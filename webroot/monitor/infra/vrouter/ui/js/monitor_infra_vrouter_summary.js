@@ -99,7 +99,7 @@ monitorInfraComputeSummaryClass = (function() {
            barChart()
                .dimension(vnDimension)
                .group(vnDimension.group(Math.floor))
-               .toolTip(true)
+               .toolTip(false)
              .x(d3.scale.linear()
                .domain([0, vnCnt+(vnCnt/24)])
                .rangeRound([0, 10 * 26])) //Width

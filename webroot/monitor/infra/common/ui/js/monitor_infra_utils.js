@@ -2,6 +2,73 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 var consoleTimer = [];
+//For Axis params if the data type is not provided default one is Integer and currently 
+//only two data types integer and float are supported
+var axisParams = {
+                    'vRouter':{
+                        yAxisParams:[{
+                                        lbl:'Memory (MB)',
+                                        key:'virtMemory',
+                                        isBucketSizeParam:false,
+                                        defaultParam:true,
+                                        aggregratorFn:function(){},
+                                        formatFn:function(data){
+                                            return prettifyBytes({bytes:ifNull(data,0)*1024,stripUnit:true,prefix:'MB'})
+                                        }
+                                      },
+                                      {
+                                          lbl:'Virtual Networks',
+                                          key:'vnCnt',
+                                          isBucketSizeParam:false,
+                                          aggregratorFn:function(){}
+                                      }],
+                       xAxisParams:[{
+                                       lbl:'CPU (%)',
+                                       key:'cpu',
+                                       type:'float',
+                                       defaultParam:true,
+                                       isBucketSizeParam:false,
+                                       aggregratorFn:function(){}
+                                    },
+                                    {
+                                        lbl:'Instances',
+                                        key:'instCnt',
+                                        isBucketSizeParam:false,
+                                        aggregratorFn:function(){}
+                                    }
+                                    ]
+                    },
+                    'analyticsNode':{
+                        yAxisParams:[{
+                            
+                                    }],
+                        xAxisParams:[{
+                                    
+                                    }]
+                    },
+                    'controlNode':{
+                        yAxisParams:[{
+                            
+                        }],
+                        xAxisParams:[{
+                        
+                        }]
+                    },
+                    'configNode':{
+                        yAxisParams:[{
+                            
+                        }],
+                        xAxisParams:[{
+                        
+                        }]
+                    }
+                 }
+var chartsLegend = { 
+        Working: d3Colors['green'],
+        Idle: d3Colors['blue'],
+        Warning: d3Colors['orange'],
+        Error: d3Colors['red']
+   };
 var infraMonitorAlertUtils = {
     /**
     * Process-specific alerts
@@ -229,10 +296,12 @@ var infraMonitorUtils = {
             var obj = {};
             var d = result[i];
             var dValue = result[i]['value'];
-            obj['x'] = parseFloat(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;cpu_share','--'));
-            obj['y'] = parseInt(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo;virt','--'))/1024; //Convert to MB
-            obj['cpu'] = $.isNumeric(obj['x']) ? obj['x'].toFixed(2) : '-';
+            //obj['x'] = parseFloat(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;cpu_share','--'));
+            //obj['y'] = parseInt(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo;virt','--'))/1024; //Convert to MB
+            obj['cpu'] = parseFloat(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;cpu_share','--'));
             obj['ip'] = getValueByJsonPath(dValue,'VrouterAgent;control_ip','-');
+            obj['xField'] = 'cpu';
+            obj['yField'] = 'virtMemory';
             obj['uveIP'] = obj['ip'];
             obj['summaryIps'] = getVrouterIpAddresses(dValue,"summary");
             var iplist = getValueByJsonPath(dValue,'VrouterAgent;self_ip_list',[]);
