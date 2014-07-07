@@ -67,16 +67,11 @@ function addTabs() {
                         bucketSizeParam: defaultBucketSizeParam,
                         bucketsPerAxis: defaultBucketsPerAxis
                     },
-                    crossFilter:vRouterCF,
-                    deferredObj:$.Deferred(),
-                    showSettings:true,
-                    //For Axis params if the data type is not provided default one is Integer and currently 
-                    //only two data types integer and float are supported
-                    yAxisParams:[{lbl:'Memory (MB)',key:'virtMemory',formatFn:function(data){
-                                                                                return prettifyBytes({bytes:ifNull(data,0)*1024,stripUnit:true,prefix:'MB'})
-                                                                          }
-                    },{lbl:'Virtual Networks',key:'vnCnt'}],
-                    xAxisParams:[{lbl:'CPU (%)',key:'cpu',type:'float'},{lbl:'Instances',key:'instCnt'}]
+                    crossFilter: vRouterCF,
+                    deferredObj: $.Deferred(),
+                    showSettings: true,
+                    yAxisParams: axisParams['vRouter']['yAxisParams'],
+                    xAxisParams: axisParams['vRouter']['xAxisParams'],
                 }
             };
             
@@ -167,12 +162,19 @@ function addTabs() {
         })
 
         var updateView = function(data) {
-            if(!isScatterChartInitialized('#ctrlNode-bubble')) {
-                $('#ctrlNodeStats-header').initWidgetHeader({title:'Control Nodes',link:{hashParams:{p:'mon_infra_control',q:{node:'Control Nodes'}}}});
-                var chartsData = {title:'Control Nodes',chartOptions:{tooltipFn:bgpMonitor.controlNodetooltipFn,clickFn:bgpMonitor.onControlNodeDrillDown,xPositive:true,addDomainBuffer:true},d:[{key:'Control Nodes',values:data}]};
-                $('#ctrlNode-bubble').initScatterChart(chartsData); 
-            } else { 
-            }
+            data = data.reverse();//reversing to get the reds on top
+            var chartsData = {
+                title: 'Control Nodes',
+                chartOptions: {
+                    tooltipFn: bgpMonitor.controlNodetooltipFn,
+                    clickFn: bgpMonitor.onControlNodeDrillDown,
+                    xPositive: true,
+                    addDomainBuffer: true
+                },
+                d: splitNodesToSeriesByColor(data,chartsLegend)
+            };
+            $('#ctrlNodeStats-header').initWidgetHeader({title:'Control Nodes',link:{hashParams:{p:'mon_infra_control',q:{node:'Control Nodes'}}}});
+            $('#ctrlNode-bubble').initScatterChart(chartsData); 
         }
 
         infraDashboardView.addInfoBox({
