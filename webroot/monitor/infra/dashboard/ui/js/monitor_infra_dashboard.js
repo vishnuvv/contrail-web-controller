@@ -37,18 +37,30 @@ function addTabs() {
         */
         var updateView = function(data) {
             var chartObj = {};
-            var chartsData = {title:'vRouters',d:[{key:'vRouters',values:data}],chartOptions:{tooltipFn:bgpMonitor.vRouterTooltipFn,clickFn:bgpMonitor.onvRouterDrillDown,xPositive:true,addDomainBuffer:true}};
-            var chartObj = {};
-            if(!isScatterChartInitialized('#vrouter-bubble')) {
-                $('#vrouterStats-header').initWidgetHeader({title:'vRouters',link:{hashParams:{p:'mon_infra_vrouter',q:{node:'vRouters'}}}});
-                $('#vrouter-bubble').initScatterChart(chartsData);
-            } else {
-                data = updateCharts.setUpdateParams(data);
-                chartObj['selector'] = $('#content-container').find('#vrouter-bubble > svg').first()[0];
-                chartObj['data'] = [{key:'vRouters',values:data}];
-                chartObj['type'] = 'infrabubblechart';
-                updateCharts.updateView(chartObj);
-            }
+            var chartsData = {
+                title: 'vRouters',
+                d: splitNodesToSeriesByColor(data, chartsLegend),
+                chartOptions: {
+                    tooltipFn: bgpMonitor.vRouterTooltipFn,
+                    bucketTooltipFn: bgpMonitor.vRouterBucketTooltipFn,
+                    clickFn: bgpMonitor.onvRouterDrillDown,
+                    xPositive: true,
+                    addDomainBuffer: true,
+                    isBucketize: true,
+                    deferredObj:$.Deferred(),
+                    showSettings:true,
+                    //For Axis params if the data type is not provided default one is Integer and currently 
+                    //only two data types integer and float are supported
+                    yAxisParams:[{lbl:'Memory (MB)',key:'virtMemory',formatFn:function(data){
+                                                                                return prettifyBytes({bytes:ifNull(data,0)*1024,stripUnit:true,prefix:'MB'})
+                                                                          }
+                    },{lbl:'Virtual Networks',key:'vnCnt'}],
+                    xAxisParams:[{lbl:'CPU (%)',key:'cpu',type:'float'},{lbl:'Instances',key:'instCnt'}]
+                }
+            };
+            
+            $('#vrouterStats-header').initWidgetHeader({title:'vRouters',link:{hashParams:{p:'mon_infra_vrouter',q:{node:'vRouters'}}}});
+            $('#vrouter-bubble').initScatterChart(chartsData);
             self.updatevRouterInfoBoxes();
         }
 

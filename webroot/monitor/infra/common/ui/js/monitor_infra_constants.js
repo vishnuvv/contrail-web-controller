@@ -19,6 +19,7 @@ var computeNodeTabStrip = "compute_tabstrip";
 var configNodeTabStrip = "config_tabstrip";
 var aNodeTabStrip = "analytics_tabstrip";
 var ctrlNodeTabStrip = "control_tabstrip";
+var maxBucketizeLevel = 3;//Maximum upto which the chart data should be bucketized
 
 var CONSOLE_LOGS_REFRESH_INTERVAL = 90000;//Auto refresh interval in console tab (ms)
 

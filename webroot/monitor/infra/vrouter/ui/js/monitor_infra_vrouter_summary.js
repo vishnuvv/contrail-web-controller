@@ -59,16 +59,9 @@ monitorInfraComputeSummaryClass = (function() {
         updateChartsForSummary(selectedData,"compute");
         
         //update the header
-        var infoElem = $('#vrouter-header h4');
-        var innerText = infoElem.text().split('(')[0].trim();
         var totalCnt = vRoutersDataSource.getItems().length;
         var filteredCnt = filteredNodeNames.length;
-        //totalCnt = ifNull(options['totalCntFn'](), totalCnt);
-        if (totalCnt == filteredCnt)
-            innerText += ' (' + totalCnt + ')';
-        else
-            innerText += ' (' + filteredCnt + ' of ' + totalCnt + ')';
-        infoElem.text(innerText);
+        updatevRouterLabel('vrouter-header',filteredCnt,totalCnt);
     }
     
     function updateCrossFilter(vRouterData){
