@@ -604,22 +604,10 @@ var infraMonitorUtils = {
                 dataValueField:'value',
                 change:selectTimeRange
             });
-            $("#console-from-time").contrailDateTimePicker({
-               // format:"MMM dd, yyyy hh:mm:ss tt",
-                format: 'M d, Y h:i:s A',
-//                min:new Date(2013, 2, 1),
-//                value:new Date(),
-//                timeFormat:"hh:mm:ss tt",
-//                interval:10
-            });
-            $("#console-to-time").contrailDateTimePicker({
-               // format:"MMM dd, yyyy hh:mm:ss tt",
-                format:"MMM dd, yyyy hh:mm:ss tt",
-//                min:new Date(2013, 2, 1),
-//                value: new Date(),
-//                timeFormat:"hh:mm:ss tt",
-//                interval:10
-            });
+            var defaultToTime = new Date();
+            var defaultFromTime = new Date(defaultToTime.getTime() - 300000);
+            createNewDTPicker('console', 'console-from-time', showFromTime, onSelectFromDate, defaultFromTime);
+            createNewDTPicker('console', 'console-to-time', showToTime, onSelectToDate, defaultToTime);
             $('#msgType').contrailCombobox({
                 dataSource:[],
                 placeholder:'Any'
@@ -1858,6 +1846,7 @@ function updateChartsForSummary(dsData, nodeType) {
 		key = 'vRouters';
 		chartId = 'vrouters-bubble';
         tooltipFn = bgpMonitor.vRouterTooltipFn;
+        bucketTooltipFn = bgpMonitor.vRouterBucketTooltipFn;
         clickFn = bgpMonitor.onvRouterDrillDown;
 	} else if(nodeType =="control"){
 		title = 'Control Nodes';
@@ -1888,9 +1877,13 @@ function updateChartsForSummary(dsData, nodeType) {
         }),
         chartOptions: {
             tooltipFn: tooltipFn,
+            bucketTooltipFn: bucketTooltipFn,
             clickFn: clickFn,
             xPositive: true,
-            addDomainBuffer: true
+            addDomainBuffer: true,
+            isBucketize: true,
+            deferredObj:$.Deferred(),
+            showSettings: true
         },
         link: {
             hashParams: {
@@ -1903,14 +1896,14 @@ function updateChartsForSummary(dsData, nodeType) {
         widgetBoxId: 'recent'
     }];
     var chartObj = {},nwObj = {};
-    if(!isScatterChartInitialized('#' + chartId)) {
+   // if(!isScatterChartInitialized('#' + chartId)) {
         $('#' + chartId).initScatterChart(chartsData[0]);
-    }  else {
-        chartObj['selector'] = $('#content-container').find('#' + chartId + ' > svg').first()[0];
-        chartObj['data'] = chartsData[0]['d'];
-        chartObj['type'] = 'infrabubblechart';
-        updateCharts.updateView(chartObj);
-    }
+//    }  else {
+//        chartObj['selector'] = $('#content-container').find('#' + chartId + ' > svg').first()[0];
+//        chartObj['data'] = chartsData[0]['d'];
+//        chartObj['type'] = 'infrabubblechart';
+//        updateCharts.updateView(chartObj);
+//    }
 }
 
 function splitNodesToSeriesByColor(data,colors) {
@@ -2074,8 +2067,21 @@ function getNodeTooltipContents(currObj) {
     var tooltipContents = [
         {lbl:'Host Name', value: currObj['name']},
         {lbl:'Version', value:currObj['version']},
-        {lbl:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu'].toFixed(2)  + '%' : currObj['cpu']},
-        {lbl:'Memory', value:formatMemory(currObj['memory'])}
+        {lbl:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  + '%' : currObj['cpu']},
+        {lbl:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
+    ];
+    return tooltipContents;
+}
+
+//Default tooltip render function for buckets
+function getNodeTooltipContentsForBucket(currObj) {
+    var nodes = currObj['children'];
+    //var avgCpu = d3.mean(nodes,function(d){return d.x});
+    //var avgMem = d3.mean(nodes,function(d){return d.y});
+    var tooltipContents = [
+        {lbl:'', value: 'No. of Nodes: ' + nodes.length},
+        {lbl:'Avg. CPU', value:$.isNumeric(currObj['x']) ? currObj['x']  + '%' : currObj['x']},
+        {lbl:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024) : currObj['y']}
     ];
     return tooltipContents;
 }
@@ -2095,6 +2101,9 @@ var bgpMonitor = {
     },
     vRouterTooltipFn: function(currObj) {
         return getNodeTooltipContents(currObj);
+    },
+    vRouterBucketTooltipFn: function(currObj) {
+        return getNodeTooltipContentsForBucket(currObj);
     },
     controlNodetooltipFn: function(currObj) {
         return getNodeTooltipContents(currObj);
@@ -2876,3 +2885,66 @@ function getConfigNodeLblValuePairs(parsedData){
 }
 
 /****\END Get label value pairs for Config Node details and detail template in summary****/
+
+/** Function to update the header with the current shown number of nodes and the total number of nodes. Used in vRouter summary chart*/
+function updatevRouterLabel(headerid,filteredCnt,totalCnt){
+    var infoElem = $('#'+ headerid +' h4');
+    var innerText = infoElem.text().split('(')[0].trim();
+    if (totalCnt == filteredCnt)
+        innerText += ' (' + totalCnt + ')';
+    else
+        innerText += ' (' + filteredCnt + ' of ' + totalCnt + ')';
+    infoElem.text(innerText);
+}
+
+/** Given node obj to disperse use the x and y values and size to randomly add minute values 
+ * to x and y so that the nodes appear dispersed instead of a single node. */
+function disperseRandomly(nodes,maxVariation){
+    for(var i=0;i < nodes.length; i++){
+        var x = nodes[i]['x'];
+        var y = nodes[i]['y'];
+        var newX = getRandomValue(x - (x* maxVariation), x + (x* maxVariation)); 
+        var newY = getRandomValue(y - (y* maxVariation), y + (y* maxVariation));
+        nodes[i]['x'] = newX;
+        nodes[i]['y'] = newY;
+    }
+    return nodes;
+}
+
+function disperseNodes(obj){
+    var retNodes = []
+    if(obj != null && obj['isBucket']){
+        retNodes = obj['children'];
+//        var x = obj['x'];
+//        var y = obj['y'];
+//        for(var i=0;i < obj['size']; i++){
+//            var newX = getRandomValue(x - (x* 0.05), x + (x* 0.05)); 
+//            var newY = getRandomValue(y - (y* 0.05), y + (y* 0.05));
+//            retNodes[i]['x'] = newX;
+//            retNodes[i]['y'] = newY;
+//        }
+        retNodes = disperseRandomly(retNodes,0.05);
+    }
+    return retNodes;
+}
+
+function filterAndDisperseNodes(data,minMaxX,minMaxY){    
+    var dataCF = crossfilter(data);
+    var xDimension = dataCF.dimension(function(d) { return d.x; });
+    var yDimension = dataCF.dimension(function(d) { return d.y; });
+    var thirdDimension = dataCF.dimension(function(d) { return d.x; });
+    var filteredNodes = fetchNodesBetweenXAndYRange(dataCF, 
+                                                    xDimension,
+                                                    yDimension, 
+                                                    thirdDimension, 
+                                                    minMaxX, 
+                                                    minMaxY
+                                                    );
+    var ret = data;
+    ret = disperseRandomly(filteredNodes,0.05);
+    return ret;
+}
+
+function getRandomValue(min,max){
+    return Math.random() * (max - min) + min;
+}
