@@ -1839,6 +1839,7 @@ function updateChartsForSummary(dsData, nodeType) {
 		key = 'vRouters';
 		chartId = 'vrouters-bubble';
         tooltipFn = bgpMonitor.vRouterTooltipFn;
+        bucketTooltipFn = bgpMonitor.vRouterBucketTooltipFn;
         clickFn = bgpMonitor.onvRouterDrillDown;
 	} else if(nodeType =="control"){
 		title = 'Control Nodes';
@@ -1859,16 +1860,36 @@ function updateChartsForSummary(dsData, nodeType) {
         tooltipFn = bgpMonitor.configNodeTooltipFn;
         clickFn = bgpMonitor.onConfigNodeDrillDown;
 	}
-    var chartsData = [{title:title,d:[{key:key,values:data}],chartOptions:{tooltipFn:tooltipFn,clickFn:clickFn,xPositive:true,addDomainBuffer:true},link:{hashParams:{p:'mon_bgp',q:{node:'vRouters'}}},widgetBoxId:'recent'}];
+    var chartsData = [{
+        title: title,
+        d: splitNodesToSeriesByColor(data, {
+            Red: d3Colors['red'],
+            Orange: d3Colors['orange'],
+            Blue: d3Colors['blue'],
+            Green: d3Colors['green']
+        }),
+        chartOptions: {
+            tooltipFn: tooltipFn,
+            bucketTooltipFn: bucketTooltipFn,
+            clickFn: clickFn,
+            xPositive: true,
+            addDomainBuffer: true,
+            isBucketize: true,
+            deferredObj:$.Deferred(),
+            showSettings: true
+        },
+        link: {
+            hashParams: {
+                p: 'mon_bgp',
+                q: {
+                    node: 'vRouters'
+                }
+            }
+        },
+        widgetBoxId: 'recent'
+    }];
     var chartObj = {},nwObj = {};
-    if(!isScatterChartInitialized('#' + chartId)) {
-        $('#' + chartId).initScatterChart(chartsData[0]);
-    }  else {
-        chartObj['selector'] = $('#content-container').find('#' + chartId + ' > svg').first()[0];
-        chartObj['data'] = [{key:key,values:data}];
-        chartObj['type'] = 'infrabubblechart';
-        updateCharts.updateView(chartObj);
-    }
+    $('#' + chartId).initScatterChart(chartsData[0]);
 }
 
 //Handlebar functions for monitor infra 
@@ -2017,8 +2038,21 @@ function getNodeTooltipContents(currObj) {
     var tooltipContents = [
         {lbl:'Host Name', value: currObj['name']},
         {lbl:'Version', value:currObj['version']},
-        {lbl:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu'] + '%' : currObj['cpu']},
-        {lbl:'Memory', value:currObj['memory']}
+        {lbl:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  + '%' : currObj['cpu']},
+        {lbl:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
+    ];
+    return tooltipContents;
+}
+
+//Default tooltip render function for buckets
+function getNodeTooltipContentsForBucket(currObj) {
+    var nodes = currObj['children'];
+    //var avgCpu = d3.mean(nodes,function(d){return d.x});
+    //var avgMem = d3.mean(nodes,function(d){return d.y});
+    var tooltipContents = [
+        {lbl:'', value: 'No. of Nodes: ' + nodes.length},
+        {lbl:'Avg. CPU', value:$.isNumeric(currObj['x']) ? currObj['x']  + '%' : currObj['x']},
+        {lbl:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024) : currObj['y']}
     ];
     return tooltipContents;
 }
@@ -2038,6 +2072,9 @@ var bgpMonitor = {
     },
     vRouterTooltipFn: function(currObj) {
         return getNodeTooltipContents(currObj);
+    },
+    vRouterBucketTooltipFn: function(currObj) {
+        return getNodeTooltipContentsForBucket(currObj);
     },
     controlNodetooltipFn: function(currObj) {
         return getNodeTooltipContents(currObj);
@@ -2264,4 +2301,621 @@ var bgpMonitor = {
                 return x;
         }
     },
+}
+
+/*****Get label value pairs for Control Node details and detail template in summary *****/
+function getControlNodeDetailsLblValuePairs(parsedData){
+    var ctrlNodeDashboardInfo =[];
+    var ctrlNodeData ;
+    if(parsedData.raw_json != null && parsedData.raw_json.value){
+        ctrlNodeData = parsedData.raw_json.value;
+    }
+    if(ctrlNodeData != null){
+        var procStateList, overallStatus = noDataStr;
+        var controlProcessStatusList = [];
+        try{
+            overallStatus = getOverallNodeStatusForDetails(parsedData);
+        }catch(e){overallStatus = "<span> "+statusTemplate({sevLevel:sevLevels['ERROR'],sevLevels:sevLevels})+" Down</span>";}
+        try{
+          procStateList = jsonPath(ctrlNodeData,"$..NodeStatus.process_info")[0];
+          controlProcessStatusList = getStatusesForAllControlProcesses(procStateList);
+        }catch(e){}
+        var ctrlNodeDashboardInfo = [
+                                     {lbl:'Hostname', value:parsedData.name},
+                                     {lbl:'IP Address',value:(function(){
+                                         var ip = ifNullOrEmpty(getControlIpAddresses(ctrlNodeData,"details"),noDataStr);
+                                         return ip;
+                                     })()},
+                                     {lbl:'Overall Node Status', value:overallStatus},
+                                     {lbl:'Processes', value:" "},
+                                     {lbl:INDENT_RIGHT+'Control Node', value:(function(){
+                                         return ifNull(controlProcessStatusList['contrail-control'],noDataStr);
+                                     })()},
+                                     /*{lbl:INDENT_RIGHT+'Control Node Manager', value:(function(){
+                                      try{
+                                         return ifNull(controlProcessStatusList['contrail-control-nodemgr'],noDataStr);
+                                      }catch(e){return noDataStr;}
+                                     })()},*/
+                                     {lbl:'Ifmap Connection', value:(function(){
+                                      var cnfNode = '';
+                                      try{
+                                         var url = ctrlNodeData.BgpRouterState.ifmap_info.url;
+                                         if(url != null && url != undefined && url != ""){
+                                            var pos = url.indexOf(':8443');
+                                            if(pos != -1)
+                                               cnfNode = url.substr(0, pos);
+                                               pos = cnfNode.indexOf('https://');
+                                               if(pos != -1)
+                                                  cnfNode = cnfNode.slice(pos + 8) ;
+                                         }
+                                            var status = ctrlNodeData.BgpRouterState.ifmap_info.connection_status;
+                                            var stateChangeAtTime = ctrlNodeData.BgpRouterState.ifmap_info.connection_status_change_at;
+                                            var stateChangeSince = "";
+                                            var statusString = "";
+                                            if(stateChangeAtTime != null){
+                                               var stateChangeAtTime = new XDate(stateChangeAtTime/1000);
+                                                var currTime = new XDate();
+                                                stateChangeSince = diffDates(stateChangeAtTime,currTime);
+                                            }
+                                            if(status != null && status != undefined && status != ""){
+                                               if(stateChangeSince != ""){
+                                                  if(status.toLowerCase() == "up" || status.toLowerCase() == "down"){
+                                                     status = status + " since";
+                                                  }
+                                                  statusString = status + " " + stateChangeSince;
+                                               } else {
+                                                  statusString = status;
+                                               }
+                                            }
+                                            if(statusString != ""){
+                                               cnfNode = cnfNode.concat( ' (' + statusString + ')');
+                                            }
+                                      }catch (e){}
+                                         return ifNull(cnfNode,noDataStr);
+                                     })()},
+                                     {lbl:'Analytics Node', value:(function(){
+                                      var anlNode = noDataStr; 
+                                      var secondaryAnlNode, status;
+                                      try{
+                                         //anlNode = ifNull(computeNodeData.VrouterAgent.collector,noDataStr);
+                                         anlNode = jsonPath(ctrlNodeData,"$..ModuleClientState..primary")[0].split(':')[0];
+                                         status = jsonPath(ctrlNodeData,"$..ModuleClientState..status")[0];
+                                         secondaryAnlNode = jsonPath(ctrlNodeData,"$..ModuleClientState..secondary")[0].split(':')[0];
+                                      }catch(e){
+                                         anlNode = "--";
+                                      }
+                                      try{
+                                         if(anlNode != null && anlNode != noDataStr && status.toLowerCase() == "established")
+                                            anlNode = anlNode.concat(' (Up)');
+                                      }catch(e){
+                                         if(anlNode != null && anlNode != noDataStr) {
+                                            anlNode = anlNode.concat(' (Down)');
+                                         }
+                                      }
+                                      if(secondaryAnlNode != null && secondaryAnlNode != "" && secondaryAnlNode != "0.0.0.0"){
+                                         anlNode.concat(', ' + secondaryAnlNode);
+                                      }
+                                      return ifNull(anlNode,noDataStr);
+                                     })()},
+                                     //TODO{lbl:'Config Messages', value:ctrlNodeData['configMessagesIn'] + ' In, ' + ctrlNodeData['configMessagesOut'] + ' Out'},
+                                     {lbl:'Analytics Messages', value:(function(){
+                                         var msgs = getAnalyticsMessagesCountAndSize(ctrlNodeData,['ControlNode']);
+                                         return msgs['count']  + ' [' + formatBytes(msgs['size']) + ']';
+                                     })()},
+                                     {lbl:'Peers', value:(function(){
+                                         var totpeers= 0,uppeers=0;
+                                         totpeers= ifNull(parsedData['totalBgpPeerCnt'],0);
+                                         uppeers = ifNull(parsedData['upBgpPeerCnt'],0);
+                                         var downpeers = 0;
+                                         if(totpeers > 0){
+                                             downpeers = totpeers - uppeers;
+                                         }
+                                         if (downpeers > 0){
+                                             downpeers = ", <span class='text-error'>"+ downpeers +" Down</span>";
+                                         } else {
+                                             downpeers = "";
+                                         }
+                                         return contrail.format('BGP Peers: {0} Total {1}',totpeers,downpeers);
+                                     })()},
+                                     {lbl:'',value:(function(){
+                                         var totXmppPeers = 0,upXmppPeers = 0,downXmppPeers = 0,subsCnt = 0;
+                                         totXmppPeers = parsedData['totalXMPPPeerCnt'];
+                                         upXmppPeers = parsedData['upXMPPPeerCnt'];
+                                         subsCnt = ifNull(jsonPath(ctrlNodeData,'$..BgpRouterState.ifmap_server_info.num_peer_clients')[0],0)
+                                         if(totXmppPeers > 0){
+                                             downXmppPeers = totXmppPeers - upXmppPeers;
+                                         }
+                                         if (downXmppPeers > 0){
+                                             downXmppPeers = ", <span class='text-error'>"+ downXmppPeers +" Down</span>";
+                                         } else {
+                                             downXmppPeers = "";
+                                         }
+                                         if (subsCnt > 0){
+                                             subsCnt = ", "+ subsCnt +" subscribed for configuration";
+                                         } else {
+                                             subsCnt = ""
+                                         }
+                                         return contrail.format('vRouters: {0} Established in Sync{1}{2} ',
+                                                 upXmppPeers,downXmppPeers,subsCnt);
+                                     })()},
+                                     {lbl:'CPU', value:$.isNumeric(parsedData['cpu']) ? parsedData['cpu'] + ' %' : noDataStr},
+                                     {lbl:'Memory', value:parsedData['memory'] != '-' ? parsedData['memory'] : noDataStr},
+                                     {lbl:'Version', value:parsedData['version'] != '-' ? parsedData['version'] : noDataStr},
+                                     {lbl:'Last Log', value: (function(){
+                                      var lmsg;
+                                      lmsg = getLastLogTimestamp(ctrlNodeData,"control");
+                                      if(lmsg != null){
+                                         try{
+                                            return new Date(parseInt(lmsg)/1000).toLocaleString();   
+                                         }catch(e){return noDataStr;}
+                                      } else return noDataStr;
+                                     })()}
+                                 ];
+    }
+    return ctrlNodeDashboardInfo;
+}
+
+function getStatusesForAllControlProcesses(processStateList){
+    var ret = [];
+    if(processStateList != null){
+       for(var i=0; i < processStateList.length; i++){
+          var currProc = processStateList[i];
+          if(currProc.process_name == "contrail-control-nodemgr"){
+             ret['contrail-control-nodemgr'] = getProcessUpTime(currProc);
+          } else if(currProc.process_name == "contrail-control"){
+             ret['contrail-control'] = getProcessUpTime(currProc);
+          }
+       }
+    }
+    return ret;
+ }
+
+/*****\END Get label value pairs for Control Node details and detail template in summary *****/
+
+
+/**** Get label value pairs for vRouter Node details and detail template in summaryv****/
+function getvRouterDetailsLblValuePairs(parsedData) {
+    var computeNodeDashboardInfo = [];
+    var computeNodeData;
+    if(parsedData.raw_json != null && parsedData.raw_json.value){
+        computeNodeData = parsedData.raw_json.value;
+    }
+    if(computeNodeData != null){
+        var overallStatus = getOverallNodeStatusForDetails(parsedData);
+        var procStateList = getValueByJsonPath(computeNodeData,"NodeStatus;process_info");
+        var vRouterProcessStatusList = getStatusesForAllvRouterProcesses(procStateList);
+        
+        computeNodeDashboardInfo = [
+                                    {lbl:'Hostname', value:parsedData.name},
+                                    {lbl:'IP Address', value:(function(){
+                                        return ifNullOrEmpty(getVrouterIpAddresses(computeNodeData,"details"),noDataStr);
+                                    })()},
+                                    {lbl:'Overall Node Status', value:overallStatus},
+                                    {lbl:'Processes', value:" "},
+                                    {lbl:INDENT_RIGHT+'vRouter Agent', value:(function(){
+                                        return ifNull(vRouterProcessStatusList['contrail-vrouter-agent'],noDataStr);
+                                    })()},
+                                    /*{lbl:INDENT_RIGHT+'vRouter Node Manager', value:(function(){
+                                        try{
+                                            return ifNull(vRouterProcessStatusList['contrail-vrouter-nodemgr'],noDataStr);
+                                        }catch(e){return noDataStr;}
+                                    })()},
+                                    {lbl:INDENT_RIGHT+'Openstack Nova Compute', value:(function(){
+                                        try{
+                                            return ifNull(vRouterProcessStatusList['openstack-nova-compute'],noDataStr);
+                                        }catch(e){return noDataStr;}
+                                    })()},*/
+                                    {lbl:'Analytics Node', value:(function(){
+                                        var anlNode = noDataStr; 
+                                        var secondaryAnlNode, status;
+                                        try{
+                                            //anlNode = ifNull(computeNodeData.VrouterAgent.collector,noDataStr);
+                                            anlNode = jsonPath(computeNodeData,"$..ModuleClientState..primary")[0].split(':')[0];
+                                            status = jsonPath(computeNodeData,"$..ModuleClientState..status")[0];
+                                            secondaryAnlNode = jsonPath(computeNodeData,"$..ModuleClientState..secondary")[0].split(':')[0];
+                                        }catch(e){
+                                            anlNode = noDataStr;
+                                        }
+                                        try{
+                                            if(anlNode != null && anlNode != noDataStr && status.toLowerCase() == "established")
+                                                anlNode = anlNode.concat(' (Up)');
+                                        }catch(e){
+                                            if(anlNode != null && anlNode != noDataStr) {
+                                                anlNode = anlNode.concat(' (Down)');
+                                            }
+                                        }
+                                        if(secondaryAnlNode != null && secondaryAnlNode != "" && secondaryAnlNode != "0.0.0.0"){
+                                            anlNode.concat(', ' + secondaryAnlNode);
+                                        }
+                                        return ifNull(anlNode,noDataStr);
+                                    })()},
+                                    {lbl:'Control Nodes', value:(function(){
+                                        var peerList ;
+                                        try{
+                                            peerList = computeNodeData.VrouterAgent.xmpp_peer_list;
+                                        }catch(e){}
+                                        var nodeArr=noDataStr ;
+                                        if(peerList != null && peerList.length>0){
+                                            nodeArr = '<div class="table-cell dashboard-item-value">';
+                                            var nodes = '';
+    
+                                            for (var i=0; i< peerList.length;i++){
+                                                var node = '';
+                                                node = '<span onclick="showObjLog(\'default-domain%3Adefault-project%3Aip-fabric%3A__default__%3A'+peerList[i].ip+'\',\'vRouter\');" onmouseover="" style="cursor: pointer;">'+ peerList[i].ip +'</span>' ;
+    
+                                                if(peerList[i].primary != null && peerList[i].primary == true){
+                                                    if(peerList[i].status == true){
+                                                        if((i+1) == peerList.length){//only primary present
+                                                            node =  node + "* (Up) " ;
+                                                        } else {
+                                                            node = node + "* (Up), " ;
+                                                        }
+                                                    } else {
+                                                        node = "<span class='text-error'>" + node + "* (Down)</span>, " ;
+                                                    }
+                                                    if(nodes == ''){
+                                                        nodes = node;
+                                                    } else {
+                                                        nodes = node + nodes
+                                                    }
+                                                } else {
+                                                    if(peerList[i].status == true)
+                                                        node = node + " (Up)" ;
+                                                    else
+                                                        node = "<span class='text-error'>" + node + " (Down)</span>" ;
+                                                    if(node != ''){
+                                                        nodes = nodes + node
+                                                    } else {
+                                                        nodes = node;
+                                                    }
+                                                }
+                                            }
+                                            nodeArr = nodeArr + nodes + '</div>'
+                                        }
+                                        return nodeArr;
+                                    })(),clk:'url'},
+    
+                                    //Best way to get the primary node - jsonPath(computeNodeData,'$.VrouterAgent.xmpp_peer_list[?(@.primary==true)].ip')},
+                                    {lbl:'Analytics Messages', value:(function(){
+                                        var msgs = getAnalyticsMessagesCountAndSize(computeNodeData,['VRouterAgent']);
+                                        return msgs['count']  + ' [' + formatBytes(msgs['size']) + ']';
+                                    })()},
+                                    {lbl:'XMPP Messages', value:(function(){
+                                        var xmppStatsList = getValueByJsonPath(computeNodeData,'VrouterStatsAgent;xmpp_stats_list',[]);
+                                        var inMsgs = outMsgs = 0; 
+                                        for(var i = 0; i < xmppStatsList.length ; i++) {
+                                            inMsgs += getValueByJsonPath(xmppStatsList[i],'in_msgs',0);
+                                            outMsgs += getValueByJsonPath(xmppStatsList[i],'out_msgs',0);
+                                        }
+                                        return (inMsgs + ' In, ' + outMsgs + ' Out');
+                                    })()},
+                                    {lbl:'Flow Count', value:(function(){
+                                        return (getValueByJsonPath(computeNodeData,"VrouterStatsAgent;active_flows", noDataStr) + ' Active, ' + 
+                                                getValueByJsonPath(computeNodeData,"VrouterStatsAgent;total_flows", noDataStr) + ' Total');
+                                    })()},  
+                                    {lbl:'Networks', value:parsedData['vnCnt']},
+                                    {lbl:'Interfaces', value:(function(){
+                                        var downInts = parsedData['errorIntfCnt'];
+                                        var totInts = parsedData['intfCnt'];
+                                        var ret;
+                                        if(downInts > 0){
+                                            downInts = ", <span class='text-error'>" + downInts + " Down</span>";
+                                        } else {
+                                            downInts = "";
+                                        } 
+                                        return totInts + " Total" + downInts;
+                                    })()},
+                                    {lbl:'Instances', value:parsedData['instCnt']},
+                                    {lbl:'CPU', value:$.isNumeric(parsedData['cpu']) ? parsedData['cpu'] + ' %' : noDataStr},
+                                    {lbl:'Memory', value:parsedData['memory'] != '-' ? parsedData['memory'] : noDataStr},
+                                    {lbl:'Version', value:parsedData['version'] != '-' ? parsedData['version'] : noDataStr},
+                                    {lbl:'Last Log', value: (function(){
+                                        var lmsg;
+                                        lmsg = getLastLogTimestamp(computeNodeData,"compute");
+                                        if(lmsg != null){
+                                            try{
+                                                return new Date(parseInt(lmsg)/1000).toLocaleString();  
+                                            }catch(e){return noDataStr;}
+                                        } else return noDataStr;
+                                    })()}
+                                ];
+    }//if
+    return computeNodeDashboardInfo;
+}
+
+function getStatusesForAllvRouterProcesses(processStateList){
+    var ret = [];
+    if(processStateList != null){
+        for(var i=0; i < processStateList.length; i++){
+            var currProc = processStateList[i];
+            if(currProc.process_name == "contrail-vrouter-nodemgr"){
+                ret['contrail-vrouter-nodemgr'] = getProcessUpTime(currProc);
+            } else if (currProc.process_name == "openstack-nova-compute"){
+                ret['openstack-nova-compute'] = getProcessUpTime(currProc);
+            } else if (currProc.process_name == "contrail-vrouter-agent"){
+                ret['contrail-vrouter-agent'] = getProcessUpTime(currProc);
+            }
+        }
+    }
+    return ret;
+}
+
+
+/****\END Get label value pairs for vRouter Node details and detail template in summary****/
+
+/**** Get label value pairs for Analytics Node details and detail template in summary****/
+function getAnalyticsNodeLblValuePairs(parsedData){
+    var aNodeDashboardInfo = [];
+    var aNodeData = parsedData.raw_json;
+    var analyticsProcessStatusList = [];
+    var procStateList, overallStatus = noDataStr;
+    
+    if(parsedData.raw_json != null && parsedData.raw_json.value){
+        aNodeData = parsedData.raw_json.value;
+    }
+    if(aNodeData != null){
+        overallStatus = getOverallNodeStatusForDetails(parsedData);
+        procStateList = getValueByJsonPath(aNodeData,"NodeStatus;process_info",[]);
+        analyticsProcessStatusList = getStatusesForAllAnalyticsProcesses(procStateList);
+        aNodeDashboardInfo = [
+            {lbl:'Hostname', value:parsedData.name},
+            {lbl:'IP Address', value:(function(){
+                var ips = '';
+                iplist = getValueByJsonPath(aNodeData,"CollectorState;self_ip_list",[]);
+                if(iplist != null && iplist.length>0){
+                    for (var i=0; i< iplist.length;i++){
+                        if(i+1 == iplist.length) {
+                            ips = ips + iplist[i];
+                        } else {
+                            ips = ips + iplist[i] + ', ';
+                        }
+                    }
+                } else {
+                    ips = noDataStr;
+                }
+                return ips;
+            })()},
+            {lbl:'Overall Node Status', value:overallStatus},
+            {lbl:'Processes', value:" "},
+            /*{lbl:INDENT_RIGHT+'Analytics Node Manager', value:(function(){
+                try{
+                    return ifNull(analyticsProcessStatusList['contrail-analytics-nodemgr'],noDataStr);
+                }catch(e){return noDataStr;}
+            })()},*/
+            {lbl:INDENT_RIGHT+'Collector', value:(function(){
+                return ifNull(analyticsProcessStatusList['contrail-collector'],noDataStr);
+            })()},
+            {lbl:INDENT_RIGHT+'Query Engine', value:(function(){
+                return ifNull(analyticsProcessStatusList['contrail-query-engine'],noDataStr);
+            })()},
+            {lbl:INDENT_RIGHT+'OpServer', value:(function(){
+                return ifNull(analyticsProcessStatusList['contrail-analytics-api'],noDataStr);
+            })()},
+           /* {lbl:INDENT_RIGHT+'Redis Sentinel', value:(function(){
+                return ifNull(analyticsProcessStatusList['redis-sentinel'],noDataStr);
+            })()},*/
+            {lbl:'CPU', value:$.isNumeric(parsedData['cpu']) ? parsedData['cpu'] + ' %' : noDataStr},
+            {lbl:'Memory', value:parsedData['memory'] != '-' ? parsedData['memory'] : noDataStr},
+            {lbl:'Messages', value:(function(){
+                var msgs = getAnalyticsMessagesCountAndSize(aNodeData,['Collector']);
+                return msgs['count']  + ' [' + formatBytes(msgs['size']) + ']';
+            })()},
+            {lbl:'Generators', value:(function(){
+                var ret='';
+                var genno;
+                try{
+                    if(aNodeData.CollectorState["generator_infos"]!=null){
+                        genno = aNodeData.CollectorState["generator_infos"].length;
+                    };
+                    ret = ret + ifNull(genno,noDataStr);
+                }catch(e){ return noDataStr;}
+                return ret;
+            })()},
+            {lbl:'Version', value:parsedData['version'] != '-' ? parsedData['version'] : noDataStr},
+            {lbl:'Last Log', value: (function(){
+                var lmsg;
+                lmsg = getLastLogTimestamp(aNodeData,"analytics");
+                if(lmsg != null){
+                    try{
+                        return new Date(parseInt(lmsg)/1000).toLocaleString();  
+                    }catch(e){return noDataStr;}
+                } else return noDataStr;
+                })()}
+        ];
+    }
+    return aNodeDashboardInfo;
+}
+
+function getStatusesForAllAnalyticsProcesses(processStateList){
+    var ret = [];
+    if(processStateList != null){
+        for(var i=0; i < processStateList.length; i++){
+            var currProc = processStateList[i];
+            if (currProc.process_name == "contrail-query-engine"){
+                ret['contrail-query-engine'] = getProcessUpTime(currProc);
+            }  else if (currProc.process_name == "contrail-analytics-nodemgr"){
+                ret['contrail-analytics-nodemgr'] = getProcessUpTime(currProc);
+            }  else if (currProc.process_name == "contrail-analytics-api"){
+                ret['contrail-analytics-api'] = getProcessUpTime(currProc);
+            } else if (currProc.process_name == "contrail-collector"){
+                ret['contrail-collector'] = getProcessUpTime(currProc);
+            } 
+        }
+    }
+    return ret;
+}
+/****\END Get label value pairs for Analytics Node details and detail template in summaryv****/
+
+/**** Get label value pairs for Config Node details and detail template in summary****/
+function getConfigNodeLblValuePairs(parsedData){
+    var confNodeDashboardInfo = [];
+    var confNodeData = parsedData.raw_json;
+    var analyticsProcessStatusList = [];
+    
+    if(parsedData.raw_json != null && parsedData.raw_json.value){
+        confNodeData = parsedData.raw_json.value;
+    }
+    if(confNodeData != null){
+        var procStateList, overallStatus = noDataStr;
+        var configProcessStatusList = [];
+        overallStatus = getOverallNodeStatusForDetails(parsedData);
+        procStateList = getValueByJsonPath(confNodeData,"configNode;NodeStatus;process_info",[]);
+        if(!(procStateList instanceof Array)){
+            procStateList = [procStateList];
+        }
+        configProcessStatusList = getStatusesForAllConfigProcesses(procStateList);
+        confNodeDashboardInfo = [
+          {lbl:'Hostname', value:parsedData.name},
+            {lbl:'IP Address', value:(function (){
+             var ips = '';
+                try{
+                    iplist = getValueByJsonPath(confNodeData,"configNode;ModuleCpuState;config_node_ip",[]);
+                    if(iplist instanceof Array){
+                        nodeIp = iplist[0];//using the first ip in the list for status
+                    } else {
+                        nodeIp = iplist;
+                    }
+                } catch(e){return noDataStr;}
+                if(iplist != null && iplist != noDataStr && iplist.length>0){
+                    for (var i=0; i< iplist.length;i++){
+                        if(i+1 == iplist.length) {
+                            ips = ips + iplist[i];
+                        } else {
+                            ips = ips + iplist[i] + ', ';
+                        }
+                    }
+                } else {
+                   ips = noDataStr;
+                }
+                return ips;
+            })()},
+            {lbl:'Overall Node Status', value:overallStatus},
+            {lbl:'Processes', value:" "},
+            {lbl:INDENT_RIGHT+'API Server', value:(function(){
+                return configProcessStatusList['contrail-api'];
+            })()},
+            {lbl:INDENT_RIGHT+'Schema Transformer', value:(function(){
+                return configProcessStatusList['contrail-schema'];
+            })()},
+            {lbl:INDENT_RIGHT+'Service Monitor', value:(function(){
+                return configProcessStatusList['contrail-svc-monitor'];
+            })()},
+            /*{lbl:INDENT_RIGHT+'Config Node Manager', value:(function(){
+                return ifNull(configProcessStatusList['contrail-config-nodemgr'],noDataStr);
+            })()},*/
+            {lbl:INDENT_RIGHT+'Discovery', value:(function(){
+                return ifNull(configProcessStatusList['contrail-discovery'],noDataStr);
+            })()},
+           /* {lbl:INDENT_RIGHT+'Zookeeper', value:(function(){
+                return ifNull(configProcessStatusList['contrail-zookeeper'],noDataStr);
+            })()},*/
+            {lbl:INDENT_RIGHT+'Ifmap', value:(function(){
+                return ifNull(configProcessStatusList['ifmap'],noDataStr);
+            })()},
+            {lbl:'Analytics Node', value:(function(){
+             var anlNode = noDataStr; 
+             var secondaryAnlNode, status;
+             try{
+                //anlNode = ifNull(computeNodeData.VrouterAgent.collector,noDataStr);
+                anlNode = jsonPath(confNodeData,"$..ModuleClientState..primary")[0].split(':')[0];
+                status = jsonPath(confNodeData,"$..ModuleClientState..status")[0];
+                secondaryAnlNode = ifNull(jsonPath(confNodeData,"$..ModuleClientState..secondary")[0],"").split(':')[0];
+             }catch(e){
+                anlNode = "--";
+             }
+             try{
+                if(anlNode != null && anlNode != noDataStr && status.toLowerCase() == "established")
+                   anlNode = anlNode.concat(' (Up)');
+             }catch(e){
+                if(anlNode != null && anlNode != noDataStr) {
+                   anlNode = anlNode.concat(' (Down)');
+                }
+             }
+             if(secondaryAnlNode != null && secondaryAnlNode != "" && secondaryAnlNode != "0.0.0.0"){
+                anlNode.concat(', ' + secondaryAnlNode);
+             }
+             return ifNull(anlNode,noDataStr);
+          })()},
+          //  {lbl:'Analytics Messages', value:(function(){return (parseInt(confNodeData.ApiServer.ModuleServerState["generator_info"]["connect_time"]) 
+          //    > parseInt(confNodeData.ModuleServerState["generator_info"]["reset_time"]))?"Up":"Down"})()},
+          {lbl:'CPU', value:$.isNumeric(parsedData['cpu']) ? parsedData['cpu'] + ' %' : noDataStr},
+          {lbl:'Memory', value:parsedData['memory'] != '-' ? parsedData['memory'] : noDataStr},
+          {lbl:'Version', value:parsedData['version'] != '-' ? parsedData['version'] : noDataStr},
+          {lbl:'Last Log', value: (function(){
+             var lmsg;
+             lmsg = getLastLogTimestamp(confNodeData,"config");
+             if(lmsg != null){
+                try{
+                   return new Date(parseInt(lmsg)/1000).toLocaleString();   
+                }catch(e){return noDataStr;}
+             } else return noDataStr;
+             })()}
+        ];
+    }
+    return confNodeDashboardInfo;
+}
+
+/****\END Get label value pairs for Config Node details and detail template in summary****/
+
+/** Function to update the header with the current shown number of nodes and the total number of nodes. Used in vRouter summary chart*/
+function updatevRouterLabel(headerid,filteredCnt,totalCnt){
+    var infoElem = $('#'+ headerid +' h4');
+    var innerText = infoElem.text().split('(')[0].trim();
+    if (totalCnt == filteredCnt)
+        innerText += ' (' + totalCnt + ')';
+    else
+        innerText += ' (' + filteredCnt + ' of ' + totalCnt + ')';
+    infoElem.text(innerText);
+}
+
+/** Given node obj to disperse use the x and y values and size to randomly add minute values 
+ * to x and y so that the nodes appear dispersed instead of a single node. */
+function disperseRandomly(nodes,maxVariation){
+    for(var i=0;i < nodes.length; i++){
+        var x = nodes[i]['x'];
+        var y = nodes[i]['y'];
+        var newX = getRandomValue(x - (x* maxVariation), x + (x* maxVariation)); 
+        var newY = getRandomValue(y - (y* maxVariation), y + (y* maxVariation));
+        nodes[i]['x'] = newX;
+        nodes[i]['y'] = newY;
+    }
+    return nodes;
+}
+
+function disperseNodes(obj){
+    var retNodes = []
+    if(obj != null && obj['isBucket']){
+        retNodes = obj['children'];
+//        var x = obj['x'];
+//        var y = obj['y'];
+//        for(var i=0;i < obj['size']; i++){
+//            var newX = getRandomValue(x - (x* 0.05), x + (x* 0.05)); 
+//            var newY = getRandomValue(y - (y* 0.05), y + (y* 0.05));
+//            retNodes[i]['x'] = newX;
+//            retNodes[i]['y'] = newY;
+//        }
+        retNodes = disperseRandomly(retNodes,0.05);
+    }
+    return retNodes;
+}
+
+function filterAndDisperseNodes(data,minMaxX,minMaxY){    
+    var dataCF = crossfilter(data);
+    var xDimension = dataCF.dimension(function(d) { return d.x; });
+    var yDimension = dataCF.dimension(function(d) { return d.y; });
+    var thirdDimension = dataCF.dimension(function(d) { return d.x; });
+    var filteredNodes = fetchNodesBetweenXAndYRange(dataCF, 
+                                                    xDimension,
+                                                    yDimension, 
+                                                    thirdDimension, 
+                                                    minMaxX, 
+                                                    minMaxY
+                                                    );
+    var ret = data;
+    ret = disperseRandomly(filteredNodes,0.05);
+    return ret;
+}
+
+function getRandomValue(min,max){
+    return Math.random() * (max - min) + min;
 }
