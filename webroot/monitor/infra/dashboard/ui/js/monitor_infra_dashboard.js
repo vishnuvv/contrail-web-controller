@@ -43,11 +43,13 @@ function addTabs() {
                 d: splitNodesToSeriesByColor(data, chartsLegend),
                 chartOptions: {
                     tooltipFn: bgpMonitor.vRouterTooltipFn,
+                    bucketTooltipFn: bgpMonitor.vRouterBucketTooltipFn,
                     clickFn: bgpMonitor.onvRouterDrillDown,
                     xPositive: true,
                     addDomainBuffer: true,
+                    isBucketize: true,
                     deferredObj:$.Deferred(),
-                    showSettings:false,
+                    showSettings:true,
                     //For Axis params if the data type is not provided default one is Integer and currently 
                     //only two data types integer and float are supported
                     yAxisParams:[{lbl:'Memory (MB)',key:'virtMemory',formatFn:function(data){
