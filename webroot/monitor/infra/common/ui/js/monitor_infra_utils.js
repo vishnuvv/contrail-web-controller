@@ -1835,7 +1835,7 @@ function formatMemory(memory) {
 }
 
 function updateChartsForSummary(dsData, nodeType) {
-    var title,key,chartId,isChartInitialized = false,tooltipFn;
+    var title,key,chartId,isChartInitialized = false,tooltipFn,bucketTooltipFn,isBucketize;
     var nodeData = dsData;
     var data = [];
     if(nodeData != null){
@@ -1847,24 +1847,28 @@ function updateChartsForSummary(dsData, nodeType) {
 		chartId = 'vrouters-bubble';
         tooltipFn = bgpMonitor.vRouterTooltipFn;
         bucketTooltipFn = bgpMonitor.vRouterBucketTooltipFn;
+        isBucketize = true;
         clickFn = bgpMonitor.onvRouterDrillDown;
 	} else if(nodeType =="control"){
 		title = 'Control Nodes';
 		key = 'controlNode';
 		chartId = 'controlNodes-bubble';
         tooltipFn = bgpMonitor.controlNodetooltipFn;
+        isBucketize = false;
         clickFn = bgpMonitor.onControlNodeDrillDown;
 	} else if(nodeType == "analytics"){
 		title = 'Analytic Nodes';
 		key = 'analyticsNode';
 		chartId = 'analyticNodes-bubble';
         tooltipFn = bgpMonitor.analyticNodeTooltipFn;
+        isBucketize = false;
         clickFn = bgpMonitor.onAnalyticNodeDrillDown;
 	} else if(nodeType == "config"){
 		title = 'Config Nodes';
 		key = 'configNode';
 		chartId = 'configNodes-bubble';
         tooltipFn = bgpMonitor.configNodeTooltipFn;
+        isBucketize = false;
         clickFn = bgpMonitor.onConfigNodeDrillDown;
 	}
     var chartsData = [{
@@ -1877,11 +1881,16 @@ function updateChartsForSummary(dsData, nodeType) {
         }),
         chartOptions: {
             tooltipFn: tooltipFn,
-            bucketTooltipFn: bucketTooltipFn,
+            bucketTooltipFn: (isBucketize)? bucketTooltipFn : '',
             clickFn: clickFn,
             xPositive: true,
             addDomainBuffer: true,
-            isBucketize: true,
+            isBucketize: isBucketize,
+            bucketOptions:{
+                maxBucketizeLevel: defaultMaxBucketizeLevel,
+                bucketSizeParam: defaultBucketSizeParam,
+                bucketsPerAxis: defaultBucketsPerAxis
+            },
             deferredObj:$.Deferred(),
             showSettings: true
         },
