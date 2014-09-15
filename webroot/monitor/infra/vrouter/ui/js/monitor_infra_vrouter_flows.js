@@ -32,7 +32,7 @@ monitorInfraComputeFlowsClass = (function() {
                 response = [response];
             }
             if(isFromACLFlows) {
-                var aclUUID = $('#aclDropDown').data('contrailDropdown').value();
+                var aclUUID = $('#aclDropDown' + '_' + obj.name).data('contrailDropdown').value();
                 $.each(response,function(idx,obj) {
                     var rawJson = obj;
                     if(idx != 0){
@@ -89,22 +89,24 @@ monitorInfraComputeFlowsClass = (function() {
         var isAclPrevFirstTimeClicked = true;
         var isAllPrevFirstTimeClicked = true;
         var selectedAcl = 'All';
-        var tabFilter =  $('#' + computeNodeTabStrip).data('tabFilter');
+        var tabFilter =  $('#' + computeNodeTabStrip + '_' + obj.name).data('tabFilter');
         var filters;
         if(tabFilter != null && tabFilter['tab'] == 'flows'){
             filters = tabFilter['filters'];
-            $('#' + computeNodeTabStrip).removeData('tabFilter');
+            $('#' + computeNodeTabStrip + '_' + obj.name).removeData('tabFilter');
         }
         if (filters != null){
             selectedAcl = filters[0]['aclUUID'];
         }
         flowKeyStack = [];
         aclIterKeyStack = [];
-        $('#btnNextFlows').unbind("click").click(onNextClick);
-        $('#btnPrevFlows').unbind("click").click(onPrevClick);
-        layoutHandler.setURLHashParams({tab:'flows',node: obj['name']},{triggerHashChange:false});
-        if (!isDropdownInitialized('aclDropDown')){
-            $('#aclDropDown').contrailDropdown({
+        $('#btnNextFlows' + '_' + obj.name).unbind("click").click(onNextClick);
+        $('#btnPrevFlows' + '_' + obj.name).unbind("click").click(onPrevClick);
+        if(obj.detailView === undefined) {
+            layoutHandler.setURLHashParams({tab:'flows',node: obj['name']},{triggerHashChange:false});
+        }    
+        if (!isDropdownInitialized('aclDropDown' + '_' + obj.name)){
+            $('#aclDropDown' + '_' + obj.name).contrailDropdown({
                 dataSource: {
                     type: 'remote',
                      url: contrail.format(monitorInfraUrls['VROUTER_ACL'], getIPOrHostName(obj)),
@@ -130,13 +132,13 @@ monitorInfraComputeFlowsClass = (function() {
                 dataTextField:'text',
                 change:onSelectAcl
             }).data('contrailDropdown');
-            $('#aclDropDown').data('contrailDropdown').value(selectedAcl);
+            $('#aclDropDown' + '_' + obj.name).data('contrailDropdown').value(selectedAcl);
         } 
         if(selectedAcl != 'All'){
-            $('#aclDropDown').data('contrailDropdown').value(selectedAcl);
+            $('#aclDropDown' + '_' + obj.name).data('contrailDropdown').value(selectedAcl);
         }   
-        if (!isGridInitialized('#gridComputeFlows')) {
-            $("#gridComputeFlows").contrailGrid({
+        if (!isGridInitialized('#gridComputeFlows' + '_' + obj.name)) {
+            $("#gridComputeFlows" + '_' + obj.name).contrailGrid({
                 header : {
                     title : {
                         text : 'Flows'
@@ -171,7 +173,7 @@ monitorInfraComputeFlowsClass = (function() {
                                        events: {
                                            onClick: function(e,dc){
                                                var tabIdx = $.inArray("networks", computeNodeTabs);
-                                               selectTab(computeNodeTabStrip,tabIdx);
+                                               selectTab(computeNodeTabStrip + '_' + obj.name,tabIdx);
                                            }
                                         },
                                        minWidth:195
@@ -193,7 +195,7 @@ monitorInfraComputeFlowsClass = (function() {
                                        events: {
                                            onClick: function(e,dc){
                                                var tabIdx = $.inArray("networks", computeNodeTabs);
-                                               selectTab(computeNodeTabStrip,tabIdx);
+                                               selectTab(computeNodeTabStrip + '_' + obj.name, tabIdx);
                                            }
                                         },
                                        minWidth:195
@@ -271,7 +273,7 @@ monitorInfraComputeFlowsClass = (function() {
                 footer : false,
                 change:onFlowChange
             });
-            flowGrid = $('#gridComputeFlows').data('contrailGrid');
+            flowGrid = $('#gridComputeFlows' + '_' + obj.name).data('contrailGrid');
             flowGrid.showGridMessage('loading');
             /*TODO context filtering
              * if(filters == null || filters == "" || filters == undefined){
@@ -279,7 +281,7 @@ monitorInfraComputeFlowsClass = (function() {
             }*/
         } else { 
             var newAjaxConfig;
-            flowGrid = $('#gridComputeFlows').data('contrailGrid');
+            flowGrid = $('#gridComputeFlows' + '_' + obj.name).data('contrailGrid');
             if(selectedAcl != 'All'){
                 newAjaxConfig = {
                         url: monitorInfraUrls['VROUTER_FLOWS'] + '?ip=' + getIPOrHostName(obj) 
@@ -331,8 +333,13 @@ monitorInfraComputeFlowsClass = (function() {
             return (ret == '')? noDataStr: ret;
         }
         function onSelectAcl() {
-            var acluuid = $('#aclDropDown').data("contrailDropdown").value();
-            var flowGrid = $('#gridComputeFlows').data('contrailGrid');
+            obj.name = arguments[0].target.id.split('_')[1];
+            var newIP = getIPforHostName(obj.name, 'computeNodeDS');
+            if(newIP != null) {
+                obj.ip = newIP; 
+            }        
+            var acluuid = $('#aclDropDown' + '_' + obj.name).data("contrailDropdown").value();
+            var flowGrid = $('#gridComputeFlows' + '_' + obj.name).data('contrailGrid');
             var newAjaxConfig = "";
             flowKeyStack = [];
             aclIterKeyStack = [];
@@ -427,7 +434,7 @@ monitorInfraComputeFlowsClass = (function() {
             if (name = isCellSelectable(this.select())) {
                 if ($.inArray(name, ['src_vn', 'dst_vn']) > -1){
                     var tabIdx = $.inArray("networks", computeNodeTabs);
-                    selectTab(computeNodeTabStrip, tabIdx);
+                    selectTab(computeNodeTabStrip + '_' + obj.name, tabIdx);
                 }
             }
         }
