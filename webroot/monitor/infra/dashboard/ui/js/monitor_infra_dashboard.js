@@ -48,6 +48,11 @@ function addTabs() {
                     xPositive: true,
                     addDomainBuffer: true,
                     isBucketize: true,
+                    bucketOptions:{
+                        maxBucketizeLevel: defaultMaxBucketizeLevel,
+                        bucketSizeParam: defaultBucketSizeParam,
+                        bucketsPerAxis: defaultBucketsPerAxis
+                    },
                     deferredObj:$.Deferred(),
                     showSettings:true,
                     //For Axis params if the data type is not provided default one is Integer and currently 
