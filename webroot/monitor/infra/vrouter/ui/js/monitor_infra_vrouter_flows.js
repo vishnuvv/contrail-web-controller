@@ -6,6 +6,7 @@
  * vRouter Flows tab
  */
 monitorInfraComputeFlowsClass = (function() {
+    var nodeObj;
     this.parseFlowsData = function(response){
 
         var origResponse = response;
@@ -32,7 +33,7 @@ monitorInfraComputeFlowsClass = (function() {
                 response = [response];
             }
             if(isFromACLFlows) {
-                var aclUUID = $('#aclDropDown' + '_' + obj.name).data('contrailDropdown').value();
+                var aclUUID = $('#aclDropDown' + '_' + nodeObj.name).data('contrailDropdown').value();
                 $.each(response,function(idx,obj) {
                     var rawJson = obj;
                     if(idx != 0){
@@ -337,7 +338,8 @@ monitorInfraComputeFlowsClass = (function() {
             var newIP = getIPforHostName(obj.name, 'computeNodeDS');
             if(newIP != null) {
                 obj.ip = newIP; 
-            }        
+            }     
+            nodeObj = obj;
             var acluuid = $('#aclDropDown' + '_' + obj.name).data("contrailDropdown").value();
             var flowGrid = $('#gridComputeFlows' + '_' + obj.name).data('contrailGrid');
             var newAjaxConfig = "";
@@ -359,8 +361,13 @@ monitorInfraComputeFlowsClass = (function() {
             reloadGrid(flowGrid);
         }
         function onNextClick(){
-            var flowGrid = $('#gridComputeFlows').data('contrailGrid');
-            var acluuid = $('#aclDropDown').data("contrailDropdown").value();
+            obj.name = arguments[0].target.id.split('_')[1];
+            var newIP = getIPforHostName(obj.name, 'computeNodeDS');
+            if(newIP != null) {
+                obj.ip = newIP;
+            }
+            var flowGrid = $('#gridComputeFlows' + '_' + obj.name).data('contrailGrid');
+            var acluuid = $('#aclDropDown' + '_' + obj.name).data("contrailDropdown").value();
             var newAjaxConfig = "";
             isAllPrevFirstTimeClicked = true;
             isAclPrevFirstTimeClicked = true;
@@ -387,8 +394,13 @@ monitorInfraComputeFlowsClass = (function() {
             reloadGrid(flowGrid);
         }
         function onPrevClick(){
-            var flowGrid = $('#gridComputeFlows').data('contrailGrid');
-            var acluuid = $('#aclDropDown').data("contrailDropdown").value();
+            obj.name = arguments[0].target.id.split('_')[1];
+            var newIP = getIPforHostName(obj.name, 'computeNodeDS');
+            if(newIP != null) {
+                obj.ip = newIP;
+            }
+            var flowGrid = $('#gridComputeFlows' + '_' + obj.name).data('contrailGrid');
+            var acluuid = $('#aclDropDown' + '_' + obj.name).data("contrailDropdown").value();
             var newAjaxConfig = "";
             if(isAllPrevFirstTimeClicked) {
                 //we need to do this because when we click the prev for the first time the stack would contain the next uuid as well. 

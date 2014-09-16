@@ -896,6 +896,14 @@ var infraMonitorUtils = {
         }
         
         $('#btnResetLogs' + '_' + obj.name).on('click', function () {
+            obj.name = arguments[0].target.id.split('_')[1];
+            cboTimeRange = $('#msgTimeRange' + '_' + obj.name).data('contrailDropdown');
+            cboMsgCategory = $('#msgCategory' + '_' + obj.name).data('contrailDropdown');
+            cboMsgType = $('#msgType' + '_' + obj.name).data('contrailCombobox');
+            cboMsgLevel = $('#msgLevel' + '_' + obj.name).data('contrailDropdown');
+            cboMsgLimit = $('#msgLimit' + '_' + obj.name).data('contrailDropdown');
+            cboMsgFromTime = $('#console-from-time' + '_' + obj.name).data('contrailDateTimePicker');
+           
             cboTimeRange.value('5m');
             selectTimeRange({val:"5m"});
             cboMsgType.value('');
