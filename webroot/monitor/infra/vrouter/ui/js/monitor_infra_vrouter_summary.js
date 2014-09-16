@@ -194,24 +194,15 @@ monitorInfraComputeSummaryClass = (function() {
                     forceFitColumns:true,
                     lazyLoading:true,
                     detail:{
-                        template: $("#gridDetailTemplate").html(),
+                        template: $("#computenode-template").html(),
                         onExpand: function (e,dc) {
-                            var detailTemplate = contrail.getTemplate4Id('infra-summary-details-template');
-                            var rowData = e.data;
-                            var grid = $(e['target']).closest('div.contrail-grid');
-                            var dataItem = dc;
-                            var data = getvRouterDetailsLblValuePairs(dc);
-                            data = {d:data};
-                            //Issue a call for fetching the details
-                            if(data != null) {
-                                e.detailRow.find('.row-fluid.advancedDetails').html('<div><pre style="background-color:white">' + syntaxHighlight(dc.raw_json) + '</pre></div>');
-                                //DataItem consists of row data,passing it as a parameter to the parsefunction
-                                e.detailRow.find('.row-fluid.basicDetails').html(detailTemplate(data));
-                                $(grid).data('contrailGrid').adjustDetailRowHeight(dataItem['id']);
-                            } else {
-                                e.detailRow.find('.row-fluid.basicDetails').html(detailTemplate(data));
-                            }
+                            //scaling down the content
+                            $('#compute_tabstrip_' + dc['name']).attr('style', 'margin:10px 150px 10px 150px;zoom:90%');
+                            cmpNodeView.populateComputeNode({name:dc['name'], ip:dc['ip'], detailView : true});
+                            $('#divcomputesgrid > .grid-body > .slick-viewport > .grid-canvas > .slick-row-detail').addClass('slick-grid-detail-content-height');
+                            $('#divcomputesgrid > .grid-body > .slick-viewport > .grid-canvas > .slick-row-detail > .slick-cell').addClass('slick-grid-detail-sub-content-height');
                         },
+                        detailView : true,
                         onCollapse:function (e,dc) {
                         }
                     }
