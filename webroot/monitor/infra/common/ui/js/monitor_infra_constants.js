@@ -19,11 +19,17 @@ var computeNodeTabStrip = "compute_tabstrip";
 var configNodeTabStrip = "config_tabstrip";
 var aNodeTabStrip = "analytics_tabstrip";
 var ctrlNodeTabStrip = "control_tabstrip";
-var defaultMaxBucketizeLevel = 3; //Maximum upto which the chart data should be bucketized
-var defaultBucketSizeParam = "size"; //Determines what param will be used to depict the size of the bubble in infra charts
-var defaultBucketsPerAxis = 7; //Determines how many buckets need to created per axis. If 7 creates 7 x 7 = 49 buckets and groups the nodes
+
+//Bucketization Options
+//Maximum upto which the chart data should be bucketized
+var defaultMaxBucketizeLevel = 3; 
+//Determines what param will be used to depict the size of the bubble in infra charts
+var defaultBucketSizeParam = "size"; 
+//Determines how many buckets need to created per axis. If 7 creates 7 x 7 = 49 buckets and groups the nodes
+var defaultBucketsPerAxis = 7; 
 
 var CONSOLE_LOGS_REFRESH_INTERVAL = 90000;//Auto refresh interval in console tab (ms)
+
 
 var monitorInfraUrls = {
         VROUTER_BASE                : '/api/admin/monitor/infrastructure/vrouter/',

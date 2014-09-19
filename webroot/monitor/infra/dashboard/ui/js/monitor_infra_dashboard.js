@@ -27,16 +27,30 @@ function addTabs() {
             self.upCnt = ko.computed(function() { return self.data().length - self.downCnt();});
             self.totalCnt = ko.computed(function() { return self.upCnt() === '' ? '' : self.upCnt() + self.downCnt();});
         }
-
+        var vRouterCF = 'vRoutersCF';
         var viewModel = new ViewModel();
         viewModel.data.subscribe(function(newValue) {
-            updateView(newValue);
+            //updateView(newValue);
+          //TODO dono why its required will need to take a look later by removing it
+//            var filteredNodes = [];
+//            $.each(vRoutersDataSource.getItems(),function(i,item){
+//                filteredNodes.push(item);
+//            });
+          //  manageCrossFilters.disableCallBacks('vRoutersCF');
+            manageCrossFilters.updateCrossFilter(vRouterCF,newValue);
+            //Add crossfilter dimensions for charts ie x and y
+            manageCrossFilters.addDimension(vRouterCF,'x');
+            manageCrossFilters.addDimension(vRouterCF,'y');
+           // manageCrossFilters.enableCallBacks(vRouterCF);
+            manageCrossFilters.fireCallBacks(vRouterCF);
         })
+        
         /**
         * Takes vRouters data(array) as input and creates/updates chart
         */
         var updateView = function(data) {
-            data = data.reverse();//reversing to get the reds on top
+            var filteredNodes = manageCrossFilters.getCurrentFilteredData('vRoutersCF');
+            data = filteredNodes.reverse();//reversing to get the reds on top
             var chartObj = {};
             var chartsData = {
                 title: 'vRouters',
@@ -53,6 +67,7 @@ function addTabs() {
                         bucketSizeParam: defaultBucketSizeParam,
                         bucketsPerAxis: defaultBucketsPerAxis
                     },
+                    crossFilter:vRouterCF,
                     deferredObj:$.Deferred(),
                     showSettings:true,
                     //For Axis params if the data type is not provided default one is Integer and currently 
@@ -66,9 +81,14 @@ function addTabs() {
             };
             
             $('#vrouterStats-header').initWidgetHeader({title:'vRouters',link:{hashParams:{p:'mon_infra_vrouter',q:{node:'vRouters'}}}});
+            //filterAndUpdateScatterChart('vrouter-bubble',chartsData);
             $('#vrouter-bubble').initScatterChart(chartsData);
             self.updatevRouterInfoBoxes();
         }
+        
+      //register to listen to callbacks for updates on the crossfilter and update the 
+        //components which are listening to changes on it. 
+        manageCrossFilters.addCallBack(vRouterCF,'updateView',updateView);
 
         this.updatevRouterInfoBoxes = function(){
             var data = viewModel.data();
