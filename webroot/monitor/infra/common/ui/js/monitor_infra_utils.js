@@ -1828,7 +1828,7 @@ function formatMemory(memory) {
 }
 
 function updateChartsForSummary(dsData, nodeType) {
-    var title,key,chartId,isChartInitialized = false,tooltipFn,bucketTooltipFn,isBucketize;
+    var title,key,chartId,isChartInitialized = false,tooltipFn,bucketTooltipFn,isBucketize,crossFilter;
     var nodeData = dsData;
     var data = [];
     if(nodeData != null){
@@ -1842,6 +1842,7 @@ function updateChartsForSummary(dsData, nodeType) {
         bucketTooltipFn = bgpMonitor.vRouterBucketTooltipFn;
         isBucketize = true;
         clickFn = bgpMonitor.onvRouterDrillDown;
+        crossFilter = 'vRoutersCF';
 	} else if(nodeType =="control"){
 		title = 'Control Nodes';
 		key = 'controlNode';
@@ -1864,7 +1865,7 @@ function updateChartsForSummary(dsData, nodeType) {
         isBucketize = false;
         clickFn = bgpMonitor.onConfigNodeDrillDown;
 	}
-    var chartsData = [{
+    var chartsData = {
         title: title,
         d: splitNodesToSeriesByColor(data, {
             Red: d3Colors['red'],
@@ -1884,6 +1885,7 @@ function updateChartsForSummary(dsData, nodeType) {
                 bucketSizeParam: defaultBucketSizeParam,
                 bucketsPerAxis: defaultBucketsPerAxis
             },
+            crossFilter:crossFilter,
             deferredObj:$.Deferred(),
             showSettings: true
         },
@@ -1896,9 +1898,27 @@ function updateChartsForSummary(dsData, nodeType) {
             }
         },
         widgetBoxId: 'recent'
-    }];
+    };
     var chartObj = {},nwObj = {};
-    $('#' + chartId).initScatterChart(chartsData[0]);
+    //filterAndUpdateScatterChart(chartId,chartsData);
+    $('#' + chartId).initScatterChart(chartsData);
+}
+
+function splitNodesToSeriesByColor(data,colors) {
+    var splitSeriesData = [];
+    var nodeCrossFilter = crossfilter(data);
+    var colorDimension = nodeCrossFilter.dimension(function(d) {return d.color});
+    var colorGroup = colorDimension.group();
+    $.each(colors,function(key,value) {
+        colorDimension.filterAll();
+        colorDimension.filter(value);
+        splitSeriesData.push({
+            key: key,
+            color: value,
+            values: colorDimension.top(Infinity)
+        });
+    });
+    return splitSeriesData;
 }
 
 //Handlebar functions for monitor infra 
@@ -2047,7 +2067,7 @@ function getNodeTooltipContents(currObj) {
     var tooltipContents = [
         {lbl:'Host Name', value: currObj['name']},
         {lbl:'Version', value:currObj['version']},
-        {lbl:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  + '%' : currObj['cpu']},
+        {lbl:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu'].toFixed(2)  + '%' : currObj['cpu']},
         {lbl:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
     ];
     return tooltipContents;
@@ -2060,7 +2080,7 @@ function getNodeTooltipContentsForBucket(currObj) {
     //var avgMem = d3.mean(nodes,function(d){return d.y});
     var tooltipContents = [
         {lbl:'', value: 'No. of Nodes: ' + nodes.length},
-        {lbl:'Avg. CPU', value:$.isNumeric(currObj['x']) ? currObj['x']  + '%' : currObj['x']},
+        {lbl:'Avg. CPU', value:$.isNumeric(currObj['x']) ? currObj['x'].toFixed(2)  + '%' : currObj['x']},
         {lbl:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024) : currObj['y']}
     ];
     return tooltipContents;
@@ -2908,15 +2928,8 @@ function disperseNodes(obj){
     return retNodes;
 }
 
-function filterAndDisperseNodes(data,minMaxX,minMaxY){    
-    var dataCF = crossfilter(data);
-    var xDimension = dataCF.dimension(function(d) { return d.x; });
-    var yDimension = dataCF.dimension(function(d) { return d.y; });
-    var thirdDimension = dataCF.dimension(function(d) { return d.x; });
-    var filteredNodes = fetchNodesBetweenXAndYRange(dataCF, 
-                                                    xDimension,
-                                                    yDimension, 
-                                                    thirdDimension, 
+function filterAndDisperseNodes(data,minMaxX,minMaxY){   
+    var filteredNodes = fetchNodesBetweenXAndYRange(data,
                                                     minMaxX, 
                                                     minMaxY
                                                     );
@@ -2928,3 +2941,69 @@ function filterAndDisperseNodes(data,minMaxX,minMaxY){
 function getRandomValue(min,max){
     return Math.random() * (max - min) + min;
 }
+
+function fetchNodesBetweenXAndYRange(d,xMinMax,yMinMax,cfName){
+    var dataCF = crossfilter(d);
+    
+    var xDimension = dataCF.dimension(function(d) { return d.x; });
+    var yDimension = dataCF.dimension(function(d) { return d.y; });
+    var thirdDimension = dataCF.dimension(function(d) { return d.x; });
+    
+    var filterByX = xDimension.filter(xMinMax);
+    var filterByY = yDimension.filter(yMinMax);
+    
+    var t = thirdDimension.top(Infinity);
+    xDimension.filterAll();
+    yDimension.filterAll();
+    return t;
+    
+}
+
+function filterUsingGlobalCrossFilter(cfName,xMinMax,yMinMax){
+    manageCrossFilters.applyFilter(cfName, 'x', xMinMax);
+    manageCrossFilters.applyFilter(cfName, 'y', yMinMax);
+    manageCrossFilters.fireCallBacks(cfName);
+}
+
+
+function filterAndUpdateScatterChart(chartId,chartsData){
+    var bucketOptions = chartsData.chartOptions.bucketOptions;
+    var minMaxX,minMaxY;
+    var minMax = bucketOptions.minMax;
+    var filteredNodeNames = [];
+    var data = chartsData['d'];
+    var crossFilter = chartsData.chartOptions.crossFilter;
+    
+    if(minMax == null){
+        var allData = [];
+        $.each(data,function(i,d){
+           allData = allData.concat(d['values']); 
+        });
+        minMaxX = d3.extent(allData,function(obj){
+            return obj['x'];
+        });
+        minMaxY = d3.extent(allData,function(obj){
+            return obj['y'];
+        });
+        
+    } else {
+        minMaxX = minMax.minMaxX;
+        minMaxY = minMax.minMaxY;
+    }
+    chartsData.chartOptions.bucketOptions.minMax = {minMaxX:minMaxX,minMaxY:minMaxY};
+    //Just to bring in the nodes on the borders
+    minMaxX[0] = minMaxX[0] - (minMaxX[0] * 0.01);
+    minMaxX[1] = minMaxX[1] + (minMaxX[1] * 0.01);
+    minMaxY[0] = minMaxY[0] - (minMaxY[0] * 0.01);
+    minMaxY[1] = minMaxY[1] + (minMaxY[1] * 0.01);
+    
+    
+    for(var i=0; i < data.length; i++){
+        var d = data[i]['values'];
+        //filter the nodes between x and y range
+        fetchNodesBetweenXAndYRange(crossFilter, minMaxX, minMaxY);
+    }
+    $('#' + chartId).initScatterChart(chartsData);
+}
+
+
