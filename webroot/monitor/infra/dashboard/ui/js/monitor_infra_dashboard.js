@@ -67,16 +67,11 @@ function addTabs() {
                         bucketSizeParam: defaultBucketSizeParam,
                         bucketsPerAxis: defaultBucketsPerAxis
                     },
-                    crossFilter:vRouterCF,
-                    deferredObj:$.Deferred(),
-                    showSettings:true,
-                    //For Axis params if the data type is not provided default one is Integer and currently 
-                    //only two data types integer and float are supported
-                    yAxisParams:[{lbl:'Memory (MB)',key:'virtMemory',formatFn:function(data){
-                                                                                return prettifyBytes({bytes:ifNull(data,0)*1024,stripUnit:true,prefix:'MB'})
-                                                                          }
-                    },{lbl:'Virtual Networks',key:'vnCnt'}],
-                    xAxisParams:[{lbl:'CPU (%)',key:'cpu',type:'float'},{lbl:'Instances',key:'instCnt'}]
+                    crossFilter: vRouterCF,
+                    deferredObj: $.Deferred(),
+                    showSettings: true,
+                    yAxisParams: axisParams['vRouter']['yAxisParams'],
+                    xAxisParams: axisParams['vRouter']['xAxisParams'],
                 }
             };
             
@@ -177,7 +172,7 @@ function addTabs() {
                 d: splitNodesToSeriesByColor(data,chartsLegend)
             };
             $('#ctrlNodeStats-header').initWidgetHeader({title:'Control Nodes',link:{hashParams:{p:'mon_infra_control',q:{node:'Control Nodes'}}}});
-            $('#ctrlNode-bubble').initScatterChart(chartsData);
+            $('#ctrlNode-bubble').initScatterChart(chartsData); 
         }
 
         infraDashboardView.addInfoBox({
