@@ -1965,10 +1965,10 @@ function updateChartsForSummary(dsData, nodeType) {
     var chartsData = {
         title: title,
         d: splitNodesToSeriesByColor(data, {
-            Red: d3Colors['red'],
-            Orange: d3Colors['orange'],
+            Green: d3Colors['green'],
             Blue: d3Colors['blue'],
-            Green: d3Colors['green']
+            Orange: d3Colors['orange'],
+            Red: d3Colors['red']
         }),
         chartOptions: {
             tooltipFn: tooltipFn,
@@ -2984,6 +2984,7 @@ function getConfigNodeLblValuePairs(parsedData){
 /** Function to update the header with the current shown number of nodes and the total number of nodes. Used in vRouter summary chart*/
 function updatevRouterLabel(headerid,filteredCnt,totalCnt){
     var infoElem = $('#'+ headerid +' h4');
+//    var infoElem = $('#'+ headerid);
     var innerText = infoElem.text().split('(')[0].trim();
     if (totalCnt == filteredCnt)
         innerText += ' (' + totalCnt + ')';

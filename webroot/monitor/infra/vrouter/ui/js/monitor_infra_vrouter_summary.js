@@ -36,6 +36,7 @@ monitorInfraComputeSummaryClass = (function() {
         return dimensions;
     }
     function updateGrid(selectedData) {
+        var selectedData = manageCrossFilters.getCurrentFilteredData('vRoutersCF');
         //Update the grid
         filteredNodeNames = [];
         $.each(selectedData,function(idx,obj){
@@ -59,7 +60,13 @@ monitorInfraComputeSummaryClass = (function() {
         updatevRouterLabel('vrouter-header',filteredCnt,totalCnt);
     }
     
-    function updateCrossFilter(vRouterData){
+    function updateCrossFilter(data){
+        var vRouterData = manageCrossFilters.getCurrentFilteredData('vRoutersCF');
+        var source = data.source;
+        //Do not update crossfilters if the update request also came from crossfilter
+        if(source != null && source == 'crossfilter'){
+            return;
+        }
         $('.chart > svg').remove();
        //Start updating the crossfilter
 //       vRouterCF = crossfilter(vRouterData);
@@ -132,17 +139,16 @@ monitorInfraComputeSummaryClass = (function() {
         
          chart = d3.selectAll(".chart")
              .data(charts)
-             .each(function(currChart) { currChart.on("brush", function(d) {
+             .each(function(currChart) { currChart./*on("brush", function(d) {
 //                 logMessage('bgpMonitor',filterDimension.top(10));
 //                 updateView();
                  //var selectedData = filterDimension.top(Infinity);
-                 manageCrossFilters.fireCallBacks('vRoutersCF');
-                 
+                 manageCrossFilters.fireCallBacks('vRoutersCF',{source:'crossfilter'});
                  renderAll(chart);
-             }).on("brushend", function(d) { 
+             }).*/on("brushend", function(d) { 
                  //updateView();
                  //manageCrossFilters.applyFilter('vRoutersCF','vnCnt',criteria);
-                 manageCrossFilters.fireCallBacks('vRoutersCF');
+                 manageCrossFilters.fireCallBacks('vRoutersCF',{source:'crossfilter'});
                  renderAll(chart);
              }); 
          });
@@ -152,20 +158,18 @@ monitorInfraComputeSummaryClass = (function() {
          $('.reset').bind('click',function() {
              var idx = $(this).closest('.chart').index();
              charts[idx].filter(null);
-             manageCrossFilters.fireCallBacks('vRoutersCF');
+             manageCrossFilters.fireCallBacks('vRoutersCF',{source:'crossfilter'});
              renderAll(chart);
             // updateView();
          });
          //End update to crossfilter
     }//updateCrossFilter
     
-    function updateAllListeners(){
+    function updatevRouterSummaryCharts(data){
         var filteredNodes = manageCrossFilters.getCurrentFilteredData('vRoutersCF');
         updateChartsForSummary(filteredNodes,'compute');
-        updateCrossFilter(filteredNodes);
-        updateGrid(filteredNodes);
     }
-    
+        
     this.populateComputeNodes = function () {
         infraMonitorUtils.clearTimers();
         var compNodesTemplate = contrail.getTemplate4Id("computenodes-template");
@@ -211,12 +215,14 @@ monitorInfraComputeSummaryClass = (function() {
             manageCrossFilters.addDimension('vRoutersCF','x');
             manageCrossFilters.addDimension('vRoutersCF','y');
            // manageCrossFilters.enableCallBacks('vRoutersCF');
-            manageCrossFilters.fireCallBacks('vRoutersCF');
+            manageCrossFilters.fireCallBacks('vRoutersCF','datasource');
         });
 
         //register to listen to callbacks for updates on the crossfilter and update the 
         //components which are listening to changes on it. 
-        manageCrossFilters.addCallBack('vRoutersCF','updateAllListeners',updateAllListeners);
+        manageCrossFilters.addCallBack('vRoutersCF','updatevRouterSummaryCharts',updatevRouterSummaryCharts);
+        manageCrossFilters.addCallBack('vRoutersCF','updateCrossFilter',updateCrossFilter);
+        manageCrossFilters.addCallBack('vRoutersCF','updateGrid',updateGrid);
         
         $('#divcomputesgrid').contrailGrid({
             header : {
