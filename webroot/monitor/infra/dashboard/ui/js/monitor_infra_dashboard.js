@@ -56,6 +56,9 @@ function addTabs() {
                 title: 'vRouters',
                 d: splitNodesToSeriesByColor(data, chartsLegend),
                 chartOptions: {
+                    dataSplitFn: function(data) {
+                                        return splitNodesToSeriesByColor(data, chartsLegend);
+                                 },
                     tooltipFn: bgpMonitor.vRouterTooltipFn,
                     bucketTooltipFn: bgpMonitor.vRouterBucketTooltipFn,
                     clickFn: bgpMonitor.onvRouterDrillDown,
