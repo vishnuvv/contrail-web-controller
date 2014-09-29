@@ -337,8 +337,6 @@ var infraMonitorUtils = {
             var obj = {};
             var d = result[i];
             var dValue = result[i]['value'];
-            //obj['x'] = parseFloat(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;cpu_share','--'));
-            //obj['y'] = parseInt(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo;virt','--'))/1024; //Convert to MB
             obj['cpu'] = parseFloat(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;cpu_share','--'));
             obj['ip'] = getValueByJsonPath(dValue,'VrouterAgent;control_ip','-');
             obj['xField'] = 'cpu';
@@ -365,6 +363,7 @@ var infraMonitorUtils = {
             obj['status'] = getOverallNodeStatus(d,'compute');
             var processes = ['contrail-vrouter-agent','contrail-vrouter-nodemgr','supervisor-vrouter'];
             obj['memory'] = formatMemory(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo','--'));
+            obj['virtMemory'] = parseInt(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo;virt','--'))/1024;
             obj['size'] = getValueByJsonPath(dValue,'VrouterStatsAgent;phy_if_1min_usage;0;out_bandwidth_usage',0) + 
                 getValueByJsonPath(dValue,'VrouterStatsAgent;phy_if_1min_usage;0;in_bandwidth_usage',0) + 1;
             obj['shape'] = 'circle';
@@ -2007,12 +2006,7 @@ function updateChartsForSummary(dsData, nodeType) {
 	}
     var chartsData = {
         title: title,
-        d: splitNodesToSeriesByColor(data, {
-            Green: d3Colors['green'],
-            Blue: d3Colors['blue'],
-            Orange: d3Colors['orange'],
-            Red: d3Colors['red']
-        }),
+        d: splitNodesToSeriesByColor(data, chartsLegend),
         chartOptions: {
             tooltipFn: tooltipFn,
             bucketTooltipFn: (isBucketize)? bucketTooltipFn : '',
