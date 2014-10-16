@@ -10,7 +10,7 @@ var PROUTER_DBL_CLICK =  'config_net_vn';
 
 function underlayRenderer() {
     this.load = function(obj) {
-        this.configTemplate = Handlebars.compile($("#visualization-template").html()); 
+        this.configTemplate = Handlebars.compile($("#visualization-template").html());
         Handlebars.registerPartial("deviceSummary", $("#device-summary-template").html());
         $("#content-container").html('');
         $("#content-container").html(this.configTemplate);
@@ -157,7 +157,7 @@ underlayModel.prototype.setConnectedElements = function(cEls) {
         this.connectedElements = cEls;
     } else {
         this.connectedElements = [];
-    }     
+    }
 }
 
 underlayModel.prototype.setElementMap = function(elMap) {
@@ -206,25 +206,25 @@ underlayModel.prototype.categorizeNodes = function(nodes) {
     var tors = jsonPath(nodes, "$[?(@.chassis_type=='tor')]");
     if(false !== tors)
         this.setTors(tors);
-    else 
+    else
         this.setTors([]);
 
     var spines = jsonPath(nodes, "$[?(@.chassis_type=='spine')]");
     if(false !== spines)
         this.setSpines(spines);
-    else 
+    else
         this.setSpines([]);
 
     var cores = jsonPath(nodes, "$[?(@.chassis_type=='coreswitch')]");
     if(false !== cores)
         this.setCores(cores);
-    else 
+    else
         this.setCores([]);
 
     var vrouters = jsonPath(nodes, "$[?(@.chassis_type=='-')]");
     if(false !== vrouters)
         this.setVrouters(vrouters);
-    else 
+    else
         this.setVrouters([]);
 }
 
@@ -273,6 +273,7 @@ var underlayView = function (model) {
     });
     this.initZoomControls();
     this.contextMenuConfig = {};
+    this.tooltipConfig = {};
     var _this = this;
     $("#underlay_tabstrip").contrailTabs({
         activate:function (e, ui) {
@@ -363,7 +364,7 @@ underlayView.prototype.createNode = function(node, i, cnt) {
                 xPos = (i+1)*275;
                 yPos = 120;
                 break;
-            case "coreswitch": 
+            case "coreswitch":
                 //tbd - make it 'core' here and in backend
                 xPos = (i+1)*425;
                 yPos = 20;
@@ -385,18 +386,18 @@ underlayView.prototype.createNode = function(node, i, cnt) {
         imageName = getImageName(node);
         imageLink = '/img/icons/' + imageName;
         options = {
-            attrs: { 
+            attrs: {
                 image: {
-                    'xlink:href': imageLink, 
-                    width: width, 
+                    'xlink:href': imageLink,
+                    width: width,
                     height: height
                 },
                 text: {
                     text: contrail.truncateText(nodeName,20)
                 }
-            }, 
-            size: { 
-                width: width, 
+            },
+            size: {
+                width: width,
                 height: height
             },
             position: {
@@ -441,7 +442,7 @@ underlayView.prototype.createLink = function(link, elements, elementMap, layer) 
             link.link_type = 'logical';
         }
         options = {
-            direction   : "bi", 
+            direction   : "bi",
             linkType    : link.link_type,
             linkDetails : link
         };
@@ -453,7 +454,7 @@ underlayView.prototype.createLink = function(link, elements, elementMap, layer) 
             link['connectionStroke'] = '#498AB9';
 
         }
-        
+
         options['sourceId'] = elementMap.nodes[link.endpoints[0]];
         options['targetId'] = elementMap.nodes[link.endpoints[1]];
         linkElement = new ContrailElement('link', options);
@@ -466,6 +467,87 @@ underlayView.prototype.initZoomControls = function() {
         $zoomOut: $("#zoomcontrols").find(".zoom-out"),
         $reset: $("#zoomcontrols").find(".zoom-reset"),
         disablePan: true
+    });
+}
+
+underlayView.prototype.initTooltipConfig = function() {
+    var _this = this;
+    this.tooltipConfig = {
+        PhysicalRouter: {
+            title: function(element, graph) {
+                return 'Physical Router';
+            },
+            content: function(element, graph) {
+                var viewElement = graph.getCell(element.attr('model-id'));
+                var tooltipContent = contrail.getTemplate4Id('tooltip-content-template');
+
+                var ifLength = 0;
+                if(viewElement.attributes && viewElement.attributes.hasOwnProperty('nodeDetails') &&
+                    viewElement.attributes.nodeDetails.hasOwnProperty('more_attr') &&
+                    viewElement.attributes.nodeDetails.more_attr.hasOwnProperty('ifTable') &&
+                    viewElement.attributes.nodeDetails.more_attr.ifTable.length) {
+                    ifLength = viewElement.attributes.nodeDetails.more_attr.ifTable.length;
+                }
+                return tooltipContent([
+                    {
+                        lbl:'Name',
+                        value: viewElement.attributes.nodeDetails['name']
+                    },
+                    {
+                        lbl:'Interfaces',
+                        value: ifLength
+                    }
+                ]);
+            }
+        },
+        link: {
+            title: function(element, graph) {
+                var viewElement = graph.getCell(element.attr('model-id'));
+                if(viewElement.attributes && viewElement.attributes.hasOwnProperty('linkDetails') &&
+                    viewElement.attributes.linkDetails.hasOwnProperty('endpoints') &&
+                    viewElement.attributes.linkDetails.endpoints) {
+                    return "Local: " + viewElement.attributes.linkDetails.endpoints[0] + "  " +
+                            "Remote: " + viewElement.attributes.linkDetails.endpoints[1];
+                }
+            },
+            content: function(element, graph) {
+                var viewElement = graph.getCell(element.attr('model-id'));
+                var tooltipContent = contrail.getTemplate4Id('tooltip-content-template');
+                var local_interfaces = [];
+                var remote_interfaces = [];
+                if(viewElement.attributes && viewElement.attributes.hasOwnProperty('linkDetails') &&
+                    viewElement.attributes.linkDetails.hasOwnProperty('more_attributes') &&
+                    viewElement.attributes.linkDetails.more_attributes) {
+                    local_interfaces.push(viewElement.attributes.linkDetails.more_attributes.local_interface_name);
+                    remote_interfaces.push(viewElement.attributes.linkDetails.more_attributes.remote_interface_name);
+                }
+
+                return tooltipContent([
+                    {
+                        lbl: 'Local Interfaces',
+                        value: local_interfaces.join(' ')
+                    },
+                    {
+                        lbl: 'Remote Interfaces',
+                        value: remote_interfaces.join(' ')
+                    }
+                ]);
+            }
+        }
+    };
+    $.each(this.tooltipConfig, function(keyConfig, valueConfig){
+        $('g.' + keyConfig).popover({
+            trigger: 'hover',
+            html: true,
+            delay: { show: 200, hide: 10 },
+            title: function(){
+                return valueConfig.title($(this), _this.getGraph());
+            },
+            content: function(){
+                return valueConfig.content($(this), _this.getGraph());
+            },
+            container: $('body')
+        });
     });
 }
 
@@ -511,7 +593,7 @@ underlayView.prototype.initContextMenuConfig = function() {
             }
             return contextMenuItems;
         }
-    });   
+    });
 }
 
 underlayView.prototype.clearHighlightedConnectedElements = function() {
@@ -519,6 +601,14 @@ underlayView.prototype.clearHighlightedConnectedElements = function() {
     $('div.font-element').removeClass('elementHighlighted').removeClass('dimHighlighted');
     $('g.element').removeClassSVG('elementHighlighted').removeClassSVG('dimHighlighted');
     $('g.link').removeClassSVG('elementHighlighted').removeClassSVG('dimHighlighted');
+    $("g.link").find('path.connection')
+        .css("stroke", "#637939");
+    $("g.link").find('path.marker-source')
+        .css("fill", "#333")
+        .css("stroke", "#333");
+    $("g.link").find('path.marker-target')
+        .css("fill", "#333")
+        .css("stroke", "#333");
     $("g.link").find('path.connection-wrap')
         .css("opacity", "")
         .css("fill", "")
@@ -540,7 +630,7 @@ underlayView.prototype.initGraphEvents = function() {
         evt.stopImmediatePropagation();
         var dblClickedElement = cellView.model,
             elementType       = dblClickedElement['attributes']['type'];
-        
+
         switch(elementType) {
             case 'contrail.PhysicalRouter':
                 var chassis_type    = dblClickedElement['attributes']['nodeDetails']['chassis_type'];
@@ -551,7 +641,7 @@ underlayView.prototype.initGraphEvents = function() {
                 $('g.PhysicalRouter').popover('hide');
                 break;
 
-            case 'contrail.VirtualRouter': 
+            case 'contrail.VirtualRouter':
                 $.ajax({
                     dataType: "json",
                     url: "/api/tenant/get-data",
@@ -569,20 +659,10 @@ underlayView.prototype.initGraphEvents = function() {
                     success: function (response) {
                         if(null !== response && typeof response !== undefined && response.length > 0 &&
                             response[0].hasOwnProperty('value') && response[0].value.length > 0) {
-
-                            $('div.font-element')
-                                .removeClass('elementHighlighted')
-                                .removeClass('dimHighlighted');
-                            $('g.element')
-                                .removeClass('elementHighlighted')
-                                .removeClassSVG('dimHighlighted');
-                            $('g.link')
-                                .removeClassSVG('elementHighlighted')
-                                .removeClassSVG('dimHighlighted');
-
                             var vms        = response[0].value[0].value['VrouterAgent'].virtual_machine_list;
                             if(vms.length <= 0)
                                 return;
+                            _this.clearHighlightedConnectedElements();
                             _this.getPaper().setDimensions($("#topology_paper").innerWidth(),
                                 $("#topology_paper").innerHeight() + 200);
                             $('.viewport')
@@ -613,10 +693,19 @@ underlayView.prototype.initGraphEvents = function() {
                                 vrouterToVMlinks.push({
                                     "endpoints": [vrouterName, nodeName]
                                 });
-                                
+
                             }
                             if(newElements.length > 0) {
                                 _this.getGraph().addCells(newElements);
+                                for(var i=0; i<newElements.length; i++) {
+                                    $('g.element[model-id="' + newElements[i].id + '"]')
+                                        .find('text')
+                                        .css('stroke', "#498AB9")
+                                        .css('fill', "#498AB9");
+                                    $('div.font-element[font-element-model-id="' + newElements[i].id + '"]')
+                                        .find('i.icon-contrail-virtual-machine')
+                                        .css('color', "#498AB9");
+                                }
                             }
                             newElements = [];
                             for (var i = 0; i < vrouterToVMlinks.length; i++) {
@@ -625,13 +714,13 @@ underlayView.prototype.initGraphEvents = function() {
                                     "linkType" : 'logical',
                                     "endpoints" : vrouterToVMlinks[i].endpoints
                                 };
-                                var newElement = _this.createLink(link, elements, elementMap, 0);
+                                var newElement = _this.createLink(link, elements, elementMap);
                                 newElements.push(newElement);
                                 elements.push(newElement);
                                 elementMap.links[newElement.attributes.linkDetails.endpoints[0] + '<->' + newElement.attributes.linkDetails.endpoints[1]] = newElement.id;
                                 elementMap.links[newElement.attributes.linkDetails.endpoints[1] + '<->' + newElement.attributes.linkDetails.endpoints[0]] = newElement.id;
                                 links.push(link);
-                                
+
                             }
                             if(newElements.length > 0) {
                                 _this.getGraph().addCells(newElements);
@@ -645,9 +734,9 @@ underlayView.prototype.initGraphEvents = function() {
                 });
                 break;
             case 'link':
-                var modelId = dblClickedElement.id;                
+                var modelId = dblClickedElement.id;
                 var targetElement = graph.getCell(dblClickedElement['attributes']['target']['id']),
-                    sourceElement = graph.getCell(dblClickedElement['attributes']['source']['id']);                    
+                    sourceElement = graph.getCell(dblClickedElement['attributes']['source']['id']);
                 break;
         }
     });
@@ -656,7 +745,7 @@ underlayView.prototype.initGraphEvents = function() {
         evt.stopImmediatePropagation();
         var clickedElement = cellView.model,
             elementType    = clickedElement['attributes']['type'],
-            data           = {};                
+            data           = {};
 
         switch(elementType) {
             case 'contrail.PhysicalRouter':
@@ -676,7 +765,7 @@ underlayView.prototype.initGraphEvents = function() {
                 data['endpoints'] = endpoints;
                 data['type'] = 'link';
                 _this.populateDetailsTab(data);
-                break;                    
+                break;
         }
     });
 
@@ -777,11 +866,11 @@ underlayView.prototype.highlightPath = function(response) {
     var graph      = _this.getGraph();
     var nodes      = response.nodes;
     var links      = response.links;
-    
+
     for(var i=0; i<nodes.length; i++) {
         highlightedElements.nodes.push(nodes[i]);
     }
-    
+
     for (var i = 0; i < links.length; i++) {
         highlightedElements.links.push(links[i].endpoints[0] + "<->" + links[i].endpoints[1]);
     }
@@ -804,7 +893,7 @@ underlayView.prototype.highlightPath = function(response) {
             .find('path.connection-wrap')
                 .css("opacity", ".2")
                 .css("fill", "#498AB9")
-                .css("stroke", "#498AB9");                
+                .css("stroke", "#498AB9");
     });
 };
 
@@ -822,33 +911,33 @@ underlayView.prototype.showVRouter = function(dblClickedElement) {
         for(var i=0; i<srcPoint.length; i++) {
             var sp = srcPoint[i].endpoints;
             if(elMap.links.hasOwnProperty(sp[0] + "<->" + clickedNodeName)) {
-                var otherEndNode = 
+                var otherEndNode =
                 jsonPath(nodes, "$[?(@.name=='" + sp[0] + "')]");
-                if(false !== otherEndNode && otherEndNode.length == 1 && 
+                if(false !== otherEndNode && otherEndNode.length == 1 &&
                     otherEndNode[0].node_type == "virtual-router") {
                     vrouters.push(elMap.nodes[sp[0]]);
                     linkToVrouters.push(elMap.links[sp[0] + "<->" + clickedNodeName]);
                 }
             } else if(elMap.links.hasOwnProperty(clickedNodeName + "<->" + sp[0])) {
-                var otherEndNode = 
+                var otherEndNode =
                 jsonPath(nodes, "$[?(@.name=='" + sp[0] + "')]");
-                if(false !== otherEndNode && otherEndNode.length == 1 && 
+                if(false !== otherEndNode && otherEndNode.length == 1 &&
                     otherEndNode[0].node_type == "virtual-router") {
                     vrouters.push(elMap.nodes[sp[0]]);
                     linkToVrouters.push(elMap.links[clickedNodeName + "<->" + sp[0]]);
                 }
             } else if(elMap.links.hasOwnProperty(sp[1] + "<->" + clickedNodeName)) {
-                var otherEndNode = 
+                var otherEndNode =
                 jsonPath(nodes, "$[?(@.name=='" + sp[1] + "')]");
-                if(false !== otherEndNode && otherEndNode.length == 1 && 
+                if(false !== otherEndNode && otherEndNode.length == 1 &&
                     otherEndNode[0].node_type == "virtual-router") {
                     vrouters.push(elMap.nodes[sp[1]]);
                     linkToVrouters.push(elMap.links[sp[1] + "<->" + clickedNodeName]);
                 }
             } else if(elMap.links.hasOwnProperty(clickedNodeName + "<->" + sp[1])) {
-                var otherEndNode = 
+                var otherEndNode =
                 jsonPath(nodes, "$[?(@.name=='" + sp[1] + "')]");
-                if(false !== otherEndNode && otherEndNode.length == 1 && 
+                if(false !== otherEndNode && otherEndNode.length == 1 &&
                     otherEndNode[0].node_type == "virtual-router") {
                     vrouters.push(elMap.nodes[sp[1]]);
                     linkToVrouters.push(elMap.links[clickedNodeName + "<->" + sp[1]]);
@@ -860,33 +949,33 @@ underlayView.prototype.showVRouter = function(dblClickedElement) {
         for(var i=0; i<dstPoint.length; i++) {
             var sp = dstPoint[i].endpoints;
             if(elMap.links.hasOwnProperty(sp[0] + "<->" + clickedNodeName)) {
-                var otherEndNode = 
+                var otherEndNode =
                 jsonPath(nodes, "$[?(@.name=='" + sp[0] + "')]");
-                if(false !== otherEndNode && otherEndNode.length == 1 && 
+                if(false !== otherEndNode && otherEndNode.length == 1 &&
                     otherEndNode[0].node_type == "virtual-router") {
                     vrouters.push(elMap.nodes[sp[0]]);
                     linkToVrouters.push(elMap.links[sp[0] + "<->" + clickedNodeName]);
                 }
             } else if(elMap.links.hasOwnProperty(clickedNodeName + "<->" + sp[0])) {
-                var otherEndNode = 
+                var otherEndNode =
                 jsonPath(nodes, "$[?(@.name=='" + sp[0] + "')]");
-                if(false !== otherEndNode && otherEndNode.length == 1 && 
+                if(false !== otherEndNode && otherEndNode.length == 1 &&
                     otherEndNode[0].node_type == "virtual-router") {
                     vrouters.push(elMap.nodes[sp[0]]);
                     linkToVrouters.push(elMap.links[clickedNodeName + "<->" + sp[0]]);
                 }
             } else if(elMap.links.hasOwnProperty(sp[1] + "<->" + clickedNodeName)) {
-                var otherEndNode = 
+                var otherEndNode =
                 jsonPath(nodes, "$[?(@.name=='" + sp[1] + "')]");
-                if(false !== otherEndNode && otherEndNode.length == 1 && 
+                if(false !== otherEndNode && otherEndNode.length == 1 &&
                     otherEndNode[0].node_type == "virtual-router") {
                     vrouters.push(elMap.nodes[sp[1]]);
                     linkToVrouters.push(elMap.links[sp[1] + "<->" + clickedNodeName]);
                 }
             } else if(elMap.links.hasOwnProperty(clickedNodeName + "<->" + sp[1])) {
-                var otherEndNode = 
+                var otherEndNode =
                 jsonPath(nodes, "$[?(@.name=='" + sp[1] + "')]");
-                if(false !== otherEndNode && otherEndNode.length == 1 && 
+                if(false !== otherEndNode && otherEndNode.length == 1 &&
                     otherEndNode[0].node_type == "virtual-router") {
                     vrouters.push(elMap.nodes[sp[1]]);
                     linkToVrouters.push(elMap.links[clickedNodeName + "<->" + sp[1]]);
@@ -912,7 +1001,7 @@ underlayView.prototype.showVRouter = function(dblClickedElement) {
 
     for(var i=0; i<vrouters.length; i++) {
         var vrouter_model_id = vrouters[i];
-        if($('g.element[model-id="' + vrouter_model_id + '"]').hasClassSVG('hidden')){                                
+        if($('g.element[model-id="' + vrouter_model_id + '"]').hasClassSVG('hidden')){
             $('div[font-element-model-id="'+ dblClickedElement.id  + '"]')
                 .removeClass('dimHighlighted')
                 .addClass('elementHighlighted');
@@ -940,14 +1029,25 @@ underlayView.prototype.showVRouter = function(dblClickedElement) {
                 .removeClassSVG('hidden')
                 .removeClassSVG('dimHighlighted')
                 .addClassSVG('elementHighlighted');
-        }
-        graph.getCell(link_model_id).attr({
-            '.connection': { stroke: '#498AB9'},
-            '.marker-source': { stroke: '#498AB9', fill: '#498AB9'},
-            '.marker-target': { stroke: '#498AB9', fill: '#498AB9'}
-        });
-    }
 
+            $('g.link[model-id="' + link_model_id + '"]')
+                .find('path.connection')
+                    .css("stroke", "#498AB9");
+            $('g.link[model-id="' + link_model_id + '"]')
+                .find('path.marker-source')
+                    .css("fill", "#498AB9")
+                    .css("stroke", "#498AB9");
+            $('g.link[model-id="' + link_model_id + '"]')
+                .find('path.marker-target')
+                    .css("fill", "#498AB9")
+                    .css("stroke", "#498AB9");
+            $('g.link[model-id="' + link_model_id + '"]')
+                .find('path.connection-wrap')
+                    .css("opacity", "")
+                    .css("fill", "")
+                    .css("stroke", "");
+        }
+    }
 }
 
 underlayView.prototype.hideVRouters = function() {
@@ -984,10 +1084,10 @@ underlayView.prototype.hideVRouters = function() {
 
 underlayView.prototype.renderUnderlayViz = function() {
     var elements = this.getModel().getConnectedElements();
-    this.initContextMenuConfig();
+    //this.initContextMenuConfig();
     this.graph.addCells(elements);
     this.initGraphEvents();
-
+    this.initTooltipConfig();
 }
 
 underlayView.prototype.renderFlowRecords = function() {
@@ -1034,7 +1134,7 @@ underlayView.prototype.renderTracePath = function(options) {
            label:'Destination Port',
            key:'dst_port'
        },
-       
+
     ];
     var response = {
         vRouter:[
@@ -1121,7 +1221,7 @@ underlayView.prototype.renderTracePath = function(options) {
                          value:1200
                      }
             ]
-                        
+
     };
     var _this = this;
 
@@ -1150,7 +1250,7 @@ underlayView.prototype.runTracePath = function(context, obj, response) {
             url      : "/api/tenant/networking/trace-flow",
             type     : "POST",
             data     : data,
-            view     : this, 
+            view     : this,
             callback : function(response) {
                 this.view.highlightPath(response);
             }
@@ -1167,7 +1267,7 @@ underlayView.prototype.getPostDataFromHashParams = function() {
         if(hashParams.q.hasOwnProperty('srcIP') && "" !== hashParams.q['srcIP']) {
             data.data["srcIP"] = hashParams.q['srcIP'];
             hasPostData = true;
-        } 
+        }
         if(hashParams.q.hasOwnProperty('sport') && "" !== hashParams.q['sport']) {
             data.data["sport"] = hashParams.q['sport'];
             hasPostData = true;
@@ -1233,7 +1333,7 @@ underlayView.prototype.populateDetailsTab = function(data) {
                        ifObj['ifEntry']['fmtdInBytes'] = formatBytes(ifNull(ifObj['ifEntry']['in_bytes'],'-'));
                        ifObj['ifEntry']['fmtdOutBytes'] = formatBytes(ifNull(ifObj['ifEntry']['out_bytes'],'-'));
                    }
-               }); 
+               });
             });
             details = Handlebars.compile($("#link-summary-template").html())(response);
             $("#detailsTab").html(details);
