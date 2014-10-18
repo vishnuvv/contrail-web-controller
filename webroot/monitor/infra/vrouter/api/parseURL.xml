@@ -110,6 +110,13 @@
         <callback>infravRouter.getvRouterL2Routes</callback>
     </item>
     <item>
+        <!-- Lists all the Layer2 Route entries of vRouter -->
+        <url>/api/admin/monitor/infrastructure/vrouter/virtual-machine-ips</url>
+        <method>get</method>
+        <feature>compute-node</feature>
+        <callback>infravRouter.getVirtualMachineInterfacesPervRouter</callback>
+    </item>
+    <item>
         <url>/api/admin/virtual-routers/:type</url>
         <method>get</method>
         <feature>monitoring</feature>
