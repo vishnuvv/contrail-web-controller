@@ -13,7 +13,7 @@ var axisParams = {
                                         defaultParam:true,
                                         aggregratorFn:function(){},
                                         formatFn:function(data){
-                                            return prettifyBytes({bytes:ifNull(data,0)*1024,stripUnit:true,prefix:'MB'})
+                                            return prettifyBytes({bytes:ifNull(data,0)*(1024 * 1024),stripUnit:true,prefix:'MB'})
                                         }
                                       },
                                       {
