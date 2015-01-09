@@ -64,7 +64,7 @@ function addTabs() {
                     clickFn: bgpMonitor.onvRouterDrillDown,
                     xPositive: true,
                     addDomainBuffer: true,
-                    isBucketize: true,
+                    isBucketize: (getCookie(DO_BUCKETIZE_COOKIE) == 'yes')? true : false,
                     bucketOptions:{
                         maxBucketizeLevel: defaultMaxBucketizeLevel,
                         bucketSizeParam: defaultBucketSizeParam,
@@ -73,6 +73,7 @@ function addTabs() {
                     crossFilter: vRouterCF,
                     deferredObj: $.Deferred(),
                     showSettings: true,
+                    showLegend: false,
                     yAxisParams: axisParams['vRouter']['yAxisParams'],
                     xAxisParams: axisParams['vRouter']['xAxisParams'],
                 }
