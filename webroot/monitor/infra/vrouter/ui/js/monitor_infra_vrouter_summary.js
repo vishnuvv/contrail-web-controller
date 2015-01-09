@@ -226,7 +226,6 @@ monitorInfraComputeSummaryClass = (function() {
         var emptyDataSource = new ContrailDataView();
         //register to listen to callbacks for updates on the crossfilter and update the 
         //components which are listening to changes on it. 
-        manageCrossFilters.addCallBack('vRoutersCF','updateAllListeners',updateAllListeners);
         manageCrossFilters.addCallBack('vRoutersCF','updatevRouterSummaryCharts',updatevRouterSummaryCharts);
         manageCrossFilters.addCallBack('vRoutersCF','updateCrossFilter',updateCrossFilter);
         manageCrossFilters.addCallBack('vRoutersCF','updateGrid',updateGrid);

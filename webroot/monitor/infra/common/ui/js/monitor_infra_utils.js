@@ -1898,7 +1898,7 @@ function formatMemory(memory) {
 function updateChartsForSummary(dsData, nodeType) {
     var title,key,chartId,isChartInitialized = false,tooltipFn,bucketTooltipFn,isBucketize,crossFilter;
     var nodeData = dsData;
-    var data = [];
+    var data = [],updateHeaderCount = false;
     if(nodeData != null){
         data = updateCharts.setUpdateParams($.extend(true,[],nodeData));
     }
@@ -1911,6 +1911,7 @@ function updateChartsForSummary(dsData, nodeType) {
         isBucketize = true;
         clickFn = bgpMonitor.onvRouterDrillDown;
         crossFilter = 'vRoutersCF';
+        updateHeaderCount = true;
 	} else if(nodeType =="control"){
 		title = 'Control Nodes';
 		key = 'controlNode';
@@ -1950,7 +1951,11 @@ function updateChartsForSummary(dsData, nodeType) {
             },
             crossFilter:crossFilter,
             deferredObj:$.Deferred(),
-            showSettings: true
+            showSettings: true,
+            showLegend:false,
+            //This parameter(updateHeaderCount) updates the selected nodes count in widget header
+            //(eg:vRouter summary page)
+            updateHeaderCount:updateHeaderCount,
         },
         link: {
             hashParams: {
@@ -2950,8 +2955,8 @@ function getConfigNodeLblValuePairs(parsedData){
 /****\END Get label value pairs for Config Node details and detail template in summary****/
 
 /** Function to update the header with the current shown number of nodes and the total number of nodes. Used in vRouter summary chart*/
-function updatevRouterLabel(headerid,filteredCnt,totalCnt){
-    var infoElem = $('#'+ headerid +' h4');
+function updatevRouterLabel(selector,filteredCnt,totalCnt){
+    var infoElem = $(selector).find('h4');
 //    var infoElem = $('#'+ headerid);
     var innerText = infoElem.text().split('(')[0].trim();
     if (totalCnt == filteredCnt)
@@ -2959,20 +2964,6 @@ function updatevRouterLabel(headerid,filteredCnt,totalCnt){
     else
         innerText += ' (' + filteredCnt + ' of ' + totalCnt + ')';
     infoElem.text(innerText);
-}
-
-/** Given node obj to disperse use the x and y values and size to randomly add minute values 
- * to x and y so that the nodes appear dispersed instead of a single node. */
-function disperseRandomly(nodes,maxVariation){
-    for(var i=0;i < nodes.length; i++){
-        var x = nodes[i]['x'];
-        var y = nodes[i]['y'];
-        var newX = getRandomValue(x - (x* maxVariation), x + (x* maxVariation)); 
-        var newY = getRandomValue(y - (y* maxVariation), y + (y* maxVariation));
-        nodes[i]['x'] = newX;
-        nodes[i]['y'] = newY;
-    }
-    return nodes;
 }
 
 function disperseNodes(obj){
@@ -3000,27 +2991,6 @@ function filterAndDisperseNodes(data,minMaxX,minMaxY){
     var ret = data;
     ret = disperseRandomly(filteredNodes,0.05);
     return ret;
-}
-
-function getRandomValue(min,max){
-    return Math.random() * (max - min) + min;
-}
-
-function fetchNodesBetweenXAndYRange(d,xMinMax,yMinMax,cfName){
-    var dataCF = crossfilter(d);
-    
-    var xDimension = dataCF.dimension(function(d) { return d.x; });
-    var yDimension = dataCF.dimension(function(d) { return d.y; });
-    var thirdDimension = dataCF.dimension(function(d) { return d.x; });
-    
-    var filterByX = xDimension.filter(xMinMax);
-    var filterByY = yDimension.filter(yMinMax);
-    
-    var t = thirdDimension.top(Infinity);
-    xDimension.filterAll();
-    yDimension.filterAll();
-    return t;
-    
 }
 
 function filterUsingGlobalCrossFilter(cfName,xMinMax,yMinMax){
