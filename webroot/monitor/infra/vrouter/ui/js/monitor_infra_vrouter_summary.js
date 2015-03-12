@@ -40,6 +40,7 @@ monitorInfraComputeSummaryClass = (function() {
         //Update the grid
         filteredNodeNames = [];
         $.each(selectedData,function(idx,obj){
+          //vRouters that match the filter criteria
           filteredNodeNames.push(obj['name']);
         });
         computeNodesGrid = $('#divcomputesgrid').data('contrailGrid');
@@ -216,6 +217,16 @@ monitorInfraComputeSummaryClass = (function() {
             $.each(vRoutersDataSource.getItems(),function(i,item){
                 filteredNodes.push(item);
             });
+            setTimeout(function () {
+                var cgrid = $('#divcomputesgrid').data('contrailGrid');
+                if(cgrid != null) {
+                    try{
+                        cgrid._dataView.updateData(filteredNodes);
+                    } catch(e) {
+                        cgrid._dataView.setItems(filteredNodes);
+                    }
+                }
+            }, 500);
           //  manageCrossFilters.disableCallBacks('vRoutersCF');
             manageCrossFilters.updateCrossFilter('vRoutersCF',filteredNodes);
             //Add current crossfilters dimensions again as they will be lost on crossfilter reset

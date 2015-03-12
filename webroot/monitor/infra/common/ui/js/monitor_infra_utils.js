@@ -338,6 +338,7 @@ var infraMonitorUtils = {
             var d = result[i];
             var dValue = result[i]['value'];
             obj['cpu'] = parseFloat(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;cpu_share','--'));
+            obj['cpu'] = $.isNumeric(obj['cpu']) ? obj['cpu'].toFixed(2) : '-';
             obj['ip'] = getValueByJsonPath(dValue,'VrouterAgent;control_ip','-');
             obj['xField'] = 'cpu';
             obj['yField'] = 'virtMemory';
@@ -2022,7 +2023,7 @@ function updateChartsForSummary(dsData, nodeType) {
             },
             crossFilter:crossFilter,
             deferredObj:$.Deferred(),
-            showSettings: true,
+            showSettings: false,
             showLegend:false,
             //This parameter(updateHeaderCount) updates the selected nodes count in widget header
             //(eg:vRouter summary page)
@@ -2079,7 +2080,7 @@ function getAllvRouters(defferedObj,dataSource,dsObj){
             }
         defferedObj.done(function(){
             dsObj['getFromCache'] = false;
-            manageDataSource.refreshDataSource('computeNodeDS');
+            //manageDataSource.refreshDataSource('computeNodeDS');
         });
     } else {
         obj['transportCfg'] = {
@@ -2219,7 +2220,7 @@ function getNodeTooltipContents(currObj) {
     var tooltipContents = [
         {lbl:'Host Name', value: currObj['name']},
         {lbl:'Version', value:currObj['version']},
-        {lbl:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu'].toFixed(2)  + '%' : currObj['cpu']},
+        {lbl:'CPU', value:$.isNumeric(currObj['cpu']) ? parseFloat(currObj['cpu']).toFixed(2)  + '%' : currObj['cpu']},
         {lbl:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
     ];
     return tooltipContents;

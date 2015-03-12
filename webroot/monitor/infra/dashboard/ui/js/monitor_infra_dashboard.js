@@ -6,6 +6,8 @@ var infraMonitorDashboardView = (function() {
     var self = this;
     this.load = function (obj) {
         var hashParams = ifNull(obj['hashParams'],{});
+        //Disable callbacks for DS
+        manageCrossFilters.removeAllCallBacks('vRoutersCF');
         addTabs();
         //Trigger select on tab based on hash
         infraDashboardView.selectTabByHash();
@@ -72,7 +74,7 @@ function addTabs() {
                     },
                     crossFilter: vRouterCF,
                     deferredObj: $.Deferred(),
-                    showSettings: true,
+                    showSettings: false,
                     showLegend: false,
                     yAxisParams: axisParams['vRouter']['yAxisParams'],
                     xAxisParams: axisParams['vRouter']['xAxisParams'],
