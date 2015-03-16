@@ -75,9 +75,9 @@ function addTabs() {
                     crossFilter: vRouterCF,
                     deferredObj: $.Deferred(),
                     showSettings: false,
-                    showLegend: false,
-                    yAxisParams: axisParams['vRouter']['yAxisParams'],
-                    xAxisParams: axisParams['vRouter']['xAxisParams'],
+                    showLegend: false
+                    // yAxisParams: axisParams['vRouter']['yAxisParams'],
+                    // xAxisParams: axisParams['vRouter']['xAxisParams'],
                 }
             };
             

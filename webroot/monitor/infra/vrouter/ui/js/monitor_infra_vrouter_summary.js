@@ -58,7 +58,7 @@ monitorInfraComputeSummaryClass = (function() {
         //update the header
         var totalCnt = vRoutersDataSource.getItems().length;
         var filteredCnt = filteredNodeNames.length;
-        updatevRouterLabel('vrouter-header',filteredCnt,totalCnt);
+        updatevRouterLabel('#vrouter-header',filteredCnt,totalCnt);
     }
     
     function updateCrossFilter(data){
@@ -70,10 +70,10 @@ monitorInfraComputeSummaryClass = (function() {
         }
         $('.chart > svg').remove();
        //Start updating the crossfilter
-//       vRouterCF = crossfilter(vRouterData);
-//       var intfDimension = vRouterCF.dimension(function(d) { return d.intfCnt;});
-//       var instDimension = vRouterCF.dimension(function(d) { return d.instCnt;});
-//       var vnDimension = vRouterCF.dimension(function(d) { return d.vnCnt;});
+        //vRouterCF = crossfilter(vRouterData);
+        //var intfDimension = vRouterCF.dimension(function(d) { return d.intfCnt;});
+        //var instDimension = vRouterCF.dimension(function(d) { return d.instCnt;});
+        //var vnDimension = vRouterCF.dimension(function(d) { return d.vnCnt;});
         
        var vRouterCF = manageCrossFilters.getCrossFilter('vRoutersCF');
        var intfDimension = manageCrossFilters.getDimension('vRoutersCF','intfCnt');
@@ -141,8 +141,8 @@ monitorInfraComputeSummaryClass = (function() {
          chart = d3.selectAll(".chart")
              .data(charts)
              .each(function(currChart) { currChart./*on("brush", function(d) {
-//                 logMessage('bgpMonitor',filterDimension.top(10));
-//                 updateView();
+                //logMessage('bgpMonitor',filterDimension.top(10));
+                //updateView();
                  //var selectedData = filterDimension.top(Infinity);
                  manageCrossFilters.fireCallBacks('vRoutersCF',{source:'crossfilter'});
                  renderAll(chart);

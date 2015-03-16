@@ -338,7 +338,7 @@ var infraMonitorUtils = {
             var d = result[i];
             var dValue = result[i]['value'];
             obj['cpu'] = parseFloat(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;cpu_share','--'));
-            obj['cpu'] = $.isNumeric(obj['cpu']) ? obj['cpu'].toFixed(2) : '-';
+            obj['cpu'] = $.isNumeric(obj['cpu']) ? parseFloat(obj['cpu'].toFixed(2)) : '-';
             obj['ip'] = getValueByJsonPath(dValue,'VrouterAgent;control_ip','-');
             obj['xField'] = 'cpu';
             obj['yField'] = 'virtMemory';
@@ -1971,9 +1971,10 @@ function updateChartsForSummary(dsData, nodeType) {
     var title,key,chartId,isChartInitialized = false,tooltipFn,bucketTooltipFn,isBucketize,crossFilter;
     var nodeData = dsData;
     var data = [],updateHeaderCount = false;
-    if(nodeData != null){
-        data = updateCharts.setUpdateParams($.extend(true,[],nodeData));
-    }
+    data = dsData;
+    // if(nodeData != null){
+    //     data = updateCharts.setUpdateParams($.extend(true,[],nodeData));
+    // }
     if(nodeType == 'compute'){
 		title = 'vRouters';
 		key = 'vRouters';
@@ -3157,32 +3158,6 @@ function updatevRouterLabel(selector,filteredCnt,totalCnt){
     infoElem.text(innerText);
 }
 
-function disperseNodes(obj){
-    var retNodes = []
-    if(obj != null && obj['isBucket']){
-        retNodes = obj['children'];
-//        var x = obj['x'];
-//        var y = obj['y'];
-//        for(var i=0;i < obj['size']; i++){
-//            var newX = getRandomValue(x - (x* 0.05), x + (x* 0.05)); 
-//            var newY = getRandomValue(y - (y* 0.05), y + (y* 0.05));
-//            retNodes[i]['x'] = newX;
-//            retNodes[i]['y'] = newY;
-//        }
-        retNodes = disperseRandomly(retNodes,0.05);
-    }
-    return retNodes;
-}
-
-function filterAndDisperseNodes(data,minMaxX,minMaxY){   
-    var filteredNodes = fetchNodesBetweenXAndYRange(data,
-                                                    minMaxX, 
-                                                    minMaxY
-                                                    );
-    var ret = data;
-    ret = disperseRandomly(filteredNodes,0.05);
-    return ret;
-}
 
 function filterUsingGlobalCrossFilter(cfName,xMinMax,yMinMax){
     manageCrossFilters.applyFilter(cfName, 'x', xMinMax);
