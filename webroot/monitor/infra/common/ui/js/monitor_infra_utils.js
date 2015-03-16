@@ -3159,51 +3159,5 @@ function updatevRouterLabel(selector,filteredCnt,totalCnt){
 }
 
 
-function filterUsingGlobalCrossFilter(cfName,xMinMax,yMinMax){
-    manageCrossFilters.applyFilter(cfName, 'x', xMinMax);
-    manageCrossFilters.applyFilter(cfName, 'y', yMinMax);
-    manageCrossFilters.fireCallBacks(cfName);
-}
-
-
-function filterAndUpdateScatterChart(chartId,chartsData){
-    var bucketOptions = chartsData.chartOptions.bucketOptions;
-    var minMaxX,minMaxY;
-    var minMax = bucketOptions.minMax;
-    var filteredNodeNames = [];
-    var data = chartsData['d'];
-    var crossFilter = chartsData.chartOptions.crossFilter;
-    
-    if(minMax == null){
-        var allData = [];
-        $.each(data,function(i,d){
-           allData = allData.concat(d['values']); 
-        });
-        minMaxX = d3.extent(allData,function(obj){
-            return obj['x'];
-        });
-        minMaxY = d3.extent(allData,function(obj){
-            return obj['y'];
-        });
-        
-    } else {
-        minMaxX = minMax.minMaxX;
-        minMaxY = minMax.minMaxY;
-    }
-    chartsData.chartOptions.bucketOptions.minMax = {minMaxX:minMaxX,minMaxY:minMaxY};
-    //Just to bring in the nodes on the borders
-    minMaxX[0] = minMaxX[0] - (minMaxX[0] * 0.01);
-    minMaxX[1] = minMaxX[1] + (minMaxX[1] * 0.01);
-    minMaxY[0] = minMaxY[0] - (minMaxY[0] * 0.01);
-    minMaxY[1] = minMaxY[1] + (minMaxY[1] * 0.01);
-    
-    
-    for(var i=0; i < data.length; i++){
-        var d = data[i]['values'];
-        //filter the nodes between x and y range
-        fetchNodesBetweenXAndYRange(crossFilter, minMaxX, minMaxY);
-    }
-    $('#' + chartId).initScatterChart(chartsData);
-}
 
 

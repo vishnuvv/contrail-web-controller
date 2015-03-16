@@ -228,6 +228,12 @@ monitorInfraComputeSummaryClass = (function() {
                 }
             }, 500);
           //  manageCrossFilters.disableCallBacks('vRoutersCF');
+            $.each(filteredNodes,function(idx,obj){
+                    if(obj['xField'] != null)
+                        obj['x'] = obj[obj['xField']];
+                    if(obj['yField'] != null)
+                        obj['y'] = obj[obj['yField']];
+                });
             manageCrossFilters.updateCrossFilter('vRoutersCF',filteredNodes);
             //Add current crossfilters dimensions again as they will be lost on crossfilter reset
             manageCrossFilters.addDimension('vRoutersCF','intfCnt');

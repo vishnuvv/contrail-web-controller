@@ -39,6 +39,12 @@ function addTabs() {
 //                filteredNodes.push(item);
 //            });
           //  manageCrossFilters.disableCallBacks('vRoutersCF');
+            $.each(newValue,function(idx,obj){
+                    if(obj['xField'] != null)
+                        obj['x'] = obj[obj['xField']];
+                    if(obj['yField'] != null)
+                        obj['y'] = obj[obj['yField']];
+                });
             manageCrossFilters.updateCrossFilter(vRouterCF,newValue);
             //Add crossfilter dimensions for charts ie x and y
             manageCrossFilters.addDimension(vRouterCF,'x');
