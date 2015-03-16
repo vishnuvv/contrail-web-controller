@@ -10,8 +10,7 @@ monitorInfraComputeSummaryClass = (function() {
     var vRouterDataWithStatusInfo = [];
     var filteredNodeNames = [];
     var vRouterCF;
-    updateCrossFilters = true;
-    var dimensions = [],filterDimension;
+    var dimensions = [];
     var self = this;
     var vRoutersResult = null;
     var vRoutersDataSource = null;
@@ -47,8 +46,6 @@ monitorInfraComputeSummaryClass = (function() {
         computeNodesGrid._dataView.setFilterArgs({
             filteredNodeNames:filteredNodeNames
         });
-        //Don't update crossfilters as updateView is triggered on change of crossfilter selection
-        updateCrossFilters = false;
         computeNodesGrid._dataView.setFilter(function(item,args) {
             if($.inArray(item['name'],args['filteredNodeNames']) > -1)
                 return true;
@@ -69,11 +66,6 @@ monitorInfraComputeSummaryClass = (function() {
             return;
         }
         $('.chart > svg').remove();
-       //Start updating the crossfilter
-        //vRouterCF = crossfilter(vRouterData);
-        //var intfDimension = vRouterCF.dimension(function(d) { return d.intfCnt;});
-        //var instDimension = vRouterCF.dimension(function(d) { return d.instCnt;});
-        //var vnDimension = vRouterCF.dimension(function(d) { return d.vnCnt;});
         
        var vRouterCF = manageCrossFilters.getCrossFilter('vRoutersCF');
        var intfDimension = manageCrossFilters.getDimension('vRoutersCF','intfCnt');
@@ -81,7 +73,6 @@ monitorInfraComputeSummaryClass = (function() {
        var vnDimension = manageCrossFilters.getDimension('vRoutersCF','vnCnt');
        
        dimensions.push(intfDimension,instDimension,vnDimension);
-       //filterDimension = vRouterCF.dimension(function(d) { return d.intfCnt;});
        //Set crossfilter bucket count based on number of max VNs/interfaces/instances on a vRouter
        var vnCnt = 24;
        var intfCnt = 24;
@@ -142,12 +133,10 @@ monitorInfraComputeSummaryClass = (function() {
              .data(charts)
              .each(function(currChart) { currChart./*on("brush", function(d) {
                 //logMessage('bgpMonitor',filterDimension.top(10));
-                //updateView();
                  //var selectedData = filterDimension.top(Infinity);
                  manageCrossFilters.fireCallBacks('vRoutersCF',{source:'crossfilter'});
                  renderAll(chart);
              }).*/on("brushend", function(d) { 
-                 //updateView();
                  //manageCrossFilters.applyFilter('vRoutersCF','vnCnt',criteria);
                  manageCrossFilters.fireCallBacks('vRoutersCF',{source:'crossfilter'});
                  renderAll(chart);
@@ -161,7 +150,6 @@ monitorInfraComputeSummaryClass = (function() {
              charts[idx].filter(null);
              manageCrossFilters.fireCallBacks('vRoutersCF',{source:'crossfilter'});
              renderAll(chart);
-            // updateView();
          });
          //End update to crossfilter
     }//updateCrossFilter
@@ -184,33 +172,6 @@ monitorInfraComputeSummaryClass = (function() {
         vRoutersDataSource = vRoutersResult['dataSource'];
         vRouterDeferredObj = vRoutersResult['deferredObj'];//gives the deferred object from managed datasource
        
-       /* $(vRouterDS).on('change',function() {
-            var filteredNodes = [];
-            var rowItems = vRoutersDataSource.getItems();
-            for(var i=0;i<rowItems.length;i++) {
-                filteredNodes.push(rowItems[i]);
-            }
-            updateChartsForSummary(filteredNodes,'compute');
-            if(updateCrossFilters == true) 
-                updateCrossFilter(filteredNodes);
-            else
-                updateCrossFilters = true;
-            
-            setTimeout(function () {
-                var cgrid = $('#divcomputesgrid').data('contrailGrid');
-                if(cgrid != null) {
-                    try{
-                        cgrid._dataView.updateData(filteredNodes);
-                    } catch(e) {
-                        cgrid._dataView.setItems(filteredNodes);
-                    }
-                }
-            }, 500);
-            
-            //ToDo: Need to see issue with sparkLine update
-            //updateCpuSparkLines(computeNodesGrid,localDS.data());
-        });*/
-        
         $(vRouterDS).on('change',function() {
             //TODO dono why its required will need to take a look later by removing it
             var filteredNodes = [];
@@ -421,18 +382,6 @@ monitorInfraComputeSummaryClass = (function() {
         } else {
             computeNodesGrid.showGridMessage('loading');
         }
-       /* $(vRouterDS).on('change',function() {
-            var infoElem = $('#vrouter-header h4');
-            var innerText = infoElem.text().split('(')[0].trim();
-            var totalCnt = vRoutersDataSource.getItems().length;
-            var filteredCnt = vRoutersDataSource.getLength();
-            //totalCnt = ifNull(options['totalCntFn'](), totalCnt);
-            if (totalCnt == filteredCnt)
-                innerText += ' (' + totalCnt + ')';
-            else
-                innerText += ' (' + filteredCnt + ' of ' + totalCnt + ')';
-            infoElem.text(innerText);
-        });*/
     }
     return {populateComputeNodes:populateComputeNodes};
 })();
