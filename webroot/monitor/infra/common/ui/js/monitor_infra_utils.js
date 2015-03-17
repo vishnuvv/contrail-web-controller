@@ -341,7 +341,7 @@ var infraMonitorUtils = {
             obj['cpu'] = $.isNumeric(obj['cpu']) ? parseFloat(obj['cpu'].toFixed(2)) : '-';
             obj['ip'] = getValueByJsonPath(dValue,'VrouterAgent;control_ip','-');
             obj['xField'] = 'cpu';
-            obj['yField'] = 'virtMemory';
+            obj['yField'] = 'resMemory';
             obj['uveIP'] = obj['ip'];
             obj['summaryIps'] = getVrouterIpAddresses(dValue,"summary");
             var iplist = getValueByJsonPath(dValue,'VrouterAgent;self_ip_list',[]);
@@ -364,6 +364,9 @@ var infraMonitorUtils = {
             obj['status'] = getOverallNodeStatus(d,'compute');
             var processes = ['contrail-vrouter-agent','contrail-vrouter-nodemgr','supervisor-vrouter'];
             obj['memory'] = formatMemory(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo','--'));
+            //Used for plotting in scatterChart
+            obj['resMemory'] = getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo;res','-');
+            obj['resMemory'] = $.isNumeric(obj['resMemory']) ? parseFloat(obj['resMemory']/1024) : '-';
             obj['virtMemory'] = parseInt(getValueByJsonPath(dValue,'VrouterStatsAgent;cpu_info;meminfo;virt','--'))/1024;
             obj['size'] = getValueByJsonPath(dValue,'VrouterStatsAgent;phy_if_1min_usage;0;out_bandwidth_usage',0) + 
                 getValueByJsonPath(dValue,'VrouterStatsAgent;phy_if_1min_usage;0;in_bandwidth_usage',0) + 1;
@@ -2041,7 +2044,6 @@ function updateChartsForSummary(dsData, nodeType) {
         widgetBoxId: 'recent'
     };
     var chartObj = {},nwObj = {};
-    //filterAndUpdateScatterChart(chartId,chartsData);
     $('#' + chartId).initScatterChart(chartsData);
 }
 
@@ -2235,7 +2237,7 @@ function getNodeTooltipContentsForBucket(currObj) {
     var tooltipContents = [
         {lbl:'', value: 'No. of Nodes: ' + nodes.length},
         {lbl:'Avg. CPU', value:$.isNumeric(currObj['x']) ? currObj['x'].toFixed(2)  + '%' : currObj['x']},
-        {lbl:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024) : currObj['y']}
+        {lbl:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024* 1024) : currObj['y']}
     ];
     return tooltipContents;
 }
