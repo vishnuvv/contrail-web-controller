@@ -2078,16 +2078,17 @@ function getAllvRouters(defferedObj,dataSource,dsObj){
     var obj = {};
     if(dsObj['getFromCache'] == null || dsObj['getFromCache'] == true){
         obj['transportCfg'] = { 
-                url: monitorInfraUrls['VROUTER_CACHED_SUMMARY'],
+                //url: monitorInfraUrls['VROUTER_CACHED_SUMMARY'],
+                url: '/fakeData/vRouters_100.json',
                 type:'GET'
             }
         defferedObj.done(function(){
             dsObj['getFromCache'] = false;
-            //manageDataSource.refreshDataSource('computeNodeDS');
         });
     } else {
         obj['transportCfg'] = {
-                url: monitorInfraUrls['VROUTER_CACHED_SUMMARY'] + '?forceRefresh',
+                //url: monitorInfraUrls['VROUTER_CACHED_SUMMARY'] + '?forceRefresh',
+                url: '/fakeData/vRouters_100.json',
                 type:'GET',
                 //set the default timeout as 5 mins
                 timeout:300000
