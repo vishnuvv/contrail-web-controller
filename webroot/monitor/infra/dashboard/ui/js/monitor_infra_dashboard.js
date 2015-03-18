@@ -50,14 +50,22 @@ function addTabs() {
             manageCrossFilters.addDimension(vRouterCF,'x');
             manageCrossFilters.addDimension(vRouterCF,'y');
            // manageCrossFilters.enableCallBacks(vRouterCF);
-            manageCrossFilters.fireCallBacks(vRouterCF);
+            var source = 'datasource';
+            if(newValue[0] != null && newValue[0]['isGeneratorRetrieved'] == true){
+                source = 'generator';
+            }
+            manageCrossFilters.fireCallBacks(vRouterCF,{source:source});
         })
         
         /**
         * Takes vRouters data(array) as input and creates/updates chart
         */
-        var updateView = function(data) {
-            var filteredNodes = manageCrossFilters.getCurrentFilteredData('vRoutersCF');
+        var updateView = function(result) {
+            var filteredNodes = result['data'];
+            var source = result['cfg']['source'];
+            if (source == 'generator'){
+                return;
+            }
             data = filteredNodes.reverse();//reversing to get the reds on top
             var chartObj = {};
             var chartsData = {

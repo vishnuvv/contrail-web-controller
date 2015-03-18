@@ -34,8 +34,8 @@ monitorInfraComputeSummaryClass = (function() {
     this.getCFDimensions = function() {
         return dimensions;
     }
-    function updateGrid(selectedData) {
-        var selectedData = manageCrossFilters.getCurrentFilteredData('vRoutersCF');
+    function updateGrid(result) {
+        var selectedData = result['data'];
         //Update the grid
         filteredNodeNames = [];
         $.each(selectedData,function(idx,obj){
@@ -58,11 +58,11 @@ monitorInfraComputeSummaryClass = (function() {
         updatevRouterLabel('#vrouter-header',filteredCnt,totalCnt);
     }
     
-    function updateCrossFilter(data){
-        var vRouterData = manageCrossFilters.getCurrentFilteredData('vRoutersCF');
-        var source = data.source;
-        //Do not update crossfilters if the update request also came from crossfilter
-        if(source != null && source == 'crossfilter'){
+    function updateCrossFilter(result){
+        var vRouterData = result['data'];
+        var source = result['cfg']['source'];
+        //Do not update crossfilters if the update request also came from crossfilter or because of a generator update
+        if(source == 'crossfilter' || source == 'generator'){
             return;
         }
         $('.chart > svg').remove();
@@ -154,8 +154,13 @@ monitorInfraComputeSummaryClass = (function() {
          //End update to crossfilter
     }//updateCrossFilter
     
-    function updatevRouterSummaryCharts(data){
-        var filteredNodes = manageCrossFilters.getCurrentFilteredData('vRoutersCF');
+    function updatevRouterSummaryCharts(result){
+        var filteredNodes = result['data'];
+        var source = result['cfg']['source'];
+        //if the callback is because of an update to generator then dont update the charts
+        if(source == 'generator'){
+            return;
+        }
         updateChartsForSummary(filteredNodes,'compute');
     }
         
@@ -204,7 +209,11 @@ monitorInfraComputeSummaryClass = (function() {
             manageCrossFilters.addDimension('vRoutersCF','x');
             manageCrossFilters.addDimension('vRoutersCF','y');
            // manageCrossFilters.enableCallBacks('vRoutersCF');
-            manageCrossFilters.fireCallBacks('vRoutersCF','datasource');
+            var source = 'datasource';
+            if(filteredNodes[0] != null && filteredNodes[0]['isGeneratorRetrieved'] == true){
+                source = 'generator';
+            }
+            manageCrossFilters.fireCallBacks('vRoutersCF',{source:source});
         });
         var emptyDataSource = new ContrailDataView();
         //register to listen to callbacks for updates on the crossfilter and update the 
