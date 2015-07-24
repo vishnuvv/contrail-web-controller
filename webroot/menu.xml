@@ -54,6 +54,10 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <js>monitor_infra_dashboard.js</js>
                                     <class>infraMonitorDashboardView</class>
                                 </resource>
+                                 <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
                             </resources>
                             <queryParams>
                                 <tab>vRouters</tab>
@@ -104,14 +108,10 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>Control Nodes</label>
                             <resources>
                                 <resource>
-                                    <rootDir>/monitor/infra/controlnode/ui</rootDir>
-                                    <view>monitor_infra_controlnode.view</view>
-                                    <js>monitor_infra_controlnode.js</js>
-                                    <js>monitor_infra_controlnode_summary.js</js>
-                                    <js>monitor_infra_controlnode_details.js</js>
-                                    <js>monitor_infra_controlnode_peers.js</js>
-                                    <js>monitor_infra_controlnode_routes.js</js>
-                                    <class>ctrlNodesView</class>
+                                    <rootDir>/monitor/infrastructure/controlnode/ui</rootDir>
+                                    <js>controlnode.main.js</js>
+                                    <class>controlNodesLoader</class>
+                                    <function>renderControlNode</function>
                                 </resource>
                             </resources>
                             <searchStrings>Monitor Control Nodes</searchStrings>
@@ -141,14 +141,10 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>Analytics Nodes</label>
                             <resources>
                                 <resource>
-                                    <rootDir>/monitor/infra/analyticsnode/ui</rootDir>
-                                    <view>monitor_infra_analyticnode.view</view>
-                                    <js>monitor_infra_analyticnode.js</js>
-                                    <js>monitor_infra_analyticsnode_summary.js</js>
-                                    <js>monitor_infra_analyticsnode_details.js</js>
-                                    <js>monitor_infra_analyticsnode_generators.js</js>
-                                    <js>monitor_infra_analyticsnode_qequeries.js</js>
-                                    <class>aNodesView</class>
+                                    <rootDir>/monitor/infrastructure/analyticsnode/ui</rootDir>
+                                    <js>analyticsnode.main.js</js>
+                                    <class>analyticsNodesLoader</class>
+                                    <function>renderAnalyticsNode</function>
                                 </resource>
                             </resources>
                             <searchStrings>Monitor Analytics Nodes</searchStrings>
@@ -158,12 +154,10 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>Config Nodes</label>
                             <resources>
                                 <resource>
-                                    <rootDir>/monitor/infra/confignode/ui</rootDir>
-                                    <view>monitor_infra_confignode.view</view>
-                                    <js>monitor_infra_confignode.js</js>
-                                    <js>monitor_infra_confignode_summary.js</js>
-                                    <js>monitor_infra_confignode_details.js</js>
-                                    <class>confNodesView</class>
+                                    <rootDir>/monitor/infrastructure/confignode/ui</rootDir>
+                                    <js>confignode.main.js</js>
+                                    <class>configNodesLoader</class>
+                                    <function>renderConfigNode</function>
                                 </resource>
                             </resources>
                             <searchStrings>Monitor Config Nodes</searchStrings>
@@ -173,12 +167,10 @@ and need to add the iconClass tag wherever we need to show some icons
                             <label>Database Nodes</label>
                             <resources>
                                 <resource>
-                                    <rootDir>/monitor/infra/dbnode/ui</rootDir>
-                                    <view>monitor_infra_dbnode.view</view>
-                                    <js>monitor_infra_dbnode.js</js>
-                                    <js>monitor_infra_dbnode_summary.js</js>
-                                    <js>monitor_infra_dbnode_details.js</js>
-                                    <class>databaseNodesView</class>
+                                    <rootDir>/monitor/infrastructure/databasenode/ui</rootDir>
+                                    <js>databasenode.main.js</js>
+                                    <class>databaseNodesLoader</class>
+                                    <function>renderDatabaseNode</function>
                                 </resource>
                             </resources>
                             <searchStrings>Monitor Database Nodes</searchStrings>
