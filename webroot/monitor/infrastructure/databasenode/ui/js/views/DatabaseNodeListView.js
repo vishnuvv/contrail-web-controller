@@ -15,34 +15,39 @@ define(
             });
             
             function getDatabaseNodeListViewConfig() {
+                var viewConfig = {
+                    rows : [
+                        {
+                            columns : [{
+                                elementId : 
+                                    ctwl.DATABASENODE_SUMMARY_CHART_ID,
+                                title : ctwl.DATABASENODE_SUMMARY_TITLE,
+                                app : cowc.APP_CONTRAIL_CONTROLLER,
+                                view : "DatabaseNodeScatterChartView",
+                                viewPathPrefix: "monitor/infrastructure/" +
+                                    "common/ui/js/views/",
+                            }]
+                        },
+                        {
+                            columns : [{
+                                elementId :
+                                    ctwl.DATABASENODE_SUMMARY_GRID_ID,
+                                title : ctwl.DATABASENODE_SUMMARY_TITLE,
+                                view : "DatabaseNodeGridView",
+                                viewPathPrefix: "monitor/infrastructure/" +
+                                    "databasenode/ui/js/views/",
+                                app : cowc.APP_CONTRAIL_CONTROLLER,
+                                viewConfig : {
+
+                                }
+                            }]
+                        } ]
+                };
                 return {
                     elementId : cowu.formatElementId([ 
                         ctwl.DATABASENODE_SUMMARY_LIST_SECTION_ID ]),
                     view : "SectionView",
-                    viewConfig : {
-                        rows : [
-                                {
-                                    columns : [{
-                                        elementId : 
-                                            ctwl.DATABASENODE_SUMMARY_CHART_ID,
-                                        title : ctwl.DATABASENODE_SUMMARY_TITLE,
-                                        app : cowc.APP_CONTRAIL_CONTROLLER,
-                                        view : "DatabaseNodeScatterChartView",
-                                            }]
-                                },
-                                {
-                                    columns : [ {
-                                        elementId : 
-                                            ctwl.DATABASENODE_SUMMARY_GRID_ID,
-                                        title : ctwl.DATABASENODE_SUMMARY_TITLE,
-                                        view : "DatabaseNodeGridView",
-                                        app : cowc.APP_CONTRAIL_CONTROLLER,
-                                        viewConfig : {
-                                            
-                                        }
-                                    } ]
-                                } ]
-                    }
+                    viewConfig : viewConfig
                 };
             };
             return DatabaseNodeListView;

@@ -15,33 +15,36 @@ define(
             });
             
             function getControlNodeListViewConfig() {
+                var viewConfig = {
+                    rows : [{
+                        columns : [{
+                            elementId :
+                                ctwl.CONTROLNODE_SUMMARY_CHART_ID,
+                            title : ctwl.CONTROLNODE_SUMMARY_TITLE,
+                            view : "ControlNodeScatterChartView",
+                            viewPathPrefix: "monitor/infrastructure/" +
+                                "common/ui/js/views/",
+                            app : cowc.APP_CONTRAIL_CONTROLLER,
+                        }]
+                    },{
+                        columns : [{
+                            elementId :
+                                ctwl.CONTROLNODE_SUMMARY_GRID_ID,
+                            title : ctwl.CONTROLNODE_SUMMARY_TITLE,
+                            view : "ControlNodeGridView",
+                            viewPathPrefix: "monitor/infrastructure/" +
+                                "controlnode/ui/js/views/",
+                            app : cowc.APP_CONTRAIL_CONTROLLER,
+                            viewConfig : {
+                            }
+                        }]
+                    }]
+                };
                 return {
                     elementId : cowu.formatElementId([ 
                          ctwl.CONTROLNODE_SUMMARY_LIST_SECTION_ID ]),
                     view : "SectionView",
-                    viewConfig : {
-                        rows : [{
-                                    columns : [{
-                                        elementId : 
-                                            ctwl.CONTROLNODE_SUMMARY_CHART_ID,
-                                        title : ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                        view : "ControlNodeScatterChartView",
-                                        app : cowc.APP_CONTRAIL_CONTROLLER,
-                                            }]
-                                },
-                                {
-                                    columns : [ {
-                                        elementId : 
-                                            ctwl.CONTROLNODE_SUMMARY_GRID_ID,
-                                        title : ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                        view : "ControlNodeGridView",
-                                        app : cowc.APP_CONTRAIL_CONTROLLER,
-                                        viewConfig : {
-                                            
-                                        }
-                                    } ]
-                                }]
-                    }
+                    viewConfig :viewConfig 
                 };
             };
         return ControlNodeListView;

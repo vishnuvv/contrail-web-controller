@@ -18,6 +18,7 @@ define([
             elementId: 
                 cowu.formatElementId([ctwl.DATATBASENODE_SUMMARY_PAGE_ID]),
             view: "DatabaseNodeListView",
+            viewPathPrefix: "monitor/infrastructure/databasenode/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: {}
         };

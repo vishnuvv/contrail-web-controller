@@ -26,7 +26,7 @@ define(
                                 title : ctwl.CONFIGNODE_SUMMARY_TITLE,
                                 view : "ConfigNodeScatterChartView",
                                 viewPathPrefix: 
-                                    "monitor/infrastructure/common/js/views/",
+                                    "monitor/infrastructure/common/ui/js/views/",
                                 app : cowc.APP_CONTRAIL_CONTROLLER,
                                     } ]
                         },{
@@ -36,7 +36,7 @@ define(
                                 title : ctwl.CONFIGNODE_SUMMARY_TITLE,
                                 view : "ConfigNodeGridView",
                                 viewPathPrefix: 
-                                    "monitor/infrastructure/confignode/js/" +
+                                    "monitor/infrastructure/confignode/ui/js/" +
                                     "views/",
                                 app : cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig : {

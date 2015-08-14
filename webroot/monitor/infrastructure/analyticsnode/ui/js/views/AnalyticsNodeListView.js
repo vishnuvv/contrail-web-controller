@@ -15,11 +15,7 @@ define(
             });
             
             function getAnalyticsNodeListViewConfig() {
-                return {
-                    elementId : cowu.formatElementId([ 
-                         ctwl.ANALYTICSNODE_SUMMARY_LIST_SECTION_ID ]),
-                    view : "SectionView",
-                    viewConfig : {
+                var viewConfig = {
                         rows : [
                             {
                                 columns : [{
@@ -27,26 +23,33 @@ define(
                                         ctwl.ANALYTICSNODE_SUMMARY_CHART_ID,
                                     title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                     view : "AnalyticsNodeScatterChartView",
+                                    viewPathPrefix: "monitor/infrastructure/" +
+                                        "common/ui/js/views/",
                                     app : cowc.APP_CONTRAIL_CONTROLLER,
                                 }]
-                            },
-                            {
+                            },{
                                 columns : [{
                                     elementId : 
                                         ctwl.ANALYTICSNODE_SUMMARY_GRID_ID,
                                     title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                     view : "AnalyticsNodeGridView",
+                                    viewPathPrefix: "monitor/infrastructure/" +
+                                        "analyticsnode/ui/js/views/",
                                     app : cowc.APP_CONTRAIL_CONTROLLER,
                                     viewConfig : {
                                         
                                     }
                                 }]
                             } 
-                        ]
-                    }
+                            ]
+                        };
+                return {
+                    elementId : cowu.formatElementId([
+                         ctwl.ANALYTICSNODE_SUMMARY_LIST_SECTION_ID ]),
+                    view : "SectionView",
+                    viewConfig : viewConfig
                 };
             }
-            ;
 
             function onScatterChartClick(
                     chartConfig) {

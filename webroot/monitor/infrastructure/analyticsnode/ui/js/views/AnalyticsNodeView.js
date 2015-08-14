@@ -18,6 +18,8 @@ define([
             elementId: cowu.formatElementId([
                 ctwl.ANALYTICSNODE_SUMMARY_PAGE_ID]),
             view: "AnalyticsNodeListView",
+            viewPathPrefix: "monitor/infrastructure/" +
+                "analyticsnode/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: {}
         };
