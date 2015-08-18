@@ -52,6 +52,12 @@ define(['underscore', 'contrail-view'],function(_, ContrailView){
                                    return chartDataValues;
                                },
                                tooltipConfigCB : getConfigNodeTooltipConfig,
+                               controlPanelConfig: {
+                                   legend: {
+                                       enable: true,
+                                       viewConfig: getControlPanelLegendConfig()
+                                   }
+                               },
                                clickCB : onScatterChartClick
                            }
                        }
@@ -123,70 +129,22 @@ define(['underscore', 'contrail-view'],function(_, ContrailView){
            return tooltipConfig;
        };
 
-       function getControlPanelFilterConfig() {
-           return {
-               groups : [ {
-                   id : 'by-node-color',
-                   title : 'By Node Color',
-                   type : 'radio',
-                   items : [ {
-                       text : 'Filter 1',
-                       labelCssClass : 'okay',
-                       events : {
-                           click : function(
-                                   event) {
-                               console.log('Filter 1');
-                           }
-                       }
-                   }, {
-                       text : 'Filter 2',
-                       labelCssClass : 'medium',
-                       events : {
-                           click : function(
-                                   event) {
-                               console.log('Filter 2');
-                           }
-                       }
-                   } ]
-               } ]
-           };
-       };
-
        function getControlPanelLegendConfig() {
            return {
-               groups : [ {
+               groups : [{
                    id : 'by-node-color',
-                   title : 'Cluster Color',
-                   items : [ {
-                       text : 'Provisioned Server = Total Servers',
-                       labelCssClass : 'icon-circle okay',
+                   title : 'Node Color',
+                   items : [{
+                       text : infraAlertMsgs['UVE_MISSING']+ ' or ' + 
+                           infraAlertMsgs['NTP_UNSYNCED_ERROR'],
+                       labelCssClass : 'icon-circle error',
                        events : {
                            click : function(
-                                   event) {
-                           }
+                               event) {
                        }
-                   }, {
-                       text : 'Provisioned Server != Total Servers',
-                       labelCssClass : 'icon-circle medium',
-                       events : {
-                           click : function(
-                                   event) {
-                           }
-                       }
-                   } ]
-               }, {
-                   id : 'by-node-size',
-                   title : 'Cluster Size',
-                   items : [ {
-                       text : 'Total Network Traffic',
-                       labelCssClass : 'icon-circle',
-                       events : {
-                           click : function(
-                                   event) {
-                           }
-                       }
-                   } ]
-               } ]
+                   }
+                   }]
+               }]
            };
        };
    }
