@@ -235,6 +235,99 @@ define([
             }
             return tooltipAlerts;
         };
+        
+        //Utility get the process uptime given process data
+        self.getProcessUpTime = function (d) {
+            var upTimeStr = noDataStr;
+            if(d != null && d.process_state != null && 
+                    d.process_state.toUpperCase() == "PROCESS_STATE_RUNNING") {
+                if(d.last_start_time != null){
+                    var upTime = new XDate(d.last_start_time/1000);
+                    var currTime = new XDate();
+                    upTimeStr = 'Up since ' + diffDates(upTime,currTime);
+                }
+            } else {
+                var exitTime=0,stopTime=0;
+                var currTime = new XDate();
+                if(d.last_exit_time != null){
+                    exitTime = d.last_exit_time;
+                }
+                if(d.last_stop_time != null){
+                    stopTime = d.last_stop_time;
+                }
+                if(exitTime != 0 || stopTime != 0){
+                    if(exitTime > stopTime){
+                        exitTime = new XDate(exitTime/1000);
+                        upTimeStr = 'Down since ' + diffDates(exitTime,currTime);
+                    } else {
+                        stopTime = new XDate(stopTime/1000);
+                        upTimeStr = 'Down since ' + diffDates(stopTime,currTime);
+                    }
+                } else {
+                    upTimeStr = "Down";
+                }
+            } 
+            return upTimeStr;
+        };
+        
+        /* 
+         * Common function to retrieve the analytics messages count and size
+         */
+        self.getAnalyticsMessagesCountAndSize = function (d,procList){
+            var count = 0,size = 0, obj = {};
+            for(var key in d){
+                var label = key.toUpperCase();
+                $.each(procList,function(idx,proc){
+                    if(label.indexOf(":"+proc.toUpperCase()+":") != -1){
+                        obj[key] = d[key];
+                    }
+                });
+            }
+            var sizes =  ifNull(jsonPath(obj,"$..ModuleClientState.client_info.tx_socket_stats.bytes"),0);
+            var counts = ifNull(jsonPath(obj,"$..ModuleClientState.session_stats.num_send_msg"),0);
+            $.each(counts,function(i,cnt){
+                count += cnt;
+            });
+            $.each(sizes,function(i,sze){
+                size += sze;
+            });
+            return {count:count,size:size};
+        }
+        
+        //Given the data and the node type get the last log time stamp for the node
+        self.getLastLogTimestamp = function (d, nodeType){
+            var logLevelStats = [], lastLog, lastTimeStamp;
+            var procsList = [];
+            if(nodeType != null){
+                if(nodeType == "control"){
+                    procsList = monitorInfraConstants.controlProcsForLastTimeStamp;
+                } else if (nodeType == "compute"){
+                    var proces = getValueByJsonPath(d,'NodeStatus;process_status;0;module_id');
+                    if(proces != null){
+                        procsList = [proces];
+                    } else {
+                        procsList = monitorInfraConstants.computeProcsForLastTimeStamp;
+                    }
+                } else if (nodeType =="analytics") {
+                    procsList = monitorInfraConstants.analyticsProcsForLastTimeStamp;
+                } else if (nodeType =="config"){
+                    procsList = monitorInfraConstants.configProcsForLastTimeStamp;
+                }
+                $.each(procsList,function(idx,proc){
+                    logLevelStats = getAllLogLevelStats(d,proc,logLevelStats);
+                });
+            } else {
+                logLevelStats = getAllLogLevelStats(d,"",logLevelStats);
+            }
+            
+            if(logLevelStats != null){
+                lastLog = getMaxGeneratorValueInArray(logLevelStats,"last_msg_timestamp");
+                if(lastLog != null){
+                    lastTimeStamp = lastLog.last_msg_timestamp;
+                }
+            }
+            return lastTimeStamp;
+        }
     };
     return MonitorInfraUtils;
 });

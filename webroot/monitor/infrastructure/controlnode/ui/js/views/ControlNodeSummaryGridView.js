@@ -6,7 +6,7 @@ define(
         [ 'underscore', 'contrail-view' ],
         function(
                 _, ContrailView) {
-            var ControlNodeGridView = ContrailView
+            var ControlNodeSummartGridView = ContrailView
                     .extend({
                         render : function() {
                             var self = this, 
@@ -53,9 +53,7 @@ define(
                               rowData:dc});
                        },
                        events: {
-                          onClick: function(e,dc){
-                             onCtrlNodeRowSelChange(dc);
-                          }
+                          onClick: onClickHostName
                        },
                        cssClass: 'cell-hyperlink-blue',
                        minWidth:110,
@@ -173,6 +171,28 @@ define(
                 };
                 return gridElementConfig;
             }
+            
+            function onClickHostName(e, selRowDataItem) {
+                var name = selRowDataItem.name, hashParams = null,
+                    triggerHashChange = true, hostName;
 
-            return ControlNodeGridView;
+                hostName = selRowDataItem['name'];
+                var hashObj = {
+                        type: "controlNode",
+                        view: "details",
+                        focusedElement: {
+                            node: name,
+                            tab: 'details'
+                        }
+                    };
+
+                if(contrail.checkIfKeyExistInObject(true, hashParams, 'clickedElement')) {
+                    hashObj.clickedElement = hashParams.clickedElement;
+                }
+
+                layoutHandler.setURLHashParams(hashObj, {p: "mon_infra_control", merge: false, triggerHashChange: triggerHashChange});
+
+            };
+
+            return ControlNodeSummartGridView;
         });

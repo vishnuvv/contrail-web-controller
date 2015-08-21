@@ -9,14 +9,27 @@ define([
     var ControlNodeView = ContrailView.extend({
         el: $(contentContainer),
         renderControlNode: function (viewConfig) {
-            this.renderView4Config(this.$el, null, getControlNodeConfig());
+            this.renderView4Config(this.$el, null, getControlNodeListConfig());
+        },
+        renderControlNodeDetails : function (viewConfig) {
+            this.renderView4Config(this.$el, null, getControlNodeDetails());
         }
     });
 
-    function getControlNodeConfig() {
+    function getControlNodeListConfig() {
         return {
             elementId: cowu.formatElementId([ctwl.CONTROLNODE_SUMMARY_PAGE_ID]),
             view: "ControlNodeListView",
+            viewPathPrefix: "monitor/infrastructure/controlnode/ui/js/views/",
+            app: cowc.APP_CONTRAIL_CONTROLLER,
+            viewConfig: {}
+        };
+    };
+    
+    function getControlNodeDetails() {
+        return {
+            elementId: cowu.formatElementId([ctwl.CONTROLNODE_SUMMARY_PAGE_ID]),
+            view: "ControlNodeDetailsView",
             viewPathPrefix: "monitor/infrastructure/controlnode/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: {}

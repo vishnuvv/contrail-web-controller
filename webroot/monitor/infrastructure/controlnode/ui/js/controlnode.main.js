@@ -8,18 +8,26 @@ function ControlNodesLoader() {
             pathControlNodeView = rootDir + '/js/views/ControlNodeView.js',
             renderFn = paramObject['function'];
 
-            if (self.monitorInfraView == null) {
-                requirejs([pathControlNodeView], function (ControlNodeListView){
-                    self.monitorInfraView = new ControlNodeListView();
-                    self.renderView(renderFn, hashParams);
-                });
-            } else {
+//            if (self.controlNodeView == null) {
+//                requirejs([pathControlNodeView], function (ControlNodeListView){
+//                    self.controlNodeView = new ControlNodeView();
+//                    self.renderView(renderFn, hashParams);
+//                });
+//            } else {
+//                self.renderView(renderFn, hashParams);
+//            }
+            require([pathControlNodeView], function (ControlNodeView) {
+                self.controlNodeView = new ControlNodeView();
                 self.renderView(renderFn, hashParams);
-            }
+            });
     }
-    this.renderView = function (renderFn, hashParams) {
+    this.renderView = function (renderFn, hashParams, view) {
         $(contentContainer).html("");
-        this.monitorInfraView[renderFn]({hashParams: hashParams});
+        if(hashParams.view == "details") {
+            this.controlNodeView.renderControlNodeDetails({hashParams: hashParams});
+        } else {
+            this.controlNodeView.renderControlNode({hashParams: hashParams});
+        }
     };
 
     this.updateViewByHash = function (hashObj, lastHashObj) {

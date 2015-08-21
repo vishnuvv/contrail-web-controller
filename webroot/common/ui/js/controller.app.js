@@ -67,6 +67,12 @@ require
                 'monitor-infra-utils' :
                     'monitor/infrastructure/common/ui/js/utils/' +
                     'monitor.infra.utils',
+                'monitor-infra-parsers' :
+                    'monitor/infrastructure/common/ui/js/utils/' +
+                    'monitor.infra.parsers',  
+                'monitor-infra-constants' :
+                    'monitor/infrastructure/common/ui/js/utils/' +
+                    'monitor.infra.constants',
 
                 'controller-init' : ctBaseDir + '/common/ui/js/controller.init'
             },

@@ -303,6 +303,9 @@ define([
         this.CONTROLNODE_SUMMARY_SCATTERCHART_SECTION_ID = 
             'control-nodes-scatterchart-section';
         this.CACHE_CONTROLNODE = 'cache-control-nodes';
+        this.CONTROLNODE_PEERS_GRID_SECTION_ID = 'control_node_peers_grid_section_id';
+        this.CONTROLNODE_PEERS_GRID_ID = "control_node_peers_grid_id";
+        this.CONTROLNODE_PEERS_TITLE = "Peers";
         
         //Database node summary page labels
         this.DATABASENODE_SUMMARY_PAGE_ID = 'monitor-database-nodes';
