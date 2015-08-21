@@ -31,7 +31,7 @@ define(
                             elementId :
                                 ctwl.CONTROLNODE_SUMMARY_GRID_ID,
                             title : ctwl.CONTROLNODE_SUMMARY_TITLE,
-                            view : "ControlNodeGridView",
+                            view : "ControlNodeSummaryGridView",
                             viewPathPrefix: "monitor/infrastructure/" +
                                 "controlnode/ui/js/views/",
                             app : cowc.APP_CONTRAIL_CONTROLLER,
