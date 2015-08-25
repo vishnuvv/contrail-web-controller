@@ -303,7 +303,14 @@ define([
         this.CONTROLNODE_SUMMARY_SCATTERCHART_SECTION_ID = 
             'control-nodes-scatterchart-section';
         this.CACHE_CONTROLNODE = 'cache-control-nodes';
+        this.CONTROLNODE_DETAILS_PAGE_ID = 'control_nodes_details';
+        this.CONTROLNODE_DETAIL_PAGE_ID = 'control_nodes_detail_page'
+        this.CONTROLNDOE_DETAILS_SECTION_ID = 'control_nodes_details_section';
+        this.CONTROLNODE_TAB_SECTION_ID = 'control_nodes_tab_section';
+        this.CONTROLNODE_TAB_VIEW_ID = 'control_nodes_tab_view';
+        this.CONTROLNODE_DETAILS_TABS_ID = 'control_nodes_details-tab';
         this.CONTROLNODE_PEERS_GRID_SECTION_ID = 'control_node_peers_grid_section_id';
+        this.CONTROLNODE_PEERS_GRID_VIEW_ID = 'controlnode_peers_id';
         this.CONTROLNODE_PEERS_GRID_ID = "control_node_peers_grid_id";
         this.CONTROLNODE_PEERS_TITLE = "Peers";
         
@@ -340,6 +347,16 @@ define([
         this.ANALYTICSNODE_SUMMARY_SCATTERCHART_SECTION_ID = 
             'analytics-nodes-scatterchart-section';
         this.CACHE_ANALYTICSNODE = 'cache-analytics-nodes';
+        this.ANALYTICSNODE_DETAILS_PAGE_ID = 'analytics_nodes_details';
+        this.ANALYTICSNODE_TAB_SECTION_ID = 'analytics_nodes_tab_section';
+        this.ANALYTICSNODE_TAB_VIEW_ID = 'analytics_nodes_tab_view';
+        this.ANALYTICSNODE_TABS_ID = 'analytics_nodes_tab';
+        this.ANALYTICSNODE_DETAILS_SECTION_ID = 'analytics_nodes_detail_section';
+        this.ANALYTICSNODE_DETAIL_PAGE_ID = 'analytics_node_detail_page';
+        this.ANALYTICSNODE_GENERATORS_GRID_SECTION_ID = 'analytics_node_generators_grid_section';
+        this.ANALYTICSNODE_GENERATORS_GRID_ID = 'analytics_node_generators_grid';
+        this.ANALYTICSNODE_GENERATORS_TITLE = 'Generators';
+        
 
         this.TMPL_CORE_GENERIC_EDIT = 'core-generic-edit-form-template';
         this.TMPL_CORE_GENERIC_DEL = 'core-generic-delete-form-template';

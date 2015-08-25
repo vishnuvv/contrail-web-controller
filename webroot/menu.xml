@@ -104,19 +104,6 @@ and need to add the iconClass tag wherever we need to show some icons
                             </resources>
                         </item>
                         <item>
-                            <hash>mon_infra_control</hash>
-                            <label>Control Nodes</label>
-                            <resources>
-                                <resource>
-                                    <rootDir>/monitor/infrastructure/controlnode/ui</rootDir>
-                                    <js>controlnode.main.js</js>
-                                    <class>controlNodesLoader</class>
-                                    <function>renderControlNode</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Monitor Control Nodes</searchStrings>
-                        </item>
-                        <item>
                             <hash>mon_infra_vrouter</hash>
                             <label>Virtual Routers</label>
                             <resources>
@@ -135,6 +122,19 @@ and need to add the iconClass tag wherever we need to show some icons
                                 </resource>
                             </resources>
                             <searchStrings>Monitor Compute Nodes</searchStrings>
+                        </item>
+                        <item>
+                            <hash>mon_infra_control</hash>
+                            <label>Control Nodes</label>
+                            <resources>
+                                <resource>
+                                    <rootDir>/monitor/infrastructure/controlnode/ui</rootDir>
+                                    <js>controlnode.main.js</js>
+                                    <class>controlNodesLoader</class>
+                                    <function>renderControlNode</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Monitor Control Nodes</searchStrings>
                         </item>
                         <item>
                             <hash>mon_infra_analytics</hash>

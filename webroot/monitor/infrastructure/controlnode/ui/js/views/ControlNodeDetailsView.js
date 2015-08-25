@@ -34,14 +34,14 @@ define([
                 hostname: currHashParams.focusedElement.node
             };
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_ID]),
+            elementId: cowu.formatElementId([ctwl.CONTROLNODE_TAB_SECTION_ID]),
             view: "SectionView",
             viewConfig: {
                 rows: [
                     {
                         columns: [
                             {
-                                elementId: ctwl.MONITOR_NETWORK_VIEW_ID,
+                                elementId: ctwl.CONTROLNODE_TAB_VIEW_ID,
                                 view: "ControlNodeTabView",
                                 viewPathPrefix: "monitor/infrastructure/controlnode/ui/js/views/",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,

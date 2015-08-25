@@ -23,14 +23,14 @@ define([
         var hostname = viewConfig['hostname'];
 
         return {
-            elementId: cowu.formatElementId([ctwl.MONITOR_NETWORK_VIEW_ID, '-section']),
+            elementId: ctwl.CONTROLNDOE_DETAILS_SECTION_ID,
             view: "SectionView",
             viewConfig: {
                 rows: [
                     {
                         columns: [
                             {
-                                elementId: ctwl.NETWORK_TABS_ID,
+                                elementId: ctwl.CONTROLNODE_DETAILS_TABS_ID,
                                 view: "TabsView",
                                 viewConfig: {
                                     theme: 'default',
@@ -39,11 +39,9 @@ define([
                                         var selTab = $(ui.newTab.context).text();
                                         if (selTab == ctwl.TITLE_PORT_DISTRIBUTION) {
                                             $('#' + ctwl.NETWORK_PORT_DIST_ID).trigger('refresh');
-                                        } else if (selTab == ctwl.TITLE_INSTANCES) {
-                                            $('#' + ctwl.PROJECT_INSTANCE_GRID_ID).data('contrailGrid').refreshView();
-                                        } else if (selTab == ctwl.TITLE_TRAFFIC_STATISTICS) {
-                                            $('#' + ctwl.NETWORK_TRAFFIC_STATS_ID).find('svg').trigger('refresh');
-                                        }
+                                        } else if (selTab == 'Peers') {
+                                            $('#' + ctwl.CONTROLNODE_PEERS_GRID_ID).data('contrailGrid').refreshView();
+                                        } 
                                     },
                                     tabs: [
                                            {
@@ -54,9 +52,9 @@ define([
                                                viewConfig: viewConfig 
                                            },
                                            {
-                                               elementId: 'controlnode_peers_id',
+                                               elementId: ctwl.CONTROLNODE_PEERS_GRID_VIEW_ID,
                                                title: 'Peers',
-                                               view: "ControlNodePeersView",
+                                               view: "ControlNodePeersGridView",
                                                viewPathPrefix: "monitor/infrastructure/controlnode/ui/js/views/",
                                                viewConfig: viewConfig 
                                            }

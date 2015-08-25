@@ -50,7 +50,7 @@ define(
                         obj['name'] = d['name'];
                         obj['link'] = 
                             {p:'mon_infra_control',q:{node:obj['name'],tab:''}};
-                        obj['version'] = ifEmpty(getNodeVersion(jsonPath(d,
+                        obj['version'] = ifEmpty(self.getNodeVersion(jsonPath(d,
                             '$.value.BgpRouterState.build_info')[0]),'-');
                         obj['totalPeerCount'] = 
                             ifNull(jsonPath(d,'$..num_bgp_peer')[0],0) + 
@@ -173,8 +173,8 @@ define(
                         obj['shape'] = 'circle';
                         obj['type'] = 'analyticsNode';
                         obj['display_type'] = 'Analytics Node';
-                        obj['version'] = ifEmpty(getNodeVersion(jsonPath(d,
-                            '$.value.CollectorState.build_info')[0]), '-');
+                        obj['version'] = ifEmpty(self.getNodeVersion(jsonPath(d,
+                            '$.CollectorState.build_info')[0]), '-');
                         try {
                             obj['status'] = getOverallNodeStatus(d, "analytics");
                         } catch(e) {
@@ -262,7 +262,7 @@ define(
                         obj['y'] = $.isNumeric(obj['y']) ? obj['y'] : 0;
                         //Re-visit once average response time added for config nodes
                         obj['size'] = 1;
-                        obj['version'] = ifEmpty(getNodeVersion(jsonPath(d,
+                        obj['version'] = ifEmpty(self.getNodeVersion(jsonPath(d,
                             '$.value.configNode.ModuleCpuState.build_info')[0]),'-');
                         obj['shape'] = 'circle';
                         obj['type'] = 'configNode';
@@ -398,8 +398,22 @@ define(
                     return retArr;
                 
                 }
+                this.getNodeVersion = function (buildStr) {
+                    var verStr = '';
+                    if(buildStr != null) {
+                        var buildInfo;
+                        try {
+                             buildInfo = JSON.parse(buildStr);
+                        } catch(e) {
+                        }
+                        if((buildInfo != null) && (buildInfo['build-info'] instanceof Array)) {
+                            var buildObj = buildInfo['build-info'][0];
+                            verStr = buildObj['build-version'] + ' (Build ' + buildObj['build-number'] + ')'
+                        }
+                    }
+                    return verStr;
+                };
             };
-            
             
             return MonInfraParsers;
        }

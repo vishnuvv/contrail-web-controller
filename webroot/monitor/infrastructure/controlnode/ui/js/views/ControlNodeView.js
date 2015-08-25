@@ -28,7 +28,7 @@ define([
     
     function getControlNodeDetails() {
         return {
-            elementId: cowu.formatElementId([ctwl.CONTROLNODE_SUMMARY_PAGE_ID]),
+            elementId: cowu.formatElementId([ctwl.CONTROLNODE_DETAILS_PAGE_ID]),
             view: "ControlNodeDetailsView",
             viewPathPrefix: "monitor/infrastructure/controlnode/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,

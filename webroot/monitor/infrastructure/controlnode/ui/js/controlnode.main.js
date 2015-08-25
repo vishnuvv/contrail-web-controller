@@ -8,18 +8,14 @@ function ControlNodesLoader() {
             pathControlNodeView = rootDir + '/js/views/ControlNodeView.js',
             renderFn = paramObject['function'];
 
-//            if (self.controlNodeView == null) {
-//                requirejs([pathControlNodeView], function (ControlNodeListView){
-//                    self.controlNodeView = new ControlNodeView();
-//                    self.renderView(renderFn, hashParams);
-//                });
-//            } else {
-//                self.renderView(renderFn, hashParams);
-//            }
-            require([pathControlNodeView], function (ControlNodeView) {
-                self.controlNodeView = new ControlNodeView();
+            if (self.controlNodeView == null) {
+                requirejs([pathControlNodeView], function (ControlNodeView){
+                    self.controlNodeView = new ControlNodeView();
+                    self.renderView(renderFn, hashParams);
+                });
+            } else {
                 self.renderView(renderFn, hashParams);
-            });
+            }
     }
     this.renderView = function (renderFn, hashParams, view) {
         $(contentContainer).html("");

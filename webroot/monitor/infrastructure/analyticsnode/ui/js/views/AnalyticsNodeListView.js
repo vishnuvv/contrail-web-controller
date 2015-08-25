@@ -32,7 +32,7 @@ define(
                                     elementId : 
                                         ctwl.ANALYTICSNODE_SUMMARY_GRID_ID,
                                     title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
-                                    view : "AnalyticsNodeGridView",
+                                    view : "AnalyticsNodeSummaryGridView",
                                     viewPathPrefix: "monitor/infrastructure/" +
                                         "analyticsnode/ui/js/views/",
                                     app : cowc.APP_CONTRAIL_CONTROLLER,

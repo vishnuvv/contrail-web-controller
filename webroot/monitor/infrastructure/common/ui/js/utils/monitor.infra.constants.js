@@ -28,6 +28,7 @@ define([
         this.infraDetailsPageCPUChartTitle = 'CPU Share (%)';
         this.CONSOLE_LOGS_REFRESH_INTERVAL = 90000;//Auto refresh interval in console tab (ms)
 
+        this.IS_NODE_MANAGER_INSTALLED = true;
 
         this.monitorInfraUrls = {
                 VROUTER_BASE                : '/api/admin/monitor/infrastructure/vrouter/',

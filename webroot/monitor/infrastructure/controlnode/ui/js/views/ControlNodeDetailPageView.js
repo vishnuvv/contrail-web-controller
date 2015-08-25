@@ -5,32 +5,40 @@
 define([
     'underscore',
     'contrail-view',
-    'monitor-infra-parsers'
-], function (_, ContrailView, MonitorInfraParsers) {
+    'monitor-infra-parsers',
+    'monitor-infra-constants',
+    'monitor-infra-utils'
+], function (_, ContrailView, MonitorInfraParsers, MonitorInfraConstants, MonitorInfraUtils) {
     var monInfraParsers = new MonitorInfraParsers ();
+    var monInfraConstants = new MonitorInfraConstants ();
+    var monInfraUtils = new MonitorInfraUtils ();
     var ControlNodesDetailPageView = ContrailView.extend({
         el: $(contentContainer),
 
         render: function () {
             var self = this;
-            var detailsTemplate = contrail.getTemplate4Id(cowc.TMPL_2COLUMN_1ROW_2ROW_CONTENT_VIEW);
+            var detailsTemplate = contrail.getTemplate4Id(
+                    cowc.TMPL_2COLUMN_1ROW_2ROW_CONTENT_VIEW);
             var viewConfig = this.attributes.viewConfig;
             var leftContainerElement = $('#left-column-container');
             this.$el.html(detailsTemplate);
             
 
-            self.renderView4Config($('#left-column-container'), null, getControlNodeDetailPageViewConfig(viewConfig));
+            self.renderView4Config($('#left-column-container'), null, 
+                    getControlNodeDetailPageViewConfig(viewConfig));
         }
     });
     var getControlNodeDetailPageViewConfig = function (viewConfig) {
         var hostname = viewConfig['hostname'];
         return {
-            elementId: 'controlnode_detail_page_id',
+            elementId: ctwl.CONTROLNODE_DETAIL_PAGE_ID,
             title: ctwl.TITLE_DETAILS,
             view: "DetailsView",
             viewConfig: {
                 ajaxConfig: {
-                    url: '/api/admin/monitor/infrastructure/controlnode/details?hostname='+ hostname,
+                    url: contrail.format(
+                            monInfraConstants.monitorInfraUrls['CONTROLNODE_DETAILS'], 
+                            hostname),
                     type: 'GET'
                 },
                 templateConfig: getDetailsViewTemplateConfig(),
@@ -39,15 +47,23 @@ define([
                     var ctrlNodeData = result;
                     var obj = monInfraParsers.parseControlNodesDashboardData([result])[0];
                     //Further parsing required for Details page done below
+                    var overallStatus;
+                    try{
+                        overallStatus = monInfraUtils.getOverallNodeStatusForDetails(obj);
+                    }catch(e){overallStatus = "<span> "+statusTemplate({sevLevel:sevLevels['ERROR'],sevLevels:sevLevels})+" Down</span>";}
                     
                     try{
                         //Add the process status list with uptime
-                        procStateList = jsonPath(ctrlNodeData,"$..NodeStatus.process_info")[0];
-                        var controlProcessStatusList = getStatusesForAllControlProcesses(procStateList);
+                        procStateList = jsonPath(ctrlNodeData,
+                                "$..NodeStatus.process_info")[0];
+                        var controlProcessStatusList = 
+                            getStatusesForAllControlProcesses(procStateList);
                         obj['controlProcessStatusList'] = controlProcessStatusList;
                     }catch(e){}
                       
                     obj['name'] = hostname;
+                    
+                    obj['overallNodeStatus'] = overallStatus;
                     
                     obj['ifMapConnectionStatus'] = getIfMapConnectionStatus(ctrlNodeData);
                     
@@ -66,111 +82,86 @@ define([
             }
         }
     }
-function getDetailsViewTemplateConfig() {
+    
+    function getDetailsViewTemplateConfig() {
         
         return {
-            templateGenerator: 'RowSectionTemplateGenerator',
-            templateGeneratorConfig: {
-                rows: [
-                    {
-                        templateGenerator: 'ColumnSectionTemplateGenerator',
-                        templateGeneratorConfig: {
-                            columns: [
-                                {
-                                    class: 'span6',
-                                    rows: [
-                                        {
-                                            title: 'Control Node',
-                                            templateGenerator: 'BlockListTemplateGenerator',
-                                            templateGeneratorConfig: [
-//                                                {
-//                                                    key: 'value.UveVirtualNetworkConfig.connected_networks',
-//                                                    templateGenerator: 'LinkGenerator',
-//                                                    templateGeneratorConfig: {
-//                                                        formatter: 'link',
-//                                                        template: ctwc.URL_NETWORK,
-//                                                        params: {}
-//                                                    }
-//                                                },
-                                                {
-                                                    key: 'name',
-                                                    label:'Hostname',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'ip',
-                                                    label:'IP Address',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'version',
-                                                    label: 'Version',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'status',
-                                                    label: 'Overall Node Status',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'processes',
-                                                    label: 'Processes',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'controlProcessStatusList.contrail-control',
-                                                    label: 'Control Node',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'ifMapConnectionStatus',
-                                                    label: 'Ifmap Connection',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'analyticsNodeDetails',
-                                                    label: 'Analytics Node',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'analyticsMessages',
-                                                    label: 'Analytics Messages',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'peersDetails',
-                                                    label: 'Peers',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'vRouterPeerDetails',
-                                                    label: ' ',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'cpu',
-                                                    label: 'CPU',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'memory',
-                                                    label: 'Memory',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'lastLogTimestamp',
-                                                    label: 'Last Log',
-                                                    templateGenerator: 'TextGenerator'
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
+            title: 'Control Node',
+            theme: 'widget-box',
+            keyClass: 'label-blue',
+            templateGenerator: 'BlockListTemplateGenerator',
+            templateGeneratorConfig: [
+                {
+                    key: 'name',
+                    label:'Hostname',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'ip',
+                    label:'IP Address',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'version',
+                    label: 'Version',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'overallNodeStatus',
+                    label: 'Overall Node Status',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'processes',
+                    label: 'Processes',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'controlProcessStatusList.contrail-control',
+                    label: 'Control Node',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'ifMapConnectionStatus',
+                    label: 'Ifmap Connection',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'analyticsNodeDetails',
+                    label: 'Analytics Node',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'analyticsMessages',
+                    label: 'Analytics Messages',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'peersDetails',
+                    label: 'Peers',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'vRouterPeerDetails',
+                    label: ' ',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'cpu',
+                    label: 'CPU',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'memory',
+                    label: 'Memory',
+                    templateGenerator: 'TextGenerator'
+                },
+                {
+                    key: 'lastLogTimestamp',
+                    label: 'Last Log',
+                    templateGenerator: 'TextGenerator'
+                }
+            ]
         };
     };
 
@@ -239,28 +230,34 @@ function getDetailsViewTemplateConfig() {
         var anlNode = noDataStr; 
         var secondaryAnlNode, status;
         try{
-           anlNode = jsonPath(ctrlNodeData,"$..ModuleClientState..primary")[0].split(':')[0];
+           anlNode = jsonPath(ctrlNodeData,
+                   "$..ModuleClientState..primary")[0].split(':')[0];
            status = jsonPath(ctrlNodeData,"$..ModuleClientState..status")[0];
-           secondaryAnlNode = ifNull(jsonPath(ctrlNodeData,"$..ModuleClientState..secondary")[0],"").split(':')[0];
+           secondaryAnlNode = ifNull(jsonPath(ctrlNodeData,
+                   "$..ModuleClientState..secondary")[0],"").split(':')[0];
         }catch(e){
            anlNode = "--";
         }
         try{
-           if(anlNode != null && anlNode != noDataStr && status.toLowerCase() == "established")
+           if(anlNode != null && anlNode != noDataStr && 
+                   status.toLowerCase() == "established")
               anlNode = anlNode.concat(' (Up)');
         }catch(e){
            if(anlNode != null && anlNode != noDataStr) {
               anlNode = anlNode.concat(' (Down)');
            }
         }
-        if(secondaryAnlNode != null && secondaryAnlNode != "" && secondaryAnlNode != "0.0.0.0"){
+        if(secondaryAnlNode != null && secondaryAnlNode != "" 
+            && secondaryAnlNode != "0.0.0.0"){
            anlNode = anlNode.concat(', ' + secondaryAnlNode);
         }
         return ifNull(anlNode,noDataStr);
     }
     
     function getAnalyticsNodeMessageInfo(ctrlNodeData) {
-        var msgs = monitorInfraUtils.getAnalyticsMessagesCountAndSize(ctrlNodeData,['contrail-control']);
+        var msgs = monitorInfraUtils.getAnalyticsMessagesCountAndSize(
+                ctrlNodeData,
+                ['contrail-control']);
         return msgs['count']  + ' [' + formatBytes(msgs['size']) + ']';
     }
     
@@ -284,12 +281,15 @@ function getDetailsViewTemplateConfig() {
         var totXmppPeers = 0,upXmppPeers = 0,downXmppPeers = 0,subsCnt = 0;
         totXmppPeers = parsedData['totalXMPPPeerCnt'];
         upXmppPeers = parsedData['upXMPPPeerCnt'];
-        subsCnt = ifNull(jsonPath(ctrlNodeData,'$..BgpRouterState.ifmap_server_info.num_peer_clients')[0],0)
+        subsCnt = ifNull(jsonPath(ctrlNodeData,
+                '$..BgpRouterState.ifmap_server_info.num_peer_clients')[0],
+                0);
         if(totXmppPeers > 0){
             downXmppPeers = totXmppPeers - upXmppPeers;
         }
         if (downXmppPeers > 0){
-            downXmppPeers = ", <span class='text-error'>"+ downXmppPeers +" Down</span>";
+            downXmppPeers = ", <span class='text-error'>"+ downXmppPeers 
+            +" Down</span>";
         } else {
             downXmppPeers = "";
         }
