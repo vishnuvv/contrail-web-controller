@@ -6,7 +6,7 @@ function ConfigNodesLoader() {
             hashParams = paramObject['hashParams'],
             rootDir = currMenuObj['resources']['resource'][0]['rootDir'],
             pathConfigNodeView = rootDir + '/js/views/ConfigNodeView.js',
-            renderFn = paramObject['function'];
+            renderFn = paramObject['renderFn'];
             if (self.monitorInfraView == null) {
                 requirejs([pathConfigNodeView], function (ConfigNodeListView) {
                     self.monitorInfraView = new ConfigNodeListView();
@@ -22,8 +22,7 @@ function ConfigNodesLoader() {
     };
 
     this.updateViewByHash = function (hashObj, lastHashObj) {
-        var renderFn;
-        this.load({hashParams: hashObj, 'function': renderFn});
+        this.load({hashParams: hashObj});
     };
 
     this.destroy = function () {

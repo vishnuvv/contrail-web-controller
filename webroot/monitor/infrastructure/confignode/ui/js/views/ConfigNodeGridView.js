@@ -159,7 +159,7 @@ define(
                                 }
                             },
                             cacheConfig : {
-                            // ucid: smwc.UCID_ALL_CLUSTER_LIST
+                                ucid: ctwl.CACHE_CONFIGNODE
                             }
                         }
                     }

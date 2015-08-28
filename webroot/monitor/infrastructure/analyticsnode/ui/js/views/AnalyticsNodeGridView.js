@@ -172,7 +172,7 @@ define([ 'underscore', 'contrail-view' ],function(_, ContrailView) {
                                 }
                             },
                             cacheConfig : {
-                            // ucid: smwc.UCID_ALL_CLUSTER_LIST
+                                ucid: ctwl.CACHE_ANALYTICSNODE
                             }
                         }
                     }

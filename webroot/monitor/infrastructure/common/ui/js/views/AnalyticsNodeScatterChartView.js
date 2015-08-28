@@ -50,7 +50,7 @@ define(['underscore', 'contrail-view'],function(_, ContrailView){
                                    }
                                    return chartDataValues;
                                },
-                               tooltipConfigCB : getClusterTooltipConfig,
+                               tooltipConfigCB : getAnalyticsNodeTooltipConfig,
                                controlPanelConfig: {
                                    legend: {
                                        enable: true,
@@ -67,7 +67,7 @@ define(['underscore', 'contrail-view'],function(_, ContrailView){
 
        function onScatterChartClick(chartConfig) {
            var analyticsNode = chartConfig.name, hashObj = {
-               node : clusterID,
+               node : analyticsNode,
                tab : ''
            };
 
@@ -78,7 +78,7 @@ define(['underscore', 'contrail-view'],function(_, ContrailView){
            });
        };
 
-       function getClusterTooltipConfig(data) {
+       function getAnalyticsNodeTooltipConfig(data) {
            var analyticsNode = data.rawData;
            var tooltipData = [
                               {
@@ -133,7 +133,7 @@ define(['underscore', 'contrail-view'],function(_, ContrailView){
                    id : 'by-node-color',
                    title : 'Node Color',
                    items : [{
-                       text : 'Query Errors exists',
+                       text : 'Errors in UVE', //TODO need to discuss the format
                        labelCssClass : 'icon-circle warning',
                        events : {
                            click : function(

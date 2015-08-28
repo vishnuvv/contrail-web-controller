@@ -328,6 +328,8 @@ define([
         this.CONFIGNODE_SUMMARY_SCATTERCHART_SECTION_ID =
             'config-nodes-scatterchart-section';
         this.CACHE_CONFIGNODE = 'cache-config-nodes';
+        this.CONFIGNODE_VIEWPATH_PREFIX =
+            'monitor/infrastructure/confignode/ui/js/views/';
 
         //Control node summary page labels
         this.CONTROLNODE_SUMMARY_PAGE_ID = 'monitor-control-nodes';
@@ -342,6 +344,8 @@ define([
         this.CONTROLNODE_SUMMARY_SCATTERCHART_SECTION_ID =
             'control-nodes-scatterchart-section';
         this.CACHE_CONTROLNODE = 'cache-control-nodes';
+        this.CONTROLNODE_VIEWPATH_PREFIX =
+            'monitor/infrastructure/controlnode/ui/js/views/';
 
         //Database node summary page labels
         this.DATABASENODE_SUMMARY_PAGE_ID = 'monitor-database-nodes';
@@ -359,6 +363,8 @@ define([
         this.DATABASENODE_SUMMARY_SCATTERCHART_SECTION_ID =
             'database-nodes-scatterchart-section';
         this.CACHE_DATABASENODE = 'cache-database-nodes';
+        this.DATABASENODE_VIEWPATH_PREFIX =
+            'monitor/infrastructure/databasenode/ui/js/views/';
 
         //Analytics node summary page labels
         this.ANALYTICSNODE_SUMMARY_PAGE_ID = 'monitor-analytics-nodes';
@@ -376,7 +382,11 @@ define([
         this.ANALYTICSNODE_SUMMARY_SCATTERCHART_SECTION_ID =
             'analytics-nodes-scatterchart-section';
         this.CACHE_ANALYTICSNODE = 'cache-analytics-nodes';
+        this.ANALYTICSNODE_VIEWPATH_PREFIX =
+            'monitor/infrastructure/analyticsnode/ui/js/views/';
 
+        this.MONITOR_INFRA_VIEW_PATH =
+            'monitor/infrastructure/common/ui/js/views/';
         this.TMPL_CORE_GENERIC_EDIT = 'core-generic-edit-form-template';
         this.TMPL_CORE_GENERIC_DEL = 'core-generic-delete-form-template';
 

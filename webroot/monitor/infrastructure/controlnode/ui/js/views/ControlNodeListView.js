@@ -22,8 +22,7 @@ define(
                                 ctwl.CONTROLNODE_SUMMARY_CHART_ID,
                             title : ctwl.CONTROLNODE_SUMMARY_TITLE,
                             view : "ControlNodeScatterChartView",
-                            viewPathPrefix: "monitor/infrastructure/" +
-                                "common/ui/js/views/",
+                            viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
                             app : cowc.APP_CONTRAIL_CONTROLLER,
                         }]
                     },{
@@ -32,8 +31,7 @@ define(
                                 ctwl.CONTROLNODE_SUMMARY_GRID_ID,
                             title : ctwl.CONTROLNODE_SUMMARY_TITLE,
                             view : "ControlNodeGridView",
-                            viewPathPrefix: "monitor/infrastructure/" +
-                                "controlnode/ui/js/views/",
+                            viewPathPrefix: ctwl.CONFIGNODE_VIEWPATH_PREFIX,
                             app : cowc.APP_CONTRAIL_CONTROLLER,
                             viewConfig : {
                             }

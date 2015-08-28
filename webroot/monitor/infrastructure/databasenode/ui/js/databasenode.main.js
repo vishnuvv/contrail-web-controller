@@ -6,7 +6,7 @@ function DatabaseNodesLoader() {
             hashParams = paramObject['hashParams'],
             rootDir = currMenuObj['resources']['resource'][0]['rootDir'],
             pathDatabaseView = rootDir + '/js/views/DatabaseNodeView.js',
-            renderFn = paramObject['function'];
+            renderFn = paramObject['renderFn'];
 
             if (self.monitorInfraView == null) {
                 requirejs([pathDatabaseView], function (DatabaseNodeListView) {
@@ -23,8 +23,7 @@ function DatabaseNodesLoader() {
     };
 
     this.updateViewByHash = function (hashObj, lastHashObj) {
-        var renderFn;
-        this.load({hashParams: hashObj, 'function': renderFn});
+        this.load({hashParams: hashObj});
     };
 
     this.destroy = function () {

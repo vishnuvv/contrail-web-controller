@@ -24,8 +24,7 @@ define(
                                 title : ctwl.DATABASENODE_SUMMARY_TITLE,
                                 app : cowc.APP_CONTRAIL_CONTROLLER,
                                 view : "DatabaseNodeScatterChartView",
-                                viewPathPrefix: "monitor/infrastructure/" +
-                                    "common/ui/js/views/",
+                                viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
                             }]
                         },
                         {
@@ -34,8 +33,8 @@ define(
                                     ctwl.DATABASENODE_SUMMARY_GRID_ID,
                                 title : ctwl.DATABASENODE_SUMMARY_TITLE,
                                 view : "DatabaseNodeGridView",
-                                viewPathPrefix: "monitor/infrastructure/" +
-                                    "databasenode/ui/js/views/",
+                                viewPathPrefix:
+                                    ctwl.DATABASENODE_VIEWPATH_PREFIX,
                                 app : cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig : {
 

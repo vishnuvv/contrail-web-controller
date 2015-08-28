@@ -17,7 +17,7 @@ define([
         return {
             elementId: cowu.formatElementId([ctwl.CONTROLNODE_SUMMARY_PAGE_ID]),
             view: "ControlNodeListView",
-            viewPathPrefix: "monitor/infrastructure/controlnode/ui/js/views/",
+            viewPathPrefix: ctwl.CONTROLNODE_VIEWPATH_PREFIX,
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: {}
         };

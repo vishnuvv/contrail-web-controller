@@ -23,8 +23,8 @@ define(
                                         ctwl.ANALYTICSNODE_SUMMARY_CHART_ID,
                                     title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                     view : "AnalyticsNodeScatterChartView",
-                                    viewPathPrefix: "monitor/infrastructure/" +
-                                        "common/ui/js/views/",
+                                    viewPathPrefix:
+                                        ctwl.MONITOR_INFRA_VIEW_PATH,
                                     app : cowc.APP_CONTRAIL_CONTROLLER,
                                 }]
                             },{
@@ -33,8 +33,8 @@ define(
                                         ctwl.ANALYTICSNODE_SUMMARY_GRID_ID,
                                     title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                     view : "AnalyticsNodeGridView",
-                                    viewPathPrefix: "monitor/infrastructure/" +
-                                        "analyticsnode/ui/js/views/",
+                                    viewPathPrefix:
+                                        ctwl.ANALYTICSNODE_VIEWPATH_PREFIX,
                                     app : cowc.APP_CONTRAIL_CONTROLLER,
                                     viewConfig : {
 

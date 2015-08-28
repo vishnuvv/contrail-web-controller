@@ -6,7 +6,7 @@ function ControlNodesLoader() {
             hashParams = paramObject['hashParams'],
             rootDir = currMenuObj['resources']['resource'][0]['rootDir'],
             pathControlNodeView = rootDir + '/js/views/ControlNodeView.js',
-            renderFn = paramObject['function'];
+            renderFn = paramObject['renderFn'];
 
             if (self.monitorInfraView == null) {
                 requirejs([pathControlNodeView], function (ControlNodeListView){
@@ -23,8 +23,7 @@ function ControlNodesLoader() {
     };
 
     this.updateViewByHash = function (hashObj, lastHashObj) {
-        var renderFn;
-        this.load({hashParams: hashObj, 'function': renderFn});
+        this.load({hashParams: hashObj});
     };
 
     this.destroy = function () {

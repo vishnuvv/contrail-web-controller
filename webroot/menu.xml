@@ -203,10 +203,9 @@ and need to add the iconClass tag wherever we need to show some icons
                         </roles>
                         <orchModels>
                             <model>test</model>
-                       <!--     <model>openstack</model>
+                            <model>openstack</model>
                             <model>cloudstack</model>
                             <model>vcenter</model>
-                       -->
                         </orchModels>
                         <accessFn>hideInFederatedvCenter</accessFn>
                     </access>
@@ -278,7 +277,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <rootDir>/monitor/infrastructure/controlnode/ui</rootDir>
                                     <js>controlnode.main.js</js>
                                     <class>controlNodesLoader</class>
-                                    <function>renderControlNode</function>
+                                    <renderFn>renderControlNode</renderFn>
                                 </resource>
                             </resources>
                             <searchStrings>Monitor Control Nodes</searchStrings>
@@ -311,7 +310,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <rootDir>/monitor/infrastructure/analyticsnode/ui</rootDir>
                                     <js>analyticsnode.main.js</js>
                                     <class>analyticsNodesLoader</class>
-                                    <function>renderAnalyticsNode</function>
+                                    <renderFn>renderAnalyticsNode</renderFn>
                                 </resource>
                             </resources>
                             <searchStrings>Monitor Analytics Nodes</searchStrings>
@@ -324,7 +323,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <rootDir>/monitor/infrastructure/confignode/ui</rootDir>
                                     <js>confignode.main.js</js>
                                     <class>configNodesLoader</class>
-                                    <function>renderConfigNode</function>
+                                    <renderFn>renderConfigNode</renderFn>
                                 </resource>
                             </resources>
                             <searchStrings>Monitor Config Nodes</searchStrings>
@@ -337,7 +336,7 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <rootDir>/monitor/infrastructure/databasenode/ui</rootDir>
                                     <js>databasenode.main.js</js>
                                     <class>databaseNodesLoader</class>
-                                    <function>renderDatabaseNode</function>
+                                    <renderFn>renderDatabaseNode</renderFn>
                                 </resource>
                             </resources>
                             <searchStrings>Monitor Database Nodes</searchStrings>
