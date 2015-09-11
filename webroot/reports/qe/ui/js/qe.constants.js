@@ -36,6 +36,8 @@ define([
         this.STAT_QUERY_PREFIX = "stat";
         this.OBJECT_LOGS_PREFIX = "ol";
 
+        this.FLOW_RECORD_TABLE = "FlowRecordTable";
+        this.FR_QUERY_PREFIX = "fr";
         this.DEFAULT_QUERY_PREFIX = 'query';
 
         this.UMID_FLOW_SERIES_FORM_MODEL = "qe:fs-form-model";

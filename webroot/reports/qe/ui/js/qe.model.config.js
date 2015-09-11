@@ -15,7 +15,7 @@ define([
                 "time_range": 1800,
                 "from_time": Date.now() - (10 * 60 * 1000),
                 "to_time": Date.now(),
-                "select": null,
+                "select": "",
                 "time_granularity": 60,
                 "time_granularity_unit": 'secs',
                 "where": null,

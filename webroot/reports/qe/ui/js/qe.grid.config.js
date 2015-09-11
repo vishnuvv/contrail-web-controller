@@ -49,6 +49,7 @@ define([
             {select:"sum(packets)", display:{id:"sum(packets)", field:"sum(packets)", width:100, name:"SUM (Packets)", format:"{0:n0}", groupable:false}},
             {select:"avg(packets)", display:{id:"avg(packets)", field:"avg(packets)", width:100, name:"AVG (Packets)", format:"{0:n0}", groupable:false}}
         ],
+        
         "FlowClass":[
             {select:"sourcevn", display:{id:"sourcevn", field:"sourcevn", name:"Source VN", width:250, minWidth: 250, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.sourcevn);}}},
             {select:"destvn", display:{id:"destvn", field:"destvn", name:"Destination VN", width:250, minWidth: 250, formatter: function(r, c, v, cd, dc){ return handleNull4Grid(dc.destvn);}}},

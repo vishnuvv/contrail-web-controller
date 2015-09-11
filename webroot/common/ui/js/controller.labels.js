@@ -171,7 +171,11 @@ define([
             /*Virtual Router Config*/
             virtual_router_type: "Type",
             physical_router_back_refs: "Physical Routers",
-            virtual_router_ip_address: "IP Address"
+            virtual_router_ip_address: "IP Address",
+                
+            /* Underlay Labels */
+            traceflow_radiobtn_name : '',
+            traceFlowDropdown : '',
         };
 
         this.TOP_CONTENT_CONTAINER = "top-content-container";
@@ -310,6 +314,24 @@ define([
         this.TITLE_GRAPH_ELEMENT_VIRTUAL_MACHINE = 'virtual machine';
         this.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK = 'link';
 
+        //Underlay labels
+        this.UNDERLAY_GRAPH_ID = "underlay-graph";
+        this.URL_UNDERLAY_TOPOLOGY = '/api/tenant/networking/underlay-topology';
+        this.URL_UNDERLAY_TOPOLOGY_REFRESH = this.URL_UNDERLAY_TOPOLOGY + '?forceRefresh';
+        //this.URL_UNDERLAY_TOPOLOGY = '/UnderlayTopology.json';
+        //this.URL_UNDERLAY_TOPOLOGY = '/underlayResponseWithVM.json';
+        this.TMPL_UNDERLAY_GRAPH_VIEW = 'underlay-graph-template';
+        this.UNDERLAY_CONTROLPANEL = 'underlay-controlpanel';
+        this.TITLE_GRAPH_ELEMENT_PHYSICAL_ROUTER = 'Physical Router';
+        this.TITLE_GRAPH_ELEMENT_VIRTUAL_ROUTER = 'Virtual Router';
+        this.UNDERLAY_VIEWPATH_PREFIX =
+            'monitor/infrastructure/underlay/ui/js/views/';
+        this.UNDERLAY_TRACEFLOW_TITLE = 'Trace Flow';
+        this.UNDERLAY_PROUTER_INTERFACES_TITLE = 'Interfaces';
+        this.UNDERLAY_PROUTER_DETAILS = 'Physical Router Details';
+        this.UNDERLAY_SEARCHFLOW_TITLE = 'Search Flows';
+        this.UNDERLAY_TRAFFIC_STATISTICS = 'Traffic Statistics';
+        
         //Alarms labels
         this.ALARMS_BREADCRUMB_DROPDOWN = "alarms-breadcrumb-dropdown";
         this.MONITOR_ALARMS_PAGE_ID = "monitor-alarms-page";
@@ -571,6 +593,7 @@ define([
         this.QE_STAT_QUERY_CHART_PAGE_ID = 'qe-stat-query-chart-page';
         this.QE_STAT_QUERY_LINE_CHART_ID = "qe-stat-query-line-chart"
         this.QE_STAT_QUERY_CHART_GRID_ID = "qe-stat-query-chart-grid";
+        this.QE_FLOW_RECORD_ID = 'qe-flow-records';
 
         this.QE_OBJECT_LOGS_ID = "qe-object-logs";
         this.QE_OBJECT_LOGS_SECTION_ID = "qe--object-logs-section";

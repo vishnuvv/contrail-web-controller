@@ -2,11 +2,11 @@ define([
     'underscore',
     'contrail-list-model',
     'js/views/LoginWindowView',
-    'js/models/LoginWindowModel'
+    'js/models/LoginWindowModel',
 ], function (_, ContrailListModel, LoginWindowView, LoginWindowModel) {
     var MonitorInfraUtils = function () {
         var self = this;
-        var noDataStr = monitorInfraConstants.noDataStr;
+        var noDataStr = '-';
         // var isProcessExcluded = self.isProcessExcluded;
         infraMonitorAlertUtils = {
             /**
@@ -1484,7 +1484,8 @@ define([
                     getUrlFn: cfg['getUrlFn']
                 });
             });
-        }
+        };
+        
         self.vRouterBubbleSizeFn = function(mergedNodes) {
             return d3.max(mergedNodes,function(d) {
                 return d.size;
@@ -1602,7 +1603,7 @@ define([
                 }
             }
             return postData;
-        }
+        };
         self.getComputeNodeDetails = function(deferredObj,hostname) {
             $.ajax({
                 url: contrail.format(monitorInfraConstants.monitorInfraUrls['VROUTER_DETAILS'] , hostname,true)
@@ -1610,10 +1611,999 @@ define([
                 deferredObj.resolve(result);
             });
         }
+        
         self.getIPOrHostName = function(obj) {
             return (obj['ip'] == noDataStr) ? obj['name'] : obj['ip'];
         }
+        
+        self.getUnderlayTooltipConfig = function () {
+            var tooltipTitleTmpl =
+                    contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_TITLE),
+                tooltipContentTmpl =
+                    contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_CONTENT);
+            return {
+                PhysicalRouter: {
+                    title: function (element, graphView) {
+                        var viewElement = graphView.model.getCell(element.attr('model-id')),
+                            pRouterName = viewElement.attributes.nodeDetails['name'];
 
+                        return tooltipTitleTmpl({name: pRouterName, type: ctwl.TITLE_GRAPH_ELEMENT_PHYSICAL_ROUTER});
+
+                    },
+                    content: function (element, graphView) {
+                        var viewElement = graphView.model.getCell(element.attr('model-id'));
+                            actions = [], tooltipLblValues = [], ifLength = 0;
+
+                        actions.push({
+                            text: 'Configure',
+                            iconClass: 'icon-cog'
+                        },{
+                            text: 'View',
+                            iconClass: 'icon-external-link'
+                        });
+                        ifLength = getValueByJsonPath(viewElement,
+                            'attributes;nodeDetails;more_attributes;ifTable',
+                            []).length;
+                        tooltipLblValues.push({
+                            label:'Name',
+                            value: viewElement.attributes.nodeDetails['name']
+                        });
+                        var nodeDetails = getValueByJsonPath(viewElement,'attributes;nodeDetails',{});
+                        if(nodeDetails['errorMsg'] != null) {
+                            tooltipLblValues.push({
+                                label:'Events',
+                                value: nodeDetails['errorMsg']
+                            }); 
+                        } else {
+                            tooltipLblValues.push({
+                                label: 'Interfaces',
+                                value: ifLength
+                            },{
+                                label: 'Management IP',
+                                value: ifNull(nodeDetails['mgmt_ip'],'-')
+                            }); 
+                        }
+
+                        return tooltipContentTmpl({
+                            info: tooltipLblValues,
+                            iconClass: 'icon-contrail-virtual-network',
+                            actions: actions
+                        });
+                    },
+                    dimension: {
+                        width: 340
+                    },
+                    actionsCallback: function (element, graphView) {
+                        var viewElement = graphView.model.getCell(element.attr('model-id')),
+                            actions = [];
+
+                        actions.push({
+                            callback: function (key, options) {
+                                loadFeature({p: 'config_net_vn'});
+                            }
+                        });
+
+                        if (!$(element).hasClassSVG('ZoomedElement')) {
+                            actions.push({
+                                callback: function (key, options) {
+                                    loadFeature({
+                                        p: 'mon_networking_networks',
+                                        q: {
+                                            view: 'details',
+                                            type: 'network',
+                                            focusedElement: {
+                                                fqName: viewElement['attributes']['nodeDetails']['name'],
+                                                type: ctwc.GRAPH_ELEMENT_NETWORK
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+
+                        return actions;
+                    }
+                },
+                VirtualRouter: {
+                    title: function (element, graphView) {
+                        var viewElement = graphView.model.getCell(element.attr('model-id')),
+                            vRouterName = viewElement.attributes.nodeDetails['name'];
+
+                        return tooltipTitleTmpl({name: vRouterName, type: ctwl.TITLE_GRAPH_ELEMENT_VIRTUAL_ROUTER});
+                    },
+                    content: function (element, graphView) {
+                        var viewElement = graphView.model.getCell(element.attr('model-id')),
+                            actions = [],
+                            instances = graphView.model.VMs;
+                        var vms = 0, name = getValueByJsonPath(viewElement,
+                                'attributes;nodeDetails;name', '-');
+                        for(var i=0; i<instances.length; i++) {
+                            if(instances[i]['more_attributes']['vrouter'] === 
+                                name){
+                                vms++;
+                            }
+                        }
+
+                        actions.push({
+                            text: 'Configure',
+                            iconClass: 'icon-cog'
+                        });
+                        
+                        var tooltipContent = [{
+                                label:'Name',
+                                value: name
+                            },{
+                                label: "Number of VMs",
+                                value: vms
+                            }
+                        ];
+                        return tooltipContentTmpl({
+                            info: tooltipContent,
+                            iconClass: 'icon-check-empty icon-rotate-45 icn-service-instance',
+                            actions: actions
+                        });
+                    },
+                    dimension: {
+                        width: 355
+                    },
+                    actionsCallback: function (element, graphView) {
+                        var viewElement = graphView.model.getCell(element.attr('model-id')),
+                            actions = [];
+
+                        actions.push({
+                            callback: function (key, options) {
+                                loadFeature({p: 'config_sc_svcInstances'});
+                            }
+                        });
+
+                        return actions;
+                    }
+                },
+                VirtualMachine: {
+                    title: function (element, graphView) {
+                        var viewElement = graphView.model.getCell(element.attr('model-id')),
+                            virtualMachineName = getValueByJsonPath(viewElement,
+                                'attributes;nodeDetails;name', '-');
+                        return tooltipTitleTmpl({name: virtualMachineName, type: ctwl.TITLE_GRAPH_ELEMENT_VIRTUAL_MACHINE});
+                    },
+                    content: function (element, graphView) {
+                        var viewElement = graphView.model.getCell(element.attr('model-id')),
+                            actions = [], tooltipContent, tooltipLblValues = [];
+                        var vmIp = "", vn = "", label, instanceName = "";
+                        var instanceUUID =
+                            viewElement.attributes.nodeDetails['name'];
+                        var instances = graphView.model.VMs;
+                        for(var i=0; i<instances.length; i++) {
+                            if(instances[i].name === instanceUUID) {
+                                var attributes = ifNull(instances[i]['more_attributes'],{}),ipArr = [],vnArr = [];
+                                var interfaceList = ctwu.getDataBasedOnSource(ifNull(attributes['interface_list'],[]));
+                                label = "Name";
+                                instanceName = attributes['vm_name'];
+                                for(var j = 0; j < interfaceList.length; j++) {
+                                    if(interfaceList[j]['virtual_network'] != null)
+                                        vnArr.push(interfaceList[j]['virtual_network']);
+                                    if(interfaceList[j]['ip6_active'] && interfaceList[j]['ip6_address'] != '0.0.0.0')
+                                        ipArr.push(interfaceList[j]['ip6_address']);
+                                    else if(interfaceList[j]['ip_address'] != '0.0.0.0')
+                                        ipArr.push(interfaceList[j]['ip_address']);
+                                }
+                                if(ipArr.length > 0)
+                                    vmIp = ipArr.join();
+                                if(vnArr.length > 0)
+                                    vn = ctwu.formatVNName(vnArr);
+                                break;
+                            }
+                        }
+                        if("" == instanceName)
+                            instanceName = 
+                                viewElement.attributes.nodeDetails['name'];
+                        actions.push({
+                            text: 'View',
+                            iconClass: 'icon-external-link'
+                        });
+
+                        tooltipContent = {
+                            iconClass: 'icon-contrail-virtual-machine font-size-30',
+                            actions: actions
+                        };
+                        tooltipLblValues = [{
+                            label: label,
+                            value: instanceName
+                        }];
+                        if(vmIp !== "") {
+                            tooltipLblValues.push({
+                                label: "IP",
+                                value: vmIp
+                            });
+                        }
+                        if(vn !== "") {
+                            tooltipLblValues.push({
+                                label: "Network(s)",
+                                value: vn
+                            });
+                        }
+                        tooltipContent['info'] = tooltipLblValues;
+                        return tooltipContentTmpl(tooltipContent);
+                    },
+                    dimension: {
+                        width: 355
+                    },
+                    actionsCallback: function (element, graphView) {
+                        var viewElement = graphView.model.getCell(element.attr('model-id')),
+                            actions = [];
+
+                        actions.push({
+                            callback: function (key, options) {
+                                var srcVN = viewElement.attributes.nodeDetails.srcVNDetails.name,
+                                    vmUVE = viewElement.attributes.nodeDetails.uve,
+                                    vmName = contrail.checkIfExist(vmUVE) ? vmUVE['UveVirtualMachineAgent']['vm_name'] : null;
+
+                                loadFeature({
+                                    p: 'mon_networking_instances',
+                                    q: {
+                                        type: 'instance',
+                                        view: 'details',
+                                        focusedElement: {
+                                            fqName: srcVN,
+                                            uuid: viewElement.attributes.nodeDetails['fqName'],
+                                            vmName: vmName,
+                                            type: ctwc.GRAPH_ELEMENT_NETWORK
+                                        }
+                                    }
+                                });
+                            }
+                        });
+
+                        return actions;
+                    }
+                },
+                link: {
+                    title: function (element, graphView) {
+                        var graphModel = graphView.model;
+                        var viewElement =
+                            graphModel.getCell(element.attr('model-id'));
+                        var instances = graphModel['VMs'];
+                        var instanceName1 = "";
+                        var instanceName2 = "";
+                        var endpoint1 = viewElement.attributes.linkDetails.endpoints[0];
+                        var endpoint2 = viewElement.attributes.linkDetails.endpoints[1];
+                        for(var i=0; i<instances.length; i++) {
+                            if(instances[i].name === endpoint1) {
+                                instanceName1 =
+                                    instances[i]['more_attributes']['vm_name'];
+                            } else if (instances[i].name === endpoint1) {
+                                instanceName2 =
+                                    instances[i]['more_attributes']['vm_name'];
+                            }
+                        }
+                        if("" == instanceName1)
+                            instanceName1 = endpoint1;
+                        if("" == instanceName2)
+                            instanceName2 = endpoint2;
+                        
+                        return tooltipTitleTmpl({
+                            name: instanceName1 + ctwc.LINK_CONNECTOR_STRING + instanceName2,
+                            type: ctwl.TITLE_GRAPH_ELEMENT_CONNECTED_NETWORK
+                        });
+                    },
+                    content: function (element, graphView) {
+                        var viewElement =
+                            graphView.model.getCell(element.attr('model-id'));
+                        var local_interfaces = [];
+                        var remote_interfaces = [];
+                        if(viewElement.attributes && viewElement.attributes.hasOwnProperty('linkDetails') &&
+                            viewElement.attributes.linkDetails.hasOwnProperty('more_attributes') &&
+                            viewElement.attributes.linkDetails.more_attributes &&
+                            "-" !== viewElement.attributes.linkDetails.more_attributes &&
+                            viewElement.attributes.linkDetails.more_attributes.length > 0) {
+                            var moreAttrs = viewElement.attributes.linkDetails.more_attributes;
+                            for(var i=0; i<moreAttrs.length; i++) {
+                                local_interfaces.push(moreAttrs[i].local_interface_name + " (" + moreAttrs[i].local_interface_index + ")");
+                                remote_interfaces.push(moreAttrs[i].remote_interface_name + " (" + moreAttrs[i].remote_interface_index + ")");
+                            }
+                        }
+                        data = [{
+                                lbl:
+                                    viewElement.attributes.linkDetails.endpoints[0],
+                                value:
+                                    local_interfaces
+                            },{
+                                lbl:
+                                    viewElement.attributes.linkDetails.endpoints[1],
+                                value:
+                                    remote_interfaces
+                            }];
+                        return tooltipContentTmpl({
+                            info: data,
+                            iconClass: 'icon-resize-horizontal'
+                        });
+                    },
+                    dimension: { width: 400 }
+                }
+            
+            };
+        };
+        self.getUnderlayPRouterInterfaceTabViewConfig = function (viewConfig) {
+            return {
+                elementId: ctwc.UNDERLAY_PROUTER_INTERFACE_TAB_ID,
+                title: ctwl.UNDERLAY_PROUTER_INTERFACES_TITLE,
+                view: "GridView",
+                viewConfig: {
+                    elementConfig:{
+                        header: {
+                            title: {
+                                text: contrail.format('Interfaces ( {0} )',
+                                    viewConfig['hostName'])
+                            },
+                            defaultControls: {
+                                collapseable: true,
+                                exportable: true,
+                                refreshable: false,
+                                searchable: false
+                            }
+                        },
+                        body: {
+                            options: {
+                                autoRefresh: false,
+                                checkboxSelectable: false,
+                                fixedRowHeight: 30
+                            },
+                            dataSource: {
+                                data: []
+                            }
+                        },
+                        columnHeader: {
+                            columns: [{
+                                field:'ifDescr',
+                                name:'Name',
+                                minWidth: 150,
+                            },{
+                                field:'ifAdminStatus',
+                                name:'Status',
+                                minWidth: 100,
+                                formatter:function(r,c,v,cd,dc) {
+                                    var adminStatus =
+                                        getValueByJsonPath(dc,'raw_json;ifAdminStatus','-'),
+                                        operStatus =
+                                        getValueByJsonPath(dc,'raw_json;ifOperStatus','-');
+                                    if(adminStatus == 1 && operStatus == 1) {
+                                        return 'Up';
+                                    } else if (adminStatus == 1 && operStatus != 1) {
+                                        return 'Oper Down';  
+                                    } else if (adminStatus != 1 && operStatus != 1) {
+                                        return 'Admin Down';
+                                    } else {
+                                        return '-';
+                                    }
+                                }
+                            },{
+                                field:'ifPhysAddress',
+                                name:'MAC Address',
+                                minWidth:150,
+                            },{
+                                field:'ifIndex',
+                                name:'Index',
+                                minWidth: 150
+                            },{
+                                field:'bandwidth',
+                                name:'Traffic (In/Out)',
+                                minWidth:150,
+                                formatter:function(r,c,v,cd,dc) {
+                                    return contrail.format("{0} / {1}",formatBytes(dc['ifInOctets']),formatBytes(dc['ifOutOctets']));
+                                }
+                            }]
+                        }
+                    }
+                }
+            
+            }
+        };
+        
+        self.getUnderlayDetailsTabViewConfig = function(viewConfig) {
+            return {
+                elementId: ctwc.UNDERLAY_DETAILS_TAB_ID,
+                title: ctwl.TITLE_DETAILS,
+                view: "DetailsView",
+                viewConfig: {
+                    data: viewConfig.data,
+                    templateConfig: monitorInfraUtils.
+                        getUnderlayDetailsTabTemplateConfig(),
+                    app: cowc.APP_CONTRAIL_CONTROLLER,
+                }
+            }
+        };
+        
+        self.getUnderlayDetailsTabTemplateConfig = function() {
+            return {
+                advancedViewOptions: false,
+                templateGenerator: 'RowSectionTemplateGenerator',
+                templateGeneratorConfig: {
+                    rows: [
+                        {
+                            templateGenerator: 'ColumnSectionTemplateGenerator',
+                            templateGeneratorConfig: {
+                                columns: [
+                                    {
+                                        class: 'span6',
+                                        rows: [
+                                            {
+                                                title: ctwl.UNDERLAY_PROUTER_DETAILS,
+                                                templateGenerator:
+                                                    'BlockListTemplateGenerator',
+                                                templateGeneratorConfig: [
+                                                    {
+                                                        key: 'hostName',
+                                                        templateGenerator:
+                                                            'TextGenerator'
+                                                    },{
+                                                        key: 'description',
+                                                        templateGenerator:
+                                                            'TextGenerator'
+                                                    },{
+                                                        key: 'intfCnt',
+                                                        templateGenerator:
+                                                            'LinkGenerator',
+                                                        templateGeneratorConfig: {
+                                                            formatter: 'link',
+                                                            template:
+                                                                ctwc.URL_NETWORK,
+                                                            params: {}
+                                                        }
+                                                    },{
+                                                        key: 'managementIP',
+                                                        templateGenerator:
+                                                            'TextGenerator',
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                    ]
+                }
+            }
+        };
+        
+        self.getTrafficStatisticsTabViewConfig = function (data) {
+            var ajaxConfig = {};
+            var endpoints = ifNull(data['endpoints'],[]);
+            var sourceType = getValueByJsonPath(data,
+                'sourceElement;attributes;nodeDetails;node_type','-');
+            var targetType = getValueByJsonPath(data,
+                'targetElement;attributes;nodeDetails;node_type','-');
+            var view = 'LineWithFocusChartView', modelMap = null;
+            var viewConfig = {}, viewPathPrefix;
+            if(sourceType == ctwc.PROUTER && targetType == ctwc.PROUTER) {
+                var postData = {
+                        "data": {
+                             "endpoints": endpoints,
+                             "sampleCnt": 150,
+                             "minsSince": 180
+                    }    
+                };
+                ajaxConfig = {
+                    url: '/api/tenant/networking/underlay/prouter-link-stats',
+                    type: 'POST',
+                    "data": JSON.stringify(postData),
+                };
+                viewConfig.view = view;
+                viewConfig.link = ctwc.PROUTER;
+                viewConfig.modelConfig = {};
+                viewConfig.modelConfig.remote = {
+                    ajaxConfig: ajaxConfig,
+                };
+            } else if(sourceType == ctwc.PROUTER && targetType == ctwc.VROUTER) {
+                var vrouter = (sourceType == ctwc.VROUTER) ?
+                    data['sourceElement']['attributes']['nodeDetails']['name']:
+                    data['targetElement']['attributes']['nodeDetails']['name'];
+                var params = {
+                    minsSince: 60,
+                    sampleCnt: 120,
+                    useServerTime: true,
+                    vrouter: vrouter,
+                };
+                ajaxConfig = {
+                    url: '/api/tenant/networking/underlay/vrouter/stats?'+$.param(params)
+                };
+                viewConfig.view = view;
+                viewConfig.link = ctwc.VROUTER;
+                viewConfig.parseFn = ctwp.parseTrafficLineChartData;
+                viewConfig.modelConfig = {};
+                viewConfig.modelConfig.remote = {
+                     ajaxConfig: ajaxConfig,
+                     dataParser: function (response) {
+                         return [response];
+                     }
+                };
+            } else if(sourceType == ctwc.VIRTUALMACHINE || targetType == ctwc.VIRTUALMACHINE) {
+                var instanceUUID = getValueByJsonPath(data,'targetElement;attributes;nodeDetails;name','-');
+                var virtualNetwork = getValueByJsonPath(data,'targetElement;attributes;nodeDetails;more_attributes;interface_list;0;virtual_network','-');
+                var modelKey = ctwc.get(ctwc.UMID_INSTANCE_UVE, instanceUUID);
+                view = 'InstanceTrafficStatsView';
+                viewPathPrefix = 'monitor/networking/ui/js/views/';
+                modelMap = {};
+                modelMap[modelKey] = ctwvc.getInstanceTabViewModelConfig(instanceUUID);
+                viewConfig.modelKey = modelKey;
+                viewConfig.parseFn = ctwp.parseTrafficLineChartData;
+                viewConfig.link = ctwc.VIRTUALMACHINE;
+            }
+            return {
+                view: view,
+                viewPathPrefix: viewPathPrefix,
+                elementId: ctwc.UNDERLAY_TRAFFICSTATS_TAB_ID,
+                title: ctwl.TITLE_TRAFFIC_STATISTICS,
+                viewConfig: viewConfig,
+                modelMap: modelMap
+            };
+        },
+        
+        self.parsePRouterLinkStats = function (response) {
+            var result = [];
+            for(var i = 0; i < response.length; i++) {
+                var rawFlowData = response[i];
+                var lclData = ifNull(rawFlowData[0],{});
+                var rmtData = ifNull(rawFlowData[1],{});
+                var lclFlows =
+                    getValueByJsonPath(lclData,'flow-series;value',[]);
+                var rmtFlows =
+                    getValueByJsonPath(rmtData,'flow-series;value',[]),
+                    chartTitle,
+                    lclNodeName =
+                        getValueByJsonPath(lclData,'summary;name','-'),
+                    lclInfName =
+                        getValueByJsonPath(lclData,'summary;if_name','-'),
+                    rmtNodeName =
+                        getValueByJsonPath(rmtData,'summary;name','-'),
+                    rmtIntfName =
+                        getValueByJsonPath(rmtData,'summary;if_name','-');
+                
+                chartTitle = contrail.format('Traffic statistics of link {0} ({1}) -- {2} ({3})',lclNodeName,
+                                            lclInfName,rmtNodeName,rmtIntfName);
+                var inPacketsLocal = {
+                    key: contrail.format('{0} ({1})',lclNodeName,lclInfName),
+                        values:[]
+                }, 
+                    inPacketsRemote = {
+                        key: contrail.format('{0} ({1})',rmtNodeName,rmtIntfName),
+                        values:[]
+                };
+                for(var j = 0; j < lclFlows.length; j++) {
+                    var lclFlowObj = lclFlows[j];
+                    inPacketsLocal['values'].push({
+                        x: Math.floor(lclFlowObj['T=']/1000),
+                        y: ifNull(lclFlowObj['SUM(ifStats.ifInPkts)'],0)
+                    });
+                }
+                for(var j = 0; j < rmtFlows.length; j++) {
+                    var rmtFlowObj = rmtFlows[j];
+                    inPacketsRemote['values'].push({
+                        x: Math.floor(rmtFlowObj['T=']/1000),
+                        y: ifNull(rmtFlowObj['SUM(ifStats.ifInPkts)'],0)
+                    });
+                }
+                var chartData = [inPacketsLocal,inPacketsRemote];
+                /*var icontag = "<i id='prouter-ifstats-loading-0' class='icon-spinner icon-spin blue bigger-125' " +
+                        "style='display: none;'></i>";
+                $("#prouter-lclstats-widget-"+i).find('.widget-header > h4').html(icontag+chrtTitle);*/
+                options = {
+                    height:300,
+                    yAxisLabel: 'Packets per 72 secs',
+                    y2AxisLabel: 'Packets per 72 secs',
+                    defaultSelRange: 9 //(latest 9 samples)
+                };
+                result.push({
+                   chartData: chartData,
+                   options: options,
+                   chartTitle: chartTitle
+                });
+                return result;
+                //initTrafficTSChart('#prouter-lclstats-'+i, chartData, options, null, "formatSumPackets", "formatSumPackets");
+            }
+        },
+        
+        self.getTraceFlowVrouterGridColumns = function () {
+            var graphView = $("#"+ctwl.UNDERLAY_GRAPH_ID).data('graphView');
+            computeNodes = graphView.model.vRouters;
+            return [
+                {
+                    field:'peer_vrouter',
+                    name:"Other Virtual Router",
+                    minWidth:170,
+                    formatter: function(r,c,v,cd,dc){
+                        var name = $.grep(computeNodes,function(value,idx){
+                                        return (getValueByJsonPath(value,'more_attributes;VrouterAgent;self_ip_list;0','-') == dc['peer_vrouter']);
+                                   });
+                        if(validateIPAddress(dc['peer_vrouter']))
+                            return contrail.format('{0} ({1})',getValueByJsonPath(name,'0;name','-'),dc['peer_vrouter']);
+                        else
+                            return '-';
+                    }
+                },{
+                    field:"protocol",
+                    name:"Protocol",
+                    minWidth:40,
+                    formatter:function(r,c,v,cd,dc){
+                        return formatProtocol(dc['protocol']);
+                    }
+                },{
+                    field:"src_vn",
+                    name:"Source Network",
+                    minWidth:110,
+                    formatter: function (r,c,v,cd,dc) {
+                        var srcVN = dc['src_vn'] != null ? dc['src_vn'] :
+                            noDataStr;
+                        return formatVN(srcVN);
+                    }
+                },{
+                    field:"sip",
+                    name:"Source IP",
+                    minWidth:60,
+                    formatter:function(r,c,v,cd,dc) {
+                        if(validateIPAddress(dc['sip']))
+                            return dc['sip']
+                        else
+                            noDataStr;
+                    }
+                },{
+                    field:"src_port",
+                    name:"Source Port",
+                    minWidth:50
+                },{
+                    field:"direction",
+                    name:"Direction",
+                    minWidth:40,
+                    formatter: function(r,c,v,cd,dc) {
+                        if (dc['direction'] == 'ingress')
+                            return 'INGRESS'
+                        else if (dc['direction'] == 'egress')
+                            return 'EGRESS'
+                        else
+                            return '-';
+                    }
+                },{
+                    field:"dst_vn",
+                    name:"Destination Network",
+                    minWidth:110,
+                    formatter: function (r,c,v,cd,dc) {
+                        var destVN = dc['dst_vn'] != null ? dc['dst_vn'] :
+                            noDataStr;
+                        return formatVN(destVN);
+                    }
+                },{
+                    field:"dip",
+                    name:"Destination IP",
+                    minWidth:60,
+                    formatter:function(r,c,v,cd,dc) {
+                        if(validateIPAddress(dc['dip']))
+                            return dc['dip']
+                        else
+                            noDataStr;
+                    }
+                },{
+                    field:"dst_port",
+                    name:"Destination Port",
+                    minWidth:50
+                },{
+                    field:"stats_bytes",
+                    name:"Bytes/Pkts",
+                    minWidth:120,
+                    formatter:function(r,c,v,cd,dc){
+                        return contrail.format("{0}/{1}",
+                            formatBytes(dc['stats_bytes']),dc['stats_packets']);
+                    },
+                    searchFn:function(d){
+                        return d['stats_bytes']+ '/ ' +d['stats_packets'];
+                    }
+                }
+            ]; 
+        },
+        self.getTraceFlowVMGridColumns = function () {
+            return [
+                    {
+                        field: 'formattedOtherVrouter',
+                        name: "Other Virtual Router",
+                        minWidth:170,
+                    },{
+                        field: 'formattedVrouter',
+                        name: "Virtual Router",
+                        minWidth:170,
+                    },{
+                        field:"protocol",
+                        name:"Protocol",
+                        minWidth:40,
+                        formatter:function(r,c,v,cd,dc){
+                            return formatProtocol(dc['protocol']);
+                        }
+                    },{
+                        field:"formattedSrcVN",
+                        name:"Source Network",
+                        minWidth:110,
+                    },{
+                        field:"sourceip",
+                        name:"Source IP",
+                        minWidth:60,
+                        formatter:function(r,c,v,cd,dc) {
+                            if(validateIPAddress(dc['sourceip']))
+                                return dc['sourceip']
+                            else
+                                noDataStr;
+                        }
+                    },{
+                        field:"sport",
+                        name:"Source Port",
+                        minWidth:50
+                    },{
+                        field:"direction_ing",
+                        name:"Direction",
+                        minWidth:40,
+                        formatter: function(r,c,v,cd,dc) {
+                            if (dc['direction_ing'] == 1)
+                                return 'INGRESS'
+                            else if (dc['direction_ing'] == 0)
+                                return 'EGRESS'
+                            else
+                                return '-';
+                        }
+                    },{
+                        field:"formattedDestVN",
+                        name:"Destination Network",
+                        minWidth:110,
+                        formatter: function (r,c,v,cd,dc) {
+                            var destVN = dc['destvn'] != null ? dc['destvn'] :
+                                noDataStr;
+                            return formatVN(destVN);
+                        }
+                    },{
+                        field:"destip",
+                        name:"Destination IP",
+                        minWidth:60,
+                        formatter:function(r,c,v,cd,dc) {
+                            if(validateIPAddress(dc['destip']))
+                                return dc['destip']
+                            else
+                                noDataStr;
+                        }
+                    },{
+                        field:"dport",
+                        name:"Destination Port",
+                        minWidth:50
+                    },{
+                        field:"agg-bytes",
+                        name:"Bytes/Pkts",
+                        minWidth:120,
+                        formatter:function(r,c,v,cd,dc){
+                            return contrail.format("{0}/{1}",
+                                formatBytes(dc['agg-bytes']),dc['agg-packets']);
+                        },
+                        searchFn:function(d){
+                            return d['agg-bytes']+ '/ ' +d['agg-packets'];
+                        }
+                    }
+                ];
+        },
+        
+        self.getSearchFlowGridColumns = function () {
+            return [
+                {
+                    field: 'formattedOtherVrouter',
+                    name: "Other Virtual Router",
+                    minWidth:170,
+                },{
+                    field: 'formattedVrouter',
+                    name: "Virtual Router",
+                    minWidth:170,
+                },{
+                    field:"protocol",
+                    name:"Protocol",
+                    minWidth:40,
+                    formatter:function(r,c,v,cd,dc){
+                        return formatProtocol(dc['protocol']);
+                    }
+                },{
+                    field:"formattedSrcVN",
+                    name:"Source Network",
+                    minWidth:110,
+                },{
+                    field:"sip",
+                    name:"Source IP",
+                    minWidth:60,
+                    formatter:function(r,c,v,cd,dc) {
+                        if(validateIPAddress(dc['sip']))
+                            return dc['sip']
+                        else
+                            noDataStr;
+                    }
+                },{
+                    field:"src_port",
+                    name:"Source Port",
+                    minWidth:50
+                },{
+                    field:"direction",
+                    name:"Direction",
+                    minWidth:40,
+                    formatter: function(r,c,v,cd,dc) {
+                        if (dc['direction'] == 'ingress')
+                            return 'INGRESS'
+                        else if (dc['direction'] == 'egress')
+                            return 'EGRESS'
+                        else
+                            return '-';
+                    }
+                },{
+                    field:"formattedDestVN",
+                    name:"Destination Network",
+                    minWidth:110,
+                    formatter: function (r,c,v,cd,dc) {
+                        var destVN = dc['dst_vn'] != null ? dc['dst_vn'] :
+                            noDataStr;
+                        return formatVN(destVN);
+                    }
+                },{
+                    field:"dip",
+                    name:"Destination IP",
+                    minWidth:60,
+                    formatter:function(r,c,v,cd,dc) {
+                        if(validateIPAddress(dc['dip']))
+                            return dc['dip']
+                        else
+                            noDataStr;
+                    }
+                },{
+                    field:"dst_port",
+                    name:"Destination Port",
+                    minWidth:50
+                },{
+                    field:"stats_bytes",
+                    name:"Bytes/Pkts",
+                    minWidth:120,
+                    formatter:function(r,c,v,cd,dc){
+                        return contrail.format("{0}/{1}",
+                            formatBytes(dc['stats_bytes']),dc['stats_packets']);
+                    },
+                    searchFn:function(d){
+                        return d['stats_bytes']+ '/ ' +d['stats_packets'];
+                    }
+                }
+            ];
+        };
+        self.getUnderlayGraphInstance = function () {
+            return $("#"+ctwl.UNDERLAY_GRAPH_ID).data('graphView');
+        };
+        
+        self.showFlowPath = function (connectionWrapIds, offsetWidth, graphView) {
+            if(offsetWidth == null)
+                offsetWidth = 5;
+            if(!(connectionWrapIds instanceof Array))
+                return;
+            var hopLength = connectionWrapIds.length;
+            for(var i=0;i<hopLength;i++) {
+                var isDirectionCrt =
+                    monitorInfraUtils.checkLinkDirection(connectionWrapIds[i], graphView);
+                self.addOffsetPath(connectionWrapIds[i], offsetWidth, isDirectionCrt);
+            }
+        };
+        
+        self.checkLinkDirection = function (connectionWrapId, graphView) {
+            var connectionWrapElem = $('#' + connectionWrapId),
+                flowPath = graphView['flowPath'];
+            if(connectionWrapElem.length > 0) {
+                connectionWrapElem = $(connectionWrapElem[0]);
+            } else {
+                return;
+            }
+            var linkId = $(connectionWrapElem).parent().attr('model-id');
+            var linkAttrs = graphView.getCell(linkId).attributes;
+            var sourceId = linkAttrs.source.id;
+            var destId = linkAttrs.target.id;
+            var srcEl = graphView.getCell(sourceId);
+            var destEl = graphView.getCell(destId);
+            var srcNodeName = getValueByJsonPath(srcEl,'attributes;nodeDetails;name','-');
+            var destNodeName = getValueByJsonPath(destEl,'attributes;nodeDetails;name','-');
+            var isDirectionCrt = false,links = getValueByJsonPath(flowPath,'links',[]);
+            for(var i = 0; i < links.length; i ++) {
+                if(srcNodeName == getValueByJsonPath(links[i],'endpoints;0','-') &&
+                        destNodeName == getValueByJsonPath(links[i],'endpoints;1','-')) {
+                    isDirectionCrt = true
+                    break;
+                }
+            }
+            return isDirectionCrt;
+        };
+        
+        self.addOffsetPath = function (connectionWrapId, offsetWidth, isDirectionCrt) {
+            var connectionWrapElem = $('#' + connectionWrapId);
+            if(connectionWrapElem.length > 0) {
+                connectionWrapElem = $(connectionWrapElem[0]);
+            } else {
+                return;
+            }
+            var path = connectionWrapElem.attr('d');
+            var pathCoords;
+            if(typeof(path) == 'string') {
+                pathCoords = path.match(/M ([\d.]+) ([\d.]+) C ([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+) ([\d.]+)/);
+                if((pathCoords instanceof Array) && pathCoords.length == 9) {
+                    pathCoords.shift();
+                    pathCoords = $.map(pathCoords,function(val) {
+                        return parseFloat(val);
+                    });
+                    var offsetPath;
+                    if(offsetWidth < 0) {
+                        offsetPath = connectionWrapElem.clone().prop('id',connectionWrapId + '_down');
+                    } else {
+                        offsetPath = connectionWrapElem.clone().prop('id',connectionWrapId + '_up');
+                    }
+                    var curve = new Bezier(pathCoords);
+                    var inclinedVerticalLine = false;
+                    if(curve._linear != true) {
+                        if(!isDirectionCrt) {
+                            offsetWidth = -offsetWidth;
+                            offsetPath.attr('marker-start',"url(#bezierUp)");
+                        } else {
+                            offsetPath.attr('marker-end',"url(#bezierDown)");
+                        }
+                        //Hack,till we fix the issue,links b/w TOR and SPINES are not vertical 
+                        if(Math.abs(pathCoords[pathCoords.length - 2] - pathCoords[0]) <= 10) {
+                            inclinedVerticalLine = true;
+                            if(!isDirectionCrt) {
+                                offsetPath.attr('marker-start','url(#upDeviated)');
+                            } else {
+                                offsetPath.attr('marker-end','url(#downDeviated)');
+                            }
+                        }
+                        var offsetPathStr = self.getOffsetBezierPath(pathCoords,offsetWidth);
+                        var offsetPathCords = offsetPathStr.split(' ');
+                        var offsetPathCordsLen = offsetPathCords.length;
+                        var lastX = offsetPathCords[offsetPathCords.length - 2];
+                        if(!isDirectionCrt && !inclinedVerticalLine) {
+                            lastX = parseFloat(lastX) + 10;
+                            offsetPathCords[offsetPathCords.length - 2] = lastX;
+                        } else if (isDirectionCrt && !inclinedVerticalLine)  {
+                            lastX = parseFloat(lastX) - 10;
+                            offsetPathCords[offsetPathCords.length - 2] = lastX;
+                        }
+                        offsetPath.attr('d',offsetPathCords.join(' '));
+                    } else {
+                        //Vertical line
+                        if(pathCoords[0] == pathCoords[6]) {
+                            //Pointing upwards/downwards
+                            if(!isDirectionCrt) {
+                                offsetPath.attr('transform','translate(' + offsetWidth + ',0)');
+                                offsetPath.attr('marker-start',"url(#up)");
+                            } else {
+                                offsetPath.attr('transform','translate(-' + offsetWidth + ',0)');
+                                offsetPath.attr('marker-end',"url(#down)");
+                            }
+                        }
+                        //Horizontal line
+                        if(pathCoords[1] == pathCoords[7]) {
+                            offsetPath.attr('transform','translate(0,' + offsetWidth + ')');
+                        }
+                    }
+                    
+                    if(!isDirectionCrt) {
+                        offsetPath.attr('class','connection-wrap-up');
+                    } else {
+                        offsetPath.attr('class','connection-wrap-down');
+                    }
+                    offsetPath.insertAfter(connectionWrapElem);
+                }
+            }
+        };
+        
+        self.getOffsetBezierPath = function(pathCoords, offsetWidth) {
+            //var curve = new Bezier(315,225,431,225,431,141,547,141);
+            var curve = new Bezier(pathCoords);
+            if(curve._linear == true) {
+            }
+            var offsetCurve = curve.offset(offsetWidth);
+            var offsetCurvePath = "";
+            for(var i=0;i<offsetCurve.length;i++) {
+                offsetCurvePath += " " + offsetCurve[i].toSVG();
+            }
+            return offsetCurvePath;
+        };
     };
     return MonitorInfraUtils;
 });

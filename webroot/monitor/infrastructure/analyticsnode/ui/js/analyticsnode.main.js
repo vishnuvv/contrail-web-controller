@@ -9,9 +9,9 @@ function AnalyticsNodesLoader() {
             pathAnalyticsNodeView = rootDir + '/js/views/AnalyticsNodeView.js',
             renderFn = paramObject['renderFn'];
 
-        if (self.analyticsNodeView == null) {
-            requirejs([pathAnalyticsNodeView], function(AnalyticsNodeView) {
-                self.analyticsNodeView = new AnalyticsNodeView();
+        if (self.monitorInfraView == null) {
+            requirejs([pathAnalyticsNodeView], function(AnalyticsNodeListView) {
+                self.monitorInfraView = new AnalyticsNodeListView();
                 self.renderView(renderFn, hashParams);
             });
         } else {
@@ -30,7 +30,9 @@ function AnalyticsNodesLoader() {
     };
 
     this.updateViewByHash = function(hashObj, lastHashObj) {
-        this.load({hashParams : hashObj});
+        this.load({
+            hashParams : hashObj,
+        });
     };
 
     this.destroy = function() {

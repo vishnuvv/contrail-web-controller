@@ -68,57 +68,7 @@ define([
                    data('contrailGrid').refreshView();
                 }
             },
-            tabs: [
-                {
-                    elementId: 'vrouter_detail_tab_id',
-                    title: 'Details',
-                    view: "VRouterDetailPageView",
-                    viewPathPrefix:
-                        ctwl.VROUTER_VIEWPATH_PREFIX,
-                    app: cowc.APP_CONTRAIL_CONTROLLER,
-                    viewConfig: viewConfig
-                },{
-                    elementId: 'vrouter_interfaces_tab_id',
-                    title: 'Interfaces',
-                    view: "VRouterInterfacesFormView",
-                    viewPathPrefix:
-                        ctwl.VROUTER_VIEWPATH_PREFIX,
-                    app: cowc.APP_CONTRAIL_CONTROLLER,
-                    viewConfig: viewConfig
-                },{
-                    elementId: 'vrouter_networks_tab_id',
-                    title: 'Networks',
-                    view: "VRouterNetworksFormView",
-                    viewPathPrefix:
-                        ctwl.VROUTER_VIEWPATH_PREFIX,
-                    app: cowc.APP_CONTRAIL_CONTROLLER,
-                    viewConfig: viewConfig
-                },{
-                    elementId: 'vrouter_acl_tab_id',
-                    title: 'ACL',
-                    view: "VRouterACLFormView",
-                    viewPathPrefix:
-                        ctwl.VROUTER_VIEWPATH_PREFIX,
-                    app: cowc.APP_CONTRAIL_CONTROLLER,
-                    viewConfig: viewConfig
-                },{
-                    elementId: 'vrouter_flows_tab_id',
-                    title: 'Flows',
-                    view: "VRouterFlowsFormView",
-                    viewPathPrefix:
-                        ctwl.VROUTER_VIEWPATH_PREFIX,
-                    app: cowc.APP_CONTRAIL_CONTROLLER,
-                    viewConfig: viewConfig
-                },{
-                    elementId: 'vrouter_routes_tab_id',
-                    title: 'Routes',
-                    view: "VRouterRoutesFormView",
-                    viewPathPrefix:
-                        ctwl.VROUTER_VIEWPATH_PREFIX,
-                    app: cowc.APP_CONTRAIL_CONTROLLER,
-                    viewConfig: viewConfig
-                }
-            ]
+            tabs: ctwvc.getVRouterDetailsPageTabs(viewConfig)
         }
     }
     return VRouterTabView;

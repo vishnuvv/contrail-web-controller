@@ -962,6 +962,7 @@ function getZeroFlowSample(time) {
 
 function processVNFlowSeriesData(pubChannel, saveChannelKey, jobData, done) {
     var appData = jobData.taskData.appData;
+    console.log("Gettibg appData s:", appData);
     var vnName = appData['srcVN'];
     var vrouter = appData['vrouter'];
     if (null != vnName) {
