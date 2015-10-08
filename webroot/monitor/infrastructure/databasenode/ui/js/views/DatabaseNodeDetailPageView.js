@@ -19,6 +19,8 @@ define([
 
             self.renderView4Config($('#left-column-container'), null,
                     getDatabaseNodeDetailPageViewConfig(viewConfig));
+            self.renderView4Config($('#right-column-container'), null,
+                    getDatabaseNodeDetailChartViewConfig(viewConfig));
         }
     });
     var getDatabaseNodeDetailPageViewConfig = function (viewConfig) {
@@ -98,6 +100,16 @@ define([
         }
     }
 
+    function getDatabaseNodeDetailChartViewConfig (viewConfig) {
+        return {
+            elementId: 'database_detail_charts_id',
+            title: ctwl.TITLE_DETAILS,
+            view: "DatabaseNodeDetailsChartsView",
+            viewPathPrefix : ctwl.DATABASENODE_VIEWPATH_PREFIX,
+            viewConfig: viewConfig
+        }
+    }
+    
     function getDetailsViewTemplateConfig() {
         return {
             advancedViewOptions: false,

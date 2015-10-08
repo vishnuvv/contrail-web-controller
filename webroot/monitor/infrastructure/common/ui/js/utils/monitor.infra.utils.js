@@ -1563,7 +1563,7 @@ define([
             }
         }
         
-        self.getPostDataForCpuMemStatsQuery = function (dsName,source) {
+       /* self.getPostDataForCpuMemStatsQuery = function (dsName,source) {
             var postData = {
                     pageSize:50,
                     page:1,
@@ -1610,6 +1610,75 @@ define([
             }).done(function(result) {
                 deferredObj.resolve(result);
             });
+        } */
+        
+        self.getPostDataForCpuMemStatsQuery = function (dsName,chartType) {
+            var postData = {
+                    pageSize:50,
+                    page:1,
+//                    timeRange:600,
+                    tgUnits:'secs',
+//                    fromTimeUTC:'now-10m',
+                    fromTimeUTC:'now-2h',
+                    toTimeUTC:'now',
+                    async:true,
+                    queryId:randomUUID(),
+                    reRunTimeRange:600,
+                    select:'Source, T, cpu_info.cpu_share, cpu_info.mem_res, cpu_info.module_id',
+                    groupFields:['Source'],
+                    plotFields:['cpu_info.cpu_share']
+            }
+            
+            if (dsName == monitorInfraConstants.CONTROL_NODE) {
+                postData['table'] = 'StatTable.ControlCpuState.cpu_info';
+                postData['where'] = '(cpu_info.module_id = contrail-control)';
+            } else if (dsName == monitorInfraConstants.COMPUTE_NODE) {
+                if(chartType == 'vRouterAgent') {
+                    postData['select'] = 'Source, T, cpu_info.cpu_share, cpu_info.mem_res';
+                } else if (chartType == 'vRouterSystem') {
+                    postData['select'] = 'Source, T, cpu_info.one_min_cpuload, cpu_info.used_sys_mem';
+                }
+                postData['table'] = 'StatTable.ComputeCpuState.cpu_info';
+                postData['where'] = '';
+            } else if (dsName == monitorInfraConstants.ANALYTICS_NODE) {
+                postData['table'] = 'StatTable.AnalyticsCpuState.cpu_info';
+                postData['select'] = 'Source, T, cpu_info.cpu_share, cpu_info.mem_res';
+//                if(source == "details"){
+//                    postData['where'] = '(cpu_info.module_id = contrail-collector) OR (cpu_info.module_id = contrail-query-engine) OR (cpu_info.module_id = contrail-analytics-api)';
+//                } else {
+//                    postData['where'] = '(cpu_info.module_id = contrail-collector)';
+//                }
+                if(chartType == 'analyticsCollector') {
+                    postData['where'] = '(cpu_info.module_id = contrail-collector)';
+                } else if (chartType == 'analyticsQE') {
+                    postData['where'] = '(cpu_info.module_id = contrail-query-engine)';
+                } else if (chartType == 'analyticsAnalytics') {
+                    postData['where'] = '(cpu_info.module_id = contrail-analytics-api)';
+                }
+            } else if (dsName == monitorInfraConstants.CONFIG_NODE) {
+                postData['table'] = 'StatTable.ConfigCpuState.cpu_info';
+//                postData['select'] = 'Source, T, cpu_info.cpu_share, cpu_info.mem_res';
+//                if(source == "details"){
+//                    postData['where'] = '(cpu_info.module_id = contrail-api) OR (cpu_info.module_id = contrail-svc-monitor) OR (cpu_info.module_id = contrail-schema)';
+//                } else {
+//                    postData['where'] = '(cpu_info.module_id = contrail-api)';
+//                }
+                if(chartType == 'configAPIServer') {
+                    postData['where'] = '(cpu_info.module_id = contrail-api)';
+                } else if (chartType == 'configServiceMonitor') {
+                    postData['where'] = '(cpu_info.module_id = contrail-svc-monitor)';
+                } else if (chartType == 'configSchema') {
+                    postData['where'] = '(cpu_info.module_id = contrail-schema)';
+                }
+            } else if (dsName == monitorInfraConstants.DATABASE_NODE) {
+                postData['table'] = 'StatTable.DatabaseUsageInfo.database_usage';
+                if(chartType == 'database') {
+                    postData['select'] = 'Source, T, database_usage.disk_space_used_1k, database_usage.analytics_db_size_1k';
+                    postData['plotFields'] = 'database_usage.disk_space_used_1k';
+//                    postData['where'] = {"name":"Source","op":1,"value":"nodea2"};
+                }
+            }
+            return postData;
         }
         
         self.getIPOrHostName = function(obj) {

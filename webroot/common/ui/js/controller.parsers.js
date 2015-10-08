@@ -385,6 +385,19 @@ define([
             }
             return chartData;
         };
+        
+        this.parseCPUMemLineChartDataForNodeDetails = function(responseArray,options) {
+            var cpuUtilization = {key: "CPU Utilization (%)", values: [], bar: true, color: d3_category5[1]},
+                memoryUsage = {key: "Memory Usage", values: [], color: d3_category5[3]},
+                chartData = [memoryUsage, cpuUtilization];
+
+            for (var i = 0; i < responseArray.length; i++) {
+                var ts = Math.floor(responseArray[i]['T'] / 1000);
+                cpuUtilization.values.push({x: ts, y: responseArray[i][options.dimensions[0]]});
+                memoryUsage.values.push({x: ts, y: responseArray[i][options.dimensions[1]]});
+            }
+            return chartData;
+        };
 
         this.parseNetwork4Breadcrumb = function(response) {
             return  $.map(response['virtual-networks'], function (n, i) {

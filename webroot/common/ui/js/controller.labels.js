@@ -371,6 +371,12 @@ define([
         this.CONFIGNODE_DETAILS_SECTION_ID = 'config_node_details_section';
         this.CONFIGNODE_TABS_ID = 'config_node_tab'
         this.CACHE_CONFIGNODE = 'cache-config-nodes';
+        this.CONFIGNODE_DETAILS_APISERVER_CHART_SECTION_ID = 'config_node_details_apiserver_agent_chart_section';
+        this.CONFIGNODE_DETAILS_APISERVER_LINE_CHART_ID = 'config_node_details_apiserver_line_chart';
+        this.CONFIGNODE_DETAILS_SERVICE_MONITOR_CHART_SECTION_ID = 'config_node_details_service_monitor_chart_section';
+        this.CONFIGNODE_DETAILS_SERVICE_MONITOR_LINE_CHART_ID = 'config_node_details_service_monitor_line_chart';
+        this.CONFIGNODE_DETAILS_SCHEMA_CHART_SECTION_ID = 'config_node_details_schema_chart_section';
+        this.CONFIGNODE_DETAILS_SCHEMA_LINE_CHART_ID = 'config_node_details_schema_line_chart';
 
         //Control node labels
         this.CONTROLNODE_VIEWPATH_PREFIX = 'monitor/infrastructure/controlnode/ui/js/views/';
@@ -387,10 +393,11 @@ define([
 
         this.CONTROLNODE_DETAILS_PAGE_ID = 'control_nodes_details';
         this.CONTROLNODE_DETAIL_PAGE_ID = 'control_nodes_detail_page'
-        this.CONTROLNDOE_DETAILS_SECTION_ID = 'control_nodes_details_section';
+        this.CONTROLNODE_DETAILS_CHART_SECTION_ID = 'control_nodes_details_chart_section';
         this.CONTROLNODE_TAB_SECTION_ID = 'control_nodes_tab_section';
         this.CONTROLNODE_TAB_VIEW_ID = 'control_nodes_tab_view';
         this.CONTROLNODE_DETAILS_TABS_ID = 'control_nodes_details-tab';
+        this.CONTROLNODE_DETAILS_LINE_CHART_ID = 'control_node_details_chart';
         this.CONTROLNODE_PEERS_GRID_SECTION_ID = 'control_node_peers_grid_section_id';
         this.CONTROLNODE_PEERS_GRID_VIEW_ID = 'control_node_peers_id';
         this.CONTROLNODE_PEERS_GRID_ID = "control_node_peers_grid_id";
@@ -423,6 +430,11 @@ define([
         this.VROUTER_DETAILS_SECTION_ID = 'vrouter_details_section';
         this.VROUTER_DETAILS_TABS_ID = 'vrouter_details_tab';
         this.VROUTER_DETAIL_ID = 'vrouter_detail_id;'
+        this.VROUTER_DETAILS_AGENT_CHART_SECTION_ID = 'vrouter_details_vrouter_agent_chart_section';
+        this.VROUTER_DETAILS_AGENT_LINE_CHART_ID = 'vrouter_details_agent_line_chart';
+        this.VROUTER_DETAILS_SYSTEM_CHART_SECTION_ID = 'vrouter_details_system_chart_section';
+        this.VROUTER_DETAILS_SYSTEM_LINE_CHART_ID = 'vrouter_details_system_line_chart';
+        
 
         // this.VROUTER_NETWORKS_GRID_SECTION_ID = 'vrouter_networks_grid_section_id';
         this.VROUTER_NETWORKS_GRID_VIEW_ID = 'vrouter_networks_id';
@@ -483,6 +495,8 @@ define([
         this.DATABASENODE_TAB_SECTION_ID = 'database_node_tab_section';
         this.DATABASENODE_TAB_VIEW_ID = 'database_node_tab';
         this.DATABASENODE_DETAILS_SECTION_ID = 'database_node_details_section';
+        this.DATABASENODE_DETAILS_CHART_SECTION_ID = 'database_details_chart_section';
+        this.DATABASENODE_DETAILS_LINE_CHART_ID = 'database_details_line_chart';
         this.DATABASENODE_TABS_ID = 'database_node_tabs';
         this.CACHE_DATABASENODE = 'cache-database-nodes';
 
@@ -504,6 +518,11 @@ define([
         this.ANALYTICSNODE_TABS_ID = 'analytics_nodes_tab';
         this.ANALYTICSNODE_DETAILS_SECTION_ID = 'analytics_nodes_detail_section';
         this.ANALYTICSNODE_DETAIL_PAGE_ID = 'analytics_node_detail_page';
+        this.ANALYTICSNODE_DETAILS_COLLECTOR_CHART_SECTION_ID = 'analytics_node_details_vrouter_collector_chart_section'
+        this.ANALYTICSNODE_DETAILS_COLLECTOR_LINE_CHART_ID = 'analytics_node_details_collector_line_chart';
+        this.ANALYTICSNODE_DETAILS_QE_CHART_SECTION_ID = 'analytics_node_details_qe_chart_section';
+        this.ANALYTICSNODE_DETAILS_QE_LINE_CHART_ID = 'analytics_node_details_qe_line_chart';    
+            
         this.ANALYTICSNODE_GENERATORS_GRID_SECTION_ID = 'analytics_node_generators_grid_section';
         this.ANALYTICSNODE_GENERATORS_GRID_ID = 'analytics_node_generators_grid';
         this.ANALYTICSNODE_GENERATORS_TITLE = 'Generators';

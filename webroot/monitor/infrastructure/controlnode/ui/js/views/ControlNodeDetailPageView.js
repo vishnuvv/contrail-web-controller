@@ -19,8 +19,101 @@ define([
 
             self.renderView4Config($('#left-column-container'), null,
                     getControlNodeDetailPageViewConfig(viewConfig));
+            self.renderView4Config($('#right-column-container'), null,
+                    getControlNodeDetailChartViewConfig(viewConfig));
+            
+            
+//            $.ajax({
+//                url: '/api/service/networking/web-server-info'
+//            }).done(function (resultJSON) {
+//                endTime = resultJSON['serverUTCTime'];
+//            }).fail(function() {
+//                endTime = getCurrentTime4MemCPUCharts();
+//            }).always(function() {
+//                this.infoBoxView = new NodeDetailsInfoboxesView({el:$(contentContainer).
+//                    find('#right-column-container')});
+//                var infoBoxList = getInfoboxesConfig();
+//                for(var i=0;i<infoBoxList.length;i++) {
+//                    this.infoBoxView.add(infoBoxList[i]);
+//                }
+////                self.renderView4Config($('#right-column-container'), null,
+////                        getControlNodeDetailChartViewConfig(viewConfig,endTime));
+//            });
         }
     });
+    
+    function getControlNodeDetailChartViewConfig (viewConfig) {
+        return {
+            elementId: 'controlnode_detail_charts_id',
+            title: ctwl.TITLE_DETAILS,
+            view: "ControlNodeDetailsChartsView",
+            viewPathPrefix : ctwl.CONTROLNODE_VIEWPATH_PREFIX,
+            viewConfig: viewConfig
+        }
+    }
+    
+//    function getInfoboxesConfig() {
+//
+//        return [{
+//            title: 'Control Node',
+//            view: ControlNodeDetailsChartView,
+////            model: vRouterListModel,
+//        }];
+//    };
+    
+//    var getControlNodeDetailChartViewConfig = function (viewConfig, endTime) {
+//
+//        var hostname = viewConfig['hostname'];
+//
+//        return {
+//            elementId: ctwl.CONTROLNDOE_DETAILS_SECTION_ID,
+//            view: "SectionView",
+//            viewConfig: {
+//                rows: [
+//                    {
+//                        columns: [
+//                            {
+//                                elementId: ctwl.CONTROLNODE_DETAILS_LINE_CHART_ID,
+//                                view: "LineBarWithFocusChartView",
+//                                viewConfig: {
+//                                    modelConfig: getNodeCPUMemModelConfig(hostname, endTime),
+//                                    parseFn: ctwp.parseCPUMemLineChartDataForNodeDetails,
+//                                    chartOptions: {
+//                                        forceY1: [0, 1]
+//                                    }
+//                                }
+//                            }
+//                        ]
+//                    }
+//                ]
+//            }
+//        }
+//    };
+    
+//    var getNodeCPUMemModelConfig = function (hostname, endTime) {
+//        var postData = monitorInfraUtils.
+//                        getPostDataForCpuMemStatsQuery(
+//                                monitorInfraConstants.COMPUTE_NODE,"details");
+//
+//        var modelConfig = {
+//            remote: {
+//                ajaxConfig: {
+//                    url: monitorInfraConstants.monitorInfraUrls['QUERY'],
+//                    type: 'POST',
+//                    data: JSON.stringify(postData)
+//                },
+//                dataParser: function (response) {
+//                    return response['data']
+//                }
+//            },
+//            cacheConfig: {
+//                ucid: ctwc.get(ctwc.UCID_NODE_CPU_MEMORY_LIST, hostname)
+//            }
+//        };
+//
+//        return modelConfig;
+//    };
+    
     var getControlNodeDetailPageViewConfig = function (viewConfig) {
         var hostname = viewConfig['hostname'];
         return {
@@ -246,6 +339,7 @@ define([
     //Derive the IFmap connection status from the parsed data
     function getIfMapConnectionStatus(ctrlNodeData) {
         var cnfNode = '';
+        var noDataStr = monitorInfraConstants.noDataStr;
         try {
             var url = ctrlNodeData.BgpRouterState.ifmap_info.url;
             if (url != null && url != undefined && url != "") {
@@ -290,6 +384,7 @@ define([
 
     //Derive the ip and status of Analytics Node this is connecting to
     function getAnalyticsNodeDetails(ctrlNodeData) {
+        var noDataStr = monitorInfraConstants.noDataStr;
         var anlNode = noDataStr;
         var secondaryAnlNode, status;
         try{
@@ -368,7 +463,7 @@ define([
 
     function getLastLogTime(ctrlNodeData) {
         var lmsg;
-        lmsg = getLastLogTimestamp(ctrlNodeData,"control");
+        lmsg = monitorInfraUtils.getLastLogTimestamp(ctrlNodeData,"control");
         if(lmsg != null){
            try{
               return new Date(parseInt(lmsg)/1000).toLocaleString();
