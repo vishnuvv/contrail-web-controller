@@ -155,7 +155,7 @@ define([
                                     elementId: 'acl_uuid',
                                     view: "FormInputView",
                                     viewConfig: {
-                                        label: 'Name',
+                                        label: 'UUID',
                                         path: 'acl_uuid',
                                         dataBindValue: 'acl_uuid',
                                         class: "span6",
