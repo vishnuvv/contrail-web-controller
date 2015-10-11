@@ -8,15 +8,16 @@ define([
     'monitor/infrastructure/common/ui/js/utils/monitor.infra.constants',
     'monitor/infrastructure/common/ui/js/utils/monitor.infra.parsers',
     'reports/qe/ui/js/qe.utils',
-    'text!monitor/infrastructure/common/ui/templates/monitor.infra.tmpl'
+    'text!monitor/infrastructure/common/ui/templates/monitor.infra.tmpl',
+    'reports/qe/ui/js/qe.constants',
 ], function (_, MonitorInfraUtils, MonitorInfraConstants, MonitorInfraParsers,
-        QEUtils, MonitorInfraTmpls) {
+        QEUtils, MonitorInfraTmpls, QEConstants) {
     monitorInfraUtils = new MonitorInfraUtils;
     monitorInfraConstants = new MonitorInfraConstants;
     monitorInfraUtils = new MonitorInfraUtils;
     monitorInfraParsers = new MonitorInfraParsers;
     qewu = new QEUtils();
-
+    qewc = new QEConstants();
     var initJSpath = pkgBaseDir +
         '/monitor/infrastructure/common/ui/js/monitor.infra.init.js',
         initStatus = contentHandler.initFeatureModuleMap[initJSpath],

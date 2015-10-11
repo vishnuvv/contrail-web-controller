@@ -2475,27 +2475,27 @@ define([
                     name:"Source Network",
                     minWidth:110,
                 },{
-                    field:"sip",
+                    field:"sourceip",
                     name:"Source IP",
                     minWidth:60,
                     formatter:function(r,c,v,cd,dc) {
-                        if(validateIPAddress(dc['sip']))
-                            return dc['sip']
+                        if(validateIPAddress(dc['sourceip']))
+                            return dc['sourceip']
                         else
                             noDataStr;
                     }
                 },{
-                    field:"src_port",
+                    field:"sport",
                     name:"Source Port",
                     minWidth:50
                 },{
-                    field:"direction",
+                    field:"direction_ing",
                     name:"Direction",
                     minWidth:40,
                     formatter: function(r,c,v,cd,dc) {
-                        if (dc['direction'] == 'ingress')
+                        if (dc['direction_ing'] == 1)
                             return 'INGRESS'
-                        else if (dc['direction'] == 'egress')
+                        else if (dc['direction_ing'] == 0)
                             return 'EGRESS'
                         else
                             return '-';
@@ -2505,22 +2505,22 @@ define([
                     name:"Destination Network",
                     minWidth:110,
                     formatter: function (r,c,v,cd,dc) {
-                        var destVN = dc['dst_vn'] != null ? dc['dst_vn'] :
+                        var destVN = dc['destvn'] != null ? dc['destvn'] :
                             noDataStr;
                         return formatVN(destVN);
                     }
                 },{
-                    field:"dip",
+                    field:"destip",
                     name:"Destination IP",
                     minWidth:60,
                     formatter:function(r,c,v,cd,dc) {
-                        if(validateIPAddress(dc['dip']))
-                            return dc['dip']
+                        if(validateIPAddress(dc['destip']))
+                            return dc['destip']
                         else
                             noDataStr;
                     }
                 },{
-                    field:"dst_port",
+                    field:"dport",
                     name:"Destination Port",
                     minWidth:50
                 },{
@@ -2529,10 +2529,10 @@ define([
                     minWidth:120,
                     formatter:function(r,c,v,cd,dc){
                         return contrail.format("{0}/{1}",
-                            formatBytes(dc['stats_bytes']),dc['stats_packets']);
+                            formatBytes(dc['agg-bytes']),dc['agg-packets']);
                     },
                     searchFn:function(d){
-                        return d['stats_bytes']+ '/ ' +d['stats_packets'];
+                        return d['agg-bytes']+ '/ ' +d['agg-packets'];
                     }
                 }
             ];
@@ -2672,6 +2672,19 @@ define([
                 offsetCurvePath += " " + offsetCurve[i].toSVG();
             }
             return offsetCurvePath;
+        };
+        
+        self.getUnderlayVRouterParams = function (nodeDetails) {
+          return {
+              hostname: nodeDetails['name'],
+              ip: getValueByJsonPath(nodeDetails,
+                  'more_attributes;VrouterAgent;self_ip_list;0',
+                  '-'),
+              introspectPort:
+                  getValueByJsonPath(nodeDetails,
+                  'more_attributes;VrouterAgent;sandesh_http_port',
+                  ctwc.DEFAULT_INTROSPECTPORT)
+          };  
         };
     };
     return MonitorInfraUtils;

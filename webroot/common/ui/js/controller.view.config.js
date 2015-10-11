@@ -364,18 +364,24 @@ define([
                   viewConfig: {
                     
                   }
-              }, {
-                  elementId: ctwc.UNDERLAY_TRAFFICSTATS_TAB_ID,
-                  title: ctwl.UNDERLAY_TRAFFIC_STATISTICS,
-                  view: "TrafficStatisticsView",
-                  viewPathPrefix:
-                      ctwl.UNDERLAY_VIEWPATH_PREFIX,
-                  app: cowc.APP_CONTRAIL_CONTROLLER,
-                  viewConfig: {
-                        
-                  }
-              }  
+              } 
           ]; 
+        };
+        
+        self.getUnderlayPRouterLinkTabConfig = function () {
+            return [
+                {
+                    elementId: ctwc.UNDERLAY_TRAFFICSTATS_TAB_ID,
+                    title: ctwl.UNDERLAY_TRAFFIC_STATISTICS,
+                    view: "TrafficStatisticsView",
+                    viewPathPrefix:
+                        ctwl.UNDERLAY_VIEWPATH_PREFIX,
+                    app: cowc.APP_CONTRAIL_CONTROLLER,
+                    viewConfig: {
+                          
+                    }
+                } 
+            ];
         };
         
         self.getPortDistChartOptions = function() {
