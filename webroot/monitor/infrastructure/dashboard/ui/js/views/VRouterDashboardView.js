@@ -75,7 +75,7 @@ define(
                                     title:'Interfaces'
                                 },{
                                     field:'vnCnt',
-                                    title:'Networks'
+                                    title:'VNs'
                                 }],
                                 totalCntModel: cfgObj['totalCntModel']
                             }
