@@ -4,12 +4,19 @@
 
 define(['underscore', 'contrail-view'],function(_, ContrailView){
    var DatabaseNodeScatterChartView = ContrailView.extend({
-                                       render : function (){
-                                           this.renderView4Config(this.$el,
-                                           this.model,
-                                           getDatabaseNodeScatterChartViewConfig());
-                                       }
-                                    });
+        render : function (){
+            var widgetConfig = getValueByJsonPath(this,'attributes;viewConfig;widgetConfig');
+            if(widgetConfig != null) {
+                this.renderView4Config(this.$el,
+                this.model,
+                widgetConfig
+                );
+            }
+            this.renderView4Config(this.$el,
+            this.model,
+            getDatabaseNodeScatterChartViewConfig());
+        }
+    });
 
    function getDatabaseNodeScatterChartViewConfig() {
        return {

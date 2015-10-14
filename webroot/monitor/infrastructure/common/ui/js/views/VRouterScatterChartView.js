@@ -5,6 +5,13 @@
 define(['underscore', 'contrail-view'], function(_, ContrailView) {
    var VRouterScatterChartView = ContrailView.extend({
        render: function() {
+            var widgetConfig = getValueByJsonPath(this,'attributes;viewConfig;widgetConfig');
+            if(widgetConfig != null) {
+                this.renderView4Config(this.$el,
+                this.model,
+                widgetConfig
+                );
+            }
            this.renderView4Config(this.$el,
            this.model,
            getVRouterScatterChartViewConfig());
