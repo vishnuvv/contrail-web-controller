@@ -13,6 +13,30 @@ define([
                 var trafficStatsConfig = monitorInfraUtils.
                     getTrafficStatisticsTabViewConfig(linkAttributes);
                 var trafficStatsViewConfig = trafficStatsConfig.viewConfig;
+                var tempViewConfig = {
+                            view: 'LineWithFocusChartView',
+                            elementId: "#"+ctwc.UNDERLAY_TRAFFICSTATS_TAB_ID,
+                            viewConfig:{
+                                widgetConfig: {
+                                    elementId: "#"+ctwc.UNDERLAY_TRAFFICSTATS_TAB_ID+ '-widget',
+                                    view: "WidgetView",
+                                    viewConfig: {
+                                        header: {
+                                            title: 'Traffic Statistics'
+                                        },
+                                        controls: {
+                                            top: {
+                                                default: {
+                                                    collapseable: true
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                };
+                var tempModel = new ContrailListModel({});
+                self.renderView4Config(self.$el, tempModel, tempViewConfig, null, null);
                 if(trafficStatsViewConfig.modelConfig != null) {
                     var contrailListModel = new ContrailListModel(
                             trafficStatsConfig.viewConfig.modelConfig);
