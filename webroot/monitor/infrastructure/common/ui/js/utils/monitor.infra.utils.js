@@ -1430,12 +1430,13 @@ define([
             } else {
                 return {
                     content: {
+                        iconClass: false,
                         info: tooltipContents.slice(1),
                         actions: [
                             {
                                 type: 'link',
                                 text: 'View',
-                                iconClass: 'icon-external-link',
+                                iconClass: 'icon-external-link'
                                 // callback: onScatterChartClick
                             }
                         ]

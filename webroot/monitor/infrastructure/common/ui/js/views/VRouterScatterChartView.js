@@ -28,10 +28,10 @@ define(['underscore', 'contrail-view'], function(_, ContrailView) {
                        title: ctwl.VROUTER_SUMMARY_TITLE,
                        view: "ZoomScatterChartView",
                        viewConfig: {
-                           loadChartInChunks: true,
+                           loadChartInChunks: false,
                            cfDataSource : self.cfDataSource,
                            chartOptions: {
-                               doBucketize: false,
+                               doBucketize: true,
                                xLabel: 'CPU (%)',
                                yLabel: 'Memory (MB)',
                                forceX: [0, 1],

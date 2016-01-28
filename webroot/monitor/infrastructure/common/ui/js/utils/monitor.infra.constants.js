@@ -44,6 +44,7 @@ define([
                 VROUTER_BASE                : '/api/admin/monitor/infrastructure/vrouter/',
                 VROUTER_SUMMARY             : '/api/admin/monitor/infrastructure/vrouters/summary',
                 VROUTER_CACHED_SUMMARY      : '/api/admin/monitor/infrastructure/vrouters/cached-summary',
+                VROUTER_CACHED_SUMMARY      : '/fakeData/vrouters_harshad_cachedSummary.json',
                 VROUTER_DETAILS             : '/api/admin/monitor/infrastructure/vrouter/details?hostname={0}&basic={1}',
                 VROUTER_INTERFACES          : '/api/admin/monitor/infrastructure/vrouter/interface',
                 VROUTER_NETWORKS            : '/api/admin/monitor/infrastructure/vrouter/vn',
