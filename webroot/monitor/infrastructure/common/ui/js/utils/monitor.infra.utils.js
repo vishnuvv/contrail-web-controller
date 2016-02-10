@@ -1443,7 +1443,7 @@ define([
                     },
                     title: {
                         name: tooltipContents[0]['value'],
-                        type: 'virtual router'
+                        type: 'Virtual Router'
                     }
                 }
             }
@@ -2934,6 +2934,55 @@ define([
                 underlayTabView.childViewMap[ctwc.UNDERLAY_TAB_ID].removeTab(i);
             }
         };
+       self.getScatterChartLegendConfigForNodes = function() {
+           return {
+               groups : [{
+                   id : 'by-node-color',
+                   title : 'Node Color',
+                   items : [ {
+                       text : 'Major Alarms',
+                       labelCssClass : 'icon-circle error',
+                       events : {
+                           click : function(event) {
+                           }
+                       }
+                   },{
+                       text : 'Minor Alarms',
+                       labelCssClass : 'icon-circle warning',
+                       events : {
+                           click : function(event) {
+                           }
+                       }
+                   },{
+                       text : 'Intialized',
+                       labelCssClass : 'icon-circle medium',
+                       events : {
+                           click : function(event) {
+                           }
+                       }
+                   },{
+                       text : 'No Alarms',
+                       labelCssClass : 'icon-circle okay',
+                       events : {
+                           click : function(event) {
+                           }
+                       }
+                   }]
+               },{
+                    id: 'by-node-size',
+                    title: 'Bubble Size',
+                    items: [
+                        {
+                            text: 'Bandwidth',
+                            labelCssClass: 'icon-circle',
+                            events: {
+                                click: function (event) {}
+                            }
+                        }
+                    ]
+                }]
+           };
+       };
     };
     return MonitorInfraUtils;
 });

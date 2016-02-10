@@ -135,7 +135,7 @@ define(['underscore', 'contrail-view'],function(_, ContrailView){
            return {
                groups : [{
                    id : 'by-node-color',
-                   title : 'Cluster Color',
+                   title : 'Node Color',
                    items : [ {
                        text : infraAlertMsgs['UVE_MISSING'] + ' or ' +
                            infraAlertMsgs['CONFIG_MISSING'] + ' or ' +

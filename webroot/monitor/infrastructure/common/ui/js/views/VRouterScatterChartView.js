@@ -57,7 +57,16 @@ define(['underscore', 'contrail-view'], function(_, ContrailView) {
                                //     return chartDataValues;
                                // },
                                // tooltipConfigCB: getVRouterTooltipConfig,
+                               bubbleSizeFn: function(d) {
+                                    return d3.max(d,function(d) { return d.size;});
+                               },
                                tooltipConfigCB: monitorInfraUtils.vRouterTooltipFn,
+                               controlPanelConfig: {
+                                   legend: {
+                                       enable: true,
+                                       viewConfig: monitorInfraUtils.getScatterChartLegendConfigForNodes()
+                                   }
+                               },
                                bucketTooltipFn: monitorInfraUtils.vRouterBucketTooltipFn,
                                clickCB: monitorInfraUtils.onvRouterDrillDown
                            }
