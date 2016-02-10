@@ -2983,6 +2983,35 @@ define([
                 }]
            };
        };
+        self.getScatterChartFilterConfigForNodes = function() {
+            return {
+                groups: [
+                    {
+                        id: 'by-node-color',
+                        title: false,
+                        type: 'checkbox-circle',
+                        items: [
+                            {
+                                text: 'Major Alarms',
+                                labelCssClass: 'error'
+                            },
+                            {
+                                text: 'Minor Alarms',
+                                labelCssClass: 'warning'
+                            },
+                            {
+                                text: 'Initialized',
+                                labelCssClass: 'default'
+                            },
+                            {
+                                text: 'No Alarms',
+                                labelCssClass: 'okay'
+                            }
+                        ]
+                    }
+                ]
+            };
+        };
     };
     return MonitorInfraUtils;
 });

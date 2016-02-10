@@ -65,7 +65,11 @@ define(['underscore', 'contrail-view'], function(_, ContrailView) {
                                    legend: {
                                        enable: true,
                                        viewConfig: monitorInfraUtils.getScatterChartLegendConfigForNodes()
-                                   }
+                                   },
+                                    filter: {
+                                        enable: true,
+                                        viewConfig: monitorInfraUtils.getScatterChartFilterConfigForNodes()
+                                    },
                                },
                                bucketTooltipFn: monitorInfraUtils.vRouterBucketTooltipFn,
                                clickCB: monitorInfraUtils.onvRouterDrillDown
