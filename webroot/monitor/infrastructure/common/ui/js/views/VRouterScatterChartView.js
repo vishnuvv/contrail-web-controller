@@ -36,7 +36,7 @@ define(['underscore', 'contrail-view'], function(_, ContrailView) {
                                yLabel: 'Memory (MB)',
                                forceX: [0, 1],
                                forceY: [0, 20],
-                               margin: {top:0},
+                               margin: {top:5},
                                // yLabelFormat: d3.format(".02f"),
                                // xLabelFormat: d3.format(".02f"),
                                // dataParser: function(response) {

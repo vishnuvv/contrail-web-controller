@@ -2940,14 +2940,14 @@ define([
                    id : 'by-node-color',
                    title : 'Node Color',
                    items : [ {
-                       text : 'Major Alarms',
+                       text : 'Critical',
                        labelCssClass : 'icon-circle error',
                        events : {
                            click : function(event) {
                            }
                        }
                    },{
-                       text : 'Minor Alarms',
+                       text : 'Error',
                        labelCssClass : 'icon-circle warning',
                        events : {
                            click : function(event) {
@@ -2961,7 +2961,7 @@ define([
                            }
                        }
                    },{
-                       text : 'No Alarms',
+                       text : 'Up',
                        labelCssClass : 'icon-circle okay',
                        events : {
                            click : function(event) {
@@ -2992,11 +2992,11 @@ define([
                         type: 'checkbox-circle',
                         items: [
                             {
-                                text: 'Major Alarms',
+                                text: 'Critical',
                                 labelCssClass: 'error'
                             },
                             {
-                                text: 'Minor Alarms',
+                                text: 'Error',
                                 labelCssClass: 'warning'
                             },
                             {
@@ -3004,7 +3004,7 @@ define([
                                 labelCssClass: 'default'
                             },
                             {
-                                text: 'No Alarms',
+                                text: 'Up',
                                 labelCssClass: 'okay'
                             }
                         ]
