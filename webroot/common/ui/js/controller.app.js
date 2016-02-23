@@ -27,7 +27,7 @@ if (typeof ctBaseDir !== 'undefined') {
         waitSeconds: 0
     });
 
-    require(['controller-init'], function () {});
+    // require(['controller-init'], function () {});
 }
 
 function getControllerAppPaths (ctBaseDir, ctBuildDir) {
@@ -35,15 +35,15 @@ function getControllerAppPaths (ctBaseDir, ctBuildDir) {
     return {
         'controller-srcdir': ctBaseDir,
         'controller-basedir': ctWebDir,
-        'controller-constants': ctWebDir + '/common/ui/js/controller.constants',
-        'controller-grid-config': ctWebDir + '/common/ui/js/controller.grid.config',
-        'controller-graph-config': ctWebDir + '/common/ui/js/controller.graph.config',
-        'controller-labels': ctWebDir + '/common/ui/js/controller.labels',
-        'controller-utils': ctWebDir + '/common/ui/js/controller.utils',
-        'controller-messages': ctWebDir + '/common/ui/js/controller.messages',
-        'controller-parsers': ctWebDir + '/common/ui/js/controller.parsers',
-        'controller-view-config': ctWebDir + '/common/ui/js/controller.view.config',
-        'controller-init': ctWebDir + '/common/ui/js/controller.init',
+        // 'controller-constants': ctWebDir + '/common/ui/js/controller.constants',
+        // 'controller-grid-config': ctWebDir + '/common/ui/js/controller.grid.config',
+        // 'controller-graph-config': ctWebDir + '/common/ui/js/controller.graph.config',
+        // 'controller-labels': ctWebDir + '/common/ui/js/controller.labels',
+        // 'controller-utils': ctWebDir + '/common/ui/js/controller.utils',
+        // 'controller-messages': ctWebDir + '/common/ui/js/controller.messages',
+        // 'controller-parsers': ctWebDir + '/common/ui/js/controller.parsers',
+        // 'controller-view-config': ctWebDir + '/common/ui/js/controller.view.config',
+        // 'controller-init': ctWebDir + '/common/ui/js/controller.init',
 
         //TODO: Only commons controller level definations should be created in this file.
         /**

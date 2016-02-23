@@ -1,10 +1,7 @@
 define([
     'underscore',
     'contrail-list-model',
-    'core-basedir/js/views/LoginWindowView',
-    'core-basedir/js/models/LoginWindowModel',
-    'monitor/infrastructure/common/ui/js/views/MonitorInfraObjectLogsPopUpView'
-], function (_, ContrailListModel, LoginWindowView, LoginWindowModel, MonitorInfraObjectLogsPopUpView) {
+], function (_, ContrailListModel) {
     var MonitorInfraUtils = function () {
         var self = this;
         var noDataStr = monitorInfraConstants.noDataStr;
@@ -491,7 +488,7 @@ define([
             if(cowu.getAlarmsFromAnalytics) {
                 nodeColor = coreAlarmUtils.getNodeColor(obj);
             } else {
-                nodeColor = coreAlarmUtils.getNodeColor(obj);
+                // nodeColor = coreAlarmUtils.getNodeColor(obj);
             }
             if(nodeColor != false)
                 return nodeColor;
@@ -504,7 +501,7 @@ define([
             if(cowu.getAlarmsFromAnalytics) {
                 nodeColor = coreAlarmUtils.getNodeColor(obj);
             } else {
-                nodeColor = coreAlarmUtils.getNodeColor(obj);
+                // nodeColor = coreAlarmUtils.getNodeColor(obj);
             }
             if(nodeColor != false)
                 return nodeColor;
@@ -521,7 +518,7 @@ define([
             if(cowu.getAlarmsFromAnalytics) {
                 nodeColor = coreAlarmUtils.getNodeColor(obj);
             } else {
-                nodeColor = coreAlarmUtils.getNodeColor(obj);
+                // nodeColor = coreAlarmUtils.getNodeColor(obj);
             }
             if(nodeColor != false)
                 return nodeColor;
@@ -534,7 +531,7 @@ define([
             if(cowu.getAlarmsFromAnalytics) {
                 nodeColor = coreAlarmUtils.getNodeColor(obj);
             } else {
-                nodeColor = coreAlarmUtils.getNodeColor(obj);
+                // nodeColor = coreAlarmUtils.getNodeColor(obj);
             }
             if(nodeColor != false)
                 return nodeColor;
@@ -546,7 +543,7 @@ define([
             if(cowu.getAlarmsFromAnalytics) {
                 nodeColor = coreAlarmUtils.getNodeColor(obj);
             } else {
-                nodeColor = coreAlarmUtils.getNodeColor(obj);
+                // nodeColor = coreAlarmUtils.getNodeColor(obj);
             }
             if(nodeColor != false)
                 return nodeColor;
@@ -1470,28 +1467,30 @@ define([
         }
 
         self.onStatusLinkClick = function (nodeIp) {
-            var loginWindow = new LoginWindowView();
             var leftColumnContainer = '#left-column-container';
-            loginWindow.model = new LoginWindowModel();
-            loginWindow.renderLoginWindow({
-                data:{
-                    ip: nodeIp
-                },
-                callback : function (response) {
-                    var htmlString = '<pre>' +
-                        response + '</pre>';
-                    $('.contrail-status-view')
-                        .html(htmlString);
-                    $(leftColumnContainer)
-                        .find('.widget-box')
-                        .find('.list-view').hide();
-                    $(leftColumnContainer)
-                        .find('.widget-box')
-                        .find('.advanced-view').hide();
-                    $(leftColumnContainer)
-                        .find('.widget-box')
-                        .find('.contrail-status-view').show();
-                }
+            require(['core-basedir/js/views/LoginWindowView','loginwindow-model'],function(LoginWindowView,LoginWindowModel) {
+                var loginWindow = new LoginWindowView();
+                loginWindow.model = new LoginWindowModel();
+                loginWindow.renderLoginWindow({
+                    data:{
+                        ip: nodeIp
+                    },
+                    callback : function (response) {
+                        var htmlString = '<pre>' +
+                            response + '</pre>';
+                        $('.contrail-status-view')
+                            .html(htmlString);
+                        $(leftColumnContainer)
+                            .find('.widget-box')
+                            .find('.list-view').hide();
+                        $(leftColumnContainer)
+                            .find('.widget-box')
+                            .find('.advanced-view').hide();
+                        $(leftColumnContainer)
+                            .find('.widget-box')
+                            .find('.contrail-status-view').show();
+                    }
+                });
             });
         }
 
@@ -1945,7 +1944,7 @@ define([
                     fromTimeUTC:'now-2h',
                     toTimeUTC:'now',
                     async:true,
-                    queryId: qewu.generateQueryUUID(),
+                    queryId: generateQueryUUID(),
                     reRunTimeRange:600,
                     select:'Source, T, cpu_info.cpu_share, cpu_info.mem_res, cpu_info.module_id',
                     groupFields:['Source'],
@@ -3139,11 +3138,13 @@ define([
             };
         }
         self.showObjLogs = function (objId,type) {
-            var monInfraObjLogsView = new MonitorInfraObjectLogsPopUpView ();
-            monInfraObjLogsView.render ({
-                                        type: type,
-                                        objId: objId
-                                    });
+            require(['monitor/infrastructure/common/ui/js/views/MonitorInfraObjectLogsPopUpView'],function(MonitorInfraObjectLogsPopUpView) {
+                var monInfraObjLogsView = new MonitorInfraObjectLogsPopUpView ();
+                monInfraObjLogsView.render ({
+                                            type: type,
+                                            objId: objId
+                                        });
+            });
         };
 
         self.purgeAnalyticsDB = function (purgePercentage) {
