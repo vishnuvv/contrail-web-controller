@@ -22,6 +22,7 @@ define([
     ctwp = new Parsers();
     ctwvc = new ViewConfig();
 
+    //deferredObj reading from global variable 
     var deferredObj = contentHandler.initFeatureAppDefObjMap[FEATURE_PCK_WEB_CONTROLLER];
 
     if(contrail.checkIfExist(deferredObj)) {
