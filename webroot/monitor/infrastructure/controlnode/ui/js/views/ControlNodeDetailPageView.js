@@ -32,6 +32,7 @@ define([
             title: ctwl.TITLE_DETAILS,
             view: "ControlNodeDetailsChartsView",
             viewPathPrefix : ctwl.CONTROLNODE_VIEWPATH_PREFIX,
+            app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: viewConfig
         }
     }

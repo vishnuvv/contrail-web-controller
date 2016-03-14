@@ -244,10 +244,13 @@ define('controller-constants',[
                 role = globalObj['webServerInfo']['role'],
                 activeOrchModel = globalObj['webServerInfo']['loggedInOrchestrationMode'];
 
-            /* In case of vcenter, get the projects from API Server only */
-            if ((activeOrchModel == 'vcenter') || (((null == getProjectsFromIdentity) || (false == getProjectsFromIdentity)) && ((null == config) || (false == config)))) {
+            if ((((null == getProjectsFromIdentity) || (false == getProjectsFromIdentity)) && ((null == config) || (false == config)))) {
                 url = '/api/tenants/projects/' + domainObj.name;
             }
+            if(activeOrchModel == 'vcenter') {
+                url = '/api/tenants/config/projects/' + domainObj.name;
+            }
+
             return url;
         };
 
@@ -566,6 +569,7 @@ define('controller-constants',[
                                             value : 'md5'
                                         }
                                     ];
+         this.BGP_AAS_ROUTERS = ["bgpaas-server", "bgpaas-client"];
 
         //Physical Routers constants
         this.URL_PHYSICAL_ROUTERS_DETAILS_IN_CHUNKS =
@@ -666,6 +670,24 @@ define('controller-constants',[
         this.ROUTE_AGGREGATE_PREFIX_ID = "route_aggregate";
         this.URL_CREATE_ROUTE_AGGREGATE = "/api/tenants/config/route-aggregates";
         this.URL_UPDATE_ROUTE_AGGREGATE = "/api/tenants/config/route-aggregate/";
+
+        this.DEFAULT_COMMUNITIES = [
+            {text:"no-export",id:"no-export"},
+            {text:"accept-own",id:"accept-own"},
+            {text:"no-advertise",id:"no-advertise"},
+            {text:"no-export-subconfed",id:"no-export-subconfed"},
+            {text:"no-reoriginate",id:"no-reoriginate"}
+        ];
+
+        /* Packet Capture Constants */
+        this.PACKET_CAPTURE_LIST_ID = "packet-capture-list";
+        this.PACKET_CAPTURE_GRID_ID = "packet-capture-grid";
+        this.URL_GET_PACKET_CAPTURE_DATA = "/api/tenants/config/service-instances/";
+        this.PACKET_CAPTURE_SECTION_ID = "packet-capture-section";
+        this.PACKET_CAPTURE_ID = "packet-capture-list";
+        this.PACKET_CAPTURE_LIST_VIEW_ID = "packet-capture-list-view";
+        this.PACKET_CAPTURE_PREFIX_ID = "packet_capture";
+        this.URL_GET_SERVICE_TEMPLATE_IMAGES = "/api/tenants/config/service-template-images";
     };
 
     //str will be [0-9]+(m|h|s|d)
@@ -986,11 +1008,15 @@ define('controller-labels',[
         this.TITLE_PORT_DISTRIBUTION = "Port Distribution";
         this.TITLE_PORT_MAP = "Port Map";
 
+        this.TITLE_CPU = "CPU Share (%)";
+        this.TITLE_CPU_LOAD = "CPU Load";
+        this.TITLE_MEMORY = "Memory";
+
         /** Titles used in node details chart widget **/
         this.TITLE_CONTROLNODE_CPU_MEM_UTILIZATION = 'Control Node CPU/Memory Utilization';
         this.TITLE_VROUTER_AGENT_CPU_MEM_UTILIZATION = 'Virtual Router Agent CPU/Memory Utilization';
-        this.TITLE_VROUTER_SYSTEM_CPU_MEM_UTILIZATION = 'Virtual Router System CPU/Memory Utilization';
-        this.TITLE_VROUTER_BANDWIDTH_UTILIZATION = 'Virtual Router Physical Bandwidth Utilization';
+        this.TITLE_VROUTER_SYSTEM_CPU_MEM_UTILIZATION = 'System CPU/Memory Utilization';
+        this.TITLE_VROUTER_BANDWIDTH_UTILIZATION = 'Physical Bandwidth Utilization';
         this.TITLE_ANALYTICS_COLLECTOR_CPU_MEM_UTILIZATION = 'Collector CPU/Memory Utilization';
         this.TITLE_ANALYTICS_QE_CPU_MEM_UTILIZATION = 'Query Engine CPU/Memory Utilization';
         this.TITLE_ANALYTICS_ANALYTICS_CPU_MEM_UTILIZATION = 'OpServer CPU/Memory Utilization';
@@ -1662,6 +1688,12 @@ define('controller-labels',[
         this.CDB_TITLE_FQ_TABLE = "FQ Name Table";
         this.CDB_TITLE_UUID_TABLE = "UUID Name Table";
         this.CDB_TITLE_SHARED_TABLE = "Shared Name Table";
+        this.CDB_TITLE_DELETE_RECORD = "Delete Record";
+        this.CDB_TMPL_DELETE_RECORD = "cdb-delete-template";
+        this.CDB_DELETE_MODAL_ID_ = "delete-cdb";
+
+        this.CDB_LABEL_KEY_VALUES = "keyvalues";
+        this.CDB_LABEL_KEY = "key";
         //Config DB Labels - End
 
         /* Service Appliance */
@@ -1733,6 +1765,26 @@ define('controller-labels',[
         this.TITLE_ROUTE_AGGREGATE_MULTI_DELETE = 'Delete Route Aggregate(s)';
         this.TITLE_ADD_ROUTE_AGGREGATE = 'Create Route Aggregate';
 
+        // Health Check Config labels
+        this.CFG_SVC_HEALTH_CHK_PAGE_ID = 'config-svc-health-chk-page';
+        this.CFG_SVC_HEALTH_CHK_LIST_ID = 'config-svc-health-chk-list';
+        this.CFG_SVC_HEALTH_CHK_LIST_VIEW_ID = 'config-svc-health-chk-list-view';
+        this.CFG_SVC_HEALTH_CHK_GRID_ID = 'config-svc-health-chk-grid';
+        this.CFG_SVC_HEALTH_CHK_PREFIX_ID = 'HealthCheckServices';
+        this.CFG_SVC_HEALTH_CHK_TITLE = 'Health Check Services';
+        this.CFG_SVC_HEALTH_CHK_TITLE_SUMMARY = 'Health Check Summary';
+        this.CFG_SVC_HEALTH_CHK_TITLE_DETAILS = 'Details';
+        this.CFG_SVC_HEALTH_CHK_TITLE_EDIT = 'Edit Health Check Service';
+        this.CFG_SVC_HEALTH_CHK_TITLE_CREATE = 'Create Health Check Service';
+        this.CFG_SVC_HEALTH_CHK_TITLE_DELETE = 'Delete Health Check Service';
+        this.CFG_SVC_HEALTH_CHK_TITLE_MULTI_DELETE = 'Delete Health Check Service(s)';
+
+        /* Packet Capture Labels */
+        this.TITLE_PACKET_CAPTURE = 'Analyzers';
+        this.TITLE_EDIT_PACKET_CAPTURE = 'Edit Analyzer';
+        this.TITLE_PACKET_CAPTURE_DELETE = 'Delete Analyzer';
+        this.TITLE_PACKET_CAPTURE_MULTI_DELETE = 'Delete Analyzer(s)';
+        this.TITLE_ADD_PACKET_CAPTURE = 'Create Analyzer';
     };
     return CTLabels;
 });
@@ -1960,12 +2012,13 @@ define('controller-utils',[
 
                         $(contentContainer).html(dataErrorTemplate(dataErrorConfig));
                     }
-                },
+                }/*,
                 cacheConfig : {
                     ucid: ctwc.UCID_BC_ALL_SA_SETS,
                     loadOnTimeout: false,
                     cacheTimeout: cowc.DOMAIN_CACHE_UPDATE_INTERVAL
                 }
+                */
             }
         };
 
@@ -2004,7 +2057,7 @@ define('controller-utils',[
         };
 
         this.getProjectListModelConfig = function(domainObj, dropdownOptions) {
-            return {
+            var modelConfig = {
                 remote: {
                     ajaxConfig: {
                         url: ctwc.getProjectsURL(domainObj,
@@ -2026,13 +2079,18 @@ define('controller-utils',[
                         $(contentContainer).html(dataErrorTemplate(dataErrorConfig));
                     }
                 },
-                cacheConfig : {
+            };
+            if ((null == dropdownOptions) ||
+                (null == dropdownOptions['config']) ||
+                (false == dropdownOptions['config'])) {
+                modelConfig.cacheConfig = {
                     ucid: ctwc.get(ctwc.UCID_BC_DOMAIN_ALL_PROJECTS,
                                    domainObj.name),
                     loadOnTimeout: false,
                     cacheTimeout: cowc.PROJECT_CACHE_UPDATE_INTERVAL
-                }
-            };
+                };
+            }
+            return modelConfig;
         };
 
         this.getDNSListModelConfig = function(dns) {
@@ -2845,6 +2903,15 @@ define('controller-grid-config',[
                 onClick: onClickFunction
             }
         };
+        this.getListAction = function (onClickFunction, title, divider) {
+            return {
+                title: title,
+                iconClass: 'icon-list-alt',
+                width: 80,
+                divider: contrail.checkIfExist(divider) ? divider : false,
+                onClick: onClickFunction
+            }
+        };
         this.getDeleteAction = function (onClickFunction, divider) {
             return {
                 title: ctwl.TITLE_DELETE_CONFIG,
@@ -3349,6 +3416,31 @@ define('controller-parsers',[
             return chartData;
         };
 
+        this.parseLineChartDataForVRouterBandwidth = function(responseArray,options) {
+            var axis1 = {key: (options.axisLabels != null)? options.axisLabels[0]: "CPU Utilization (%)",
+                                    values: [],
+                                    bar: true,
+                                    color: cowc.D3_COLOR_CATEGORY5[1]
+                                };
+            var axis2 = {key: (options.axisLabels != null)? options.axisLabels[1]: "Memory Usage",
+                                    values: [],
+                                    color: cowc.D3_COLOR_CATEGORY5[3]
+                                };
+            var axis3 = {key: (options.axisLabels != null)? options.axisLabels[2]: "Memory Usage",
+                                    values: [],
+                                    color: cowc.D3_COLOR_CATEGORY5[4]
+                                };
+            var chartData = [axis1, axis2, axis3];
+
+            for (var i = 0; i < responseArray.length; i++) {
+                var ts = Math.floor(responseArray[i]['T'] / 1000);
+                axis1.values.push({x: ts, y: responseArray[i][options.dimensions[0]]});
+                axis2.values.push({x: ts, y: responseArray[i][options.dimensions[1]]});
+                axis3.values.push({x: ts, y: responseArray[i][options.dimensions[2]]});
+            }
+            return chartData;
+        };
+
         this.parseDataForNodeDetailsSparkline = function (responseArray,options) {
             var retData = [];
             for (var i = 0; i < responseArray.length; i++) {
@@ -3612,6 +3704,20 @@ define('controller-parsers',[
             }
             return activeDNSRecData;
         };
+
+        this.svcHealthChkCfgDataParser = function(response) {
+           var retArr = [];
+           var svcHealthChk = getValueByJsonPath(response,
+                            '0;service-health-checks', []);
+
+           var length = svcHealthChk.length
+           for (var i = 0; i < length; i++) {
+               retArr.push(svcHealthChk[i]['service-health-check']);
+           }
+           return retArr;
+        };
+
+
     };
 
     return CTParsers;

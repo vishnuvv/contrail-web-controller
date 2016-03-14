@@ -245,7 +245,8 @@ define('monitor-infra-vrouter-model',['contrail-list-model'], function(ContrailL
             },
             vlRemoteConfig: vlRemoteConfig,
             cacheConfig : {
-                ucid : ctwl.CACHE_VROUTER
+                ucid : ctwl.CACHE_VROUTER,
+                cacheTimeout:0
             }
         };
         return ContrailListModel(listModelConfig);
@@ -861,12 +862,13 @@ define('monitor-infra-utils',[
             return ajaxConfig;
         };
 
-        self.getAjaxConfigForInfraNodesCpuStats = function (dsName,responseJSON) {
+        self.getAjaxConfigForInfraNodesCpuStats = function (dsName,responseJSON,page) {
             var ajaxConfig = {};
             //build the query
             var postData = self.getPostDataForCpuMemStatsQuery({
                 nodeType:dsName,
-                node:''});
+                node:'',
+                page:page});
             ajaxConfig = {
                 url: monitorInfraConstants.monitorInfraUrls['QUERY'],
                 type:'POST',
@@ -1284,8 +1286,11 @@ define('monitor-infra-utils',[
             statsData = statsData['data'];
             $.each(statsData,function(idx,d){
                 var source = d['Source'];
+                var name = d['name'];
                 var t = JSON.stringify({"ts":d['T']});
-
+                if(name != null && source != name) {
+                    source = name;//In case of TOR agents the name is the key
+                }
                 if(ret[source] != null && ret[source]['history-10'] != null){
                     var hist10 = ret[source]['history-10'];
                     hist10[t] = d['cpu_info.cpu_share'];
@@ -1774,7 +1779,7 @@ define('monitor-infra-utils',[
             //var avgMem = d3.mean(nodes,function(d){return d.y});
             var tooltipContents = [
                 {label:'', value: 'No. of Nodes: ' + nodes.length},
-                {label:'Avg. CPU', value:$.isNumeric(currObj['x']) ? currObj['x'].toFixed(2)  + '%' : currObj['x']},
+                {label:'Avg. ' + ctwl.TITLE_CPU, value:$.isNumeric(currObj['x']) ? currObj['x'].toFixed(2)  : currObj['x']},
                 {label:'Avg. Memory', value:$.isNumeric(currObj['y']) ? formatBytes(currObj['y'] * 1024* 1024) : currObj['y']}
             ];
             if(formatType == 'simple') {
@@ -1805,7 +1810,7 @@ define('monitor-infra-utils',[
             var tooltipContents = [
                 {label:'Host Name', value: currObj['name']},
                 {label:'Version', value:currObj['version']},
-                {label:'CPU', value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  + '%' : '-'},
+                {label: ctwl.TITLE_CPU, value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  : '-'},
                 {label:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
             ];
             //Get tooltipAlerts
@@ -2188,7 +2193,7 @@ define('monitor-infra-utils',[
                 moduleType = options.moduleType,
                 node = options.node;
             var postData = {
-                    pageSize:50,
+                    pageSize:10000,
                     page:1,
 //                    timeRange:600,
                     tgUnits:'secs',
@@ -2201,7 +2206,9 @@ define('monitor-infra-utils',[
                     groupFields:['Source'],
                     plotFields:['cpu_info.cpu_share']
             }
-
+            if(options.page != null && options.page == "summary") {
+                postData['fromTimeUTC'] = 'now-15m';
+            }
             if (dsName == monitorInfraConstants.CONTROL_NODE) {
                 postData['table'] = 'StatTable.ControlCpuState.cpu_info';
                 if (moduleType != null && moduleType != '') {
@@ -2213,16 +2220,22 @@ define('monitor-infra-utils',[
                 postData['table'] = 'StatTable.ComputeCpuState.cpu_info';
                 if (moduleType != null && moduleType != '') {
                     if(moduleType == 'vRouterAgent') {
-                        postData['select'] = 'Source, T, cpu_info.cpu_share, cpu_info.mem_res';
+                        postData['select'] = 'Source, name, T, cpu_info.cpu_share, cpu_info.mem_res';
                     } else if (moduleType == 'vRouterSystem') {
-                        postData['select'] = 'Source, T, cpu_info.one_min_cpuload, cpu_info.used_sys_mem';
+                        postData['select'] = 'Source, name, T, cpu_info.one_min_cpuload, cpu_info.used_sys_mem';
                     } else if (moduleType == 'vRouterBandwidth') {
                         postData['table'] = 'StatTable.VrouterStatsAgent.phy_if_band';
-                        postData['select'] = 'Source, T, phy_if_band.in_bandwidth_usage, phy_if_band.out_bandwidth_usage';
+                        postData['select'] = 'Source, name, T=, phy_if_band.in_bandwidth_usage, phy_if_band.out_bandwidth_usage';
+                        postData['tgValue'] = 60;
+                    } else if (moduleType == 'vRouterFlowRate') {
+                        postData['table'] = 'StatTable.VrouterStatsAgent.flow_rate';
+                        postData['select'] = 'Source, name, T=, MAX(flow_rate.active_flows)';
+                        postData['tgValue'] = 60;
+                        postData['plotFields'] = ['MAX(flow_rate.active_flows)'];
                     }
-                    postData['where'] = '(Source = '+ node +')';
+                    postData['where'] = '(Source = '+ node +' OR name = '+ node +')';
                 } else {
-                    postData['select'] = 'Source, T, cpu_info.cpu_share, cpu_info.mem_res';
+                    postData['select'] = 'Source, name, T, cpu_info.cpu_share, cpu_info.mem_res';
                     postData['where'] = '';
                 }
             } else if (dsName == monitorInfraConstants.ANALYTICS_NODE) {
@@ -2259,7 +2272,21 @@ define('monitor-infra-utils',[
                 postData['where'] = '(Source = '+ node +')';
             }
             return postData;
-        }
+        };
+
+        self.filterTORAgentData = function (data) {
+            if(data == null) {
+                return [];
+            }
+            var ret = [];
+            $.each(data,function(i,d){
+                if (d['Source'] == d['name']) {
+                    ret.push(d);
+                }
+            });
+            return ret;
+        };
+
         self.getComputeNodeDetails = function(deferredObj,hostname) {
             $.ajax({
                 url: contrail.format(monitorInfraConstants.monitorInfraUrls['VROUTER_DETAILS'] , hostname,true)
@@ -3433,7 +3460,7 @@ define('confignode-scatterchart-view',['underscore', 'contrail-view'],function(_
                        viewConfig : {
                            loadChartInChunks : true,
                            chartOptions : {
-                               xLabel : 'CPU (%)',
+                               xLabel : ctwl.TITLE_CPU,
                                yLabel : 'Memory (MB)',
                                margin: {top:10},
                                forceX : [ 0, 1 ],
@@ -3462,10 +3489,10 @@ define('confignode-scatterchart-view',['underscore', 'contrail-view'],function(_
                                },
                                tooltipConfigCB : getConfigNodeTooltipConfig,
                                controlPanelConfig: {
-                                   legend: {
-                                       enable: true,
-                                       viewConfig: getControlPanelLegendConfig()
-                                   }
+                                   // legend: {
+                                   //     enable: true,
+                                   //     viewConfig: getControlPanelLegendConfig()
+                                   // }
                                },
                                clickCB : onScatterChartClick
                            }
@@ -3502,7 +3529,7 @@ define('confignode-scatterchart-view',['underscore', 'contrail-view'],function(_
                                   value : configNode.version
                               },
                               {
-                                  label : 'CPU',
+                                  label : ctwl.TITLE_CPU,
                                   value : configNode.cpu,
                               },
                               {
@@ -3588,7 +3615,7 @@ define('controlnode-scatterchart-view',['underscore', 'contrail-view'],function(
                        viewConfig : {
                            loadChartInChunks : true,
                            chartOptions : {
-                               xLabel : 'CPU (%)',
+                               xLabel : ctwl.TITLE_CPU,
                                yLabel : 'Memory (MB)',
                                margin: {top:10},
                                forceX : [ 0, 1 ],
@@ -3617,10 +3644,10 @@ define('controlnode-scatterchart-view',['underscore', 'contrail-view'],function(
                                },
                                tooltipConfigCB : getControlNodeTooltipConfig,
                                controlPanelConfig: {
-                                   legend: {
-                                       enable: true,
-                                       viewConfig: getControlPanelLegendConfig()
-                                   }
+                                   // legend: {
+                                   //     enable: true,
+                                   //     viewConfig: getControlPanelLegendConfig()
+                                   // }
                                },
                                clickCB : onScatterChartClick
                            }
@@ -3657,7 +3684,7 @@ define('controlnode-scatterchart-view',['underscore', 'contrail-view'],function(
                                   value : controlNode.version
                               },
                               {
-                                  label : 'CPU',
+                                  label : ctwl.TITLE_CPU,
                                   value : controlNode.cpu,
                               },
                               {
@@ -3784,10 +3811,10 @@ define('dbnode-scatterchart-view',['underscore', 'contrail-view'],function(_, Co
                                },
                                tooltipConfigCB : getDatabaseNodeTooltipConfig,
                                controlPanelConfig: {
-                                   legend: {
-                                       enable: true,
-                                       viewConfig: getControlPanelLegendConfig()
-                                   }
+                                   // legend: {
+                                   //     enable: true,
+                                   //     viewConfig: getControlPanelLegendConfig()
+                                   // }
                                },
                                clickCB : onScatterChartClick
                            }
@@ -3820,8 +3847,8 @@ define('dbnode-scatterchart-view',['underscore', 'contrail-view'],function(_, Co
            var databaseNode = data.rawData;
            var tooltipData = [
               {
-                  label : 'Host Name',
-                  value : databaseNode['name']
+                  label : 'Version',
+                  value : databaseNode['version']
               },
               {
                   label : 'Disk Space',
@@ -3932,7 +3959,7 @@ define('analyticsnode-scatterchart-view',['underscore', 'contrail-view'],functio
                        viewConfig : {
                            loadChartInChunks : true,
                            chartOptions : {
-                               xLabel : 'CPU (%)',
+                               xLabel : ctwl.TITLE_CPU,
                                yLabel : 'Memory (MB)',
                                forceX : [ 0, 1 ],
                                forceY : [ 0, 20 ],
@@ -3960,10 +3987,10 @@ define('analyticsnode-scatterchart-view',['underscore', 'contrail-view'],functio
                                },
                                tooltipConfigCB : getAnalyticsNodeTooltipConfig,
                                controlPanelConfig: {
-                                   legend: {
-                                       enable: true,
-                                       viewConfig: getControlPanelLegendConfig()
-                                   }
+                                   // legend: {
+                                   //     enable: true,
+                                   //     viewConfig: getControlPanelLegendConfig()
+                                   // }
                                },
                                clickCB : onScatterChartClick
                            }
@@ -3998,7 +4025,7 @@ define('analyticsnode-scatterchart-view',['underscore', 'contrail-view'],functio
                                   value : analyticsNode.version
                               },
                               {
-                                  label : 'CPU',
+                                  label : ctwl.TITLE_CPU,
                                   value : analyticsNode.cpu,
                               },
                               {
@@ -4203,6 +4230,12 @@ define(
                     var retArr = [];
                     $.each(result,function(idx,d) {
                         var obj = {};
+                        var routerType = getValueByJsonPath(d,
+                            "value;ConfigData;bgp-router;bgp_router_parameters;router_type",
+                            null);
+                        if($.inArray(routerType, ctwc.BGP_AAS_ROUTERS) !== -1) {
+                            return true;
+                        }
                         obj['x'] = parseFloat(jsonPath(d,'$.value.ControlCpuState.cpu_info[0].cpu_share')[0]);
                         //Info:Need to specify the processname explictly
                         //for which we need res memory && Convert to MB
@@ -4778,7 +4811,8 @@ define(
                             'value;ConfigData')) ? true : false;
                         obj['isUveMissing'] = ($.isEmptyObject(getValueByJsonPath(d,
                             'value;databaseNode'))) ? true : false;
-                        obj['version'] = noDataStr;
+                        obj['version'] = ifEmpty(self.getNodeVersion(getValueByJsonPath(d,
+                                            'value;databaseNode;NodeStatus;build_info')),'-');
                         var configData;
                         if(!obj['isConfigMissing']){
                             configData = getValueByJsonPath(d,'value;ConfigData');
@@ -6051,7 +6085,8 @@ define(
                 }
 
                 self.getCpuText = function (cpu, noCpuText) {
-                    return (cpu != null && cpu != NaN)? cpu + ' %' : noCpuText;
+                    var ret = ifNotNumeric(cpu,noCpuText)
+                    return ret;
                 }
             };
 
@@ -6092,7 +6127,7 @@ define('monitor-infra-constants',[
         this.aNodeTabStrip = "analytics_tabstrip";
         this.ctrlNodeTabStrip = "control_tabstrip";
         this.dbNodeTabStrip = "db_tabstrip";
-        this.infraDetailsPageCPUChartTitle = 'CPU Share (%)';
+        this.infraDetailsPageCPUChartTitle = ctwl.TITLE_CPU;
         this.CONSOLE_LOGS_REFRESH_INTERVAL = 90000;//Auto refresh interval in console tab (ms)
 
         this.IS_NODE_MANAGER_INSTALLED = true;
@@ -6105,7 +6140,6 @@ define('monitor-infra-constants',[
                 VROUTER_BASE                : '/api/admin/monitor/infrastructure/vrouter/',
                 VROUTER_SUMMARY             : '/api/admin/monitor/infrastructure/vrouters/summary',
                 VROUTER_CACHED_SUMMARY      : '/api/admin/monitor/infrastructure/vrouters/cached-summary',
-                // VROUTER_CACHED_SUMMARY      : '/fakeData/vrouters_harshad_cachedSummary.json',
                 VROUTER_DETAILS             : '/api/admin/monitor/infrastructure/vrouter/details?hostname={0}&basic={1}',
                 VROUTER_INTERFACES          : '/api/admin/monitor/infrastructure/vrouter/interface',
                 VROUTER_NETWORKS            : '/api/admin/monitor/infrastructure/vrouter/vn',
