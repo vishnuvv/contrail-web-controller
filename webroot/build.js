@@ -24,6 +24,9 @@
             name:"js/controller-libs",
             exclude:['underscore','js/controller-dashboard-libs']
         },{
+            name:"js/controller-bundle",
+            exclude:['underscore','js/controller-dashboard-libs']
+        },{
             name:"js/controller-dashboard-libs",
             exclude:['underscore']
         }
