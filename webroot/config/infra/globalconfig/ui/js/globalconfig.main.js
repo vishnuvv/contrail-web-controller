@@ -15,6 +15,7 @@ function GlobalConfigPageLoader ()
 
 //        $(contentContainer).empty();
 
+        // return;
         if (self.globalConfigView == null) {
             requirejs([pathGlobalConfigView], function (GlobalConfigView) {
                 self.globalConfigView = new GlobalConfigView();
