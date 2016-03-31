@@ -50,6 +50,7 @@ require.config({
         'monitor-infra-vrouter-model'       : 'monitor/infrastructure/common/ui/js/models/VRouterListModel',
         'confignode-scatterchart-view'      : 'monitor/infrastructure/common/ui/js/views/ConfigNodeScatterChartView',
         'controlnode-scatterchart-view'     : 'monitor/infrastructure/common/ui/js/views/ControlNodeScatterChartView',
+        'vrouter-scatterchart-view'         : 'monitor/infrastructure/common/ui/js/views/VRouterScatterChartView',
         'dbnode-scatterchart-view'          : 'monitor/infrastructure/common/ui/js/views/DatabaseNodeScatterChartView',
         'analyticsnode-scatterchart-view'   : 'monitor/infrastructure/common/ui/js/views/AnalyticsNodeScatterChartView',
         'vrouter-dashboard-view'            : 'monitor/infrastructure/dashboard/ui/js/views/VRouterDashboardView',

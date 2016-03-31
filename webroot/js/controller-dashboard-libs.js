@@ -9,6 +9,7 @@ define([
     'controlnode-scatterchart-view',
     'dbnode-scatterchart-view',
     'analyticsnode-scatterchart-view',
+    'vrouter-scatterchart-view',
     'vrouter-dashboard-view',
     'monitor-infra-parsers',
     'monitor-infra-utils',

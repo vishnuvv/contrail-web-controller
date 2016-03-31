@@ -4086,6 +4086,91 @@ define('analyticsnode-scatterchart-view',['underscore', 'contrail-view'],functio
 });
 
 /*
+ * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
+ */
+
+define('vrouter-scatterchart-view',['underscore', 'contrail-view'], function(_, ContrailView) {
+   var VRouterScatterChartView = ContrailView.extend({
+       render: function() {
+            var widgetConfig = getValueByJsonPath(this,'attributes;viewConfig;widgetConfig');
+            var self = this;
+            self.cfDataSource = getValueByJsonPath(self,'attributes;viewConfig;cfDataSource',null,false);
+            if(widgetConfig != null) {
+                this.renderView4Config(this.$el,this.model,widgetConfig);
+            }
+           this.renderView4Config(this.$el,
+           this.model,
+           getVRouterScatterChartViewConfig(self));
+       }
+   });
+
+   function getVRouterScatterChartViewConfig(self) {
+       return {
+           elementId: ctwl.VROUTER_SUMMARY_SCATTERCHART_SECTION_ID,
+           view: "SectionView",
+           viewConfig: {
+               rows: [{
+                   columns: [{
+                       elementId: ctwl.VROUTER_SUMMARY_SCATTERCHART_ID,
+                       title: ctwl.VROUTER_SUMMARY_TITLE,
+                       view: "ZoomScatterChartView",
+                       viewConfig: {
+                           loadChartInChunks: false,
+                           cfDataSource : self.cfDataSource,
+                           chartOptions: {
+                               doBucketize: true,
+                               xLabel: ctwl.TITLE_CPU,
+                               yLabel: 'Memory (MB)',
+                               forceX: [0, 1],
+                               forceY: [0, 20],
+                               margin: {top:5},
+                               // yLabelFormat: d3.format(".02f"),
+                               // xLabelFormat: d3.format(".02f"),
+                               // dataParser: function(response) {
+                               //     var chartDataValues = [];
+                               //     for (var i = 0; i < response.length; i++) {
+                               //         var vRouterNode = response[i];
+                               //
+                               //         chartDataValues.push({
+                               //             name: vRouterNode['name'],
+                               //             y: ifNotNumeric(vRouterNode['y'],0),
+                               //             x: ifNotNumeric(vRouterNode['x'],0),
+                               //             color: vRouterNode['color'],
+                               //             size: contrail.handleIfNull(
+                               //                  vRouterNode['size'],0),
+                               //             rawData: vRouterNode
+                               //         });
+                               //     }
+                               //     return chartDataValues;
+                               // },
+                               // tooltipConfigCB: getVRouterTooltipConfig,
+                               bubbleSizeFn: function(d) {
+                                    return d3.max(d,function(d) { return d.size;});
+                               },
+                               tooltipConfigCB: monitorInfraUtils.vRouterTooltipFn,
+                               controlPanelConfig: {
+                                   // legend: {
+                                   //     enable: true,
+                                   //     viewConfig: monitorInfraUtils.getScatterChartLegendConfigForNodes()
+                                   // },
+                                    filter: {
+                                        enable: false,
+                                        viewConfig: monitorInfraUtils.getScatterChartFilterConfigForNodes()
+                                    },
+                               },
+                               bucketTooltipFn: monitorInfraUtils.vRouterBucketTooltipFn,
+                               clickCB: monitorInfraUtils.onvRouterDrillDown
+                           }
+                       }
+                   }]
+               }]
+           }
+       };
+   }
+   return VRouterScatterChartView;
+});
+
+/*
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 
@@ -5199,19 +5284,29 @@ define(
                                     }
                                 }
                             }
-                            if(new RegExp(/vport|logical-port|remote-physical-port/).test(obj['type'])) {
+                            // if(new RegExp(/vport|logical-port|remote-physical-port/).test(obj['type'])) {
                                 if(obj.fip_list != null) {
                                     var fipList = [];
                                     fipList = ifNull(jsonPath(obj,"$..FloatingIpSandeshList")[0],[]);
                                     obj['disp_fip_list'] = self.floatingIPCellTemplate(fipList);
                                 }
-                                retArray.push({uuid:obj['uuid'],name:obj['name'],label:obj['label'],active:obj['active'],
+                                retArray.push({
+                                    uuid: obj['uuid'],
+                                    name: obj['name'],
+                                    label: obj['label'],
+                                    active: obj['active'],
                                     dispName: obj['dispName'],
-                                    type:obj['type'],
-                                    vn_name:obj['vn_name'],disp_vn_name:dispVNName,vm_uuid:obj['vm_uuid'],
-                                    vm_name:obj['vm_name'],disp_vm_name:dispVMName,ip_addr:obj['ip_addr'],
-                                    disp_fip_list:obj['disp_fip_list'],raw_json:rawJson});
-                            }
+                                    type: obj['type'],
+                                    vn_name: obj['vn_name'],
+                                    disp_vn_name: dispVNName,
+                                    vm_uuid: obj['vm_uuid'],
+                                    vm_name: obj['vm_name'],
+                                    disp_vm_name: dispVMName,
+                                    ip_addr: obj['ip_addr'],
+                                    disp_fip_list: obj['disp_fip_list'],
+                                    raw_json: rawJson
+                                });
+                            // }
                         });
                     }
                     return {
@@ -6246,11 +6341,11 @@ define('mon-infra-controller-dashboard',[
     });
 
     function getInfoboxesConfig() {
+        var vRouterListModel = new VRouterListModel();
         var analyticsNodeListModel = new AnalyticsNodeListModel();
         var controlNodeListModel = new ControlNodeListModel();
         var databaseNodeListModel = new DatabaseNodeListModel();
         var configNodeListModel = new ConfigNodeListModel();
-        var vRouterListModel = new VRouterListModel();
 
         return [{
             title: 'Virtual Routers',
@@ -6294,6 +6389,7 @@ define('js/controller-dashboard-libs',[
     'controlnode-scatterchart-view',
     'dbnode-scatterchart-view',
     'analyticsnode-scatterchart-view',
+    'vrouter-scatterchart-view',
     'vrouter-dashboard-view',
     'monitor-infra-parsers',
     'monitor-infra-utils',
