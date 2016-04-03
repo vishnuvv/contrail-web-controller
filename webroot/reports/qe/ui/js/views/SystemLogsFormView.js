@@ -6,8 +6,9 @@ define([
     'underscore',
     'query-form-view',
     'knockback',
-    'reports/qe/ui/js/models/SystemLogsFormModel'
-], function (_, QueryFormView, Knockback, SystemLogsFormModel) {
+    'reports/qe/ui/js/models/SystemLogsFormModel',
+    'js/common/qe.utils'
+], function (_, QueryFormView, Knockback, SystemLogsFormModel,qewu) {
 
     var SystemLogsFormView = QueryFormView.extend({
         render: function () {

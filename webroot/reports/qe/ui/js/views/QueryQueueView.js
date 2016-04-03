@@ -5,8 +5,9 @@
 define([
     'underscore',
     'contrail-view',
-    'contrail-list-model'
-], function (_, ContrailView, ContrailListModel) {
+    'contrail-list-model',
+    'js/common/qe.grid.config'
+], function (_, ContrailView, ContrailListModel,qewgc) {
     var QueryQueueView = ContrailView.extend({
         render: function () {
             var self = this,

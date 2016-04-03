@@ -6,8 +6,9 @@ define([
     'underscore',
     'query-form-view',
     'knockback',
-    'reports/qe/ui/js/models/StatQueryFormModel'
-], function (_, QueryFormView, Knockback, StatQueryFormModel) {
+    'reports/qe/ui/js/models/StatQueryFormModel',
+    'js/common/qe.utils'
+], function (_, QueryFormView, Knockback, StatQueryFormModel,qewu) {
 
     var StatQueryFormView = QueryFormView.extend({
         render: function () {

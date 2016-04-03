@@ -6,8 +6,9 @@ define([
     'underscore',
     'query-form-view',
     'knockback',
-    'reports/qe/ui/js/models/ObjectLogsFormModel'
-], function (_, QueryFormView, Knockback, ObjectLogsFormModel) {
+    'reports/qe/ui/js/models/ObjectLogsFormModel',
+    'js/common/qe.utils',
+], function (_, QueryFormView, Knockback, ObjectLogsFormModel,qewu) {
 
     var ObjectLogsFormView = QueryFormView.extend({
         render: function () {
