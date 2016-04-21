@@ -744,7 +744,7 @@ define('monitor-infra-utils',[
             if(cowu.getAlarmsFromAnalytics) {
                 nodeColor = coreAlarmUtils.getNodeColor(obj);
             } else {
-                // nodeColor = coreAlarmUtils.getNodeColor(obj);
+                nodeColor = coreAlarmUtils.getNodeColor(obj);
             }
             if(nodeColor != false)
                 return nodeColor;
@@ -757,7 +757,7 @@ define('monitor-infra-utils',[
             if(cowu.getAlarmsFromAnalytics) {
                 nodeColor = coreAlarmUtils.getNodeColor(obj);
             } else {
-                // nodeColor = coreAlarmUtils.getNodeColor(obj);
+                nodeColor = coreAlarmUtils.getNodeColor(obj);
             }
             if(nodeColor != false)
                 return nodeColor;
@@ -774,7 +774,7 @@ define('monitor-infra-utils',[
             if(cowu.getAlarmsFromAnalytics) {
                 nodeColor = coreAlarmUtils.getNodeColor(obj);
             } else {
-                // nodeColor = coreAlarmUtils.getNodeColor(obj);
+                nodeColor = coreAlarmUtils.getNodeColor(obj);
             }
             if(nodeColor != false)
                 return nodeColor;
@@ -787,7 +787,7 @@ define('monitor-infra-utils',[
             if(cowu.getAlarmsFromAnalytics) {
                 nodeColor = coreAlarmUtils.getNodeColor(obj);
             } else {
-                // nodeColor = coreAlarmUtils.getNodeColor(obj);
+                nodeColor = coreAlarmUtils.getNodeColor(obj);
             }
             if(nodeColor != false)
                 return nodeColor;
@@ -799,7 +799,7 @@ define('monitor-infra-utils',[
             if(cowu.getAlarmsFromAnalytics) {
                 nodeColor = coreAlarmUtils.getNodeColor(obj);
             } else {
-                // nodeColor = coreAlarmUtils.getNodeColor(obj);
+                nodeColor = coreAlarmUtils.getNodeColor(obj);
             }
             if(nodeColor != false)
                 return nodeColor;
