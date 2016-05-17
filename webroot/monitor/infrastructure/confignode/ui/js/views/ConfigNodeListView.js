@@ -47,7 +47,7 @@ define(
                 };
                 return {
                     elementId : cowu.formatElementId(
-                        [ctwl.CONFIGNODE_SUMMARY_LIST_SECTION_ID ]),
+                        [ctwl.MX_VISUALIZATION_SECTION_ID ]),
                     view : "SectionView",
                     viewConfig : viewConfig
                 };

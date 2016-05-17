@@ -175,6 +175,7 @@ define([
             $('body').on("click", '#flow-info span.reset', function () {
                 self.removeUnderlayPathIds();
                 self.removeUnderlayEffects();
+                
                 self.resetTopology({
                     resetBelowTabs: true
                 });
@@ -692,15 +693,18 @@ define([
                         graphModel.selectedElement().model().set({
                         'nodeType': ctwc.PROUTER,
                         'nodeDetail': nodeDetails});
-                        var children = dblClickedElement.options.model.attributes.children;
+                        var children = graphModel.getChildren(
+                            nodeDetails['name'], ctwc.VROUTER,
+                            graphModel.nodesCollection,
+                            graphModel.edgesCollection);
                         var adjList = _.clone(
                             graphModel.underlayAdjacencyList());
-                        var childrenName = [];
-                        _.each(children, function(child) {
-                            childrenName.push(child.name());
-                            adjList[child.name()] = [];
-                        });
-                        if (childrenName.length > 0) {
+                        if (children.length > 0) {
+                            var childrenName = [];
+                            for (var i = 0; i < children.length; i++) {
+                                childrenName.push(children[i].attributes.name());
+                                adjList[children[i].attributes.name()] = [];
+                            }
                             adjList[nodeDetails['name']] = childrenName;
                             graphModel.adjacencyList(adjList);
                             self.removeUnderlayEffects();
@@ -723,6 +727,28 @@ define([
                                     resetBelowTabs: true
                                 });
                             }
+                        this.tooltipConfigWidth = 0;
+                        this.tooltipConfigHeight = 0;
+                        var network = this.network;
+                        var nodeIds = network.getNodeIds(); //all existing nodes
+                        var edgeIds = network.getEdgeIds(); //all existing edges
+                        _.each(nodeIds, function(id, idx) {
+                            network.removeNode(id);
+                        });
+                        _.each(edgeIds, function(id, idx) {
+                            network.removeEdge(id);
+                        });
+                        //self.hide();
+                        self.renderView4Config($(contentContainer), null, {
+                                elementId: cowu.formatElementId([ctwl.MX_VISUALIZATION_ID]),
+                                view: "MXVisualizationView",
+                                viewPathPrefix: ctwl.URL_MX_VISUALIZATION,
+                                app: cowc.APP_CONTRAIL_CONTROLLER,
+                                viewConfig: {
+                                    clickedElement: dblClickedElement
+                                }
+                        });
+                        
                         }
                     break;
                 case ctwc.VROUTER:
@@ -753,14 +779,13 @@ define([
                             siblings = graphModel.getChildren(parentName, ctwc.VROUTER,
                             graphModel.nodesCollection, graphModel.edgesCollection);
                             parentNode =
-                            self.network.getNode(self.model.elementMap().node[parentName]);
+                            self.network.getNode(self.model.elementMap.node[parentName]);
                         }
 
                     }
-                    /*var children = graphModel.getChildren(nodeDetails.name,
+                    var children = graphModel.getChildren(nodeDetails.name,
                         ctwc.VIRTUALMACHINE, graphModel.nodesCollection,
-                        graphModel.edgesCollection);*/
-                    var children = dblClickedElement.options.model.attributes.children;
+                        graphModel.edgesCollection);
                     var newAdjList = {};
                     var oldAdjList = {};
                     if(self.underlayPathIds.nodes.length > 0 ||
@@ -782,13 +807,14 @@ define([
                         oldAdjList = _.clone(newAdjList);
                         oldAdjList[parentNode['name']] = [];
                     }
-                    var childrenName = [];
-                    _.each(children, function(child) {
-                        childrenName.push(child.name());
-                        newAdjList[child.name()] = [];
-                    });
-                    if(childrenName.length > 0)
+                    if (children.length > 0) {
+                        var childrenName = [];
+                        for (var i = 0; i < children.length; i++) {
+                            childrenName.push(children[i].attributes.name());
+                            newAdjList[children[i].attributes.name()] = [];
+                        }
                         newAdjList[nodeDetails['name']] = childrenName;
+                    }
                     graphModel.adjacencyList(newAdjList);
                     self.removeUnderlayEffects();
                     self.removeUnderlayPathIds();
@@ -848,6 +874,7 @@ define([
             link.attributes.tooltipConfig({
                 title       : title,
                 content     : content,
+                data        : link,
                 dimension   : {
                     width   : $(dummydiv).find('.popover').width(),
                     height  : $(dummydiv).find('.popover').height()
@@ -881,6 +908,7 @@ define([
             node.attributes.tooltipConfig({
                 title           : title,
                 content         : content,
+                data            : node,
                 actionsCallback : tooltipConfig.actionsCallback,
                 dimension: {
                     width: $(dummydiv).find('.popover').width(),
@@ -927,8 +955,7 @@ define([
                     }
                 }
                 var parentNode = _.filter(nodesCollection.models, function(node) { 
-                    return (node.attributes.name() == parentElementLabel &&
-                        !(node.attributes.model().attributes.hasOwnProperty("hidden")));
+                    return (node.attributes.name() == parentElementLabel);
                     });
                 if (false !== parentNode && parentNode.length === 1) {
                     parentNode = parentNode[0];
@@ -944,8 +971,7 @@ define([
 
             _.each(adjacencyList, function(edges, parentElementLabel) {
                 var parentNode = _.filter(nodesCollection.models, function(node) { 
-                    return (node.attributes.name() == parentElementLabel &&
-                        !(node.attributes.model().attributes.hasOwnProperty("hidden")));
+                    return (node.attributes.name() == parentElementLabel);
                     });
                 if (false !== parentNode && parentNode.length === 1) {
                     parentNode = parentNode[0];
@@ -980,8 +1006,7 @@ define([
                             }
                         }
                         var childNode = _.filter(nodesCollection.models, function(node) { 
-                            return (node.attributes.name() == childElementLabel &&
-                                !(node.attributes.model().attributes.hasOwnProperty("hidden")));
+                            return (node.attributes.name() == childElementLabel);
                         });
                         if (false !== childNode && childNode.length === 1) {
                             childNode = childNode[0];
@@ -1078,7 +1103,12 @@ define([
                             } else {
                                 continue;
                             }
-                            var newLink = self.createLink(linkModel,
+                            var newLinkModel = self.model.addEdge({
+                                link_type: linkModel.attributes.link_type(),
+                                endpoints: linkModel.attributes.endpoints(),
+                                more_attributes: linkModel.attributes.more_attributes
+                            });
+                            var newLink = self.createLink(self.model.edgesCollection.last(),
                                 link_type, endpoint0NodeId, endpoint1NodeId);
                             var currentLinkId = newLink.attributes.element_id();
                             linkElements.push(newLink);
@@ -1362,21 +1392,17 @@ define([
         removeUnderlayPathIds: function() {
             var network = this.network;
             var graphModel = this.model;
-            var elementMap = graphModel.elementMap();
+            var elementMap = this.model.elementMap();
             var pathIds = this.underlayPathIds;
             var edgeIds = network.getEdgeIds();
             var edges = [];
             if(pathIds && pathIds.hasOwnProperty('links')) {
                 for (var i = 0; i < pathIds.links.length; i++) {
-                    graphModel.edgesCollection.remove(
-                        graphModel.getEdge(pathIds.links[i])[0]);
                     network.removeEdge(pathIds.links[i]);
                 }
             }
             if(pathIds && pathIds.hasOwnProperty('nodes')) {
                 for (var i = 0; i < pathIds.nodes.length; i++) {
-                    graphModel.nodesCollection.remove(
-                        graphModel.getNode(pathIds.nodes[i])[0]);
                     network.removeNode(pathIds.nodes[i]);
                 }
             }
@@ -1568,6 +1594,9 @@ define([
                 contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_CONTENT);
             return {
                 "physical-router": {
+                    data: function(node) {
+                        return node;
+                    },
                     title: function(node) {
                         return tooltipTitleTmpl({
                             name: node.attributes.name(),
@@ -1585,6 +1614,10 @@ define([
                             text: 'Configure',
                             iconClass: 'icon-cog'
                         });
+                      /*  actions.push({
+                           text: 'Chassisview',
+                           iconClass: 'icon-cog'
+                        });*/
                         ifLength = 
                         getValueByJsonPath(node.attributes.more_attributes(),"ifTable", []).length;
                         tooltipLblValues.push({
@@ -1622,21 +1655,52 @@ define([
                             }
                         });
 
-                        actions.push({
-                            callback: function(key, options) {
+                        /*actions.push({
+                            callback: function(underlayGraphView) {
+                                var self = underlayGraphView;
+                                var network = self.network;
+                                self.removeUnderlayPathIds();
+                                self.removeUnderlayEffects();
+                                self.resetTooltip();
+                                var test = "test100";
+                               // console.log("node"+node.data().popover.options.data.attributes.model().attributes);
                                 graphModel.selectedElement().model().set({
-                                    'nodeType': ctwc.PROUTER,
-                                    'nodeDetail': node});
-                                graphModel.selectedElement().model().set({
-                                    'nodeType': '',
-                                    'nodeDetail': {}},{silent:true});
+                                   // 'nodeData':node.data().popover.options.data.attributes.model().attributes
+                                    'nodeData':test
+                                 });
+                               // var nodeData = selectedElement['attributes']['nodeData'];
+                                //console.log("nodeData"+nodeData);
+                                //$(dummydiv).remove();
+                               // document.getElementsByClassName('.vis-network-tooltip').style.display = 'none';
+    console.log("selected elemement"+graphModel.selectedElement.model().attributes.selectedElement.attributes.nodeData);
+                                //$(".vis-network-tooltip").hide();
+                                this.tooltipConfigWidth = 0;
+                                this.tooltipConfigHeight = 0;
+                                var nodeIds = network.getNodeIds(); //all existing nodes
+                                var edgeIds = network.getEdgeIds(); //all existing edges
+                                _.each(nodeIds, function(id, idx) {
+                                    network.removeNode(id);
+                                });
+                                _.each(edgeIds, function(id, idx) {
+                                    network.removeEdge(id);
+                                });
+                                self.renderView4Config($(contentContainer), null, {
+                                        elementId: cowu.formatElementId([ctwl.MX_VISUALIZATION_ID]),
+                                        view: "MXVisualizationView",
+                                        viewPathPrefix: ctwl.URL_MX_VISUALIZATION,
+                                        app: cowc.APP_CONTRAIL_CONTROLLER,
+                                        viewConfig: {}
+                                });
                             }
-                        });
+                        });*/
 
                         return actions;
                     }
                 },
                 "virtual-router": {
+                    data: function(node) {
+                        return node;
+                    },
                     title: function(node) {
                         return tooltipTitleTmpl({
                             name: node.attributes.name(),
@@ -1666,7 +1730,14 @@ define([
                             text: 'Configure',
                             iconClass: 'icon-cog'
                         });
-
+                        actions.push({
+                            text: 'Map Flow',
+                            iconClass: 'icon-exchange'
+                        });
+                        actions.push({
+                            text: 'Trace Flow',
+                            iconClass: 'icon-exchange'
+                        });
                         var tooltipContent = [{
                             label: 'Name',
                             value: name
@@ -1694,10 +1765,38 @@ define([
                         });
 
                         actions.push({
-                            callback: function() {
+                            callback: function(underlayGraphView) {
                                 graphModel.selectedElement().model().set({
                                     'nodeType': ctwc.VROUTER,
-                                    'nodeDetail': node});
+                                    'nodeDetail':
+                                    node.data().popover.
+                                    options.data.attributes.
+                                    model().attributes});
+                                $("#"+ctwc.UNDERLAY_TAB_ID).tabs({active:0});
+                                $("#run_query").find("button").click();
+                                graphModel.selectedElement().model().set({
+                                    'nodeType': '',
+                                    'nodeDetail': {}},{silent:true});
+                            }
+                        });
+                        actions.push({
+                            callback: function(underlayGraphView) {
+                                graphModel.selectedElement().model().set({
+                                    'nodeType': ctwc.VROUTER,
+                                    'nodeDetail':
+                                    node.data().popover.
+                                    options.data.attributes.
+                                    model().attributes});
+                                $("#"+ctwc.UNDERLAY_TAB_ID).tabs({active:1});
+                                underlayGraphView.rootView.viewMap.
+                                    traceflow_radiobtn_name.model.
+                                    traceflow_radiobtn_name('vRouter');
+                                underlayGraphView.rootView.viewMap.
+                                    vrouter_dropdown_name.model.
+                                    vrouter_dropdown_name(
+                                        node.data().popover.
+                                        options.data.attributes.
+                                        model().attributes.name);
                                 graphModel.selectedElement().model().set({
                                     'nodeType': '',
                                     'nodeDetail': {}},{silent:true});
@@ -1707,6 +1806,9 @@ define([
                     }
                 },
                 "virtual-machine": {
+                    data: function(node) {
+                        return node;
+                    },
                     title: function(node) {
                         var virtualMachineName =
                         getValueByJsonPath(node.attributes.more_attributes(),
@@ -1726,8 +1828,6 @@ define([
                             label, instanceName = "";
                         var instanceUUID = node.attributes.name();
                         var instances = graphModel.getVirtualMachines();
-                        var fip_addr = "";
-                        var fip_addr_arr = [];
                         for (var i = 0; i < instances.length; i++) {
                             if (instances[i].attributes.name() === instanceUUID) {
                                 var attributes = ifNull(instances[i].attributes.more_attributes(), {}),
@@ -1743,9 +1843,6 @@ define([
                                         ipArr.push(interfaceList[j]['ip6_address']);
                                     else if (interfaceList[j]['ip_address'] != '0.0.0.0')
                                         ipArr.push(interfaceList[j]['ip_address']);
-                                    fip_addr_arr = getValueByJsonPath(interfaceList[j], "floating_ips", []);
-                                    if (fip_addr != "") fip_addr += ", ";
-                                    fip_addr += _.pluck(fip_addr_arr, 'ip_address').join(', ');
                                 }
                                 if (ipArr.length > 0)
                                     vmIp = ipArr.join();
@@ -1756,6 +1853,10 @@ define([
                         }
                         if ("" == instanceName)
                             instanceName = node.attributes.name();
+                        actions.push({
+                            text: 'Trace Flow',
+                            iconClass: 'icon-exchange'
+                        });
                         tooltipContent = {
                             iconClass: 'icon-contrail-virtual-machine font-size-30',
                             actions: actions
@@ -1780,15 +1881,35 @@ define([
                                 value: vn
                             });
                         }
-
-                        if (fip_addr != "") {
-                            tooltipLblValues.push({
-                                label: "Floating IP(s)",
-                                value: fip_addr
-                            });
-                        }
                         tooltipContent['info'] = tooltipLblValues;
                         return tooltipContentTmpl(tooltipContent);
+                    },
+                    actionsCallback: function(node) {
+                        var actions = [];
+                        actions.push({
+                            callback: function(underlayGraphView) {
+                                graphModel.selectedElement().model().set({
+                                    'nodeType': ctwc.VIRTUALMACHINE,
+                                    'nodeDetail':
+                                    node.data().popover.
+                                    options.data.attributes.
+                                    model().attributes});
+                                $("#"+ctwc.UNDERLAY_TAB_ID).tabs({active:1});
+                                underlayGraphView.rootView.viewMap.
+                                    traceflow_radiobtn_name.model.
+                                    traceflow_radiobtn_name('instance');
+                                underlayGraphView.rootView.viewMap.
+                                    instance_dropdown_name.model.
+                                    instance_dropdown_name(
+                                        node.data().popover.
+                                        options.data.attributes.
+                                        model().attributes.name);
+                                graphModel.selectedElement().model().set({
+                                    'nodeType': '',
+                                    'nodeDetail': {}},{silent:true});
+                            }
+                        });
+                        return actions;
                     }
                 },
                 link: {
@@ -1918,13 +2039,16 @@ define([
                 }
                 var params = parameters;
                 var self = contrailVisView.caller;
+                
                 var network = contrailVisView;
                 var _network = network.network;
                 if (params.nodes.length == 1) {
+                    //console.log("params nodes underlay"+params.nodes[0]);
                     var clickedElement = _network.canvas.body.nodes[params.nodes[0]];
                     //self.resetConnectedElements();
-                    self.addDimlightToConnectedElements();
+                    //self.addDimlightToConnectedElements();
                     var node = self.model.getNode(params.nodes[0]);
+                    //console.log("underlay node called"+node);
                     if(node && node.length == 1)
                         node = node[0];
                     else
@@ -1964,6 +2088,8 @@ define([
                                 'nodeDetail': {}},{silent:true});
                             break;
                     }
+                    //$(".vis-network-tooltip").hide();
+                 
                 } else if (params.edges.length == 1) {
                     var data = {};
                     var clickedElement = _network.canvas.body.edges[params.edges[0]];
@@ -2073,6 +2199,7 @@ define([
                 trigger: 'hover',
                 html: true,
                 animation: false,
+                data: tooltipConfig.data,
                 placement: function (context, src) {
                     //src is div.vis-network-tooltip
                     //context is div.popover
@@ -2099,7 +2226,6 @@ define([
                         return 'bottom';
                     }
                 },
-
                 title: function () {
                     return tooltipConfig.title;
                 },
@@ -2112,7 +2238,7 @@ define([
             $('.popover').find('.btn').on('click', function() {
                 var actionKey = $(this).data('action'),
                   actionsCallback = tooltipConfig.actionsCallback(tt);
-                  actionsCallback[actionKey].callback();
+                  actionsCallback[actionKey].callback(self);
                   $(".vis-network-tooltip").popover("hide");
             });
             $('.popover').find('i.icon-remove').on('click', function() {
@@ -2137,6 +2263,7 @@ define([
             $(".vis-network-tooltip").popover("hide");
             var self = contrailVisView.caller;
             if (params.nodes.length == 1) {
+
                 if(getCookie('nodeDoubleClick') != "true" &&
                     (self.underlayPathIds.nodes.length > 0 ||
                     self.underlayPathIds.links.length > 0)) {
@@ -2159,6 +2286,7 @@ define([
                 } else {
                     self.expandNodes(params, contrailVisView);
                 }
+               
             } else if(params.nodes.length == 0 && params.edges.length == 0) {
                 self.resetConnectedElements();
                 underlayUtils.removeUnderlayTabs(
@@ -2212,9 +2340,9 @@ define([
                         'background-repeat   : no-repeat; ' +
                         'background-position : 2px 2px; ';
 
-            //Zoom-in/out/reset always appears.
-            //There are additional navigations required on map
-            //Increase 40 pixels for 'top'
+            // Zoom-in/out/reset always appears.
+            // There are additional navigations required on map
+            // Increase 40 pixels for 'top'
             var navConfig = {
                 "rearrange": {
                     "id"    : "rearrange",

@@ -351,7 +351,26 @@ define([
         this.UNDERLAY_TRAFFIC_STATISTICS = 'Traffic Statistics';
         this.UNDERLAY_SEARCHFLOW_WIDGET_TITLE = 'Query Flow Records';
 
-
+        //MX visulization lables
+        this.MX_VISUALIZATION_ID ="mx-visualization";
+        this.URL_MX_VISUALIZATION = 'monitor/infrastructure/mxvisualization/ui/js/views/';
+        this.MX_VISUALIZATION_TITLE = 'MX Visulization';
+        this.MX_VISUALIZATION_TAB_ID ="mx-visualization-tab";
+        this.MX_VISUALIZATION_SECTION_ID = 'mx-visualization-list-section';
+        this.MX_GRAPH_ID = "MX-graph";
+        this.TMPL_MX_GRAPH_VIEW = 'mx-graph-template';
+        this.MX_DETAILS_TAB_TITLE = 'Details';
+        this.MX_LINECARD_TITLE = 'Line Cards';
+        this.MX_INTERFACE_TITLE = 'Interface';
+        this.MX_LINECARD_CHART_TITLE = 'Traffic Statistics';
+        this.MX_TAB_DETAILS = 'MX Details';
+        this.MX_LINECARDCOUNT_URL = '/api/tenant/networking/mxlinecard';
+        this.MX_MXTOPOLOGY_URL = '/api/tenant/networking/mxtopology';
+        this.MX_LINECARDSTATS_URL = '/api/admin/monitor/infrastructure/mx/linecardstats';
+        this.MX_PFESTATS_URL = '/api/admin/monitor/infrastructure/mx/pfestats';
+        this.TITLE_LINECARDS = "Line Cards";
+        this.MX_TRAFFIC_STAT_TITLE = 'Traffic Statistics';
+        
         //Monitor Infra common
         this.MONITOR_INFRA_VIEW_PATH = 'monitor/infrastructure/common/ui/js/views/';
 

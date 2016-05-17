@@ -77,6 +77,7 @@ function getControllerAppPaths (ctBaseDir, ctBuildDir,env) {
             'searchflow-model': ctWebDir + '/monitor/infrastructure/underlay/ui/js/models/SearchFlowFormModel',
             'traceflow-model': ctWebDir + '/monitor/infrastructure/underlay/ui/js/models/TraceFlowTabModel',
             'underlay-graph-model' : ctWebDir + '/monitor/infrastructure/underlay/ui/js/models/UnderlayGraphModel',
+            'mx-graph-model' : ctWebDir + '/monitor/infrastructure/mxvisualization/ui/js/models/MXVisualizationModel',
             'monitor-infra-confignode-model' : ctWebDir + '/monitor/infrastructure/common/ui/js/models/ConfigNodeListModel',
             'monitor-infra-confignode-charts-model': ctWebDir + '/monitor/infrastructure/common/ui/js/models/ConfigNodeChartsModel',
             'monitor-infra-analyticsnode-model' : ctWebDir + '/monitor/infrastructure/common/ui/js/models/AnalyticsNodeListModel',

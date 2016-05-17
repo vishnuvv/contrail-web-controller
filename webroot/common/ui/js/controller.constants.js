@@ -223,8 +223,25 @@ define([
         this.URL_OBJECT_SHARED_TABLE = "/api/query/cassandra/keys/obj_shared_table";
         this.OBJECT_SHARED_TABLE = "obj_shared_table";
         this.OBJECT_UUID_TABLE = "obj_uuid_table";
+        
+        //MX visulizations conatant
+        this.MX_VISUALIZATION_TAB_ID ="mx-visualizationTabs";
+        this.MX_SEARCHFLOW_TAB_ID = 'searchFlow';
+        this.MX_LINECARDS_TAB_ID = 'linecards';
+        this.MX_LINECARDS_STAT_TAB_ID = 'linecardstats';
+        this.MX_TRAFFIC_STAT_TAB_ID = 'mx-traffic-stats-Tabs';
+        this.MX_TRAFFIC_STAT_WIDGET = 'mx-traffic-stats-widget';
+        this.MX_DETAILS_TAB_ID = 'mx-details-tab-id';
+        this.MX_DETAILS_VIEW_TAB_ID = 'mx-details-view-tab-id';
+        this.MX_DETAILS_TAB_WIDGET = 'mx-details-tab-widget';
+        this.MX_LINECARDS_DETAILS_TAB_ID = 'mx-linecards-details-tab';
+        this.MX_LINECARDS_DETAILS_TAB_WIDGET = 'mx-linecards-details-tab-widget';
+        this.MX_INTERFACES_DETAILS_TAB_ID = 'mxinterfacetab';
+        this.MX_INTERFACES_DETAILS_TAB_ID = 'mx-interfaces-details-tab';
+        this.MX_INTERFACES_DETAILS_TAB_WIDGET = 'mx-interfaces-details-tab-widget';
 
         // Underlay constants
+        this.UNDERLAY_TAB_ID = 'underlayTabs';
         this.UNDERLAY_TOPOLOGY_CACHE = "underlayTopology";
         this.UNDERLAY_TABS_VIEW_ID = 'underlayTabsView';
         this.UNDERLAY_TAB_ID = 'underlayTabs';
