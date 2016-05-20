@@ -33,15 +33,16 @@ define([
             //No need to instantiate as it's a singleton class
             var monitorInfraDashboardView = MonitorInfraDashboardView;
             monitorInfraDashboardView.addInfoboxes(getInfoboxesConfig());
+            // console.info('added infoboxes',performance.now());
         }
     });
 
     function getInfoboxesConfig() {
+        var vRouterListModel = new VRouterListModel();
         var analyticsNodeListModel = new AnalyticsNodeListModel();
         var controlNodeListModel = new ControlNodeListModel();
         var databaseNodeListModel = new DatabaseNodeListModel();
         var configNodeListModel = new ConfigNodeListModel();
-        var vRouterListModel = new VRouterListModel();
 
         return [{
             title: 'Virtual Routers',

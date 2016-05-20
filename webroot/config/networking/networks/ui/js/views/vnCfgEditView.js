@@ -6,6 +6,7 @@ define([
     'underscore',
     'contrail-view',
     'knockback',
+    // 'validation',
     'config/networking/networks/ui/js/views/vnCfgFormatters'],
     function (_, ContrailView, Knockback, VNCfgFormatters) {
     var formatVNCfg = new VNCfgFormatters();
@@ -56,6 +57,7 @@ define([
                                          false);
                 Knockback.applyBindings(self.model,
                                         document.getElementById(modalId));
+                //How it knows which collection (network_ipam_refs) to be bound to which element??
                 kbValidation.bind(self,
                     {collection: self.model.model().attributes.network_ipam_refs});
                 kbValidation.bind(self,
@@ -112,6 +114,7 @@ define([
                                     "vnCfgConfigValidations", null, null,
                                     function () {
                 self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
+                // ko.applyBindings(self.model,
                 Knockback.applyBindings(self.model,
                                         document.getElementById(modalId));
                 //kbValidation.bind(self);
