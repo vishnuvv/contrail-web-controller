@@ -216,6 +216,13 @@ define(['backbone', 'contrail-view-model'],
                    }
                    if($.inArray(parent, tree[parents[i].name]["parent"]) == -1)
                       tree[parents[i].name]["parent"].push(parent);
+                   // Need to check if there are any siblings with no parent
+                   // and do the same process for those nodes.
+                   var siblings = this.getSiblingsWithNoParent(parents[i]);
+                   if (siblings.length > 0) {
+                       this.parseTree(siblings, tree, tmpTree, null);
+                   }
+
                    var children =
                        this.getChildren(parents[i].name, children_chassis_type);
 
@@ -226,6 +233,42 @@ define(['backbone', 'contrail-view-model'],
                }
            }
            return tree;
+       },
+
+       getSiblingsWithNoParent: function (node) {
+           if (node != null) {
+               var siblings = [], nodes = this.nodes, links = this.links;
+               var name = node['name'], chassis_type = node['chassis_type'];
+               var srcPoint = jsonPath(links,
+                       '$[?(@.endpoints[0]=="' + name + '")]');
+                   var dstPoint = jsonPath(links,
+                       '$[?(@.endpoints[1]=="' + name + '")]');
+                   if(false !== srcPoint && srcPoint.length > 0) {
+                       for(var i=0; i<srcPoint.length; i++) {
+                           var sp = srcPoint[i].endpoints;
+                           var otherEndNode =
+                               jsonPath(nodes, '$[?(@.name=="' + sp[1] + '")]');
+                           if(false !== otherEndNode && otherEndNode.length == 1 &&
+                               otherEndNode[0].chassis_type == chassis_type &&
+                               (otherEndNode[0]['parent'] == null || otherEndNode[0]['parent'].length == 0)) {
+                               siblings.push(otherEndNode[0]);
+                           }
+                       }
+                   }
+                   if(false !== dstPoint && dstPoint.length > 0) {
+                       for(var i=0; i<dstPoint.length; i++) {
+                           var sp = dstPoint[i].endpoints;
+                           var otherEndNode =
+                               jsonPath(nodes, '$[?(@.name=="' + sp[0] + '")]');
+                           if(false !== otherEndNode && otherEndNode.length == 1 &&
+                               otherEndNode[0].chassis_type == chassis_type &&
+                               (otherEndNode[0]['parent'] == null || otherEndNode[0]['parent'].length == 0)) {
+                               siblings.push(otherEndNode[0]);
+                           }
+                       }
+                   }
+               return _.uniq(siblings, 'name');
+           }
        },
        getChildChassisType : function (parent_chassis_type) {
            switch (parent_chassis_type) {
