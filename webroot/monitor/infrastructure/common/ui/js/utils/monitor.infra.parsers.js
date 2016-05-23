@@ -785,13 +785,6 @@ define(
                             y0: y0,
                             y1: y0 += totalFailedReqs
                         });
-                        parsedData.push({
-                            colorCodes: colorCodes,
-                            counts: counts,
-                            total: totalFailedReqs,
-                            timestampExtent: timestampExtent,
-                            date: new Date(i / 1000)
-                        });
                         for(var j=0,len=reqCntData.length;j<len;j++) {
                             var nodeName = reqCntData[j]['key'];
                             var nodeReqCnt = reqCntData[j]['value'];
@@ -813,13 +806,14 @@ define(
                                 y0:y0,
                                 y1:y0 += nodeReqCnt
                             });
-                            parsedData.push({
-                                counts: counts,
-                                total: totalReqs,
-                                timestampExtent: timestampExtent,
-                                date: new Date(i / 1000)
-                            });
                         }
+                        parsedData.push({
+                            colorCodes: colorCodes,
+                            counts: counts,
+                            total: totalReqs,
+                            timestampExtent: timestampExtent,
+                            date: new Date(i / 1000)
+                        });
                     }
                     return parsedData;
                 };

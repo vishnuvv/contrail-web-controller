@@ -43,9 +43,9 @@ define([
                     return response['data'];
                 }
             },
-            cacheConfig : {
+            /*cacheConfig : {
                 ucid: ctwl.CACHE_CONFIGNODE_CHARTS
-            }
+            }*/
         };
 
         return ContrailListModel(listModelConfig);

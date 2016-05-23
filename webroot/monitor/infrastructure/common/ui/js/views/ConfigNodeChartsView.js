@@ -44,7 +44,7 @@ define(['underscore', 'contrail-view',
                                height: 380,
                                xAxisLabel: 'Time (hrs)',
                                yAxisLabel: 'Request Served',
-                               yAxisOffset: 25,
+                               yAxisOffset: 15,
                                axisLabelFontSize: 11,
                                tickPadding: 8,
                                margin: {
@@ -130,7 +130,7 @@ define(['underscore', 'contrail-view',
                                            .append('text')
                                            .attr('dy', 8)
                                            .attr('text-anchor', 'end')
-                                           .text('Failure');
+                                           .text('Failures');
                                        var legend = legendWrap.selectAll('.contrail-slegend')
                                               .data(colorCodes)
                                               .enter()
@@ -166,7 +166,7 @@ define(['underscore', 'contrail-view',
                                view: "WidgetView",
                                viewConfig: {
                                    header: {
-                                       title: 'Response Parameters',
+                                       title: 'Response Statistics',
                                    },
                                    controls: {
                                        top: {
@@ -288,7 +288,7 @@ define(['underscore', 'contrail-view',
                                view: "WidgetView",
                                viewConfig: {
                                    header: {
-                                       title: 'Config Node',
+                                       title: 'Request Statistics',
                                    },
                                    controls: {
                                        top: {
