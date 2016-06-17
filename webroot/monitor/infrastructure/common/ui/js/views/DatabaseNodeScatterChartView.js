@@ -36,6 +36,7 @@ define(['underscore', 'contrail-view'],function(_, ContrailView){
                                forceX : [ 0, 1 ],
                                forceY : [ 0, 20 ],
                                margin: {top:10},
+                               zoomScroll: false,
                                dataParser : function(
                                        response) {
                                    var chartDataValues = [ ];
