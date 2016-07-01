@@ -13,7 +13,7 @@ define([
 
         renderPort: function (viewConfig) {
             self = this,
-            this.renderView4Config(this.$el, null,
+            this.renderView4Config($(contentContainer), null,
                                    this.getPortConfig(viewConfig));
         },
         getPortConfig: function (viewConfig) {
