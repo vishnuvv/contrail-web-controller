@@ -582,6 +582,12 @@ define([
         this.GLOBAL_FLOW_AGING_GRID_ID = "global-flow-aging-grid";
         this.GLOBAL_FLOW_AGING_PREFIX_ID = "global_flow_aging";
         this.GLOBAL_FLOW_AGING_LIST_VIEW_ID = "global-flow-aging-list-view";
+        
+        //User definded counters
+        this.USER_DEFINED_COUNTRERS_GRID_ID = "user-defined-counters-grid";
+        this.GLOBAL_COUNTERS_PREFIX_ID = "global_user_defined_counters";
+        this.GLOBAL_USER_DEFINED_COUNTRER_PREFIX_ID = "user_defined_counters";
+       
 
         //BGP
         this.URL_GET_BGP = '/api/tenants/config/bgp/get-bgp-routers';
