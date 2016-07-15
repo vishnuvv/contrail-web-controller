@@ -32,8 +32,8 @@ define([
                                 viewConfig: {
                                     parseFn: function (response) {
                                         var dimensions = ['MAX(flow_rate.active_flows)',
-                                                          'phy_if_band.in_bandwidth_usage',
-                                                          'phy_if_band.out_bandwidth_usage'];
+                                                          'phy_band_in_bps',
+                                                          'phy_band_out_bps'];
                                         var axisLabels = ['Flow Rate','Bandwidth In','Bandwidth Out'];
                                         var options = {dimensions:dimensions,axisLabels:axisLabels};
                                         return ctwp.parseLineChartDataForVRouterBandwidth(response,options);
