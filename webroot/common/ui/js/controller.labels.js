@@ -364,7 +364,17 @@ define([
         this.VROUTER_DASHBOARD_CHART_ID = 'vrouter-dashboard-chart';
         this.VROUTER_DASHBOARD_SPARKLINE_ID = 'vrouter-dashboard-sparkline';
         this.VROUTER_DASHBOARD_SECTION_ID = 'vrouter-dashboard-section';
-
+        
+        //Analytics node labels
+        this.ANALYTICS_CHART_SANDESH_SECTION_ID = "analytics-chart-sandesh-section-id";
+        this.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID = "analytics-chart-sandesh-stackedbarchart-id";
+        this.ANALYTICS_CHART_QUERIES_SECTION_ID = "analytics-chart-queries-section-id";
+        this.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID = "analytics-chart-queries-stackedbarchart-id";
+        this.ANALYTICS_CHART_DATABASE_READ_SECTION_ID = "analytics-chart-database-read-section-id";
+        this.ANALYTICS_CHART_DATABASE_READ_STACKEDBARCHART_ID = "analytics-chart-database-read-stackedbarchart-id";
+        this.ANALYTICS_CHART_DATABASE_WRITE_SECTION_ID = "analytics-chart-database-write-section-id";
+        this.ANALYTICS_CHART_DATABASE_WRITE_STACKEDBARCHART_ID = "analytics-chart-database-write-stackedbarchart-id";
+        
         //Config node labels
         this.CONFIGNODE_VIEWPATH_PREFIX = 'monitor/infrastructure/confignode/ui/js/views/';
         this.CONFIGNODE_SUMMARY_PAGE_ID = 'monitor-config-nodes';

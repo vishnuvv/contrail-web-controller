@@ -26,9 +26,9 @@ define(['underscore', 'contrail-view',
                                elementId: ctwl.CONFIGNODE_SUMMARY_STACKEDCHART_ID + '-widget',
                                view: "WidgetView",
                                viewConfig: {
-                                   header: {
+                                   /*header: {
                                        title: 'Requests Served',
-                                   },
+                                   },*/
                                    controls: {
                                        top: {
                                            default: {
@@ -42,9 +42,10 @@ define(['underscore', 'contrail-view',
                            chartOptions:{
                                brush: false,
                                height: 380,
-                               xAxisLabel: 'Time',
+                               xAxisLabel: '',
                                yAxisLabel: 'Requests served',
                                yAxisOffset: 25,
+                               xAxisTicksCnt: 8,
                                axisLabelFontSize: 11,
                                tickPadding: 8,
                                margin: {
@@ -153,9 +154,9 @@ define(['underscore', 'contrail-view',
                                elementId: ctwl.CONFIGNODE_SUMMARY_LINEBARCHART_ID + '-widget',
                                view: "WidgetView",
                                viewConfig: {
-                                   header: {
+                                  /* header: {
                                        title: 'Response Statistics',
-                                   },
+                                   },*/
                                    controls: {
                                        top: {
                                            default: {
@@ -180,7 +181,7 @@ define(['underscore', 'contrail-view',
                                focusEnable: false,
                                height: 190,
                                showLegend: true,
-                               xAxisLabel: 'Time',
+                               xAxisLabel: '',
                                xAxisMaxMin: false,
                                defaultDataStatusMessage: false,
                                xFormatter: function (xValue, tickCnt) {
@@ -260,9 +261,9 @@ define(['underscore', 'contrail-view',
                                elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_SECTION_ID + '-widget',
                                view: "WidgetView",
                                viewConfig: {
-                                   header: {
+                                  /* header: {
                                        title: 'Request Statistics',
-                                   },
+                                   },*/
                                    controls: {
                                        top: {
                                            default: {
