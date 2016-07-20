@@ -844,7 +844,7 @@ define(
                         //Getting nodes group with failed requests as value
                         var reqFailedData = groupDim.group().reduceSum(
                             function (d) {
-                                if (parseInt(d['query_stats.error']) != "None") {
+                                if (d['query_stats.error'] != "None") {
                                     return 1;
                                 } else {
                                     return 0;
@@ -939,7 +939,7 @@ define(
                         //Getting nodes group with failed requests as value
                         var reqFailedData = groupDim.group().reduceSum(
                             function (d) {
-                                if (parseInt(d[reqfailed]) > 0) {
+                                if (d[reqfailed] > 0) {
                                     return 1;
                                 } else {
                                     return 0;

@@ -2,510 +2,158 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore', 'contrail-view',
-       'monitor-infra-analytics-sandesh-chart-model', 'monitor-infra-analytics-queries-chart-model', 'monitor-infra-analytics-database-read-write-chart-model'],function(_, ContrailView,AnalyticsNodeSandeshChartModel, AnalyticsNodeQueriesChartModel, AnalyticsNodeDataBaseReadWriteChartModel){
-        var AnalyticsNodeScatterChartView = ContrailView.extend({
+define(['underscore', 'contrail-view'],function(_, ContrailView){
+   var AnalyticsNodeScatterChartView = ContrailView.extend({
         render : function (){
-            var anlyticsTemplate = contrail.getTemplate4Id(
-                    cowc.TMPL_4COLUMN__2ROW_CONTENT_VIEW);
-            var self = this;
-            this.$el.html(anlyticsTemplate);
-            
-            var topleftColumn = this.$el.find(".top-container .left-column");
-            var toprightCoulmn = this.$el.find(".top-container .right-column");
-            var bottomleftColumn = this.$el.find(".bottom-container .left-column");
-            var bottomrightCoulmn = this.$el.find(".bottom-container .right-column");
-            var sandeshModel = new AnalyticsNodeSandeshChartModel();
-            var queriesModel = new AnalyticsNodeQueriesChartModel();
-            var databseReadWritemodel = new AnalyticsNodeDataBaseReadWriteChartModel();
-            
-            self.renderView4Config(topleftColumn,  sandeshModel,
-                    getAnalyticsNodeSandeshChartViewConfig());
-            
-            self.renderView4Config(toprightCoulmn,  queriesModel,
-                    getAnalyticsNodeQueriesChartViewConfig());
-            
-            self.renderView4Config(bottomleftColumn,  databseReadWritemodel,
-                    getAnalyticsNodeDatabaseReadChartViewConfig());
-            
-            self.renderView4Config(bottomrightCoulmn,  databseReadWritemodel,
-                    getAnalyticsNodeDatabaseWriteChartViewConfig());
-
+            var widgetConfig = getValueByJsonPath(this,'attributes;viewConfig;widgetConfig');
+            if(widgetConfig != null) {
+                this.renderView4Config(this.$el,
+                this.model,
+                widgetConfig
+                );
+            }
+            this.renderView4Config(this.$el,
+            this.model,
+            getConfigNodeScatterChartViewConfig()
+            );
         }
     });
 
-   function getAnalyticsNodeSandeshChartViewConfig() {
+   function getConfigNodeScatterChartViewConfig() {
        return {
-           elementId : ctwl.ANALYTICS_CHART_SANDESH_SECTION_ID,
+           elementId : ctwl.ANALYTICSNODE_SUMMARY_SCATTERCHART_SECTION_ID,
            view : "SectionView",
            viewConfig : {
                rows : [ {
-                   
                    columns : [ {
-                       elementId : ctwl.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID,
-                       view : "StackedBarChartWithFocusView",
+                       elementId : ctwl.ANALYTICSNODE_SUMMARY_SCATTERCHART_ID,
+                       title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
+                       view : "ZoomScatterChartView",
                        viewConfig : {
-                           widgetConfig: {
-                               elementId: ctwl.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID + '-widget',
-                               view: "WidgetView",
-                               viewConfig: {
-                                  /* header: {
-                                       title: 'Response Statistics',
-                                   },*/
-                                   controls: {
-                                       top: {
-                                           default: {
-                                               collapseable: false
-                                           }
-                                       }
+                           loadChartInChunks : true,
+                           chartOptions : {
+                               xLabel : ctwl.TITLE_CPU,
+                               yLabel : 'Memory (MB)',
+                               forceX : [ 0, 1 ],
+                               forceY : [ 0, 20 ],
+                               margin: {top:10},
+                               dataParser : function(
+                                       response) {
+                                   var chartDataValues = [ ];
+                                   for ( var i = 0; i < response.length; i++) {
+                                       var analyticsNode = response[i];
+                                       chartDataValues
+                                           .push({
+                                               name : analyticsNode['name'],
+                                               y : analyticsNode['y'],
+                                               x : contrail.handleIfNull(
+                                                   analyticsNode['x'],
+                                                   0),
+                                               color : analyticsNode['color'],
+                                               size : contrail.handleIfNull(
+                                                   analyticsNode['size'],
+                                                   0),
+                                               rawData : analyticsNode
+                                           });
                                    }
-                               }
-                           },
-                           class: 'confignode-chart marginLeft',
-                           chartOptions:{
-                               brush: false,
-                               height: 230,
-                               xAxisLabel: '',
-                               yAxisLabel: 'Sandesh messages',
-                               yAxisOffset: 25,
-                               axisLabelFontSize: 11,
-                               tickPadding: 8,
-                               margin: {
-                                   left: 40,
-                                   top: 35,
-                                   right: 0,
-                                   bottom: 40
+                                   return chartDataValues;
                                },
-                               bucketSize: monitorInfraConstants.CONFIGNODESTATS_BUCKET_DURATION/(1000 * 1000 * 60),//converting to minutes
-                               sliceTooltipFn: function (data) {
-                                   var tooltipConfig = {},
-                                       time = data['time'];
-                                       tooltipConfig['title'] = {
-                                               name : data['name'],
-                                               type: 'Analytic Nodes'
-                                       };
-                                       tooltipConfig['content'] = {
-                                           iconClass : false,
-                                           info : [{
-                                               label: 'Time',
-                                               value: time
-                                           },{
-                                               label: 'Total Requests',
-                                               value: ifNull(data['nodeReqCnt'], '-')
-                                           },
-                                           {
-                                               label: 'Average Response Time',
-                                               value: ifNull(data['avgResTime'], '-')
-                                           }]
-                                       };
-                                   var tooltipElementTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP),
-                                   tooltipElementTitleTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_TITLE),
-                                   tooltipElementContentTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_CONTENT),
-                                   tooltipElementObj, tooltipElementTitleObj, tooltipElementContentObj;
-
-                                   tooltipConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_ELEMENT_TOOLTIP, tooltipConfig);
-
-                                   tooltipElementObj = $(tooltipElementTemplate(tooltipConfig));
-                                   tooltipElementTitleObj = $(tooltipElementTitleTemplate(tooltipConfig.title));
-                                   tooltipElementContentObj = $(tooltipElementContentTemplate(tooltipConfig.content));
-
-                                   tooltipElementObj.find('.popover-title').append(tooltipElementTitleObj);
-                                   tooltipElementObj.find('.popover-content').append(tooltipElementContentObj);
-                                   return $(tooltipElementObj).wrapAll('<div>').parent().html();
+                               tooltipConfigCB : getAnalyticsNodeTooltipConfig,
+                               controlPanelConfig: {
+                                   // legend: {
+                                   //     enable: true,
+                                   //     viewConfig: getControlPanelLegendConfig()
+                                   // }
                                },
-                               showLegend: true,
-                               legendFn: function (data, container, chart) {
-                                  // console.log(data);
-                                   if (container != null && $(container).find('svg') != null
-                                       && data != null && data.length > 0) {
-                                       var colorCodes = data[0]['colorCodes'];
-                                       var svg = $(container).find('svg');
-                                       var width = parseInt($(svg).css('width') || svg.getBBox()['width']);
-                                       var legendWrap = d3.select($(svg)[0]).append('g')
-                                              .attr('class','legend-wrap')
-                                              .attr('transform','translate('+width+',0)')
-                                       monitorInfraUtils.addLegendToSummaryPageCharts({
-                                           container: legendWrap,
-                                           cssClass: 'contrail-legend-error',
-                                           data: [data],
-                                           offset: -10,
-                                           colors: monitorInfraConstants.CONFIGNODE_FAILEDREQUESTS_COLOR,
-                                           label: 'Failures',
-                                       });
-                                       monitorInfraUtils.addLegendToSummaryPageCharts({
-                                           container: legendWrap,
-                                           cssClass: 'contrail-legend-stackedbar',
-                                           data: colorCodes,
-                                           offset: 70,
-                                           colors: colorCodes,
-                                           label: 'Analytics Node',
-                                       });
-                                   }
-                               }
-                           },
-                           parseFn: function (response) {
-                               //console.log(response);
-                               return monitorInfraParsers.parseSandeshMessageRequestsStackChartData(response);
+                               clickCB : onScatterChartClick
                            }
                        }
-                   }]
-               }]
+                   } ]
+               } ]
            }
-       }
+       };
 
-   }
-   
-   function getAnalyticsNodeQueriesChartViewConfig() {
-       return {
-           elementId : ctwl.ANALYTICS_CHART_QUERIES_SECTION_ID,
-           view : "SectionView",
-           viewConfig : {
-               rows : [ {
-                   
-                   columns : [ {
-                       elementId : ctwl.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID,
-                       view : "StackedBarChartWithFocusView",
-                       viewConfig : {
-                           widgetConfig: {
-                               elementId: ctwl.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID + '-widget',
-                               view: "WidgetView",
-                               viewConfig: {
-                                  /* header: {
-                                       title: 'Response Statistics',
-                                   },*/
-                                   controls: {
-                                       top: {
-                                           default: {
-                                               collapseable: false
-                                           }
-                                       }
-                                   }
-                               }
-                           },
-                           class: 'confignode-chart marginLeft',
-                           chartOptions:{
-                               brush: false,
-                               height: 230,
-                               xAxisLabel: '',
-                               yAxisLabel: 'Queries',
-                               yAxisOffset: 25,
-                               axisLabelFontSize: 11,
-                               tickPadding: 8,
-                               margin: {
-                                   left: 40,
-                                   top: 35,
-                                   right: 0,
-                                   bottom: 40
-                               },
-                               bucketSize: monitorInfraConstants.CONFIGNODESTATS_BUCKET_DURATION/(1000 * 1000 * 60),//converting to minutes
-                              sliceTooltipFn: function (data) {
-                                  var tooltipConfig = {},
-                                  time = data['time'];
-                                  tooltipConfig['title'] = {
-                                          name : data['name'],
-                                          type: 'Analytic Nodes'
-                                  };
-                                  tooltipConfig['content'] = {
-                                      iconClass : false,
-                                      info : [{
-                                          label: 'Time',
-                                          value: time
-                                      },{
-                                          label: 'Total Requests',
-                                          value: ifNull(data['nodeReqCnt'], '-')
-                                      }]
-                                  };
-                              var tooltipElementTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP),
-                              tooltipElementTitleTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_TITLE),
-                              tooltipElementContentTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_CONTENT),
-                              tooltipElementObj, tooltipElementTitleObj, tooltipElementContentObj;
+       function onScatterChartClick(chartConfig) {
+           var analyticsNode = chartConfig.name, hashObj = {
+                type: "analyticsNode",
+                view: "details",
+                focusedElement: {
+                    node: analyticsNode,
+                    tab: 'details'
+                }
+            };
 
-                              tooltipConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_ELEMENT_TOOLTIP, tooltipConfig);
+           layoutHandler.setURLHashParams(hashObj, {
+               p : "mon_infra_analytics",
+               merge : false,
+               triggerHashChange : true
+           });
+       };
 
-                              tooltipElementObj = $(tooltipElementTemplate(tooltipConfig));
-                              tooltipElementTitleObj = $(tooltipElementTitleTemplate(tooltipConfig.title));
-                              tooltipElementContentObj = $(tooltipElementContentTemplate(tooltipConfig.content));
+       function getAnalyticsNodeTooltipConfig(data) {
+           var analyticsNode = data.rawData;
+           var tooltipData = [
+                              {
+                                  label : 'Version',
+                                  value : analyticsNode.version
+                              },
+                              {
+                                  label : ctwl.TITLE_CPU,
+                                  value : analyticsNode.cpu,
+                              },
+                              {
+                                  label : 'Memory',
+                                  value : analyticsNode.memory,
+                              }];
+           var tooltipAlerts = monitorInfraUtils.getTooltipAlerts(analyticsNode);
+           tooltipData = tooltipData.concat(tooltipAlerts);
+           var tooltipConfig = {
+               title : {
+                   name : data.name,
+                   type : 'Analytics Node'
+               },
+               content : {
+                   iconClass : false,
+                   info : tooltipData,
+                   actions : [ {
+                       type : 'link',
+                       text : 'View',
+                       iconClass : 'icon-external-link',
+                       callback : onScatterChartClick
+                   } ]
+               },
+               delay : cowc.TOOLTIP_DELAY
+           };
 
-                              tooltipElementObj.find('.popover-title').append(tooltipElementTitleObj);
-                              tooltipElementObj.find('.popover-content').append(tooltipElementContentObj);
-                              return $(tooltipElementObj).wrapAll('<div>').parent().html();
-                          },
-                               showLegend: true,
-                               legendFn: function (data, container, chart) {
-                                   //console.log(data);
-                                   if (container != null && $(container).find('svg') != null
-                                       && data != null && data.length > 0) {
-                                       var colorCodes = data[0]['colorCodes'];
-                                       var svg = $(container).find('svg');
-                                       var width = parseInt($(svg).css('width') || svg.getBBox()['width']);
-                                       var legendWrap = d3.select($(svg)[0]).append('g')
-                                              .attr('class','legend-wrap')
-                                              .attr('transform','translate('+width+',0)')
-                                       monitorInfraUtils.addLegendToSummaryPageCharts({
-                                           container: legendWrap,
-                                           cssClass: 'contrail-legend-error',
-                                           data: [data],
-                                           offset: -10,
-                                           colors: monitorInfraConstants.CONFIGNODE_FAILEDREQUESTS_COLOR,
-                                           label: 'Failures',
-                                       });
-                                       monitorInfraUtils.addLegendToSummaryPageCharts({
-                                           container: legendWrap,
-                                           cssClass: 'contrail-legend-stackedbar',
-                                           data: colorCodes,
-                                           offset: 70,
-                                           colors: colorCodes,
-                                           label: 'Analytics Node',
-                                       });
-                                   }
-                               }
-                           },
-                           parseFn: function (response) {
-                               //console.log(response);
-                               return monitorInfraParsers.parseAnlyticsQueriesChartData(response);
+           return tooltipConfig;
+       };
+
+       function getControlPanelLegendConfig() {
+           return {
+               groups : [ {
+                   id : 'by-node-color',
+                   title : 'Node Color',
+                   items : [{
+                       text : 'Errors in UVE', //TODO need to discuss the format
+                       labelCssClass : 'icon-circle warning',
+                       events : {
+                           click : function(
+                                   event) {
                            }
                        }
-                   }]
-               }]
-           }
-       }
-
-   }
-   
-   function getAnalyticsNodeDatabaseReadChartViewConfig() {
-       return {
-           elementId : ctwl.ANALYTICS_CHART_DATABASE_READ_SECTION_ID,
-           view : "SectionView",
-           viewConfig : {
-               rows : [ {
-                   
-                   columns : [ {
-                       elementId : ctwl.ANALYTICS_CHART_DATABASE_READ_STACKEDBARCHART_ID,
-                       view : "StackedBarChartWithFocusView",
-                       viewConfig : {
-                           widgetConfig: {
-                               elementId: ctwl.ANALYTICS_CHART_DATABASE_READ_STACKEDBARCHART_ID + '-widget',
-                               view: "WidgetView",
-                               viewConfig: {
-                                  /* header: {
-                                       title: 'Response Statistics',
-                                   },*/
-                                   controls: {
-                                       top: {
-                                           default: {
-                                               collapseable: false
-                                           }
-                                       }
-                                   }
-                               }
-                           },
-                           class: 'confignode-chart marginLeft',
-                           chartOptions:{
-                               brush: false,
-                               height: 230,
-                               xAxisLabel: '',
-                               yAxisLabel: 'DB Writes',
-                               yAxisOffset: 25,
-                               axisLabelFontSize: 11,
-                               tickPadding: 8,
-                               margin: {
-                                   left: 40,
-                                   top: 35,
-                                   right: 0,
-                                   bottom: 40
-                               },
-                               bucketSize: monitorInfraConstants.CONFIGNODESTATS_BUCKET_DURATION/(1000 * 1000 * 60),//converting to minutes
-                               sliceTooltipFn: function (data) {
-                                   var tooltipConfig = {},
-                                   time = data['time'];
-                                   tooltipConfig['title'] = {
-                                           name : data['name'],
-                                           type: 'Analytic Nodes'
-                                   };
-                                   tooltipConfig['content'] = {
-                                       iconClass : false,
-                                       info : [{
-                                           label: 'Time',
-                                           value: time
-                                       },{
-                                           label: 'Total Requests',
-                                           value: ifNull(data['nodeReqCnt'], '-')
-                                       }]
-                                   };
-                               var tooltipElementTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP),
-                               tooltipElementTitleTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_TITLE),
-                               tooltipElementContentTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_CONTENT),
-                               tooltipElementObj, tooltipElementTitleObj, tooltipElementContentObj;
-
-                               tooltipConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_ELEMENT_TOOLTIP, tooltipConfig);
-
-                               tooltipElementObj = $(tooltipElementTemplate(tooltipConfig));
-                               tooltipElementTitleObj = $(tooltipElementTitleTemplate(tooltipConfig.title));
-                               tooltipElementContentObj = $(tooltipElementContentTemplate(tooltipConfig.content));
-
-                               tooltipElementObj.find('.popover-title').append(tooltipElementTitleObj);
-                               tooltipElementObj.find('.popover-content').append(tooltipElementContentObj);
-                               return $(tooltipElementObj).wrapAll('<div>').parent().html();
-                               },
-                               showLegend: true,
-                               legendFn: function (data, container, chart) {
-                                   if (container != null && $(container).find('svg') != null
-                                       && data != null && data.length > 0) {
-                                       var colorCodes = data[0]['colorCodes'];
-                                       var svg = $(container).find('svg');
-                                       var width = parseInt($(svg).css('width') || svg.getBBox()['width']);
-                                       var legendWrap = d3.select($(svg)[0]).append('g')
-                                              .attr('class','legend-wrap')
-                                              .attr('transform','translate('+width+',0)')
-                                       monitorInfraUtils.addLegendToSummaryPageCharts({
-                                           container: legendWrap,
-                                           cssClass: 'contrail-legend-error',
-                                           data: [data],
-                                           offset: -10,
-                                           colors: monitorInfraConstants.CONFIGNODE_FAILEDREQUESTS_COLOR,
-                                           label: 'Failures',
-                                       });
-                                       monitorInfraUtils.addLegendToSummaryPageCharts({
-                                           container: legendWrap,
-                                           cssClass: 'contrail-legend-stackedbar',
-                                           data: colorCodes,
-                                           offset: 70,
-                                           colors: colorCodes,
-                                           label: 'Analytics Node',
-                                       });
-                                   }
-                               }
-                           },
-                           parseFn: function (response) {
-                               var databasereqfailed = 'table_info.read_fails';
-                               var databasereqdata = 'table_info.reads';
-                               return monitorInfraParsers.parseAnlyticsNodeDataBaseReadWriteChartData(response, databasereqfailed, databasereqdata);
+                   },{
+                       text : infraAlertMsgs['UVE_MISSING']+ ' or ' +
+                       infraAlertMsgs['NTP_UNSYNCED_ERROR'],
+                       labelCssClass : 'icon-circle error',
+                       events : {
+                           click : function(
+                                   event) {
                            }
                        }
-                   }]
+                   } ]
                }]
-           }
-       }
-
-   }
-   
-   function getAnalyticsNodeDatabaseWriteChartViewConfig() {
-       return {
-           elementId : ctwl.ANALYTICS_CHART_DATABASE_WRITE_SECTION_ID,
-           view : "SectionView",
-           viewConfig : {
-               rows : [ {
-                   
-                   columns : [ {
-                       elementId : ctwl.ANALYTICS_CHART_DATABASE_WRITE_STACKEDBARCHART_ID,
-                       view : "StackedBarChartWithFocusView",
-                       viewConfig : {
-                           widgetConfig: {
-                               elementId: ctwl.ANALYTICS_CHART_DATABASE_WRITE_STACKEDBARCHART_ID + '-widget',
-                               view: "WidgetView",
-                               viewConfig: {
-                                  /* header: {
-                                       title: 'Response Statistics',
-                                   },*/
-                                   controls: {
-                                       top: {
-                                           default: {
-                                               collapseable: false
-                                           }
-                                       }
-                                   }
-                               }
-                           },
-                           class: 'confignode-chart marginLeft',
-                           chartOptions:{
-                               brush: false,
-                               height: 230,
-                               xAxisLabel: '',
-                               yAxisLabel: 'DB Reads',
-                               yAxisOffset: 25,
-                               axisLabelFontSize: 11,
-                               tickPadding: 8,
-                               margin: {
-                                   left: 40,
-                                   top: 35,
-                                   right: 0,
-                                   bottom: 40
-                               },
-                               bucketSize: monitorInfraConstants.CONFIGNODESTATS_BUCKET_DURATION/(1000 * 1000 * 60),//converting to minutes
-                               sliceTooltipFn: function (data) {
-                                   var tooltipConfig = {},
-                                   time = data['time'];
-                                   tooltipConfig['title'] = {
-                                           name : data['name'],
-                                           type: 'Analytic Nodes'
-                                   };
-                                   tooltipConfig['content'] = {
-                                       iconClass : false,
-                                       info : [{
-                                           label: 'Time',
-                                           value: time
-                                       },{
-                                           label: 'Total Requests',
-                                           value: ifNull(data['nodeReqCnt'], '-')
-                                       }]
-                                   };
-                               var tooltipElementTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP),
-                               tooltipElementTitleTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_TITLE),
-                               tooltipElementContentTemplate = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_CONTENT),
-                               tooltipElementObj, tooltipElementTitleObj, tooltipElementContentObj;
-
-                               tooltipConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_ELEMENT_TOOLTIP, tooltipConfig);
-
-                               tooltipElementObj = $(tooltipElementTemplate(tooltipConfig));
-                               tooltipElementTitleObj = $(tooltipElementTitleTemplate(tooltipConfig.title));
-                               tooltipElementContentObj = $(tooltipElementContentTemplate(tooltipConfig.content));
-
-                               tooltipElementObj.find('.popover-title').append(tooltipElementTitleObj);
-                               tooltipElementObj.find('.popover-content').append(tooltipElementContentObj);
-                               return $(tooltipElementObj).wrapAll('<div>').parent().html();
-                               },
-                               showLegend: true,
-                               legendFn: function (data, container, chart) {
-                                   //console.log(data);
-                                   if (container != null && $(container).find('svg') != null
-                                       && data != null && data.length > 0) {
-                                       var colorCodes = data[0]['colorCodes'];
-                                       var svg = $(container).find('svg');
-                                       var width = parseInt($(svg).css('width') || svg.getBBox()['width']);
-                                       var legendWrap = d3.select($(svg)[0]).append('g')
-                                              .attr('class','legend-wrap')
-                                              .attr('transform','translate('+width+',0)')
-                                       monitorInfraUtils.addLegendToSummaryPageCharts({
-                                           container: legendWrap,
-                                           cssClass: 'contrail-legend-error',
-                                           data: [data],
-                                           offset: -10,
-                                           colors: monitorInfraConstants.CONFIGNODE_FAILEDREQUESTS_COLOR,
-                                           label: 'Failures',
-                                       });
-                                       monitorInfraUtils.addLegendToSummaryPageCharts({
-                                           container: legendWrap,
-                                           cssClass: 'contrail-legend-stackedbar',
-                                           data: colorCodes,
-                                           offset: 70,
-                                           colors: colorCodes,
-                                           label: 'Analytics Node',
-                                       });
-                                   }
-                               }
-                           },
-                           parseFn: function (response) {
-                               //console.log(response);
-                               var databasereqfailed = 'table_info.write_fails';
-                               var databasereqdata = 'table_info.writes';
-                               return monitorInfraParsers.parseAnlyticsNodeDataBaseReadWriteChartData(response, databasereqfailed, databasereqdata);
-                           }
-                       }
-                   }]
-               }]
-           }
-       }
-
+           };
+       };
    }
    return AnalyticsNodeScatterChartView;
 });
