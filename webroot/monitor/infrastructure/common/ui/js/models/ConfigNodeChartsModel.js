@@ -38,6 +38,7 @@ define([
                     data: JSON.stringify(queryPostData)
                 },
                 dataParser : function (response) {
+                    listModel.queryJSON = response['queryJSON'];
                     return response['data'];
                 }
             },
@@ -59,8 +60,8 @@ define([
 
             }
         };
-
-        return ContrailListModel(listModelConfig);
+        var listModel = new ContrailListModel(listModelConfig)
+        return listModel;
     };
     return ConfigNodeChartsModel;
     }

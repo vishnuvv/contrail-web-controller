@@ -24,36 +24,37 @@ define([
             },
         };
         var listModelConfig = {
-                remote : {
-                    ajaxConfig : {
-                        url : monitorInfraConstants.monitorInfraUrls.STATS_QUERY,
-                        type: 'POST',
-                        data: JSON.stringify(queryPostData)
-                    },
-                    dataParser : function (response) {
-                        return response['data'];
-                    }
+            remote : {
+                ajaxConfig : {
+                    url : monitorInfraConstants.monitorInfraUrls.STATS_QUERY,
+                    type: 'POST',
+                    data: JSON.stringify(queryPostData)
                 },
-                vlRemoteConfig: {
-                    vlRemoteList: [{
-                        getAjaxConfig: function () {
-                            return {
-                                url: monitorInfraConstants.monitorInfraUrls.STATS_QUERY+'?forceRefresh',
-                                type:'POST',
-                                data: JSON.stringify(queryPostData)
-                            }
-                        },successCallback: function(response, contrailListModel) {
-                            contrailListModel.queryJSON = response['queryJSON'];
-                            contrailListModel.setData(response['data']);
-                        }
-                    }]
-                },
-                cacheConfig : {
-
+                dataParser : function (response) {
+                    listModel.queryJSON = response['queryJSON'];
+                    return response['data'];
                 }
-            };
+            },
+            vlRemoteConfig: {
+                vlRemoteList: [{
+                    getAjaxConfig: function () {
+                        return {
+                            url: monitorInfraConstants.monitorInfraUrls.STATS_QUERY+'?forceRefresh',
+                            type:'POST',
+                            data: JSON.stringify(queryPostData)
+                        }
+                    },successCallback: function(response, contrailListModel) {
+                        contrailListModel.queryJSON = response['queryJSON'];
+                        contrailListModel.setData(response['data']);
+                    }
+                }]
+            },
+            cacheConfig : {
 
-        return ContrailListModel(listModelConfig);
+            }
+        };
+        var listModel = new ContrailListModel(listModelConfig)
+        return listModel;
     };
     return AnalyticsNodeQueriesModel;
     }
