@@ -97,7 +97,8 @@ define([
                 FLOWSERIES_CPU              : '/api/tenant/networking/flow-series/cpu?moduleId={0}&minsSince={1}&sampleCnt={2}&source={3}&endTime={4}',
                 QUERY                       : '/api/admin/reports/query',
                 MSGTABLE_CATEGORY           : '/api/admin/table/values/MessageTable/Category',
-                MSGTABLE_LEVEL              : '/api/admin/table/values/MessageTable/Level'
+                MSGTABLE_LEVEL              : '/api/admin/table/values/MessageTable/Level',
+                STATS_QUERY                 : '/api/qe/get-query'
         }
 
         this.UVEModuleIds = {

@@ -25,18 +25,34 @@ define([
             },
         };
         var listModelConfig = {
-            remote : {
-                ajaxConfig : {
-                    url : "/api/qe/query",
-                    type: 'POST',
-                    data: JSON.stringify(queryPostData)
+                remote : {
+                    ajaxConfig : {
+                        url : monitorInfraConstants.monitorInfraUrls.STATS_QUERY,
+                        type: 'POST',
+                        data: JSON.stringify(queryPostData)
+                    },
+                    dataParser : function (response) {
+                        return response['data'];
+                    }
                 },
-                dataParser : function (response) {
-                    return response['data'];
+                vlRemoteConfig: {
+                    vlRemoteList: [{
+                        getAjaxConfig: function () {
+                            return {
+                                url: monitorInfraConstants.monitorInfraUrls.STATS_QUERY+'?forceRefresh',
+                                type:'POST',
+                                data: JSON.stringify(queryPostData)
+                            }
+                        },successCallback: function(response, contrailListModel) {
+                            contrailListModel.queryJSON = response['queryJSON'];
+                            contrailListModel.setData(response['data']);
+                        }
+                    }]
+                },
+                cacheConfig : {
+
                 }
-            },
-            cacheConfig : {}
-        };
+            };
 
         return ContrailListModel(listModelConfig);
     };
