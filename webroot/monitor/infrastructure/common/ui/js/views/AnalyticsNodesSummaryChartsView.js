@@ -6,10 +6,10 @@ define(['underscore', 'contrail-view',
        'monitor-infra-analytics-sandesh-chart-model',
        'monitor-infra-analytics-queries-chart-model',
        'monitor-infra-analytics-database-read-write-chart-model',
-       'monitor-infra-analytics-database-usage-model','gridstack','gs-view'],
+       'monitor-infra-analytics-database-usage-model','gs-view'],
        function(_, ContrailView,AnalyticsNodeSandeshChartModel,
             AnalyticsNodeQueriesChartModel, AnalyticsNodeDataBaseReadWriteChartModel,
-            AanlyticsNodeDatabaseUsageModel,gridstack,GridStackView){
+            AanlyticsNodeDatabaseUsageModel,GridStackView){
         var AnalyticsNodesSummaryChartsView = ContrailView.extend({
         render : function (){
             var anlyticsTemplate = contrail.getTemplate4Id(
@@ -33,29 +33,8 @@ define(['underscore', 'contrail-view',
                 databseReadWritemodel = new AnalyticsNodeDataBaseReadWriteChartModel();
 
             self.$el.append($("<div class='gs-container'></div>"));
-            var gridStackView = new GridStackView({
-                el: self.$el.find('.gs-container')
-            });
 
-            gridStackView.add({
-                modelCfg: sandeshModel,
-                viewCfg: getAnalyticsNodeSandeshChartViewConfig(colorFn)
-            })
-
-            gridStackView.add({
-                modelCfg: queriesModel,
-                viewCfg: getAnalyticsNodeQueriesChartViewConfig(colorFn)
-            });
-
-            gridStackView.add({
-                modelCfg: dbUsageModel,
-                viewCfg: getAnalyticsNodeDatabaseUsageChartViewConfig(colorFn)
-            });
-
-            gridStackView.add({
-                modelCfg: databseReadWritemodel,
-                viewCfg: getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn)
-            });
+            self.renderView4Config(self.$el.find('.gs-container'),{},getGridStackWidgetConfig(colorFn));
 
             // self.renderView4Config(topleftColumn.find('.gridstack-item-content'),  sandeshModel,
             //        getAnalyticsNodeSandeshChartViewConfig(colorFn));
@@ -69,10 +48,48 @@ define(['underscore', 'contrail-view',
 
             // self.renderView4Config(bottomRow, null,getPercentileTextViewConfig());
 
-
-
         }
     });
+
+   function getGridStackWidgetConfig(colorFn) {
+        var sandeshModel = new AnalyticsNodeSandeshChartModel(),
+            queriesModel = new AnalyticsNodeQueriesChartModel(),
+            dbUsageModel = new AanlyticsNodeDatabaseUsageModel();
+            databseReadWritemodel = new AnalyticsNodeDataBaseReadWriteChartModel();
+       return {
+           elementId : 'analyticsGridStackSection',
+           view : "SectionView",
+           viewConfig : {
+               rows : [ {
+                   columns : [ {
+                       elementId : 'analyticsGridStackComponent',
+                       view : "GridStackView",
+                       viewConfig : {
+                            widgetCfgList: [
+                                {
+                                    modelCfg: sandeshModel,
+                                    viewCfg: getAnalyticsNodeSandeshChartViewConfig(colorFn)
+                                },
+                                {
+                                    modelCfg: queriesModel,
+                                    viewCfg: getAnalyticsNodeQueriesChartViewConfig(colorFn)
+                                },
+                                {
+                                    modelCfg: dbUsageModel,
+                                    viewCfg: getAnalyticsNodeDatabaseUsageChartViewConfig(colorFn)
+                                },
+                                {
+                                    modelCfg: databseReadWritemodel,
+                                    viewCfg: getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn)
+                                }
+                            ]
+                       }
+                   }]
+               }]
+           }
+       }
+   }
+
    function getAnalyticsNodeSandeshChartViewConfig(colorFn) {
        return {
            elementId : ctwl.ANALYTICS_CHART_SANDESH_SECTION_ID,
