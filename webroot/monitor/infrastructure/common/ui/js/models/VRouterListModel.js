@@ -2,7 +2,36 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['contrail-list-model'], function(ContrailListModel) {
+define(['contrail-list-model','async'], function(ContrailListModel,async) {
+    var vRouterModel = Backbone.Model.extend({
+            idAttribute:'name'
+        });
+    var VRouterCollection = Backbone.Collection.extend({
+        model: vRouterModel,
+        url: monitorInfraConstants.monitorInfraUrls.VROUTER_CACHED_SUMMARY,
+        parse: function(data) {
+            return monitorInfraParsers.parsevRoutersDashboardData(data);
+        }
+    });
+    vRouterCollection = new VRouterCollection();
+    vRouterCollection.fetch().done(function() {
+        async.mapSeries([{
+            ajaxCfg: monitorInfraUtils.getGeneratorsAjaxConfigForInfraNodes('computeNodeDS'),
+            parseFn: monitorInfraUtils.parseInfraGeneratorsData
+        }/*, {
+            ajaxCfg: monitorInfraUtils.getAjaxConfigForInfraNodesCpuStats(monitorInfraConstants.COMPUTE_NODE),
+            parseFn: monitorInfraUtils.parseAndMergeCpuStatsWithPrimaryDataForInfraNodes
+        }*/], function(data) {
+            data['ajaxCfg']['contentType'] = 'application/json';
+            $.ajax(data['ajaxCfg']).done(function(response) {
+                var retData = data['parseFn'](response);
+                vRouterCollection.set(retData,{add:false,remove:false});
+            });
+        }, function(err,results) {
+            console.info("Error in fetching vRouter collection",err);
+        });
+    });
+                            
     var VRouterListModel = function() {
         var vlRemoteConfig = {
                 vlRemoteList: [{

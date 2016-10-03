@@ -634,7 +634,8 @@ define([
             $.each(result,function(idx,d){
                 var obj = {};
                 obj['status'] = self.getOverallNodeStatusFromGenerators(d);
-                obj['name'] = d['name'];
+                obj['status'] = 'Down';
+                obj['name'] = d['name'].replace(/:.*/,'');
                 retArr.push(obj);
             });
             return retArr;
@@ -870,7 +871,7 @@ define([
             }
         }
 
-        self.getOverallNodeStatusFromGenerators = function () {
+        self.getOverallNodeStatusFromGenerators = function (d) {
             var status = "--";
             var generatorDownTime;
 
@@ -951,6 +952,33 @@ define([
                     if(genData[idx]['name'].split(':')[0] == d['name']){
                         d['status'] = self.getFinalNodeStatusFromGenerators(
                            genData[idx]['status'],primaryData[i]);
+                        d['isGeneratorRetrieved'] = true;
+                        genData.splice(idx,1);
+                        break;
+                    }
+                    idx++;
+                };
+                updatedData.push(d);
+            });
+            primaryDS.updateData(updatedData);
+        };
+
+        self.parseGeneratorDataForInfraNodes = function(response) {
+
+            var genDSData = self.parseInfraGeneratorsData(response);
+            var primaryData = primaryDS.getItems();
+            var updatedData = [];
+            // to avoid the change event getting triggered
+            // copy the data into another array and use it.
+            var genData = [];
+            $.each(genDSData,function (idx,obj){
+                genData.push(obj);
+            });
+            $.each(primaryData,function(i,d){
+                var idx=0;
+                while(genData.length > 0 && idx < genData.length){
+                    if(genData[idx]['name'].split(':')[0] == d['name']){
+                        d['status'] = self.getFinalNodeStatusFromGenerators(genData[idx]['status'],primaryData[i]);
                         d['isGeneratorRetrieved'] = true;
                         genData.splice(idx,1);
                         break;
@@ -1072,6 +1100,7 @@ define([
                 return statusFromGen;
             }
             var statusFromProcessStateList = dataItem['status'];
+            //Look at generator status only if status from process list is UP
             if(statusFromProcessStateList.search("Up") != -1){
                 if(statusFromGen.search("Down") != -1){
                     return statusFromGen;
