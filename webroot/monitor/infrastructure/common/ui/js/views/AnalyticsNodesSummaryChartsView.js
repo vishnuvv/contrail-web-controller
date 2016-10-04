@@ -85,9 +85,6 @@ define(['underscore', 'contrail-view',
                                 {
                                     modelCfg: databseReadWritemodel,
                                     viewCfg: getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn),
-                                    itemAttr: {
-                                        height: 4
-                                    }
                                 },{
                                     modelCfg: new AnalyticsModel(),
                                     viewCfg: {
@@ -101,6 +98,64 @@ define(['underscore', 'contrail-view',
                                     },
                                     itemAttr: {
                                         width: 2
+                                    }
+                                }, {
+                                    modelCfg: monitorInfraUtils.getStatsModelConfig({
+                                        table_name: 'StatTable.SandeshMessageStat.msg_info',
+                                        select: 'T=, msg_info.type, SUM(msg_info.messages)'
+                                    }),
+                                    viewCfg: {
+                                        elementId : 'message_type_top_5_section',
+                                        view : "SectionView",
+                                        viewConfig : {
+                                            rows : [ {
+                                                columns :[
+                                                     $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
+                                                         elementId : 'message_type_top_5',
+                                                         viewConfig: {
+                                                             chartOptions: {
+                                                                 colors: cowc.FIVE_NODE_COLOR,
+                                                                 title: 'Message Type',
+                                                                 xAxisLabel: '',
+                                                                 yAxisLabel: 'Top 5 Message Type',
+                                                                 groupBy: 'msg_info.type',
+                                                                 limit: 5,
+                                                                 yField: 'SUM(msg_info.messages)',
+                                                             }
+                                                         }
+                                                     })
+                                                ]
+                                            }]
+                                        }
+                                    }
+                                },{
+                                    modelCfg: monitorInfraUtils.getStatsModelConfig({
+                                        table_name: 'StatTable.SandeshMessageStat.msg_info',
+                                        select: 'T=, name, SUM(msg_info.messages)'
+                                    }),
+                                    viewCfg: {
+                                        elementId : 'generator_top_5_section',
+                                        view : "SectionView",
+                                        viewConfig : {
+                                            rows : [ {
+                                                columns :[
+                                                     $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
+                                                         elementId : 'generator_top_5',
+                                                         viewConfig: {
+                                                             chartOptions: {
+                                                                 colors: cowc.FIVE_NODE_COLOR,
+                                                                 title: 'Message Type',
+                                                                 xAxisLabel: '',
+                                                                 yAxisLabel: 'Top 5 Generators',
+                                                                 groupBy: 'name',
+                                                                 limit: 5,
+                                                                 yField: 'SUM(msg_info.messages)',
+                                                             }
+                                                         }
+                                                     })
+                                                ]
+                                            }]
+                                        }
                                     }
                                 }
                             ]
@@ -272,33 +327,20 @@ define(['underscore', 'contrail-view',
            elementId : ctwl.ANALYTICS_CHART_SANDESH_SECTION_ID,
            view : "SectionView",
            viewConfig : {
-               rows : [ {
-                   columns : [ {
+               rows : [{
+                   columns : [ $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
                        elementId : ctwl.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID,
-                       view : "StackedBarChartWithFocusView",
-                       viewConfig : {
-                           class: 'mon-infra-chart chartMargin',
-                           chartOptions:{
-                               height: 230,
+                       viewConfig: {
+                           chartOptions: {
+                               colors: colorFn,
                                title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                xAxisLabel: '',
                                yAxisLabel: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
                                groupBy: 'Source',
                                yField: 'SUM(msg_info.messages)',
-                               yAxisOffset: 25,
-                               tickPadding: 8,
-                               margin: {
-                                   left: 55,
-                                   top: 20,
-                                   right: 0,
-                                   bottom: 40
-                               },
-                               bucketSize: monitorInfraConstants.STATS_BUCKET_DURATION,
-                               colors: colorFn,
-                               showControls: false,
                            }
                        }
-                   }]
+                   })]
                }]
            }
        }
@@ -311,17 +353,14 @@ define(['underscore', 'contrail-view',
            view : "SectionView",
            viewConfig : {
                rows : [ {
-
-                   columns : [ {
+                   columns : [ $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
                        elementId : ctwl.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID,
-                       view : "StackedBarChartWithFocusView",
-                       viewConfig : {
-                           class: 'mon-infra-chart chartMargin',
-                           chartOptions:{
-                               height: 230,
+                       viewConfig: {
+                           chartOptions: {
+                               colors: colorFn,
+                               title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                xAxisLabel: '',
                                yAxisLabel: ctwl.ANALYTICS_CHART_QUERIES_LABEL,
-                               title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                groupBy: 'Source',
                                failureCheckFn: function (d) {
                                    if (d['query_stats.error'] != "None") {
@@ -330,20 +369,9 @@ define(['underscore', 'contrail-view',
                                        return 0;
                                    }
                                },
-                               yAxisOffset: 25,
-                               tickPadding: 4,
-                               margin: {
-                                   left: 55,
-                                   top: 20,
-                                   right: 0,
-                                   bottom: 40
-                               },
-                               bucketSize: monitorInfraConstants.STATS_BUCKET_DURATION,
-                               colors: colorFn,
-                               showControls: false,
                            }
                        }
-                   }]
+                   })]
                }]
            }
        }
@@ -356,33 +384,17 @@ define(['underscore', 'contrail-view',
            view : "SectionView",
            viewConfig : {
                rows : [ {
-                   columns : [ {
+                   columns : [ $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
                        elementId : ctwl.ANALYTICS_CHART_DATABASE_READ_STACKEDBARCHART_ID,
-                       view : "StackedBarChartWithFocusView",
-                       viewConfig : {
-                           class: 'mon-infra-chart chartMargin',
-                           chartOptions:{
-                               height: 230,
+                       viewConfig: {
+                           chartOptions: {
+                               title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                xAxisLabel: '',
                                yAxisLabel: ctwl.ANALYTICS_CHART_DATABASE_USAGE,
                                yField: 'MAX(database_usage.analytics_db_size_1k)',
-                               title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
-                               yAxisOffset: 25,
-                               yAxisFormatter: function (d) {
-                                   return formatBytes(d, true);
-                               },
-                               tickPadding: 8,
-                               margin: {
-                                   left: 55,
-                                   top: 20,
-                                   right: 0,
-                                   bottom: 40
-                               },
-                               bucketSize: monitorInfraConstants.STATS_BUCKET_DURATION,
-                               showControls: false,
                            }
                        }
-                   }]
+                   })]
                }]
            }
        }
@@ -396,35 +408,23 @@ define(['underscore', 'contrail-view',
            viewConfig : {
                rows : [ {
 
-                   columns : [ {
+                   columns : [
+                               $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
                        elementId : ctwl.ANALYTICS_CHART_DATABASE_WRITE_STACKEDBARCHART_ID,
-                       view : "StackedBarChartWithFocusView",
-                       viewConfig : {
-                           class: 'mon-infra-chart chartMargin',
-                           chartOptions:{
-                               height: 230,
+                       viewConfig: {
+                           chartOptions: {
+                               colors: colorFn,
                                title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                xAxisLabel: '',
                                yAxisLabel: ctwl.ANALYTICS_CHART_DATABASE_WRITE_LABEL,
-                               yAxisOffset: 25,
                                groupBy: 'Source',
                                failureCheckFn: function (d) {
                                    return d[ctwl.ANALYTICS_CHART_DATABASE_WRITE_FAILS];
                                },
                                yField: ctwl.ANALYTICS_CHART_DATABASE_WRITE,
-                               tickPadding: 8,
-                               margin: {
-                                   left: 55,
-                                   top: 20,
-                                   right: 0,
-                                   bottom: 40
-                               },
-                               bucketSize: monitorInfraConstants.STATS_BUCKET_DURATION,
-                               colors: colorFn,
-                               showControls: false,
-                           },
+                           }
                        }
-                   }]
+                   })]
                }]
            }
        }

@@ -126,4 +126,19 @@ dl.progress-percentage dd {
     font-size: 13px;
 }
 /******Percentile CSS ends here****/
-
+.grid-stack-item header{
+  background-color:transparent !important;
+  white-space: nowrap;
+  overflow: hidden;    
+  text-indent: -1000em !important;
+  color:#fff !important;
+}
+/*.grid-stack-item-content {
+border:none !important;
+}*/
+.ui-draggable-handle:hover{
+cursor:move;
+}
+.grid-stack .grid-stack-item .grid-stack-item-content {
+    overflow: hidden;
+}

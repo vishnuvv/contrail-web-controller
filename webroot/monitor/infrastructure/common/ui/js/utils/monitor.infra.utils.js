@@ -2350,30 +2350,30 @@ define([
                   "to_time": Date.now(),
                   "to_time_utc": Date.now(),
                   "time_granularity_unit": "secs",
+                  "time_granularity": 150,
                   "limit": "150000"
                 }
-            }
-            if (statsConfig['tableName'] != null) {
-                postData['formModelAttrs']['table_name'] = statsConfig['tableName'];
-            }
-            if (statsConfig['select'] != null) {
-                postdData['formModelAttrs']['select'] = statsConfig['select'];
-            }
-            return {
-                remote : {
-                    ajaxConfig : {
-                        url : "/api/qe/query",
-                        type: 'POST',
-                        data: JSON.stringify(postdData)
+            };
+            $.extend(postData['formModelAttrs'], statsConfig);
+            var listModelConfig = {
+                    "remote" : {
+                        ajaxConfig : {
+                            url : "/api/qe/query",
+                            type: 'POST',
+                            data: JSON.stringify(postData)
+                        },
+                        dataParser : function (response) {
+                            return response['data'];
+                        }
                     },
-                    dataParser : function (response) {
-                        return response['data'];
-                    }
-                },
-                cacheConfig : {
-                    ucid: statsConfig['cacheId']
+                    "cacheConfig" : {}
+                };
+                if(statsConfig['cacheId'] != null){
+                    listModelConfig["cacheConfig"] = {
+                            ucid: statsConfig['cacheId']
+                    };
                 }
-            }
+            return listModelConfig
         };
     };
     return MonitorInfraUtils;

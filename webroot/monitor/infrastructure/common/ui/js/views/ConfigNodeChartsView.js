@@ -11,116 +11,254 @@ define(['underscore', 'contrail-view', 'legend-view',
                 viewConfig = self.attributes.viewConfig,
                 colorFn = viewConfig['colorFn'];
             var chartModel = new ConfigNodeChartsModel();
-            self.renderView4Config(self.$el, chartModel,
-                    getConfigNodeChartViewConfig(colorFn));
+            //self.renderView4Config(self.$el, chartModel,
+              //      getConfigNodeChartViewConfig(colorFn));
+            self.$el.append($("<div class='gs-container'></div>"));
+            self.renderView4Config(self.$el.find('.gs-container'),{},getGridStackWidgetConfig(colorFn));
         }
     });
 
-   function getConfigNodeChartViewConfig(colorFn) {
+   function getGridStackWidgetConfig(colorFn) {
+       var chartModel = new ConfigNodeChartsModel();  
        return {
-           elementId : ctwl.CONFIGNODE_SUMMARY_CHART_SECTION_ID,
+           elementId : 'configGridStackSection',
            view : "SectionView",
            viewConfig : {
                rows : [ {
-                   columns : [{
-                       elementId : ctwl.CONFIGNODE_SUMMARY_STACKEDCHART_ID,
-                       view : "StackedBarChartWithFocusView",
+                   columns : [ {
+                       elementId : 'configGridStackComponent',
+                       view : "GridStackView",
                        viewConfig : {
-                           class: 'col-xs-7 mon-infra-chart',
-                           chartOptions:{
-                               height: 480,
-                               xAxisLabel: '',
-                               yAxisLabel: 'Requests Served',
-                               title: ctwl.CONFIGNODE_SUMMARY_TITLE,
-                               groupBy: 'Source',
-                               failureCheckFn: function (d) {
-                                   if (parseInt(d['api_stats.resp_code']) != 200) {
-                                       return 1;
-                                   } else {
-                                       return 0;
-                                   }
-                               },
-                               yAxisOffset: 25,
-                               tickPadding: 8,
-                               margin: {
-                                   left: 40,
-                                   top: 20,
-                                   right: 0,
-                                   bottom: 40
-                               },
-                               bucketSize: monitorInfraConstants.STATS_BUCKET_DURATION,
-                               showControls: false,
-                               colors: colorFn
-                           }
-                       }
-                   },{
-                       elementId: ctwl.CONFIGNODE_SUMMARY_LINEBARCHART_ID,
-                       view: 'LineBarWithFocusChartView',
-                       viewConfig: {
-                           class: 'col-xs-5 mon-infra-chart',
-                           parseFn: function (response) {
-                               return monitorInfraParsers.parseConfigNodeResponseStackedChartData(response, colorFn);
+                           gridAttr: {
+                               defaultWidth: 6,
                            },
-                           chartOptions: {
-                               y1AxisLabel:ctwl.RESPONSE_TIME,
-                               y2AxisLabel:ctwl.RESPONSE_SIZE,
-                               title: ctwl.CONFIGNODE_SUMMARY_TITLE,
-                               xAxisTicksCnt: 8, //In case of time scale for every 15 mins one tick
-                               margin: {top: 20, right: 50, bottom: 40, left: 50},
-                               axisLabelDistance: -10,
-                               y2AxisWidth: 50,
-                               //forceY1: [0, 1],
-                               focusEnable: false,
-                               height: 245,
-                               showLegend: true,
-                               xAxisLabel: '',
-                               //xAxisLabel: 'Time',
-                               xAxisMaxMin: false,
-                               defaultDataStatusMessage: false,
-                               xFormatter: function (xValue, tickCnt) {
-                                   // Same function is called for
-                                   // axis ticks and the tool tip
-                                   // title
-                                   var date = new Date(xValue);
-                                   if (tickCnt != null) {
-                                       var mins = date.getMinutes();
-                                       date.setMinutes(Math.ceil(mins/15) * 15);
+                           widgetCfgList: [
+                               {
+                                   modelCfg: chartModel,
+                                   viewCfg: 
+                                       $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
+                                           elementId : ctwl.CONFIGNODE_SUMMARY_STACKEDCHART_ID,
+                                           view: 'StackedAreaChartView',
+                                           viewConfig: {
+                                               class: 'col-xs-7 mon-infra-chart chartMargin',
+                                               chartOptions: {
+                                                   height: 480,
+                                                   colors: colorFn,
+                                                   title: ctwl.CONFIGNODE_SUMMARY_TITLE,
+                                                   xAxisLabel: '',
+                                                   yAxisLabel: 'Requests Served',
+                                                   groupBy: 'Source',
+                                                   failureCheckFn: function (d) {
+                                                       if (parseInt(d['api_stats.resp_code']) != 200) {
+                                                           return 1;
+                                                       } else {
+                                                           return 0;
+                                                       }
+                                                   },
+                                                   margin: {
+                                                       left: 40,
+                                                       top: 20,
+                                                       right: 0,
+                                                       bottom: 40
+                                                   }
+                                               }
+                                           }
+                                       }),
+                                   itemAttr: {
+                                       height: 4
                                    }
-                                   return d3.time.format('%H:%M')(date);
-                               },
-                               y1Formatter: function (y1Value) {
-                                   var formattedValue = Math.round(y1Value) + ' ms';
-                                   if (y1Value > 1000){
-                                       // seconds block
-                                       formattedValue = Math.round(y1Value/1000);
-                                       formattedValue = formattedValue + ' secs'
-                                   } else if (y1Value > 60000) {
-                                       // minutes block
-                                       formattedValue = Math.round(y1Value/(60 * 1000))
-                                       formattedValue = formattedValue + ' mins'
+                                       
+                               },{
+                                   modelCfg: chartModel,
+                                   viewCfg: {
+                                       elementId: ctwl.CONFIGNODE_SUMMARY_LINEBARCHART_ID,
+                                       view: 'LineBarWithFocusChartView',
+                                       viewConfig: {
+                                           class: 'col-xs-5 mon-infra-chart',
+                                           chartOptions: {
+                                               y1AxisLabel:ctwl.RESPONSE_TIME,
+                                               y2AxisLabel:ctwl.RESPONSE_SIZE,
+                                               title: ctwl.CONFIGNODE_SUMMARY_TITLE,
+                                               xAxisTicksCnt: 8, //In case of time scale for every 15 mins one tick
+                                               margin: {top: 20, right: 50, bottom: 40, left: 50},
+                                               axisLabelDistance: -10,
+                                               y2AxisWidth: 50,
+                                               focusEnable: false,
+                                               height: 245,
+                                               showLegend: true,
+                                               xAxisLabel: '',
+                                               xAxisMaxMin: false,
+                                               defaultDataStatusMessage: false,
+                                               insertEmptyBuckets: false,
+                                               bucketSize: 4,
+                                               groupBy: 'Source',
+                                               //Y1 for bar
+                                               y1Field: 'api_stats.response_time_in_usec',
+                                               //Y2 for line
+                                               y2Field: 'api_stats.response_size',
+                                               y2AxisColor: monitorInfraConstants.CONFIGNODE_RESPONSESIZE_COLOR,
+                                               y2FieldOperation: 'average',
+                                               y1FieldOperation: 'average',
+                                               colors: colorFn,
+                                               xFormatter: function (xValue, tickCnt) {
+                                                   // Same function is called for
+                                                   // axis ticks and the tool tip
+                                                   // title
+                                                   var date = new Date(xValue);
+                                                   if (tickCnt != null) {
+                                                       var mins = date.getMinutes();
+                                                       date.setMinutes(Math.ceil(mins/15) * 15);
+                                                   }
+                                                   return d3.time.format('%H:%M')(date);
+                                               },
+                                               y1Formatter: function (y1Value) {
+                                                   //Divide by 1000 to convert to milli secs;
+                                                   y1Value = ifNull(y1Value, 0)/1000;
+                                                   var formattedValue = Math.round(y1Value) + ' ms';
+                                                   if (y1Value > 1000){
+                                                       // seconds block
+                                                       formattedValue = Math.round(y1Value/1000);
+                                                       formattedValue = formattedValue + ' secs'
+                                                   } else if (y1Value > 60000) {
+                                                       // minutes block
+                                                       formattedValue = Math.round(y1Value/(60 * 1000))
+                                                       formattedValue = formattedValue + ' mins'
+                                                   }
+                                                   return formattedValue;
+                                               },
+                                               y2Formatter: function (y2Value) {
+                                                   var formattedValue = formatBytes(y2Value, true);
+                                                   return formattedValue;
+                                               },
+                                               legendView: LegendView
+                                           },
+                                       }
                                    }
-                                   return formattedValue;
-                               },
-                               y2Formatter: function (y2Value) {
-                                   var formattedValue = formatBytes(y2Value, true);
-                                   return formattedValue;
-                               },
-                               legendView: LegendView
-                           },
-                       }
-                   }, {
-                       elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_SECTION_ID,
-                       view: 'ConfigNodeDonutChartView',
-                       viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
-                       app : cowc.APP_CONTRAIL_CONTROLLER,
-                       viewConfig: {
-                           class: 'col-xs-5 mon-infra-chart',
-                           color: colorFn
+                               },{
+                                   modelCfg: chartModel,
+                                   viewCfg: {
+                                       elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_SECTION_ID,
+                                       view: 'ConfigNodeDonutChartView',
+                                       viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
+                                       app : cowc.APP_CONTRAIL_CONTROLLER,
+                                       viewConfig: {
+                                           class: 'col-xs-5 mon-infra-chart',
+                                           color: colorFn
+                                       }
+                                   }
+                               },{
+                                   modelCfg: monitorInfraUtils.getStatsModelConfig({
+                                       table_name: 'StatTable.VncApiStatsLog.api_stats',
+                                       select: "T=, api_stats.useragent, COUNT(api_stats)"
+                                   }),
+                                   viewCfg: {
+                                       elementId : 'useragent_top_5_section',
+                                       view : "SectionView",
+                                       viewConfig : {
+                                           rows : [ {
+                                               columns :[
+                                                    $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
+                                                        elementId : 'useragent_top_5',
+                                                        viewConfig: {
+                                                            chartOptions: {
+                                                                colors: cowc.FIVE_NODE_COLOR,
+                                                                title: 'User Agent',
+                                                                xAxisLabel: '',
+                                                                yAxisLabel: 'Top 5 User Agents',
+                                                                groupBy: 'api_stats.useragent',
+                                                                limit: 5,
+                                                                yField: 'COUNT(api_stats)',
+                                                                margin: {
+                                                                    left: 40,
+                                                                    top: 20,
+                                                                    right: 0,
+                                                                    bottom: 40
+                                                                }
+                                                            }
+                                                        }
+                                                    })
+                                               ]
+                                           }]
+                                       }
+                                   }
+                               },{
+                                   modelCfg: monitorInfraUtils.getStatsModelConfig({
+                                       table_name: 'StatTable.VncApiStatsLog.api_stats',
+                                       select: "T=, api_stats.object_type, COUNT(api_stats)"
+                                   }),
+                                   viewCfg: {
+                                       elementId : 'objecttype_top_5_section',
+                                       view : "SectionView",
+                                       viewConfig : {
+                                           rows : [ {
+                                               columns :[
+                                                    $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
+                                                        elementId : 'objecttype_top_5',
+                                                        viewConfig: {
+                                                            chartOptions: {
+                                                                colors: cowc.FIVE_NODE_COLOR,
+                                                                title: 'Object Type',
+                                                                xAxisLabel: '',
+                                                                yAxisLabel: 'Top 5 Object Types',
+                                                                groupBy: 'api_stats.object_type',
+                                                                limit: 5,
+                                                                yField: 'COUNT(api_stats)',
+                                                                margin: {
+                                                                    left: 40,
+                                                                    top: 20,
+                                                                    right: 0,
+                                                                    bottom: 40
+                                                                }
+                                                            }
+                                                        }
+                                                    })
+                                               ]
+                                           }]
+                                       }
+                                   }
+                               }, {
+
+                                   modelCfg: monitorInfraUtils.getStatsModelConfig({
+                                       table_name: 'StatTable.VncApiStatsLog.api_stats',
+                                       select: "T=, api_stats.object_type, COUNT(api_stats)"
+                                   }),
+                                   viewCfg: {
+                                       elementId : 'objecttype_top_5_section',
+                                       view : "SectionView",
+                                       viewConfig : {
+                                           rows : [ {
+                                               columns :[
+                                                    $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
+                                                        elementId : 'objecttype_top_5',
+                                                        viewConfig: {
+                                                            chartOptions: {
+                                                                colors: cowc.FIVE_NODE_COLOR,
+                                                                title: 'Object Type',
+                                                                xAxisLabel: '',
+                                                                yAxisLabel: 'Top 5 Object Types',
+                                                                groupBy: 'api_stats.object_type',
+                                                                limit: 5,
+                                                                yField: 'COUNT(api_stats)',
+                                                                margin: {
+                                                                    left: 40,
+                                                                    top: 20,
+                                                                    right: 0,
+                                                                    bottom: 40
+                                                                }
+                                                            }
+                                                        }
+                                                    })
+                                               ]
+                                           }]
+                                       }
+                                   }
+                               }
+                           ]
                        }
                    }]
                }]
            }
-       }
+       };
 
    }
    return ConfigNodeChartView;
