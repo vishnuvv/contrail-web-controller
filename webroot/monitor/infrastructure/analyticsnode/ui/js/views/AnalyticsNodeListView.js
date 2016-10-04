@@ -32,7 +32,7 @@ define(
                                         colorFn: colorFn
                                     }
                                 }]
-                            },{
+                            }/*,{
                                 columns : [{
                                     elementId :
                                         ctwl.ANALYTICSNODE_SUMMARY_GRID_ID,
@@ -45,7 +45,7 @@ define(
                                         colorFn: colorFn
                                     }
                                 }]
-                            }
+                            }*/
                             ]
                         };
                 return {

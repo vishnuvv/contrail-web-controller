@@ -3,11 +3,12 @@
  */
 
 define(['underscore', 'contrail-view',
+       'monitor-infra-analyticsnode-model',
        'monitor-infra-analytics-sandesh-chart-model',
        'monitor-infra-analytics-queries-chart-model',
        'monitor-infra-analytics-database-read-write-chart-model',
        'monitor-infra-analytics-database-usage-model','gs-view'],
-       function(_, ContrailView,AnalyticsNodeSandeshChartModel,
+       function(_, ContrailView,AnalyticsModel,AnalyticsNodeSandeshChartModel,
             AnalyticsNodeQueriesChartModel, AnalyticsNodeDataBaseReadWriteChartModel,
             AanlyticsNodeDatabaseUsageModel,GridStackView){
         var AnalyticsNodesSummaryChartsView = ContrailView.extend({
@@ -65,6 +66,9 @@ define(['underscore', 'contrail-view',
                        elementId : 'analyticsGridStackComponent',
                        view : "GridStackView",
                        viewConfig : {
+                            gridAttr : {
+                                defaultWidth : 6
+                            },
                             widgetCfgList: [
                                 {
                                     modelCfg: sandeshModel,
@@ -80,7 +84,24 @@ define(['underscore', 'contrail-view',
                                 },
                                 {
                                     modelCfg: databseReadWritemodel,
-                                    viewCfg: getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn)
+                                    viewCfg: getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn),
+                                    itemAttr: {
+                                        height: 4
+                                    }
+                                },{
+                                    modelCfg: new AnalyticsModel(),
+                                    viewCfg: {
+                                        elementId : ctwl.ANALYTICSNODE_SUMMARY_GRID_ID,
+                                        title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
+                                        view : "GridView",
+                                        viewConfig : {
+                                            elementConfig :
+                                                getAnalyticsNodeSummaryGridConfig()
+                                        }
+                                    },
+                                    itemAttr: {
+                                        width: 2
+                                    }
                                 }
                             ]
                        }
@@ -89,6 +110,162 @@ define(['underscore', 'contrail-view',
            }
        }
    }
+
+    function getAnalyticsNodeSummaryGridConfig(
+            pagerOptions) {
+        var columns = [
+            {
+                field:"name",
+                id:"name",
+                name:"Host name",
+                formatter:function(r,c,v,cd,dc) {
+                    return cellTemplateLinks({
+                        cellText:'name',
+                        name:'name',
+                        statusBubble:true,
+                        rowData:dc});
+                },
+                exportConfig: {
+                    allow: true,
+                    advFormatter: function(dc) {
+                        return dc.name;
+                    }
+                },
+                events: {
+                    // onClick: onClickHostName
+                },
+                cssClass: 'cell-hyperlink-blue',
+                minWidth:110,
+                sortable:true
+            },
+            {
+                field:"ip",
+                id:"ip",
+                name:"IP Address",
+                minWidth:110,
+                sortable:true,
+                formatter:function(r,c,v,cd,dc){
+                    return monitorInfraParsers.summaryIpDisplay(dc['ip'],
+                            dc['summaryIps']);
+                },
+                exportConfig: {
+                    allow: true,
+                    advFormatter: function(dc) {
+                        return dc.ip;
+                    }
+                },
+                sorter : comparatorIP
+            },
+            {
+                field:"version",
+                id:"version",
+                name:"Version",
+                sortable:true,
+                minWidth:110
+            },
+            {
+                field:"status",
+                id:"status",
+                name:"Status",
+                sortable:true,
+                formatter:function(r,c,v,cd,dc) {
+                    return monitorInfraUtils.getNodeStatusContentForSummayPages(dc,'html');
+                },
+                searchFn:function(d) {
+                    return monitorInfraUtils.getNodeStatusContentForSummayPages(d,'text');
+                },
+                minWidth:110,
+                exportConfig: {
+                    allow: true,
+                    advFormatter: function(dc) {
+                        return monitorInfraUtils.getNodeStatusContentForSummayPages(dc,
+                            'text');
+                    }
+                },
+                sortable:{
+                    sortBy: function (d) {
+                        return monitorInfraUtils.getNodeStatusContentForSummayPages(d,'text');
+                    }
+                },
+                sorter:cowu.comparatorStatus
+            },
+            {
+                field:"cpu",
+                id:"analyticsCpu",
+                name: ctwl.TITLE_CPU,
+                formatter:function(r,c,v,cd,dc) {
+                    return '<div class="gridSparkline display-inline">' +
+                            '</div><span class="display-inline">' +
+                            ifNotNumeric(dc['cpu'],'-')  + '</span>';
+                },
+                asyncPostRender: renderSparkLines,
+                searchFn:function(d){
+                    return d['cpu'];
+                },
+                minWidth:120,
+                exportConfig: {
+                    allow: true,
+                    advFormatter: function(dc) {
+                        return dc.cpu
+                    }
+                }
+            },
+            {
+                field:"memory",
+                id:"analyticsMem",
+                sortable:true,
+                name:"Memory",
+                minWidth:150,
+                sortField:"y"
+            },
+            {
+                field:"genCount",
+                id:"genCount",
+                sortable:true,
+                name:"Generators",
+                minWidth:85
+            }
+        ];
+        var gridElementConfig = {
+            header : {
+                title : {
+                    text : ctwl.ANALYTICSNODE_SUMMARY_TITLE
+                }
+            },
+            columnHeader : {
+                columns : columns
+
+            },
+            body : {
+                options : {
+                    detail : false,
+                    enableAsyncPostRender:true,
+                    checkboxSelectable : false,
+                    fixedRowHeight: 30
+                },
+                dataSource : {
+                    remote : {
+                        ajaxConfig : {
+                            url : ctwl.ANALYTICSNODE_SUMMARY
+                        }
+                    },
+                    cacheConfig : {
+                        ucid: ctwl.CACHE_ANALYTICSNODE
+                    }
+                },
+                statusMessages: {
+                    loading: {
+                        text: 'Loading Analytics Nodes..',
+                    },
+                    empty: {
+                        text: 'No Analytics Nodes Found.'
+                    }
+                }
+            }
+
+        };
+        return gridElementConfig;
+    }
 
    function getAnalyticsNodeSandeshChartViewConfig(colorFn) {
        return {
