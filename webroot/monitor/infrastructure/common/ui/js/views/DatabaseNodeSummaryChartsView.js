@@ -193,7 +193,7 @@ define(['underscore', 'contrail-view',
                 rows : [{
                     columns : [ {
                         elementId : ctwl.DATABASENODE_COMPACTIONS_CHART_ID,
-                        view : "StackedBarChartWithFocusView",
+                        view : "StackedAreaChartView",
                         viewConfig : {
                             class: 'mon-infra-chart chartMargin',
                             chartOptions:{
