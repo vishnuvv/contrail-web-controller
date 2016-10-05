@@ -4,20 +4,17 @@
 .mon-infra-chart g.nv-barsWrap g.nv-group {
     fill-opacity: 1 !important;
 }
-#analytics-nodes-chart .contrail-legend text,
-#database-nodes-chart .contrail-legend text,
-#config-nodes-chart .contrail-legend text{
+
+.mon-infra-chart .contrail-legend text{
     font: normal 11px Open Sans;
     opacity: 1;
 }
-#analytics-nodes-chart .contrail-chart-title text,
-#config-nodes-chart .contrail-chart-title text  {
+.mon-infra-chart .contrail-chart-title text  {
     font-size: 11px;
 }
-#config-nodes-chart,
-#analytics-nodes-chart,
-#database-nodes-chart{
-    margin-top:15px !important;
+.mon-infra-chart{
+    margin-left:10px !important;
+    margin-right:10px !important;
 }
 #config-nodes-chart .chart-container g.main text.axis-label,
 #config-nodes-donutchart-section g.contrail-chart-title text,
@@ -133,12 +130,13 @@ dl.progress-percentage dd {
   text-indent: -1000em !important;
   color:#fff !important;
 }
-/*.grid-stack-item-content {
-border:none !important;
-}*/
 .ui-draggable-handle:hover{
 cursor:move;
 }
 .grid-stack .grid-stack-item .grid-stack-item-content {
     overflow: hidden;
 }
+.chart-control-panel-container{
+    display:none !important;
+}
+

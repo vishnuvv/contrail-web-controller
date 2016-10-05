@@ -10,7 +10,7 @@ define(['underscore', 'contrail-view', 'legend-view',
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 colorFn = viewConfig['colorFn'];
-            var chartModel = new ConfigNodeChartsModel();
+            //var chartModel = new ConfigNodeChartsModel();
             //self.renderView4Config(self.$el, chartModel,
               //      getConfigNodeChartViewConfig(colorFn));
             self.$el.append($("<div class='gs-container'></div>"));
@@ -42,6 +42,7 @@ define(['underscore', 'contrail-view', 'legend-view',
                                            viewConfig: {
                                                class: 'col-xs-7 mon-infra-chart chartMargin',
                                                chartOptions: {
+                                                   showControls: false,
                                                    height: 480,
                                                    colors: colorFn,
                                                    title: ctwl.CONFIGNODE_SUMMARY_TITLE,
@@ -144,112 +145,6 @@ define(['underscore', 'contrail-view', 'legend-view',
                                        viewConfig: {
                                            class: 'col-xs-5 mon-infra-chart',
                                            color: colorFn
-                                       }
-                                   }
-                               },{
-                                   modelCfg: monitorInfraUtils.getStatsModelConfig({
-                                       table_name: 'StatTable.VncApiStatsLog.api_stats',
-                                       select: "T=, api_stats.useragent, COUNT(api_stats)"
-                                   }),
-                                   viewCfg: {
-                                       elementId : 'useragent_top_5_section',
-                                       view : "SectionView",
-                                       viewConfig : {
-                                           rows : [ {
-                                               columns :[
-                                                    $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
-                                                        elementId : 'useragent_top_5',
-                                                        viewConfig: {
-                                                            chartOptions: {
-                                                                colors: cowc.FIVE_NODE_COLOR,
-                                                                title: 'User Agent',
-                                                                xAxisLabel: '',
-                                                                yAxisLabel: 'Top 5 User Agents',
-                                                                groupBy: 'api_stats.useragent',
-                                                                limit: 5,
-                                                                yField: 'COUNT(api_stats)',
-                                                                margin: {
-                                                                    left: 40,
-                                                                    top: 20,
-                                                                    right: 0,
-                                                                    bottom: 40
-                                                                }
-                                                            }
-                                                        }
-                                                    })
-                                               ]
-                                           }]
-                                       }
-                                   }
-                               },{
-                                   modelCfg: monitorInfraUtils.getStatsModelConfig({
-                                       table_name: 'StatTable.VncApiStatsLog.api_stats',
-                                       select: "T=, api_stats.object_type, COUNT(api_stats)"
-                                   }),
-                                   viewCfg: {
-                                       elementId : 'objecttype_top_5_section',
-                                       view : "SectionView",
-                                       viewConfig : {
-                                           rows : [ {
-                                               columns :[
-                                                    $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
-                                                        elementId : 'objecttype_top_5',
-                                                        viewConfig: {
-                                                            chartOptions: {
-                                                                colors: cowc.FIVE_NODE_COLOR,
-                                                                title: 'Object Type',
-                                                                xAxisLabel: '',
-                                                                yAxisLabel: 'Top 5 Object Types',
-                                                                groupBy: 'api_stats.object_type',
-                                                                limit: 5,
-                                                                yField: 'COUNT(api_stats)',
-                                                                margin: {
-                                                                    left: 40,
-                                                                    top: 20,
-                                                                    right: 0,
-                                                                    bottom: 40
-                                                                }
-                                                            }
-                                                        }
-                                                    })
-                                               ]
-                                           }]
-                                       }
-                                   }
-                               }, {
-
-                                   modelCfg: monitorInfraUtils.getStatsModelConfig({
-                                       table_name: 'StatTable.VncApiStatsLog.api_stats',
-                                       select: "T=, api_stats.object_type, COUNT(api_stats)"
-                                   }),
-                                   viewCfg: {
-                                       elementId : 'objecttype_top_5_section',
-                                       view : "SectionView",
-                                       viewConfig : {
-                                           rows : [ {
-                                               columns :[
-                                                    $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
-                                                        elementId : 'objecttype_top_5',
-                                                        viewConfig: {
-                                                            chartOptions: {
-                                                                colors: cowc.FIVE_NODE_COLOR,
-                                                                title: 'Object Type',
-                                                                xAxisLabel: '',
-                                                                yAxisLabel: 'Top 5 Object Types',
-                                                                groupBy: 'api_stats.object_type',
-                                                                limit: 5,
-                                                                yField: 'COUNT(api_stats)',
-                                                                margin: {
-                                                                    left: 40,
-                                                                    top: 20,
-                                                                    right: 0,
-                                                                    bottom: 40
-                                                                }
-                                                            }
-                                                        }
-                                                    })
-                                               ]
-                                           }]
                                        }
                                    }
                                }

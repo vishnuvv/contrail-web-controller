@@ -783,6 +783,92 @@ define(
                     return chartData;
 
                 };
+                
+                this.parseGeneratorsDonutChart = function (apiStats,color) {
+                     var parsedData = [];
+                     totalResParamArr = _.sortBy(apiStats, 'SUM(msg_info.messages)');
+                     totalResParamArr = totalResParamArr.reverse();
+                     totalResParamArr = totalResParamArr.slice(0, 8);
+                     console.log(totalResParamArr);
+                     for(i=0;i<totalResParamArr.length;i++){
+                         parsedData.push({ 
+                             "key" : getValueByJsonPath(totalResParamArr, i+';msg_info.type', '-'),
+                             "color" : cowc.FIVE_NODE_COLOR[i],
+                             values : [{
+                                 "label" : getValueByJsonPath(totalResParamArr, i+';msg_info.type', '-'),
+                                 "value" : getValueByJsonPath(totalResParamArr, i+';SUM(msg_info.messages)', '-')
+                             }] 
+                         });  
+                     }
+                 return parsedData;
+             };
+                
+             this.generatorsChartsParseData = function (apiStats) {
+                 var parsedData = [], parsedDataAll = [];
+                 
+                 var parsedDataNew = [];
+                 
+                 var cf = crossfilter(apiStats);
+                 var sourceDim = cf.dimension(function (d) {return d['name']});
+                 var totalResMessages = sourceDim.group().reduceSum(
+                         function (d) {
+                             return d['SUM(msg_info.messages)'];
+                         });
+                 var totalResSize = sourceDim.group().reduceSum(
+                         function (d) {
+                             return d['SUM(msg_info.bytes)'];
+                         });
+                 totalResMessagesData = totalResMessages.all();
+                 totalResSize = totalResSize.all();
+
+                 //totalResMessagesData.push.apply(totalResMessagesData, totalResSize);
+                     $.each(totalResSize, function (key, value){
+                         var xValue = Math.round(value['value']/120);
+                         var Source = value['key'].substring(0, 6);
+                         xValue = formatBytes(xValue);
+                         xValue = parseFloat(xValue);
+                         xValue = Math.round(xValue);
+                         parsedData.push({
+                             Source : Source,
+                             label: value['key'],
+                             x: parseFloat(xValue)
+                             //color: colors[value['key']]
+                         });
+                     });
+                     
+                     $.each(totalResMessagesData, function (key, value){
+                         var dataWithX = _.find(parsedData, function(xValue){
+                             return xValue.label === value["key"];
+                         });
+                         dataWithX.y = value['value']/120;
+                         dataWithX.y = parseFloat(dataWithX.y);
+                         dataWithX.y = Math.round(dataWithX.y);
+                         //dataWithX.y = parseFloat(dataWithX.y);
+                         /*parsedDataY.push({
+                             label: value['key'],
+                             y: parseFloat(value['value'])
+                             //color: colors[value['key']]
+                         });*/
+                     });
+                     //parsedData =  $.extend(parsedData, parsedDataY);
+                     
+                    
+                     /*$.each(totalResMessagesData, function (key, value){
+                       
+                         parsedDataNew.push({
+                             label: value['key'],
+                             x: parseFloat(value['value'])
+                             y:
+                             //color: colors[value['key']]
+                         });
+                     });  */
+                     
+                     
+                   console.log(parsedData);
+                
+                 return parsedData;
+
+             };
                 this.parseConfigNodeRequestForDonutChart = function (apiStats, reqType, color) {
                     var cf = crossfilter(apiStats),
                         parsedData = [],

@@ -1577,6 +1577,49 @@ define([
                 }
             }
         }
+        
+      //Default tooltip render function for buckets
+        self.getNodeTooltipContentsForBucket1 = function(currObj,formatType) {
+            var nodes = currObj['children'];
+            console.log(nodes);
+            //var avgCpu = d3.mean(nodes,function(d){return d.x});
+            //var avgMem = d3.mean(nodes,function(d){return d.y});
+            var maxSize = self.vRouterBubbleSizeFn(nodes);
+            var nodeWithMaxSize = _.filter(nodes,function (obj) {
+                return obj['size'] == maxSize;
+            });
+            var tooltipContents = [
+                {label:'No. of Generators:', value: nodes.length},
+                {label:'Messages', value:$.isNumeric(currObj['y']) ? currObj['y'].toFixed(2)  : currObj['y']},
+                {label:'Bytes(KB)', value:Math.round(currObj['x'])},
+                //{label: 'Max Throughput (In/Out)', value: formatThroughput(nodeWithMaxSize[0]['inThroughput'])
+                //    + ' / ' + formatThroughput(nodeWithMaxSize[0]['outThroughput'])}
+            ];
+            if(formatType == 'simple') {
+                return tooltipContents;
+            } else {
+                return {
+                    content: {
+                        iconClass: false,
+                        info: tooltipContents,
+                        actions: [
+                          /*  {
+                                type: 'link',
+                                text: 'View',
+                                iconClass: 'fa fa-external-link',
+                                callback: onScatterChartClick
+                            }*/
+                        ]
+                    },
+                    title: {
+                        name: 'Generators',
+                        //type: 'Generators'
+                    }
+                }
+            }
+        }
+
+        
         //Default tooltip contents to show for infra nodes
         self.getNodeTooltipContents = function(currObj,cfg) {
             var tooltipContents = [
@@ -1612,6 +1655,35 @@ define([
                         ]
                     },title : {
                         name: tooltipContents[0]['value'],
+                        type: currObj['display_type']
+                    }
+                }
+            }
+        }
+
+        self.getNodeTooltipContents1 = function(currObj,cfg) {
+            console.log(currObj);
+            var tooltipContents = [
+                {label:'Host Name', value: currObj['Source']},
+                {label:'Messages', value: currObj['y']},
+                {label:'Bytes', value:currObj['x']}
+               // {label: ctwl.TITLE_CPU, value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  : '-'},
+               // {label:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
+            ];
+            
+            //Get tooltipAlerts
+            tooltipContents = tooltipContents.concat(self.getTooltipAlerts(currObj));
+            var cfg = ifNull(cfg,{});
+            if(cfg['formatType'] == 'simple') {
+                return tooltipContents;
+            } else {
+                return {
+                    content: {
+                        iconClass : false,
+                        info: tooltipContents.slice(1),
+                        actions: []
+                    },title : {
+                        name: 'Generators',
                         type: currObj['display_type']
                     }
                 }
@@ -1957,9 +2029,26 @@ define([
                     onClickHandler: monitorInfraUtils.onvRouterDrillDown
                 });
         },
+        self.generatorsTooltipFn = function(currObj,formatType) {
+            if(currObj['children'] != null && currObj['children'].length == 1)
+                return self.getNodeTooltipContents1(currObj['children'][0], {
+                    formatType: formatType,
+                    onClickHandler: monitorInfraUtils.onAnalyticNodeDrillDown
+                });
+            else
+                return self.getNodeTooltipContents1(currObj, {
+                    formatType: formatType,
+                    onClickHandler: monitorInfraUtils.onAnalyticNodeDrillDown
+                });
+        },
+
         self.vRouterBucketTooltipFn = function(currObj,formatType) {
             return self.getNodeTooltipContentsForBucket(currObj,formatType);
         },
+        self.generatorsBucketTooltipFn = function(currObj,formatType) {
+            return self.getNodeTooltipContentsForBucket1(currObj,formatType);
+        },
+
         self.controlNodetooltipFn = function(currObj,formatType) {
             return self.getNodeTooltipContents(currObj,formatType);
         },

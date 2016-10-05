@@ -7,9 +7,10 @@ define(['underscore', 'contrail-view',
        'monitor-infra-analytics-sandesh-chart-model',
        'monitor-infra-analytics-queries-chart-model',
        'monitor-infra-analytics-database-read-write-chart-model',
+       'monitor-infra-analytics-generators-chart-model',
        'monitor-infra-analytics-database-usage-model','gs-view'],
        function(_, ContrailView,AnalyticsModel,AnalyticsNodeSandeshChartModel,
-            AnalyticsNodeQueriesChartModel, AnalyticsNodeDataBaseReadWriteChartModel,
+            AnalyticsNodeQueriesChartModel, AnalyticsNodeDataBaseReadWriteChartModel,AnalyticsNodeGeneratorsChartModel,
             AanlyticsNodeDatabaseUsageModel,GridStackView){
         var AnalyticsNodesSummaryChartsView = ContrailView.extend({
         render : function (){
@@ -32,6 +33,8 @@ define(['underscore', 'contrail-view',
                 queriesModel = new AnalyticsNodeQueriesChartModel(),
                 dbUsageModel = new AanlyticsNodeDatabaseUsageModel();
                 databseReadWritemodel = new AnalyticsNodeDataBaseReadWriteChartModel();
+                analyticsnodeGeneratorsModel = new AnalyticsNodeGeneratorsChartModel();
+
 
             self.$el.append($("<div class='gs-container'></div>"));
 
@@ -75,13 +78,14 @@ define(['underscore', 'contrail-view',
                                     viewCfg: getAnalyticsNodeSandeshChartViewConfig(colorFn)
                                 },
                                 {
-                                    modelCfg: queriesModel,
-                                    viewCfg: getAnalyticsNodeQueriesChartViewConfig(colorFn)
+                                    modelCfg: analyticsnodeGeneratorsModel,
+                                    viewCfg: getGeneratorsScatterChartViewConfig()
                                 },
                                 {
                                     modelCfg: dbUsageModel,
                                     viewCfg: getAnalyticsNodeDatabaseUsageChartViewConfig(colorFn)
                                 },
+                               
                                 {
                                     modelCfg: databseReadWritemodel,
                                     viewCfg: getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn),
@@ -401,6 +405,50 @@ define(['underscore', 'contrail-view',
 
    }
 
+   function getGeneratorsScatterChartViewConfig() {
+       return {
+           elementId :"generatorsScatterChartView",
+           view : "SectionView",
+           viewConfig : {
+               rows: [{
+                   columns: [{
+                       elementId: "generatorsScatterChart",
+                       //title: ctwl.VROUTER_SUMMARY_TITLE,
+                       view: "ZoomScatterChartView",
+                       //app: cowc.APP_CONTRAIL_CONTROLLER,
+                       viewConfig: {
+                           loadChartInChunks: true,
+                           cfDataSource : self.cfDataSource,
+                           chartOptions:{
+                               sortFn:function(data){
+                                   return data.reverse();
+                               },
+                               fetchDataLabel : false,
+                               doBucketize: true,
+                               xLabel: 'Bytes (KB)/ min',
+                               yLabel: 'Generators (Messages /min)',
+                               forceX : [ 0, 1 ],
+                               forceY : [ 0, 20 ],
+                               margin: {top:5},
+                               doBucketize:false,
+                             
+                               showLegend: false,
+                              bubbleCfg : {
+                                   defaultMaxValue : monitorInfraConstants.VROUTER_DEFAULT_MAX_THROUGHPUT
+                              },
+                             
+                              tooltipConfigCB: monitorInfraUtils.generatorsTooltipFn,
+                              bucketTooltipFn: monitorInfraUtils.generatorsBucketTooltipFn,
+                           },
+                           
+                       }
+                   
+                   }]
+               }]
+           }
+       }
+
+   }
    function getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn) {
        return {
            elementId : ctwl.ANALYTICS_CHART_DATABASE_WRITE_SECTION_ID,

@@ -149,7 +149,7 @@ define([
                     height: 230,
                     tickPadding: 8,
                     margin: {
-                        left: 55,
+                        left: 45,
                         top: 20,
                         right: 0,
                         bottom: 40
@@ -176,10 +176,10 @@ define([
                         title: '',
                         axisLabelDistance : 0,
                         margin: {
-                            left: 60,
+                            left: 70,
                             top: 20,
                             right: 15,
-                            bottom: 50
+                            bottom: 20
                         },
                         tickPadding: 8,
                         hideFocusChart: true,
