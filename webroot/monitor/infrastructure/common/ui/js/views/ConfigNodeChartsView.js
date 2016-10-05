@@ -148,6 +148,47 @@ define(['underscore', 'contrail-view', 'legend-view',
                                            color: colorFn
                                        }
                                    }
+                               }, {
+                                   modelCfg: {
+                                       remote : {
+                                           ajaxConfig : {
+                                               url : "/api/qe/query",
+                                               type: 'POST',
+                                               data: JSON.stringify({
+                                                   "autoSort": true,
+                                                   "async": false,
+                                                   "formModelAttrs": {
+                                                    "table_name": "StatTable.SandeshMessageStat.msg_info",
+                                                     "table_type": "STAT",
+                                                     "query_prefix": "stat",
+                                                     "from_time": Date.now() - (2 * 60 * 60 * 1000),
+                                                     "from_time_utc": Date.now() - (2 * 60 * 60 * 1000),
+                                                     "to_time": Date.now(),
+                                                     "to_time_utc": Date.now(),
+                                                     "select": "PERCENTILES(msg_info.bytes), PERCENTILES(msg_info.messages)",
+                                                     "time_granularity": 30,
+                                                     "time_granularity_unit": "mins",
+                                                     "limit": "150000"
+                                                   },
+                                               }),
+                                               timeout : 120000 //2 mins
+                                           },
+                                           dataParser : function (response) {
+                                               return monitorInfraParsers.percentileAnalyticsNodeSummaryChart(response['data']);
+                                           }
+                                       },
+                                       cacheConfig : {}
+                                   },
+                                   viewCfg: {
+                                       elementId :ctwl.ANALYTICS_CHART_PERCENTILE_TEXT_VIEW,
+                                       title : '',
+                                       view : "PercentileTextView",
+                                       viewPathPrefix:
+                                           ctwl.ANALYTICSNODE_VIEWPATH_PREFIX,
+                                   },
+                                   itemAttr: {
+                                       height: 2
+                                   }
                                }
                            ]
                        }
