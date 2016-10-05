@@ -31,6 +31,7 @@ define(['underscore', 'contrail-view', 'legend-view',
                        viewConfig : {
                            gridAttr: {
                                defaultWidth: 6,
+                               defaultHeight: 10,
                            },
                            widgetCfgList: [
                                {
@@ -66,7 +67,7 @@ define(['underscore', 'contrail-view', 'legend-view',
                                            }
                                        }),
                                    itemAttr: {
-                                       height: 4
+                                       height: 2
                                    }
                                        
                                },{

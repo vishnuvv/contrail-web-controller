@@ -46,7 +46,8 @@ define(
                                                   view: 'GridStackView',
                                                   viewConfig: {
                                                       gridAttr: {
-                                                          defaultWidth: 6
+                                                          defaultWidth: 6,
+                                                          defaultHeight: 10
                                                       },
                                                       widgetCfgList: [
                                                             {
