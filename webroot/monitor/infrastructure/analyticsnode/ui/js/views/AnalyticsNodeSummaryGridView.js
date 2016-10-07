@@ -152,8 +152,23 @@ define([ 'underscore', 'contrail-view' ],function(_, ContrailView) {
                        field:"genCount",
                        id:"genCount",
                        sortable:true,
-                       name:"Generators",
+                       name:"Generators1",
                        minWidth:85
+                   },
+                   {
+                       id:"percentileMessagesSize",
+                       sortable:true,
+                       name:"95% - Messages",
+                       minWidth:200,
+                       formatter:function(r,c,v,cd,dc) {
+                           return '<span><b>'+"Count: "+
+                                   '</b></span>' +
+                                  '<span>' +
+                                  (dc['percentileMessages']) + '</span>'+'<span>'+", Size: "+
+                                   '</span>' +
+                                  '<span>' +
+                                  (dc['percentileSize']) + '</span>';
+                       }
                    }
                 ];
                 var gridElementConfig = {

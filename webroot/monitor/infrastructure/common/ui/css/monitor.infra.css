@@ -57,13 +57,12 @@
 /******VRouter Radio Button Css Ends Here****/
 .percentile {
     background: #f6f6f6;
-    padding: 8px 0px;
+    padding: 6px 4px 6px 4px;
     color: #787878;
     font-family: "Open Sans";
     font-size: 11px;
-    margin-left: 62px;
+    margin-left: 0px;
     margin-right: 10px;
-    padding: 10px;
     vertical-align: middle;
 }
 .percentile dl, .percentile dt, .percentile dd {
@@ -122,6 +121,9 @@ dl.progress-percentage dd {
     margin-left: 5px;
     font-size: 13px;
 }
+#analytics-chart-percentile-text-view, #confignode-chart-percentile-text-view{
+    width:50% !important;
+}
 /******Percentile CSS ends here****/
 .grid-stack-item header{
   background-color:transparent !important;
@@ -139,4 +141,12 @@ cursor:move;
 .chart-control-panel-container{
     display:none !important;
 }
+.grid-stack-item-content{
+border:none !important;
+}
+.grid-stack-item-content:hover{
+ border: 1px solid #ccc !important;
+ border-style: dotted !important;
+}
+
 

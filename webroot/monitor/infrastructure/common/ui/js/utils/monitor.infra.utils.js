@@ -982,6 +982,50 @@ define([
             primaryDS.updateData(updatedData);
         };
 
+        self.parseAndMergepercentileConfigNodeNodeSummaryChart =
+            function (response,primaryDS) {
+            var statsData = response;
+            var primaryData = primaryDS.getItems();
+            var updatedData = [];
+            $.each(primaryData,function(i,d){
+                var idx=0;
+                while(statsData.length > 0 && idx < statsData.length){
+                    if(statsData[idx]['Source'] == d['name']){
+                        var formattedTime =  getValueByJsonPath(statsData[idx], 'PERCENTILES(api_stats.response_time_in_usec);95', '-');
+                        var secs = formattedTime / 1000;
+                        var seconds = Number((secs).toFixed(2))+' ms'
+                        formattedTime = seconds;
+                        d['percentileTime'] = formattedTime;
+                        d['percentileSize'] = formatBytes(getValueByJsonPath(statsData[idx], 'PERCENTILES(api_stats.response_size);95', '-'));
+                       break;
+                    }
+                    idx++;
+                };
+                updatedData.push(d);
+            });
+            primaryDS.updateData(updatedData);
+        };
+        
+        self.parseAndMergePercentileAnalyticsNodeSummaryChart =
+            function (response,primaryDS) {
+            var statsData = response;
+            var primaryData = primaryDS.getItems();
+            var updatedData = [];
+            $.each(primaryData,function(i,d){
+                var idx=0;
+                while(statsData.length > 0 && idx < statsData.length){
+                    if(statsData[idx]['Source'] == d['name']){
+                        d['percentileMessages'] = Math.round(getValueByJsonPath(statsData[idx], 'PERCENTILES(msg_info.messages);95', '-'));
+                        d['percentileSize'] = formatBytes(getValueByJsonPath(statsData[idx], 'PERCENTILES(msg_info.messages);95', '-'));
+                       break;
+                    }
+                    idx++;
+                };
+                updatedData.push(d);
+            });
+            primaryDS.updateData(updatedData);
+        };
+        
         self.mergeCollectorDataAndPrimaryData = function (collectorData,primaryDS){
             var collectors = ifNull(collectorData.value,[]);
             if(collectors.length == 0){
@@ -2452,7 +2496,11 @@ define([
                             data: JSON.stringify(postData)
                         },
                         dataParser : function (response) {
-                            return response['data'];
+                            var data = response['data'];
+                            if (statsConfig['parser'] != null && typeof statsConfig['parser'] == "function") {
+                                data = statsConfig['parser'](data)
+                            }
+                            return data;
                         }
                     },
                     "cacheConfig" : {}

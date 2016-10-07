@@ -21,8 +21,8 @@ define(['underscore', 'contrail-view',
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 colorFn = viewConfig['colorFn'];
-            // self.$el.append(anlyticsTemplate);
-            // self.$el.append(percentileWrapperTemplate({cssClass: 'percentileWrapper col-xs-6 col-xs-offset-6'}));
+            self.$el.append(anlyticsTemplate);
+            self.$el.append(percentileWrapperTemplate({cssClass: 'percentileWrapper col-xs-6 col-xs-offset-6'}));
             var topleftColumn = self.$el.find(".top-container .left-column"),
                 toprightCoulmn = self.$el.find(".top-container .right-column"),
                 bottomleftColumn = self.$el.find(".bottom-container .left-column"),
@@ -75,6 +75,38 @@ define(['underscore', 'contrail-view',
                             },
                             widgetCfgList: [
                                 {
+                                    modelCfg: monitorInfraUtils.getStatsModelConfig({
+                                        "table_name": "StatTable.SandeshMessageStat.msg_info",
+                                        "select": "PERCENTILES(msg_info.bytes), PERCENTILES(msg_info.messages)",
+                                        "parser": monitorInfraParsers.percentileAnalyticsNodeSummaryChart
+                                    }),
+                                    viewCfg: {
+                                        elementId : ctwl.ANALYTICS_CHART_PERCENTILE_SECTION_ID,
+                                        view : "SectionView",
+                                        viewConfig : {
+                                            rows : [ {
+                                                columns : [ {
+                                                    elementId :ctwl.ANALYTICS_CHART_PERCENTILE_TEXT_VIEW,
+                                                    title : '',
+                                                    view : "PercentileTextView",
+                                                    viewPathPrefix:
+                                                        ctwl.ANALYTICSNODE_VIEWPATH_PREFIX,
+                                                    app : cowc.APP_CONTRAIL_CONTROLLER,
+                                                    viewConfig : {
+                                                        percentileTitle : ctwl.ANALYTICSNODE_CHART_PERCENTILE_TITLE,
+                                                        percentileXvalue : ctwl.ANALYTICSNODE_CHART_PERCENTILE_COUNT,
+                                                        percentileYvalue : ctwl.ANALYTICSNODE_CHART_PERCENTILE_SIZE,
+                                                    }
+                                                }]
+                                            }]
+                                        }
+                                    },
+                                    itemAttr: {
+                                        width: 2,
+                                        height:0.2
+                                    }
+                                },
+                                {
                                     modelCfg: sandeshModel,
                                     viewCfg: getAnalyticsNodeSandeshChartViewConfig(colorFn)
                                 },
@@ -102,7 +134,7 @@ define(['underscore', 'contrail-view',
                                         }
                                     },
                                     itemAttr: {
-                                        width: 2
+                                        width: 4
                                     }
                                 }, {
                                     modelCfg: monitorInfraUtils.getStatsModelConfig({
@@ -284,6 +316,21 @@ define(['underscore', 'contrail-view',
                 sortable:true,
                 name:"Generators",
                 minWidth:85
+            },
+            {
+                id:"percentileMessagesSize",
+                sortable:true,
+                name:"95% - Messages",
+                minWidth:200,
+                formatter:function(r,c,v,cd,dc) {
+                    return '<span><b>'+"Count "+
+                            '</b></span>' +
+                           '<span>' +
+                           (dc['percentileMessages']) + '</span>'+'<span><b>'+", Size "+
+                            '</b></span>' +
+                           '<span>' +
+                           (dc['percentileSize']) + '</span>';
+                }
             }
         ];
         var gridElementConfig = {
@@ -519,6 +566,8 @@ define(['underscore', 'contrail-view',
                                            timeout : 120000 //2 mins
                                        },
                                        dataParser : function (response) {
+                                           console.log("Hii");
+                                           console.log(response);
                                            return monitorInfraParsers.percentileAnalyticsNodeSummaryChart(response['data']);
                                        }
                                    },

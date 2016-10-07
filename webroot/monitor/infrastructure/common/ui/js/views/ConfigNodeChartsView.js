@@ -10,9 +10,7 @@ define(['underscore', 'contrail-view', 'legend-view',
             var self = this,
                 viewConfig = self.attributes.viewConfig,
                 colorFn = viewConfig['colorFn'];
-            //var chartModel = new ConfigNodeChartsModel();
-            //self.renderView4Config(self.$el, chartModel,
-              //      getConfigNodeChartViewConfig(colorFn));
+
             self.$el.append($("<div class='gs-container'></div>"));
             self.renderView4Config(self.$el.find('.gs-container'),{},getGridStackWidgetConfig(colorFn));
         }
@@ -34,6 +32,38 @@ define(['underscore', 'contrail-view', 'legend-view',
                                defaultHeight: 10,
                            },
                            widgetCfgList: [
+                               {
+                                   modelCfg: monitorInfraUtils.getStatsModelConfig({
+                                       "table_name": "StatTable.VncApiStatsLog.api_stats",
+                                       "select": "PERCENTILES(api_stats.response_time_in_usec), PERCENTILES(api_stats.response_size)",
+                                       "parser": monitorInfraParsers.percentileConfigNodeNodeSummaryChart
+                                   }),
+                                   viewCfg: {
+                                       elementId : ctwl.CONFIGNODE_CHART_PERCENTILE_SECTION_ID,
+                                       view : "SectionView",
+                                       viewConfig : {
+                                           rows : [ {
+                                               columns : [ {
+                                                   elementId :ctwl.CONFIGNODE_CHART_PERCENTILE_TEXT_VIEW,
+                                                   title : '',
+                                                   view : "PercentileTextView",
+                                                   viewPathPrefix:
+                                                       ctwl.ANALYTICSNODE_VIEWPATH_PREFIX,
+                                                   app : cowc.APP_CONTRAIL_CONTROLLER,
+                                                   viewConfig : {
+                                                       percentileTitle : ctwl.CONFIGNODE_CHART_PERCENTILE_TITLE,
+                                                       percentileXvalue : ctwl.CONFIGNODE_CHART_PERCENTILE_TIME,
+                                                       percentileYvalue : ctwl.CONFIGNODE_CHART_PERCENTILE_SIZE,
+                                                   }
+                                               }]
+                                           }]
+                                       }
+                                   },
+                                   itemAttr: {
+                                       width: 2,
+                                       height:0.2
+                                   }
+                               },
                                {
                                    modelCfg: chartModel,
                                    viewCfg: 
