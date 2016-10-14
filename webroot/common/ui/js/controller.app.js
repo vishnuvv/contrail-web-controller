@@ -74,6 +74,7 @@ function getControllerAppPaths (ctBaseDir, ctBuildDir,env) {
             * for eg: SearchFlowFormModel, use following in require call instead of path id:
             * 'controller-basedir/monitor/infrastructure/underlay/ui/js/models/SearchFlowFormModel'
             */
+            'networking-graph-view': ctWebDir + '/monitor/networking/ui/js/views/NetworkingGraphView',
             'searchflow-model': ctWebDir + '/monitor/infrastructure/underlay/ui/js/models/SearchFlowFormModel',
             'traceflow-model': ctWebDir + '/monitor/infrastructure/underlay/ui/js/models/TraceFlowTabModel',
             'underlay-graph-model' : ctWebDir + '/monitor/infrastructure/underlay/ui/js/models/UnderlayGraphModel',
@@ -111,6 +112,8 @@ function getControllerAppPaths (ctBaseDir, ctBuildDir,env) {
             'monitor-infra-module': ctWebDir + '/monitor/infrastructure/common/ui/js/monitor.infra.module',
             'nm-module': ctWebDir + '/monitor/networking/ui/js/nm.module',
             'controller-qe-module': ctWebDir + '/reports/qe/ui/js/controller.qe.module',
+
+            'networking-graph-view': ctWebDir + '/monitor/networking/ui/js/views/NetworkingGraphView',
 
             //Need to list paths that are not part of bundles
             'searchflow-model': ctWebDir + '/monitor/infrastructure/underlay/ui/js/models/SearchFlowFormModel',

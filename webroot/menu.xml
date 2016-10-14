@@ -1010,6 +1010,27 @@ and need to add the iconClass tag wherever we need to show some icons
                             </resources>
                             <searchStrings>QoS</searchStrings>
                         </item>
+                        <item>
+                            <label>Topology</label>
+                            <hash>config_networking_topology</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/monitor/networking/ui</rootDir>
+                                    <template>networking.tmpl</template>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/topology/ui</rootDir>
+                                    <js>cfgTopology.main.js</js>
+                                    <class>configTopologyPageLoader</class>
+                                    <function>renderProjectTopology</function>
+                                </resource>
+                            </resources>
+                            <!--<searchStrings>Configure Network, Virtual Network, Virtual Networks, VN, Networks</searchStrings>-->
+                        </item>
                     </items>
                 </item>
                 <item>

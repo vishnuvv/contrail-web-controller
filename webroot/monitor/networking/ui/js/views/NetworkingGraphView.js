@@ -24,7 +24,10 @@ define([
                 graphLoadingSelectorId = '#' + ctwl.GRAPH_LOADING_ID,
                 connectedGraphView, connectedGraphModel,
                 configGraphView, configGraphModel;
-
+            if (arguments.length > 0) {
+                connectedGraph = $.extend(true, {}, connectedGraph, getValueByJsonPath(arguments, '0;connectedGraph', {}));
+                configGraph = $.extend(true, {}, configGraph, getValueByJsonPath(arguments, '0;configGraph', {}));
+            }
             self.$el.html(graphTemplate());
 
             // setTimeout(function () {
@@ -84,10 +87,10 @@ define([
                 el: $(configSelectorId),
                 width: 150,
                 graphModelConfig: confGraphModelConfig,
-                tooltipConfig: nmwgrc.getConfigGraphTooltipConfig(),
-                clickEvents: {
+                tooltipConfig: getValueByJsonPath(configGraph, 'tooltipConfig', nmwgrc.getConfigGraphTooltipConfig()),
+                clickEvents: getValueByJsonPath(configGraph, 'clickEvents',{
                     'cell:pointerclick': getConfgPointerClickFn(connectedGraphView)
-                },
+                }),
                 successCallback: function (graphView) {
                     var configGraphModel = graphView.model;
 
@@ -131,12 +134,12 @@ define([
             el: $(connectedSelectorId),
             linkView: joint.shapes.contrail.LinkView,
             graphModelConfig: getConnectedGraphModelConfig(connectedGraph),
-            tooltipConfig: nmwgrc.getConnectedGraphTooltipConfig(),
-            clickEvents: {
+            tooltipConfig: getValueByJsonPath(connectedGraph, 'tooltipConfig', nmwgrc.getConnectedGraphTooltipConfig()),
+            clickEvents: getValueByJsonPath(connectedGraph, 'clickEvents',{
                 'cell:pointerclick': getCgPointerClick(self, connectedSelectorId),
                 'cell:pointerdblclick': cgPointerDblClick,
                 'blank:pointerdblclick': getCgBlankDblClick(self, connectedSelectorId, connectedGraph)
-            },
+            }),
             controlPanel: getControlPanelConfig(self, configGraph, connectedGraph, selectorId, connectedSelectorId, configSelectorId),
             emptyCallback: function (contrailGraphModel) {
                 var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
