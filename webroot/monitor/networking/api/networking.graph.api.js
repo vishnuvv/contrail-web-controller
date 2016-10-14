@@ -42,6 +42,7 @@ var interfaceFilters = [
 ];
 
 var networkFilters = [
+    'ContrailConfig:elements',
     'UveVirtualNetworkAgent:in_stats',
     'UveVirtualNetworkAgent:out_stats',
     'UveVirtualNetworkAgent:in_bandwidth_usage',
@@ -474,11 +475,19 @@ function getVNStats(links, vnUVE, jsonP, src, dest) {
 }
 
 function getVNNodeAttributes(vnUVENode) {
-    var moreAttributes = {vm_count: 0, vmi_count: 0, in_throughput: 0, out_throughput: 0, virtualmachine_list: []},
-        uveVirtualNetworkAgent;
+    var moreAttributes = {uuid: null, vm_count: 0, vmi_count: 0, in_throughput: 0, out_throughput: 0, virtualmachine_list: []},
+        uveVirtualNetworkAgent, contrailConfig;
 
     try {
         uveVirtualNetworkAgent = vnUVENode['value']['UveVirtualNetworkAgent'];
+        contrailConfig = vnUVENode['value']['ContrailConfig'];
+        if (contrailConfig != null) {
+            var uuid = commonUtils.getValueByJsonPath(contrailConfig, 'elements;uuid');
+            if (uuid == null) {
+                uuid = commonUtils.getValueByJsonPath(contrailConfig, 'elements;0;0;uuid');
+            }
+            moreAttributes['uuid'] = uuid;
+        }
         if (uveVirtualNetworkAgent != null) {
             moreAttributes['vm_count'] = commonUtils.getValueByJsonPath(uveVirtualNetworkAgent, 'virtualmachine_list', []).length;
             moreAttributes['vmi_count'] = commonUtils.getValueByJsonPath(uveVirtualNetworkAgent, 'interface_list', []).length;
