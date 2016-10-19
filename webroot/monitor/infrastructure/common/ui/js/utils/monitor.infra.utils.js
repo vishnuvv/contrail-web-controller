@@ -2,8 +2,9 @@ define([
     'underscore',
     'handlebars',
     'contrail-list-model',
-    'core-alarm-utils'
-], function (_, Handlebars, ContrailListModel,coreAlarmUtils) {
+    'core-alarm-utils',
+    'core-utils'
+], function (_, Handlebars, ContrailListModel,coreAlarmUtils,cowu) {
     var MonitorInfraUtils = function () {
         var self = this;
         var noDataStr = monitorInfraConstants.noDataStr;
@@ -482,6 +483,37 @@ define([
                     processLevelSeverity == sevLevels['WARNING'])
                 return cowc.COLOR_SEVERITY_MAP['orange'];
             return false;
+        };
+
+        self.getToolbarViewConfig = function() {
+            return {
+                columns: [{
+                    elementId: "toolbar_section",
+                    view: "SectionView",
+                    viewConfig: {
+                        rows: [{
+                            columns: [{
+                                elementId: "toolbar",
+                                title: '',
+                                view: "ToolbarView",
+                                viewConfig: {
+                                    settings: [{
+                                        id: cowc.COLOR_PALETTE,
+                                        title: "Dashboard Colors",
+                                        view: 'js/views/SettingsColorView',
+                                        model: 'js/models/SettingsColorModel'
+                                    }, {
+                                        id: cowc.CHART_SETTINGS,
+                                        title: "Chart Settings",
+                                        view: "js/views/ChartSettingsView",
+                                        model: "js/models/ChartSettingsModel"
+                                    }]
+                                }
+                            }]
+                        }]
+                    }
+                }]
+             }
         };
 
         self.getConfigNodeColor = function (d,obj) {
@@ -981,7 +1013,49 @@ define([
             });
             primaryDS.updateData(updatedData);
         };
+        self.parseAndMergepercentileConfigNodeNodeSummaryChart =
+            function (response,primaryDS) {
+            var statsData = response;
+            var primaryData = primaryDS.getItems();
+            var updatedData = [];
+            $.each(primaryData,function(i,d){
+                var idx=0;
+                while(statsData.length > 0 && idx < statsData.length){
+                    if(statsData[idx]['Source'] == d['name']){
+                        var formattedTime =  getValueByJsonPath(statsData[idx], 'PERCENTILES(api_stats.response_time_in_usec);95', '-');
+                        var secs = formattedTime / 1000;
+                        var seconds = Number((secs).toFixed(2))+' ms'
+                        formattedTime = seconds;
+                        d['percentileTime'] = formattedTime;
+                        d['percentileSize'] = formatBytes(getValueByJsonPath(statsData[idx], 'PERCENTILES(api_stats.response_size);95', '-'));
+                       break;
+                    }
+                    idx++;
+                };
+                updatedData.push(d);
+            });
+            primaryDS.updateData(updatedData);
+        };
 
+        self.parseAndMergePercentileAnalyticsNodeSummaryChart =
+            function (response,primaryDS) {
+            var statsData = response;
+            var primaryData = primaryDS.getItems();
+            var updatedData = [];
+            $.each(primaryData,function(i,d){
+                var idx=0;
+                while(statsData.length > 0 && idx < statsData.length){
+                    if(statsData[idx]['Source'] == d['name']){
+                        d['percentileMessages'] = Math.round(getValueByJsonPath(statsData[idx], 'PERCENTILES(msg_info.messages);95', '-'));
+                        d['percentileSize'] = formatBytes(getValueByJsonPath(statsData[idx], 'PERCENTILES(msg_info.bytes);95', '-'));
+                       break;
+                    }
+                    idx++;
+                };
+                updatedData.push(d);
+            });
+            primaryDS.updateData(updatedData);
+        };
         self.mergeCollectorDataAndPrimaryData = function (collectorData,primaryDS){
             var collectors = ifNull(collectorData.value,[]);
             if(collectors.length == 0){
@@ -1585,12 +1659,19 @@ define([
                 {label: ctwl.TITLE_CPU, value:$.isNumeric(currObj['cpu']) ? currObj['cpu']  : '-'},
                 {label:'Memory', value:$.isNumeric(currObj['memory']) ? formatMemory(currObj['memory']) : currObj['memory']}
             ];
-            if(currObj['type'] == 'vRouter') {
-                var bandwidthTooltipContent = {
-                    label: 'Throughput (In/Out)',
-                    value: formatThroughput(currObj['inThroughput'])
-                    + ' / ' + formatThroughput(currObj['outThroughput'])};
-                tooltipContents = tooltipContents.concat(bandwidthTooltipContent);
+            if (cfg.tooltipContents != null) {
+                tooltipContents = cfg.tooltipContents;
+            } else {
+                if(currObj['type'] == 'vRouter') {
+                    var bandwidthTooltipContent = [
+                        {label: 'Virtual Networks', value:currObj['vnCnt']},
+                        {label: 'Instances', value:currObj['instCnt']},
+                        {label: 'Interfaces', value:currObj['intfCnt']},
+                        {label: 'Throughput (In/Out)',
+                                value: formatThroughput(currObj['inThroughput'])
+                                + ' / ' + formatThroughput(currObj['outThroughput'])}];
+                    tooltipContents = tooltipContents.concat(bandwidthTooltipContent);
+                }
             }
             //Get tooltipAlerts
             tooltipContents = tooltipContents.concat(self.getTooltipAlerts(currObj));
@@ -2338,51 +2419,52 @@ define([
             );
         };
 
-        self.getStatsModelConfig = function (statsConfig) {
-            var postData = {
-                "autoSort": true,
-                "async": false,
-                "formModelAttrs": {
-                  "table_type": "STAT",
-                  "query_prefix": "stat",
-                  "from_time": Date.now() - (2 * 60 * 60 * 1000),
-                  "from_time_utc": Date.now() - (2 * 60 * 60 * 1000),
-                  "to_time": Date.now(),
-                  "to_time_utc": Date.now(),
-                  "time_granularity_unit": "secs",
-                  "time_granularity": 150,
-                  "limit": "150000"
-                }
-            };
-            if (statsConfig['tableName'] != null) {
-                postData['formModelAttrs']['table_name'] = statsConfig['tableName'];
+        self.getVRouterScatterChartTooltipFn = function(currObj,formatType,options) {
+            if(currObj['children'] != null && currObj['children'].length == 1)
+                return self.getNodeTooltipContents(currObj['children'][0], {
+                    formatType: formatType,
+                    onClickHandler: monitorInfraUtils.onvRouterDrillDown,
+                    options: options
+                });
+            else
+                return self.getNodeTooltipContents(currObj, {
+                    formatType: formatType,
+                    onClickHandler: monitorInfraUtils.onvRouterDrillDown,
+                    tooltipContents: getValueByJsonPath(options,'tooltipContents')
+                });
+        },
+        self.getDefaultGeneratorScatterChartTooltipFn = function(currObj,cfg) {
+            var tooltipContents = [];
+            if (cfg.tooltipContents != null) {
+                tooltipContents = cfg.tooltipContents;
             }
-            if (statsConfig['select'] != null) {
-                postData['formModelAttrs']['select'] = statsConfig['select'];
-            }
-            if (statsConfig['where'] != null) {
-                postData['formModelAttrs']['where'] = statsConfig['where'];
-            }
-            var listModelConfig = {
-                "remote" : {
-                    ajaxConfig : {
-                        url : "/api/qe/query",
-                        type: 'POST',
-                        data: JSON.stringify(postData)
-                    },
-                    dataParser : function (response) {
-                        return response['data'];
+            var cfg = ifNull(cfg,{});
+            if(cfg['formatType'] == 'simple') {
+                return tooltipContents;
+            } else {
+                return {
+                    content: {
+                        iconClass : false,
+                        info: tooltipContents.slice(1)
+                    },title : {
+                        name: tooltipContents[0]['value'],
+                        type: "Messages / Bytes sent per min"
                     }
-                },
-                "cacheConfig" : {}
-            };
-            if(statsConfig['cacheId'] != null){
-                listModelConfig["cacheConfig"] = {
-                        ucid: statsConfig['cacheId']
-                };
+                }
             }
-            return listModelConfig
-        };
+        },
+        self.getScatterChartClickFn = function(currObj,options) {
+            layoutHandler.setURLHashParams({
+                type: getValueByJsonPath(options,'type'),
+                view: getValueByJsonPath(options,'type'),
+                focusedElement: {
+                    node: currObj['name'],
+                    tab: 'details'
+                }
+            }, {
+                p: getValueByJsonPath(options,'hash')
+            });
+        }
     };
     return MonitorInfraUtils;
 });
