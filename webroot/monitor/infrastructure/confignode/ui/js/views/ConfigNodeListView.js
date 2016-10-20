@@ -45,7 +45,7 @@ define(
                                                   viewConfig: {
                                                       gridAttr: {
                                                           defaultWidth: 6,
-                                                          defaultHeight: 10
+                                                          defaultHeight: 8
                                                       },
                                                       widgetCfgList: [
                                                             {
@@ -64,9 +64,9 @@ define(
                                                                                      viewConfig: {
                                                                                          chartOptions: {
                                                                                              colors: cowc.FIVE_NODE_COLOR,
-                                                                                             title: 'User Agents',
+                                                                                             title: 'Process',
                                                                                              xAxisLabel: '',
-                                                                                             yAxisLabel: 'Top User Agents',
+                                                                                             yAxisLabel: 'Process Wise Usage',
                                                                                              groupBy: 'api_stats.useragent',
                                                                                              limit: 5,
                                                                                              yField: 'COUNT(api_stats)',
@@ -99,9 +99,9 @@ define(
                                                                                      viewConfig: {
                                                                                          chartOptions: {
                                                                                              colors: cowc.FIVE_NODE_COLOR,
-                                                                                             title: 'Object Types',
+                                                                                             title: 'Objects',
                                                                                              xAxisLabel: '',
-                                                                                             yAxisLabel: 'Top Object Types',
+                                                                                             yAxisLabel: 'Object Wise Usage',
                                                                                              groupBy: 'api_stats.object_type',
                                                                                              limit: 5,
                                                                                              yField: 'COUNT(api_stats)',
@@ -134,9 +134,9 @@ define(
                                                                                      viewConfig: {
                                                                                          chartOptions: {
                                                                                              colors: cowc.FIVE_NODE_COLOR,
-                                                                                             title: "Remote IPs",
+                                                                                             title: "Clients",
                                                                                              xAxisLabel: '',
-                                                                                             yAxisLabel: "Top Remote IPs",
+                                                                                             yAxisLabel: "Client Wise Usage",
                                                                                              groupBy: 'api_stats.remote_ip',
                                                                                              limit: 5,
                                                                                              yField: 'COUNT(api_stats)',
@@ -171,7 +171,7 @@ define(
                                                                                              colors: cowc.FIVE_NODE_COLOR,
                                                                                              title: "Projects",
                                                                                              xAxisLabel: '',
-                                                                                             yAxisLabel: "Top Projects",
+                                                                                             yAxisLabel: "Project Wise Usage",
                                                                                              groupBy: 'api_stats.project_name',
                                                                                              limit: 5,
                                                                                              yField: 'COUNT(api_stats)',
@@ -214,7 +214,7 @@ define(
                                                   viewConfig: {
                                                       gridAttr: {
                                                           defaultWidth: 6,
-                                                          defaultHeight: 10
+                                                          defaultHeight: 8
                                                       },
                                                       widgetCfgList: [
                                                           {

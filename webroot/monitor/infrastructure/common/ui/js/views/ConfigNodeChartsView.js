@@ -29,7 +29,7 @@ define(['underscore', 'contrail-view', 'legend-view',
                        viewConfig : {
                            gridAttr: {
                                defaultWidth: 6,
-                               defaultHeight: 10
+                               defaultHeight: 8
                            },
                            widgetCfgList: [{
                                modelCfg: monitorInfraUtils.getStatsModelConfig({
@@ -59,7 +59,6 @@ define(['underscore', 'contrail-view', 'legend-view',
                                    }
                                },
                                itemAttr: {
-                                   width: 2,
                                    height:0.2
                                }
                            },{
@@ -89,7 +88,7 @@ define(['underscore', 'contrail-view', 'legend-view',
                                                        left: 40,
                                                        top: 20,
                                                        right: 0,
-                                                       bottom: 40
+                                                       bottom: 20
                                                    }
                                                }
                                            }

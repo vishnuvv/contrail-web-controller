@@ -165,7 +165,7 @@ define([
                     class: 'mon-infra-chart chartMargin',
                     chartOptions : {
                         brush: false,
-                        height: 225,
+                        //height: 160,
                         xAxisLabel: '',
                         yAxisLabel: '',
                         groupBy: 'Source',
