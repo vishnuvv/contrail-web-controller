@@ -96,81 +96,101 @@ define(
                             onUpdatevRouterListModel();
                         }
                     });
+                function getVRouterListViewConfig(self) {
+                    return {
+                         elementId: cowu.formatElementId([
+                             ctwl.VROUTER_SUMMARY_LIST_SECTION_ID
+                         ]),
+                         view: "CarouselView",
+                         viewConfig: {
+                             pages : [
+                                  {
+                                      page: {
+                                          elementId: 'grid-stack-view-page-1',
+                                          view: 'GridStackView',
+                                          viewConfig: {
+                                              gridAttr: {
+                                                  defaultWidth: 12,
+                                                  defaultHeight: 10
+                                              },
+                                              widgetCfgList: [{
+                                                  modelCfg: vRouterUIListModel,
+                                                  viewCfg: {
+                                                      elementId: ctwl.VROUTER_SUMMARY_CHART_ID,
+                                                      title: ctwl.VROUTER_SUMMARY_TITLE,
+                                                      view: "VRouterScatterChartView",
+                                                      viewPathPrefix: "monitor/infrastructure/" +
+                                                          "common/ui/js/views/",
+                                                      app: cowc.APP_CONTRAIL_CONTROLLER,
+                                                      viewConfig: {
+                                                          widgetConfig: {
+                                                              elementId: ctwl.VROUTER_SUMMARY_CHART_ID + '-widget',
+                                                              view: "WidgetView",
+                                                              viewConfig: {
+                                                                  header: {
+                                                                      title: ctwl.VROUTER_SUMMARY_TITLE,
+                                                                      // iconClass: "icon-search"
+                                                                  },
+                                                                  controls: {
+                                                                      top: {
+                                                                          default: {
+                                                                              collapseable: true
+                                                                          }
+                                                                      }
+                                                                  }
+                                                              }
+                                                          },
+                                                          cfDataSource : self.cfDataSource
+                                                      }
+                                                  },itemAttr: {
+                                                      height: 1.3
+                                                  }
+                                              },{
+                                                  modelCfg: vRouterUIListModel,
+                                                  viewCfg: {
+                                                      elementId: ctwl.VROUTER_SUMMARY_CROSSFILTER_ID,
+                                                      title: ctwl.VROUTER_SUMMARY_TITLE,
+                                                      view: "VRouterCrossFiltersView",
+                                                      viewPathPrefix: ctwl.VROUTER_VIEWPATH_PREFIX,
+                                                      app: cowc.APP_CONTRAIL_CONTROLLER,
+                                                      viewConfig: {
+                                                          vRouterListModel:self.vRouterListModel,
+                                                          cfDataSource: self.cfDataSource,
+                                                          config:[{
+                                                              field:'vnCnt',
+                                                              title:'vRouters over Virtual Networks'
+                                                          },{
+                                                              field:'instCnt',
+                                                              title:'vRouters over Instances'
+                                                          },{
+                                                              field:'intfCnt',
+                                                              title:'vRouters over Interfaces'
+                                                          }]
+                                                      }
+                                                  },itemAttr: {
+                                                      height: 0.5
+                                                  }
+                                              },{
+                                                  modelCfg: vRouterUIListModel,
+                                                  viewCfg: {
+                                                      elementId: ctwl.VROUTER_SUMMARY_GRID_ID,
+                                                      title: ctwl.VROUTER_SUMMARY_TITLE,
+                                                      view: "VRouterSummaryGridView",
+                                                      viewPathPrefix: ctwl.VROUTER_VIEWPATH_PREFIX,
+                                                      app: cowc.APP_CONTRAIL_CONTROLLER,
+                                                      viewConfig: {
+
+                                                      }
+                                                  }
+                                              }]
+                                          }
+                                      },
+                                  }
+                             ]
+                         }
+                    };
+                };
             }
         });
-
-        function getVRouterListViewConfig(self) {
-            return {
-                elementId: cowu.formatElementId([
-                    ctwl.VROUTER_SUMMARY_LIST_SECTION_ID
-                ]),
-                view: "SectionView",
-                viewConfig: {
-                    rows: [{
-                        columns: [{
-                            elementId: ctwl.VROUTER_SUMMARY_CHART_ID,
-                            title: ctwl.VROUTER_SUMMARY_TITLE,
-                            view: "VRouterScatterChartView",
-                            viewPathPrefix: "monitor/infrastructure/" +
-                                "common/ui/js/views/",
-                            app: cowc.APP_CONTRAIL_CONTROLLER,
-                            viewConfig: {
-                                widgetConfig: {
-                                    elementId: ctwl.VROUTER_SUMMARY_CHART_ID + '-widget',
-                                    view: "WidgetView",
-                                    viewConfig: {
-                                        header: {
-                                            title: ctwl.VROUTER_SUMMARY_TITLE,
-                                            // iconClass: "icon-search"
-                                        },
-                                        controls: {
-                                            top: {
-                                                default: {
-                                                    collapseable: true
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                cfDataSource : self.cfDataSource
-                            }
-                        }]
-                    }, {
-                        columns: [{
-                            elementId: ctwl.VROUTER_SUMMARY_CROSSFILTER_ID,
-                            title: ctwl.VROUTER_SUMMARY_TITLE,
-                            view: "VRouterCrossFiltersView",
-                            viewPathPrefix: ctwl.VROUTER_VIEWPATH_PREFIX,
-                            app: cowc.APP_CONTRAIL_CONTROLLER,
-                            viewConfig: {
-                                vRouterListModel:self.vRouterListModel,
-                                cfDataSource: self.cfDataSource,
-                                config:[{
-                                    field:'vnCnt',
-                                    title:'vRouters over Virtual Networks'
-                                },{
-                                    field:'instCnt',
-                                    title:'vRouters over Instances'
-                                },{
-                                    field:'intfCnt',
-                                    title:'vRouters over Interfaces'
-                                }]
-                            }
-                        }]
-                    }, {
-                        columns: [{
-                            elementId: ctwl.VROUTER_SUMMARY_GRID_ID,
-                            title: ctwl.VROUTER_SUMMARY_TITLE,
-                            view: "VRouterSummaryGridView",
-                            viewPathPrefix: ctwl.VROUTER_VIEWPATH_PREFIX,
-                            app: cowc.APP_CONTRAIL_CONTROLLER,
-                            viewConfig: {
-
-                            }
-                        }]
-                    }]
-                }
-            };
-        };
         return VRouterListView;
     });
