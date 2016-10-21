@@ -32,21 +32,7 @@ define(
                                     colorFn: colorFn
                                 }
                             }]
-                        },
-                        {
-                            columns : [{
-                                elementId :
-                                    ctwl.DATABASENODE_SUMMARY_GRID_ID,
-                                title : ctwl.DATABASENODE_SUMMARY_TITLE,
-                                view : "DatabaseNodeSummaryGridView",
-                                viewPathPrefix:
-                                    ctwl.DATABASENODE_VIEWPATH_PREFIX,
-                                app : cowc.APP_CONTRAIL_CONTROLLER,
-                                viewConfig : {
-                                    colorFn: colorFn
-                                }
-                            }]
-                        } ]
+                        }]
                 };
                 return {
                     elementId : cowu.formatElementId([

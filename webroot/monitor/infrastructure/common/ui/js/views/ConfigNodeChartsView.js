@@ -59,7 +59,6 @@ define(['underscore', 'contrail-view', 'legend-view',
                                    }
                                },
                                itemAttr: {
-                                   width: 2,
                                    height:0.2
                                }
                            },{
@@ -114,7 +113,7 @@ define(['underscore', 'contrail-view', 'legend-view',
                                                axisLabelDistance: -10,
                                                y2AxisWidth: 50,
                                                focusEnable: false,
-                                               height: 245,
+                                               //height: 245,
                                                showLegend: true,
                                                xAxisLabel: '',
                                                xAxisMaxMin: false,
@@ -164,6 +163,9 @@ define(['underscore', 'contrail-view', 'legend-view',
                                            },
                                        }
                                    },
+                                   /*itemAttr:{
+                                       height: 1.5
+                                   }*/
                                },{
                                    modelCfg: chartModel,
                                    viewCfg: {
@@ -175,6 +177,9 @@ define(['underscore', 'contrail-view', 'legend-view',
                                            class: 'col-xs-5 mon-infra-chart',
                                            color: colorFn
                                        }
+                                   },
+                                   itemAttr: {
+                                       height: 0.7
                                    }
                                },{
                                    modelCfg: new ConfigNodeListModel(),

@@ -29,17 +29,6 @@ define(
                                 colorFn: colorFn
                             }
                         }]
-                    },{
-                        columns : [{
-                            elementId : ctwl.CONTROLNODE_SUMMARY_GRID_ID,
-                            title : ctwl.CONTROLNODE_SUMMARY_TITLE,
-                            view : "ControlNodeSummaryGridView",
-                            viewPathPrefix: ctwl.CONTROLNODE_VIEWPATH_PREFIX,
-                            app : cowc.APP_CONTRAIL_CONTROLLER,
-                            viewConfig : {
-                                colorFn: colorFn
-                            }
-                        }]
                     }]
                 };
                 return {
