@@ -100,6 +100,7 @@ function getControllerAppPaths (ctBaseDir, ctBuildDir,env) {
             'node-color-mapping': ctWebDir + '/monitor/infrastructure/common/ui/js/utils/NodeColorMapping',
             'controller-init': ctWebDir + '/common/ui/js/controller.init',
             'controller-dashboard-libs': ctWebDir + '/monitor/infrastructure/common/ui/js/monitor.infra.module',
+            'confignode-viewconfig': ctWebDir + '/monitor/infrastructure/confignode/ui/js/confignode.viewconfig',
 
             //Monitor Infra databasenodes
             'monitor-infra-databasenode-cpu-mem-model': ctWebDir + '/monitor/infrastructure/databasenode/ui/js/models/DatabaseNodeCPUMemChartModel',
@@ -128,6 +129,7 @@ function getControllerAppPaths (ctBaseDir, ctBuildDir,env) {
             'controller-dashboard-libs': ctWebDir + '/monitor/infrastructure/common/ui/js/monitor.infra.module',
             'monitor-infra-analytics-database-usage-model': ctWebDir + '/monitor/infrastructure/common/ui/js/models/DatabaseUsageModel',
             'node-color-mapping': ctWebDir + '/monitor/infrastructure/common/ui/js/utils/NodeColorMapping',
+            'confignode-viewconfig': ctWebDir + '/monitor/infrastructure/confignode/ui/js/confignode.viewconfig',
             //Monitor Infra analytics charts
             'monitor-infra-analytics-sandesh-chart-model': ctWebDir + '/monitor/infrastructure/analyticsnode/ui/js/models/AnalyticsNodeSandeshChartModel',
             'monitor-infra-analytics-queries-chart-model': ctWebDir + '/monitor/infrastructure/analyticsnode/ui/js/models/AnalyticsNodeQueriesModel',
