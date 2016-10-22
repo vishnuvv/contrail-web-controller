@@ -70,7 +70,6 @@ define(['underscore', 'contrail-view',
                                         }
                                     },
                                     itemAttr: {
-                                        width: 2,
                                         height:0.2
                                     }
                                 },

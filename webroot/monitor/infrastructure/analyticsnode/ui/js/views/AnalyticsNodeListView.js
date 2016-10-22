@@ -65,7 +65,7 @@ define(
                                                                                                     colors: cowc.FIVE_NODE_COLOR,
                                                                                                     title: 'Message Types',
                                                                                                     xAxisLabel: '',
-                                                                                                    yAxisLabel: 'Top Message Types',
+                                                                                                    yAxisLabel: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES,
                                                                                                     groupBy: 'msg_info.type',
                                                                                                     limit: 5,
                                                                                                     yField: 'SUM(msg_info.messages)',
@@ -75,6 +75,8 @@ define(
                                                                                    ]
                                                                                }]
                                                                            }
+                                                                       },itemAttr: {
+                                                                           title: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES
                                                                        }
                                                                    },{
                                                                        modelCfg: monitorInfraUtils.getStatsModelConfig({
@@ -94,7 +96,7 @@ define(
                                                                                                     colors: cowc.FIVE_NODE_COLOR,
                                                                                                     title: 'Generators',
                                                                                                     xAxisLabel: '',
-                                                                                                    yAxisLabel: 'Top Generators',
+                                                                                                    yAxisLabel: ctwl.ANALYTICS_NODE_TOP_GENERATORS,
                                                                                                     groupBy: 'name',
                                                                                                     limit: 5,
                                                                                                     yField: 'SUM(msg_info.messages)',
@@ -104,6 +106,8 @@ define(
                                                                                    ]
                                                                                }]
                                                                            }
+                                                                       },itemAttr: {
+                                                                           title: ctwl.ANALYTICS_NODE_TOP_GENERATORS
                                                                        }
                                                                    }, {
                                                                        modelCfg: monitorInfraUtils.getStatsModelConfig({
@@ -112,18 +116,21 @@ define(
                                                                            where: 'process_mem_cpu_usage.__key = contrail-analytics-nodemgr'
                                                                        }),
                                                                        viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
-                                                                           elementId : ctwl.DATABASENODE_CPU_SHARE_LINE_CHART_ID,
+                                                                           elementId : 'analytics_node_node_manager_cpu_share',
                                                                            viewConfig: {
                                                                                chartOptions: {
                                                                                    yFormatter: d3.format('.2f'),
-                                                                                   yAxisLabel: 'Node Manager CPU Share (%)',
+                                                                                   yAxisLabel: ctwl.ANALYTICS_NODE_NODE_MANAGER_CPU_SHARE,
                                                                                    groupBy: 'name',
                                                                                    colors: colorFn,
                                                                                    yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                                                                    title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                                                                }
                                                                            }
-                                                                       })
+                                                                       }),
+                                                                       itemAttr: {
+                                                                           title: ctwl.ANALYTICS_NODE_NODE_MANAGER_CPU_SHARE
+                                                                       }
                                                                    }, {
                                                                        modelCfg: monitorInfraUtils.getStatsModelConfig({
                                                                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -131,18 +138,20 @@ define(
                                                                            where: 'process_mem_cpu_usage.__key = contrail-snmp-collector'
                                                                        }),
                                                                        viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
-                                                                           elementId : ctwl.DATABASENODE_CPU_SHARE_LINE_CHART_ID,
+                                                                           elementId : 'analytics_node_snmp_collector_cpu_share',
                                                                            viewConfig: {
                                                                                chartOptions: {
                                                                                    yFormatter: d3.format('.2f'),
-                                                                                   yAxisLabel: 'SNMP Collector CPU Share (%)',
+                                                                                   yAxisLabel: ctwl.ANALYTICS_NODE_SNMP_COLLECTOR_CPU_SHARE,
                                                                                    groupBy: 'name',
                                                                                    colors: colorFn,
                                                                                    yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                                                                    title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                                                                }
                                                                            }
-                                                                       })
+                                                                       }),itemAttr: {
+                                                                           title: ctwl.ANALYTICS_NODE_SNMP_COLLECTOR_CPU_SHARE
+                                                                       }
                                                                    }, {
                                                                        modelCfg: new AnalyticsNodeListModel(),
                                                                        viewCfg: {
@@ -180,18 +189,20 @@ define(
                                                                          where: 'process_mem_cpu_usage.__key = contrail-alarm-gen'
                                                                      }),
                                                                      viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
-                                                                         elementId : ctwl.DATABASENODE_CPU_SHARE_LINE_CHART_ID,
+                                                                         elementId : 'analytics_node_alarm_gen_cpu_share',
                                                                          viewConfig: {
                                                                              chartOptions: {
                                                                                  yFormatter: d3.format('.2f'),
-                                                                                 yAxisLabel: 'Alarm Generator CPU Share (%)',
+                                                                                 yAxisLabel: ctwl.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE,
                                                                                  groupBy: 'name',
                                                                                  colors: colorFn,
                                                                                  yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                                                                  title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                                                              }
                                                                          }
-                                                                     })
+                                                                     }),itemAttr: {
+                                                                         title: ctwl.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE
+                                                                     }
                                                                  },{
                                                                      modelCfg: monitorInfraUtils.getStatsModelConfig({
                                                                          table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -199,18 +210,20 @@ define(
                                                                          where: 'process_mem_cpu_usage.__key = contrail-collector'
                                                                      }),
                                                                      viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
-                                                                         elementId : ctwl.DATABASENODE_CPU_SHARE_LINE_CHART_ID,
+                                                                         elementId : 'analytics_node_node_collector_cpu_share',
                                                                          viewConfig: {
                                                                              chartOptions: {
                                                                                  yFormatter: d3.format('.2f'),
-                                                                                 yAxisLabel: 'Collector CPU Share (%)',
+                                                                                 yAxisLabel: ctwl.ANALYTICS_NODE_COLLECTOR_CPU_SHARE,
                                                                                  groupBy: 'name',
                                                                                  colors: colorFn,
                                                                                  yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                                                                  title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                                                              }
                                                                          }
-                                                                     })
+                                                                     }),itemAttr: {
+                                                                         title: ctwl.ANALYTICS_NODE_COLLECTOR_CPU_SHARE
+                                                                     }
                                                                  },{
                                                                      modelCfg: monitorInfraUtils.getStatsModelConfig({
                                                                          table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -218,18 +231,20 @@ define(
                                                                          where: 'process_mem_cpu_usage.__key = contrail-query-engine'
                                                                      }),
                                                                      viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
-                                                                         elementId : ctwl.DATABASENODE_CPU_SHARE_LINE_CHART_ID,
+                                                                         elementId : 'analytics_node_qe_cpu_share',
                                                                          viewConfig: {
                                                                              chartOptions: {
                                                                                  yFormatter: d3.format('.2f'),
-                                                                                 yAxisLabel: 'QE CPU Share (%)',
+                                                                                 yAxisLabel: ctwl.ANALYTICS_NODE_QE_CPU_SHARE,
                                                                                  groupBy: 'name',
                                                                                  colors: colorFn,
                                                                                  yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                                                                  title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                                                              }
                                                                          }
-                                                                     })
+                                                                     }),itemAttr: {
+                                                                         title: ctwl.ANALYTICS_NODE_QE_CPU_SHARE
+                                                                     }
                                                                  },{
                                                                      modelCfg: monitorInfraUtils.getStatsModelConfig({
                                                                          table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -237,18 +252,20 @@ define(
                                                                          where: 'process_mem_cpu_usage.__key = contrail-analytics-api'
                                                                      }),
                                                                      viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
-                                                                         elementId : ctwl.DATABASENODE_CPU_SHARE_LINE_CHART_ID,
+                                                                         elementId : 'analytics_node_api_cpu_share',
                                                                          viewConfig: {
                                                                              chartOptions: {
                                                                                  yFormatter: d3.format('.2f'),
-                                                                                 yAxisLabel: 'Api CPU Share (%)',
+                                                                                 yAxisLabel: ctwl.ANALYTICS_NODE_API_CPU_SHARE,
                                                                                  groupBy: 'name',
                                                                                  colors: colorFn,
                                                                                  yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                                                                  title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                                                              }
                                                                          }
-                                                                     })
+                                                                     }),itemAttr: {
+                                                                         title: ctwl.ANALYTICS_NODE_API_CPU_SHARE
+                                                                     }
                                                                  },{
                                                                      modelCfg: new AnalyticsNodeListModel(),
                                                                      viewCfg: {

@@ -655,6 +655,25 @@ define([
         this.DATABASENODE_PERCENTILE_SECTION_ID = "database-nodes-percentile-section-id";
         this.DATABASENODE_PERCENTILE_BAR_VIEW = "database-nodes-percentile-bar-view";
 
+        //Monitor infra widget titles
+        this.CONFIG_NODE_TOP_5_USER_AGENTS = 'Process Wise Usage';
+        this.CONFIG_NODE_TOP_5_PROJECTS = 'Project Wise Usage';
+        this.CONFIG_NODE_TOP_5_OBJECT = 'Object Wise Usage';
+        this.CONFIG_NODE_TOP_REMOTE_IP = "Client Wise Usage";
+        this.CONFIG_NODE_NODE_MANAGER_CPU_SHARE = 'Node Manager CPU Share (%)';
+        this.CONFIG_NODE_SCHEMA_CPU_SHARE = 'Schema CPU Share (%)';
+        this.CONFIG_NODE_DISCOVERY_CPU_SHARE = 'Discovery CPU Share (%)';
+        this.CONFIG_NODE_API_CPU_SHARE = 'Api CPU Share (%)';
+
+        this.ANALYTICS_NODE_NODE_MANAGER_CPU_SHARE = 'Node Manager CPU Share (%)';
+        this.ANALYTICS_NODE_SNMP_COLLECTOR_CPU_SHARE = 'SNMP Collector CPU Share (%)';
+        this.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE = 'Alarm Generator CPU Share (%)';
+        this.ANALYTICS_NODE_COLLECTOR_CPU_SHARE = 'Collector CPU Share (%)';
+        this.ANALYTICS_NODE_QE_CPU_SHARE = 'QE CPU Share (%)';
+        this.ANALYTICS_NODE_API_CPU_SHARE = 'Api CPU Share (%)';
+        this.ANALYTICS_NODE_TOP_GENERATORS = 'Generators';
+        this.ANALYTICS_NODE_TOP_MESSAGE_TYPES = 'Message Types';
+
         //Analytics node labels
         this.ANALYTICSNODE_VIEWPATH_PREFIX =
             'monitor/infrastructure/analyticsnode/ui/js/views/';
