@@ -39,7 +39,7 @@ define(['underscore', 'contrail-view','monitor-infra-controlnode-model',
                            viewConfig : {
                                 gridAttr : {
                                     defaultWidth : 6,
-                                    defaultHeight : 10
+                                    defaultHeight : 8
                                 },
                                 widgetCfgList: [
                                     {

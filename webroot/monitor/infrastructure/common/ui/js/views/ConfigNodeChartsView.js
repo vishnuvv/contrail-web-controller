@@ -59,6 +59,7 @@ define(['underscore', 'contrail-view', 'legend-view',
                                    }
                                },
                                itemAttr: {
+                                   width:0.9,
                                    height:0.2
                                }
                            },{
@@ -94,7 +95,8 @@ define(['underscore', 'contrail-view', 'legend-view',
                                            }
                                        }),
                                    itemAttr: {
-                                       height: 2
+                                       height: 1.8,
+                                       width: 1.2
                                    }
                                },{
                                    modelCfg: chartModel,
@@ -163,9 +165,9 @@ define(['underscore', 'contrail-view', 'legend-view',
                                            },
                                        }
                                    },
-                                   /*itemAttr:{
-                                       height: 1.5
-                                   }*/
+                                   itemAttr:{
+                                       width: 0.9
+                                   }
                                },{
                                    modelCfg: chartModel,
                                    viewCfg: {
@@ -179,7 +181,8 @@ define(['underscore', 'contrail-view', 'legend-view',
                                        }
                                    },
                                    itemAttr: {
-                                       height: 0.7
+                                       width: 0.9,
+                                       height: 0.6
                                    }
                                },{
                                    modelCfg: new ConfigNodeListModel(),

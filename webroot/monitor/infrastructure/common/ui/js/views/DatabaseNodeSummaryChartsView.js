@@ -36,7 +36,7 @@ define(['underscore', 'contrail-view','monitor-infra-databasenode-model',
                        viewConfig : {
                             gridAttr : {
                                 defaultWidth : 6,
-                                defaultHeight : 10
+                                defaultHeight : 8
                             },
                             widgetCfgList: [
                                 {
@@ -52,8 +52,7 @@ define(['underscore', 'contrail-view','monitor-infra-databasenode-model',
                                         }
                                 },
                                     itemAttr: {
-                                        width: 2,
-                                        height:0.2
+                                        height:0.25
                                     }
                                 },
                                 {
