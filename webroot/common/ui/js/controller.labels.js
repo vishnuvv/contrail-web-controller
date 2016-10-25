@@ -507,6 +507,11 @@ define([
         this.CONTROL_NODE_RECEIVED_UPDATES = 'Received Updates';
         this.CONTROL_NODE_CPU_SHARE = 'CPU Share (%)';
         this.CONTROL_NODE_MEMORY = 'Memory';
+        this.CONTROLNODE_SENT_UPDATES = 'controlnodes-sent-updates';
+        this.CONTROLNODE_RECEIVED_UPDATES = 'controlnodes-received-updates';
+        this.CONTROLNODE_CPU_SHARE = 'controlnodes-cpu-share';
+        this.CONTROLNODE_MEMORY = 'controlnodes-memory';
+        this.CONTROLNODE_GRID_VIEW = 'controlnodes-grid-view';
         //vRouter summary page labels
         this.VROUTER_VIEWPATH_PREFIX =
             'monitor/infrastructure/vrouter/ui/js/views/';
