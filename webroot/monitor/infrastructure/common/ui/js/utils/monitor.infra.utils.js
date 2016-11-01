@@ -2400,6 +2400,9 @@ define([
             if (statsConfig['table_name'] != null) {
                 postData['formModelAttrs']['table_name'] = statsConfig['table_name'];
             }
+            if (statsConfig['table_type'] != null) {
+                postData['formModelAttrs']['table_type'] = statsConfig['table_type'];
+            }
             if (statsConfig['select'] != null) {
                 postData['formModelAttrs']['select'] = statsConfig['select'];
             }
