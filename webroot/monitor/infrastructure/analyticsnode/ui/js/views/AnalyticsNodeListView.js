@@ -74,21 +74,24 @@ define(
                                                                       },
                                                                       itemAttr: {
                                                                           height:0.25,
+                                                                          width: 1.5,
                                                                           title: ctwl.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE
                                                                       }
-                                                                  },
-                                                                  {
-                                                                      modelCfg: sandeshModel,
-                                                                      viewCfg: getAnalyticsNodeSandeshChartViewConfig(colorFn),
+                                                                  },{
+                                                                      modelCfg: databseReadWritemodel,
+                                                                      viewCfg: getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn),
                                                                       itemAttr: {
-                                                                          title: ctwl.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION
+                                                                          title: ctwl.ANALYTICS_NODE_DB_READ_WRITE,
+                                                                          width: 0.68,
+                                                                          height: 0.9
                                                                       }
-                                                                  },
-                                                                  {
+                                                                  },{
                                                                       modelCfg: queriesModel,
                                                                       viewCfg: getAnalyticsNodeQueriesChartViewConfig(colorFn),
                                                                       itemAttr: {
-                                                                          title: ctwl.ANALYTICS_NODE_QUERY_DISTRIBUTION
+                                                                          title: ctwl.ANALYTICS_NODE_QUERY_DISTRIBUTION,
+                                                                          width: 0.68,
+                                                                          height: 0.9
                                                                       }
                                                                   },
                                                                   /*{
@@ -103,15 +106,17 @@ define(
                                                                       modelCfg: dbUsageModel,
                                                                       viewCfg: getAnalyticsNodeDatabaseUsageChartViewConfig(colorFn),
                                                                       itemAttr: {
-                                                                          title: ctwl.ANALYTICS_NODE_DB_USAGE
+                                                                          title: ctwl.ANALYTICS_NODE_DB_USAGE,
+                                                                          width: 0.68,
+                                                                          height: 0.9
                                                                       }
-                                                                  },
-
-                                                                  {
-                                                                      modelCfg: databseReadWritemodel,
-                                                                      viewCfg: getAnalyticsNodeDatabaseWriteChartViewConfig(colorFn),
+                                                                  },{
+                                                                      modelCfg: sandeshModel,
+                                                                      viewCfg: getAnalyticsNodeSandeshChartViewConfig(colorFn),
                                                                       itemAttr: {
-                                                                          title: ctwl.ANALYTICS_NODE_DB_READ_WRITE
+                                                                          height: 1.1,
+                                                                          width: 2,
+                                                                          title: ctwl.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION
                                                                       }
                                                                   },{
                                                                       modelCfg: new AnalyticsNodeListModel(),
@@ -403,6 +408,7 @@ define(
                         rows : [{
                             columns : [ $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
                                 elementId : ctwl.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID,
+                                view: 'StackedAreaChartView',
                                 viewConfig: {
                                     chartOptions: {
                                         colors: colorFn,
