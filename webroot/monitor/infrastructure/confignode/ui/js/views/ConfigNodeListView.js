@@ -40,38 +40,6 @@ define(
                                                           defaultHeight: 10
                                                       },
                                                       widgetCfgList: [{
-                                                          modelCfg: monitorInfraUtils.getStatsModelConfig({
-                                                              "table_name": "StatTable.VncApiStatsLog.api_stats",
-                                                              "select": "PERCENTILES(api_stats.response_time_in_usec), PERCENTILES(api_stats.response_size)",
-                                                              "parser": monitorInfraParsers.percentileConfigNodeNodeSummaryChart
-                                                          }),
-                                                          viewCfg: {
-                                                              elementId : ctwl.CONFIGNODE_CHART_PERCENTILE_SECTION_ID,
-                                                              view : "SectionView",
-                                                              viewConfig : {
-                                                                  rows : [ {
-                                                                      columns : [ {
-                                                                          elementId :ctwl.CONFIGNODE_CHART_PERCENTILE_TEXT_VIEW,
-                                                                          title : ctwl.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE,
-                                                                          view : "PercentileTextView",
-                                                                          viewPathPrefix:
-                                                                              ctwl.ANALYTICSNODE_VIEWPATH_PREFIX,
-                                                                          app : cowc.APP_CONTRAIL_CONTROLLER,
-                                                                          viewConfig : {
-                                                                              percentileTitle : ctwl.CONFIGNODE_CHART_PERCENTILE_TITLE,
-                                                                              percentileXvalue : ctwl.CONFIGNODE_CHART_PERCENTILE_TIME,
-                                                                              percentileYvalue : ctwl.CONFIGNODE_CHART_PERCENTILE_SIZE,
-                                                                          }
-                                                                      }]
-                                                                  }]
-                                                              }
-                                                          },
-                                                          itemAttr: {
-                                                              width:0.9,
-                                                              height:0.2,
-                                                              title: ctwl.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE
-                                                          }
-                                                      },{
                                                               modelCfg: chartModel,
                                                               viewCfg:
                                                                   $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
@@ -104,8 +72,8 @@ define(
                                                                       }
                                                                   }),
                                                               itemAttr: {
-                                                                  height: 1.8,
-                                                                  width: 1.2,
+                                                                  height: 0.9,
+                                                                  width: 2,
                                                                   title: ctwl.CONFIG_NODE_REQUESTS_SERVED
                                                               }
                                                           },{
@@ -175,13 +143,49 @@ define(
                                                                   }
                                                               },
                                                               itemAttr:{
-                                                                  width: 0.9,
+                                                                  width: 1.2,
+                                                                  height: 0.9,
                                                                   title: ctwl.CONFIG_NODE_RESPONSE_TIME_VS_SIZE
                                                               }
                                                           },{
+                                                              modelCfg: monitorInfraUtils.getStatsModelConfig({
+                                                                  "table_name": "StatTable.VncApiStatsLog.api_stats",
+                                                                  "select": "PERCENTILES(api_stats.response_time_in_usec), PERCENTILES(api_stats.response_size)",
+                                                                  "parser": monitorInfraParsers.percentileConfigNodeNodeSummaryChart
+                                                              }),
+                                                              viewCfg: {
+                                                                  elementId : ctwl.CONFIGNODE_CHART_PERCENTILE_SECTION_ID,
+                                                                  view : "SectionView",
+                                                                  viewConfig : {
+                                                                      rows : [ {
+                                                                          columns : [ {
+                                                                              elementId :ctwl.CONFIGNODE_CHART_PERCENTILE_TEXT_VIEW,
+                                                                              title : ctwl.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE,
+                                                                              view : "PercentileTextView",
+                                                                              viewPathPrefix:
+                                                                                  ctwl.ANALYTICSNODE_VIEWPATH_PREFIX,
+                                                                              app : cowc.APP_CONTRAIL_CONTROLLER,
+                                                                              viewConfig : {
+                                                                                  percentileTitle : ctwl.CONFIGNODE_CHART_PERCENTILE_TITLE,
+                                                                                  percentileXvalue : ctwl.CONFIGNODE_CHART_PERCENTILE_TIME,
+                                                                                  percentileYvalue : ctwl.CONFIGNODE_CHART_PERCENTILE_SIZE,
+                                                                              }
+                                                                          }]
+                                                                      }]
+                                                                  }
+                                                              },
+                                                              itemAttr: {
+                                                                  width:0.9,
+                                                                  height:0.2,
+                                                                  title: ctwl.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE
+                                                              }
+                                                        },{
                                                               modelCfg: chartModel,
                                                               viewCfg: {
                                                                   elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_SECTION_ID,
+                                                                  //view: 'eventDropsView',
+                                                                  //viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
+                                                                  //app : cowc.APP_CONTRAIL_CONTROLLER,
                                                                   view: 'ConfigNodeDonutChartView',
                                                                   viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
                                                                   app : cowc.APP_CONTRAIL_CONTROLLER,
@@ -192,7 +196,7 @@ define(
                                                               },
                                                               itemAttr: {
                                                                   width: 0.9,
-                                                                  height: 0.6,
+                                                                  height: 0.7,
                                                                   title: ctwl.CONFIG_NODE_REQUESTS_READ_VS_WRITE
                                                               }
                                                           },{
