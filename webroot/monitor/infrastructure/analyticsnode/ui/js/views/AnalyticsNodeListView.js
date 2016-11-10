@@ -3,8 +3,11 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view', 'node-color-mapping'],
-        function(_, ContrailView, NodeColorMapping) {
+        [ 'underscore', 'contrail-view', 'node-color-mapping','analyticsnode-viewconfig','monitor-infra-viewconfig'],
+        function(
+                _, ContrailView, NodeColorMapping, AnalyticsNodeViewConfig, MonitorInfraViewConfig) {
+            var analyticsNodeViewConfig = new AnalyticsNodeViewConfig(),
+            monitorInfraViewConfig = new MonitorInfraViewConfig();
             var AnalyticsNodeListView = ContrailView.extend({
                 render : function() {
                     nodeColorMapping = new NodeColorMapping(),
@@ -28,7 +31,6 @@ define(
                                                          elementId : 'analytics-node-grid-stackview-0',
                                                          view : "GridStackView",
                                                          viewConfig : {
-                                                            elementId : 'analytics-node-grid-stackview-0',
                                                             gridAttr : {
                                                                 defaultWidth : 6,
                                                                 defaultHeight : 8
@@ -48,7 +50,6 @@ define(
                                                          elementId: 'analytics-node-grid-stackview-1',
                                                          view: 'GridStackView',
                                                          viewConfig: {
-                                                            elementId: 'analytics-node-grid-stackview-1',
                                                              gridAttr: {
                                                                  defaultWidth: 6,
                                                                  defaultHeight: 8
@@ -67,7 +68,6 @@ define(
                                                          elementId: 'analytics-node-grid-stackview-2',
                                                          view: 'GridStackView',
                                                          viewConfig: {
-                                                            elementId: 'analytics-node-grid-stackview-2',
                                                             gridAttr: {
                                                                 defaultWidth: 6,
                                                                 defaultHeight: 8
@@ -79,6 +79,24 @@ define(
                                                             {id:'analyticsnode-api-cpu-share'},
                                                             {id:'analyticsnode-grid-view'}
                                                             ]
+                                                         }
+                                                     }
+                                                 },{
+                                                     page: {
+                                                         elementId: 'analytics-node-grid-stackview-3',
+                                                         view: 'GridStackView',
+                                                         viewConfig: {
+                                                             gridAttr: {
+                                                                 defaultWidth: 6,
+                                                                 defaultHeight: 8
+                                                             },
+                                                             widgetCfgList: [
+                                                                monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
+                                                                monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
+                                                                monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
+                                                                analyticsNodeViewConfig.getViewConfig('analyticsnode-stats-available-connections')(),
+                                                                analyticsNodeViewConfig.getViewConfig('analyticsnode-grid-view')()
+                                                             ]
                                                          }
                                                      }
                                                  }

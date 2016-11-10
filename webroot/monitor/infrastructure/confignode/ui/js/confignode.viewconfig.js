@@ -228,9 +228,9 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
                                 limit: 5,
                                 yField: 'COUNT(api_stats)',
                             }
-                        }
                     }
                 };
+             }
             },
             'confignode-top-objecttypes': function (){
                 return {
@@ -254,13 +254,13 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
                                 limit: 5,
                                 yField: 'COUNT(api_stats)',
                             }
-                        }
                     },
                     itemAttr: {
                         title : ctwl.CONFIG_NODE_OBJECT_USAGE_TITLE
                     }
                 };
-            },
+             },
+            }
             'confignode-top-remote-ip': function (){
                 return {
                     modelCfg: {
@@ -283,10 +283,10 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
                                 limit: 5,
                                 yField: 'COUNT(api_stats)',
                             }
-                        }
                     }
                 };
-            },
+             },
+            }
             'confignode-top-projects': function () {
                 return {
                     modelCfg: {
@@ -309,10 +309,10 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
                                 limit: 5,
                                 yField: 'COUNT(api_stats)',
                             }
-                        }
                     }
                 };
-            },
+             },
+            }
             'confignode-process-cpu-node-mngr': function () {
                 return {
                     modelCfg: {

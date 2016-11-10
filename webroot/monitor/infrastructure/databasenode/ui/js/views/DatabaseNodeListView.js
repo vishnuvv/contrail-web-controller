@@ -3,9 +3,11 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view', 'node-color-mapping'],
+        [ 'underscore', 'contrail-view', 'node-color-mapping','databasenode-viewconfig','monitor-infra-viewconfig'],
         function(
-                _, ContrailView, NodeColorMapping) {
+                _, ContrailView, NodeColorMapping, DatabaseNodeViewConfig,MonitorInfraViewConfig) {
+            var databaseNodeViewConfig = new DatabaseNodeViewConfig(),
+                monitorInfraViewConfig = new MonitorInfraViewConfig();
             var DatabaseNodeListView = ContrailView.extend({
                 render : function() {
                     var nodeColorMapping = new NodeColorMapping(),
@@ -14,7 +16,6 @@ define(
                             getDatabaseNodeListViewConfig(colorFn));
                 }
             });
-
             function getDatabaseNodeListViewConfig(colorFn) {
                 var viewConfig = {
                     rows : [
@@ -43,6 +44,41 @@ define(
                                                      ]
                                                 }
                                              }
+                                             },
+                                         }, {
+                                             page: {
+                                                 elementId : 'database-node-grid-stackview-1',
+                                                 view : "GridStackView",
+                                                 viewConfig: {
+                                                     gridAttr : {
+                                                         defaultWidth : 6,
+                                                         defaultHeight : 8
+                                                     },
+                                                     widgetCfgList: [
+                                                         databaseNodeViewConfig.getViewConfig('databasenode-cassandra')(),
+                                                         databaseNodeViewConfig.getViewConfig('databasenode-zookeeper')(),
+                                                         databaseNodeViewConfig.getViewConfig('databasenode-kafka')(),
+                                                         monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
+                                                         databaseNodeViewConfig.getViewConfig('database-grid-view')()
+                                                     ]
+                                                }
+                                             },
+                                         },{
+                                             page: {
+                                                 elementId : 'database-node-grid-stackview-2',
+                                                 view : "GridStackView",
+                                                 viewConfig: {
+                                                     gridAttr : {
+                                                         defaultWidth : 6,
+                                                         defaultHeight : 8
+                                                     },
+                                                     widgetCfgList: [
+                                                         monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
+                                                         monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
+                                                         databaseNodeViewConfig.getViewConfig('database-grid-view')()
+                                                     ]
+                                                }
+                                             },
                                          }
                                    ]
                                 }

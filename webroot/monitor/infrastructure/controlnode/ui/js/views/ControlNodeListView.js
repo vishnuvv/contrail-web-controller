@@ -2,10 +2,11 @@
  * Copyright (c) 2014 Juniper Networks, Inc. All rights reserved.
  */
 
-define(
-        [ 'underscore', 'contrail-view','node-color-mapping'],
+        [ 'underscore', 'contrail-view','node-color-mapping','controlnode-viewconfig','monitor-infra-viewconfig'],
         function(
-                _, ContrailView,NodeColorMapping) {
+                _, ContrailView,NodeColorMapping,ControlNodeViewConfig, MonitorInfraViewConfig) {
+            var controlNodeViewConfig = new ControlNodeViewConfig(),
+                monitorInfraViewConfig = new MonitorInfraViewConfig();
             var ControlNodeListView = ContrailView.extend({
                 render : function() {
                     var nodeColorMapping = new NodeColorMapping(),
@@ -48,7 +49,42 @@ define(
                                                     {   
                                                         id: 'controlnode-grid-view',
                                                     }
-                                                    // 'controlnode-system-logs'
+                                                ]
+                                             }
+                                         },
+                                     },{
+                                         page: {
+                                         elementId : 'control-node-grid-stackview-2',
+                                         view: 'GridStackView',
+                                         viewConfig: {
+                                             gridAttr: {
+                                                 defaultWidth: 6,
+                                                 defaultHeight: 8
+                                             },
+                                             widgetCfgList: [
+                                                    controlNodeViewConfig.getViewConfig('controlnode-cpu-share')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-memory')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-control')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-nodemgr')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
+
+                                                ]
+                                             }
+                                         },
+                                     },{
+                                         page: {
+                                         elementId : 'control-node-grid-stackview-3',
+                                         view: 'GridStackView',
+                                         viewConfig: {
+                                             gridAttr: {
+                                                 defaultWidth: 6,
+                                                 defaultHeight: 8
+                                             },
+                                             widgetCfgList: [
+                                                    controlNodeViewConfig.getViewConfig('controlnode-dns')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-named')(),
+                                                    monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
                                                 ]
                                              }
                                          },
