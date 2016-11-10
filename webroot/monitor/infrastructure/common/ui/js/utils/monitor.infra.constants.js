@@ -210,6 +210,47 @@ define([
                     },
                 }
             };
+     this.defaultScatterChartViewCfg = {
+        //              title: ctwl.VROUTER_SUMMARY_TITLE,
+                      view: "ZoomScatterChartView",
+                      viewConfig: {
+                          loadChartInChunks: false,
+                          chartOptions: {
+                              sortFn:function(data){
+                                  return data.reverse();
+                              },
+                              doBucketize: true,
+                              xLabel: ctwl.TITLE_CPU,
+                              yLabel: 'Memory (MB)',
+                              xField: 'x',
+                              yField: 'y',
+                              sizeField: 'size',
+        //                      dataParser: self.parseDataForScatterChart,
+                              forceX: [0, 1],
+                              forceY: [0, 20],
+                              margin: {top:5},
+                              bubbleSizeFn: function(d) {
+                                   return d3.max(d,function(d) { return d.size;});
+                              },
+                              bubbleCfg : {
+                                   //defaultMaxValue : monitorInfraConstants.VROUTER_DEFAULT_MAX_THROUGHPUT
+                              },
+                              tooltipConfigCB: self.vRouterTooltipFn,
+                              controlPanelConfig: {
+                                   legend: {
+                                       enable: false,
+        //                               viewConfig: monitorInfraUtils.getScatterChartLegendConfigForNodes()
+                                   },
+                                   filter: {
+                                       enable: false,
+                                      // viewConfig: self.getScatterChartFilterConfigForNodes()
+                                   },
+                              },
+                              bucketTooltipFn: self.vRouterBucketTooltipFn,
+                              clickCB: self.onvRouterDrillDown
+                          }
+                      }
+                };
 
     };
 

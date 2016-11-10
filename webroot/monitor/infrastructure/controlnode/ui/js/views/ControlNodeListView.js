@@ -3,10 +3,11 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view','node-color-mapping','controlnode-viewconfig'],
+        [ 'underscore', 'contrail-view','node-color-mapping','controlnode-viewconfig','monitor-infra-viewconfig'],
         function(
-                _, ContrailView,NodeColorMapping,ControlNodeViewConfig) {
-            var controlNodeViewConfig = new ControlNodeViewConfig();
+                _, ContrailView,NodeColorMapping,ControlNodeViewConfig, MonitorInfraViewConfig) {
+            var controlNodeViewConfig = new ControlNodeViewConfig(),
+                monitorInfraViewConfig = new MonitorInfraViewConfig();
             var ControlNodeListView = ContrailView.extend({
                 render : function() {
                     var nodeColorMapping = new NodeColorMapping(),
@@ -25,20 +26,56 @@ define(
                             pages : [
                                      {
                                          page: {
-                                             elementId : 'control-node-grid-stackview-0',
-                                             view : "GridStackView",
-                                             viewConfig: {
-                                                     gridAttr : {
-                                                         defaultWidth : 6,
-                                                         defaultHeight : 8
-                                                     },
-                                                     widgetCfgList: [
-                                                        controlNodeViewConfig.getViewConfig('controlnode-sent-updates')(),
-                                                        controlNodeViewConfig.getViewConfig('controlnode-received-updates')(),
-                                                        controlNodeViewConfig.getViewConfig('controlnode-cpu-share')(),
-                                                        controlNodeViewConfig.getViewConfig('controlnode-memory')(),
-                                                        controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
-                                                     ]
+                                         elementId : 'control-node-grid-stackview-1',
+                                         view: 'GridStackView',
+                                         viewConfig: {
+                                             gridAttr: {
+                                                 defaultWidth: 6,
+                                                 defaultHeight: 8
+                                             },
+                                             widgetCfgList: [
+                                                   controlNodeViewConfig.getViewConfig('controlnode-sent-updates')(),
+                                                   controlNodeViewConfig.getViewConfig('controlnode-received-updates')(),
+                                                   monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
+                                                   monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
+                                                   controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
+                                                ]
+                                             }
+                                         },
+                                     },{
+                                         page: {
+                                         elementId : 'control-node-grid-stackview-2',
+                                         view: 'GridStackView',
+                                         viewConfig: {
+                                             gridAttr: {
+                                                 defaultWidth: 6,
+                                                 defaultHeight: 8
+                                             },
+                                             widgetCfgList: [
+                                                    controlNodeViewConfig.getViewConfig('controlnode-cpu-share')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-memory')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-control')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-nodemgr')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
+
+                                                ]
+                                             }
+                                         },
+                                     },{
+                                         page: {
+                                         elementId : 'control-node-grid-stackview-3',
+                                         view: 'GridStackView',
+                                         viewConfig: {
+                                             gridAttr: {
+                                                 defaultWidth: 6,
+                                                 defaultHeight: 8
+                                             },
+                                             widgetCfgList: [
+                                                    controlNodeViewConfig.getViewConfig('controlnode-dns')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-named')(),
+                                                    monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
+                                                ]
                                              }
                                          },
                                      }
