@@ -141,9 +141,81 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                         }
                     }),
                     itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION
+                        title: ctwl.DATABSE_NODE_PENDING_COMPACTIONS
                     }
                 }
+            },
+            'databasenode-cassandra': function (){
+                return {
+                    modelCfg: monitorInfraUtils.getStatsModelConfig({
+                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
+                        where: 'process_mem_cpu_usage.__key = cassandra'
+                    }),
+                    viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                        elementId : 'database_node_cassandra',
+                        viewConfig: {
+                            chartOptions: {
+                                yFormatter: d3.format('.2f'),
+                                yAxisLabel: "Cassandra CPU Share (%)",
+                                groupBy: 'name',
+                                colors: colorFn,
+                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                                title: ctwl.DATABASENODE_SUMMARY_TITLE,
+                            }
+                        }
+                    }),itemAttr: {
+                        title: ctwl.DATABASE_NODE_CASSANDRA_CPU_SHARE
+                    }
+                };
+            },
+            'databasenode-zookeeper': function (){
+                return {
+                    modelCfg: monitorInfraUtils.getStatsModelConfig({
+                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
+                        where: 'process_mem_cpu_usage.__key = zookeeper'
+                    }),
+                    viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                        elementId : 'database_node_zookeeper',
+                        viewConfig: {
+                            chartOptions: {
+                                yFormatter: d3.format('.2f'),
+                                yAxisLabel: "Zookeeper CPU Share (%)",
+                                groupBy: 'name',
+                                colors: colorFn,
+                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                                title: ctwl.DATABASENODE_SUMMARY_TITLE,
+                            }
+                        }
+                    }),itemAttr: {
+                        title: ctwl.DATABASE_NODE_ZOOKEEPER_CPU_SHARE
+                    }
+                };
+            },
+            'databasenode-kafka': function (){
+                return {
+                    modelCfg: monitorInfraUtils.getStatsModelConfig({
+                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
+                        where: 'process_mem_cpu_usage.__key = kafka'
+                    }),
+                    viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                        elementId : 'database_node_kafka',
+                        viewConfig: {
+                            chartOptions: {
+                                yFormatter: d3.format('.2f'),
+                                yAxisLabel: "Kafka CPU Share (%)",
+                                groupBy: 'name',
+                                colors: colorFn,
+                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                                title: ctwl.DATABASENODE_SUMMARY_TITLE,
+                            }
+                        }
+                    }),itemAttr: {
+                        title: ctwl.DATABASE_NODE_KAFKA_CPU_SHARE
+                    }
+                };
             },
             'database-grid-view': function () {
                 return {

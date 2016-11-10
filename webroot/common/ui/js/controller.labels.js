@@ -309,6 +309,8 @@ define([
         this.TITLE_MEMORY = "Memory";
         this.RESPONSE_SIZE = 'Response Size';
         this.RESPONSE_TIME = 'Response Time';
+        this.SYSTEM_CPU_SHARE = "System CPU Share";
+        this.SYSTEM_MEMORY_USED = "System memory used";
 
         /** Titles used in node details chart widget **/
         this.TITLE_CONTROLNODE_CPU_MEM_UTILIZATION = 'Control Node CPU/Memory Utilization';
@@ -505,8 +507,11 @@ define([
         this.CONTROLNODE_RECEIVED_UPDATES_SCATTER_CHART_ID = 'control-nodes-received-updates-scatter-chart';
         this.CONTROL_NODE_SENT_UPDATES = 'Sent Updates';
         this.CONTROL_NODE_RECEIVED_UPDATES = 'Received Updates';
-        this.CONTROL_NODE_CPU_SHARE = 'CPU Share (%)';
-        this.CONTROL_NODE_MEMORY = 'Memory';
+        this.CONTROL_NODE_CPU_SHARE = 'Control CPU Share (%)';
+        this.CONTROL_NODE_MEMORY = 'Control Memory';
+        this.CONTROL_NODE_CONTROL_CPU_SHARE = 'Control CPU Share (%)';
+        this.CONTROL_NODE_NODE_MANAGER_CPU_SHARE = 'Node Manager CPU Share (%)';
+        this.CONTROL_DNS_CPU_SHARE = 'DNS CPU Share (%)';
         //vRouter summary page labels
         this.VROUTER_VIEWPATH_PREFIX =
             'monitor/infrastructure/vrouter/ui/js/views/';
@@ -661,7 +666,9 @@ define([
         this.DATABSE_NODE_CPU_SHARE = "CPU Share(%)";
         this.DATABSE_NODE_DISK_SPACE_USAGE = "Disk Space Usage";
         this.DATABSE_NODE_PENDING_COMPACTIONS = "Pending Compactions";
-
+        this.DATABASE_NODE_CASSANDRA_CPU_SHARE = "Cassandra CPU Share (%)";  
+        this.DATABASE_NODE_ZOOKEEPER_CPU_SHARE = "Zookeeper CPU Share (%)";  
+        this.DATABASE_NODE_KAFKA_CPU_SHARE = "Kafka CPU Share (%)";  
         //Monitor infra widget titles
         this.CONFIG_NODE_TOP_5_USER_AGENTS = 'Process Wise Requests';
         this.CONFIG_NODE_TOP_5_PROJECTS = 'Project Wise Requests';
@@ -689,8 +696,9 @@ define([
         this.ANALYTICS_NODE_QUERY_DISTRIBUTION='Queries Distribution';
         this.ANALYTICS_NODE_DB_USAGE = 'DB Usage';
         this.ANALYTICS_NODE_DB_READ_WRITE = 'DB Read Writes';
-
-
+        this.ANALYTICS_NODE_GENERATORS = 'Generators';
+        this.ANALYTICS_NODE_AVAILABLE_CONNECTIONS = 'Available Connections'; 
+        
         //Analytics node labels
         this.ANALYTICSNODE_VIEWPATH_PREFIX =
             'monitor/infrastructure/analyticsnode/ui/js/views/';

@@ -2383,6 +2383,26 @@ define([
                     }
             );
         };
+        self.getDefaultScatterChartTooltipFn = function(currObj,cfg) {
+                    var tooltipContents = [];
+                    if (cfg.tooltipContents != null) {
+                        tooltipContents = cfg.tooltipContents;
+                    }
+                    var cfg = ifNull(cfg,{});
+                    if(cfg['formatType'] == 'simple') {
+                        return tooltipContents;
+                    } else {
+                        return {
+                            content: {
+                                iconClass : false,
+                                info: tooltipContents.slice(1)
+                            },title : {
+                                name: tooltipContents[0]['value'],
+                                type: currObj['display_type']
+                            }
+                        }
+                    }
+                },
 
         self.getStatsModelConfig = function (statsConfig) {
             var postData = {
