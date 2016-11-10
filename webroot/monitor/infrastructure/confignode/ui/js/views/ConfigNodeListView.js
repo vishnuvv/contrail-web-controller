@@ -3,10 +3,11 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view','node-color-mapping', 'confignode-viewconfig'],
+        [ 'underscore', 'contrail-view','node-color-mapping', 'confignode-viewconfig', 'monitor-infra-viewconfig'],
         function(
-                _, ContrailView,NodeColorMapping, ConfigNodeViewConfig) {
-            var configNodeViewConfig = new ConfigNodeViewConfig();
+                _, ContrailView,NodeColorMapping, ConfigNodeViewConfig, MonitorInfraViewConfig) {
+            var configNodeViewConfig = new ConfigNodeViewConfig(),
+            monitorInfraViewConfig = new MonitorInfraViewConfig();
             var ConfigNodeListView = ContrailView.extend({
                 render : function() {
                     var nodeColorMapping = new NodeColorMapping(),
@@ -54,11 +55,11 @@ define(
                                                           defaultHeight: 8
                                                       },
                                                       widgetCfgList: [
-                                                            configNodeViewConfig.getViewConfig('confignode-top-useragent')(),
-                                                            configNodeViewConfig.getViewConfig('confignode-top-objecttypes')(),
-                                                            configNodeViewConfig.getViewConfig('confignode-top-remote-ip')(),
-                                                            configNodeViewConfig.getViewConfig('confignode-top-projects')(),
-                                                            configNodeViewConfig.getViewConfig('confignode-grid-view')()
+                                                           configNodeViewConfig.getViewConfig('confignode-top-useragent')(),
+                                                           configNodeViewConfig.getViewConfig('confignode-top-objecttypes')(),
+                                                           configNodeViewConfig.getViewConfig('confignode-top-remote-ip')(),
+                                                           configNodeViewConfig.getViewConfig('confignode-top-projects')(),
+                                                           configNodeViewConfig.getViewConfig('confignode-grid-view')()
                                                       ]
                                                   }
                                               }
@@ -72,10 +73,27 @@ define(
                                                           defaultHeight: 8
                                                       },
                                                       widgetCfgList: [
-                                                            configNodeViewConfig.getViewConfig('confignode-process-cpu-node-mngr')(),
-                                                            configNodeViewConfig.getViewConfig('confignode-process-contrail-schema')(),
-                                                            configNodeViewConfig.getViewConfig('confignode-process-contrail-discovery')(),
                                                             configNodeViewConfig.getViewConfig('confignode-process-contrail-api')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-process-contrail-schema')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-process-cpu-node-mngr')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-process-contrail-discovery')(),
+                                                            configNodeViewConfig.getViewConfig('confignode-grid-view')()
+                                                      ]
+                                                  }
+                                              }
+                                          },{
+                                              page: {
+                                                  elementId : 'config-node-grid-stackview-3',
+                                                  view: 'GridStackView',
+                                                  viewConfig: {
+                                                      gridAttr: {
+                                                          defaultWidth: 6,
+                                                          defaultHeight: 8
+                                                      },
+                                                      widgetCfgList: [
+                                                            monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
+                                                            monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
+                                                            monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
                                                             configNodeViewConfig.getViewConfig('confignode-grid-view')()
                                                       ]
                                                   }
