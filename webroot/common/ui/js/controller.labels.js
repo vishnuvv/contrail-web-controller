@@ -309,8 +309,9 @@ define([
         this.TITLE_MEMORY = "Memory";
         this.RESPONSE_SIZE = 'Response Size';
         this.RESPONSE_TIME = 'Response Time';
-        this.SYSTEM_CPU_SHARE = "System CPU Share";
-        this.SYSTEM_MEMORY_USED = "System memory used";
+        this.SYSTEM_CPU_SHARE = "System CPU Share (%)";
+        this.SYSTEM_MEMORY_USED = "System Memory Usage";
+        this.DISK_USAGE = 'Disk Usage';
 
         /** Titles used in node details chart widget **/
         this.TITLE_CONTROLNODE_CPU_MEM_UTILIZATION = 'Control Node CPU/Memory Utilization';
@@ -507,11 +508,12 @@ define([
         this.CONTROLNODE_RECEIVED_UPDATES_SCATTER_CHART_ID = 'control-nodes-received-updates-scatter-chart';
         this.CONTROL_NODE_SENT_UPDATES = 'Sent Updates';
         this.CONTROL_NODE_RECEIVED_UPDATES = 'Received Updates';
-        this.CONTROL_NODE_CPU_SHARE = 'Control CPU Share (%)';
-        this.CONTROL_NODE_MEMORY = 'Control Memory';
-        this.CONTROL_NODE_CONTROL_CPU_SHARE = 'Control CPU Share (%)';
+        this.CONTROL_NODE_CPU_SHARE = 'BGP CPU Share (%)';
+        this.CONTROL_NODE_MEMORY = 'BGP Memory Usage';
+        this.CONTROL_NODE_CONTROL_CPU_SHARE = 'BGP CPU Share (%)';
         this.CONTROL_NODE_NODE_MANAGER_CPU_SHARE = 'Node Manager CPU Share (%)';
         this.CONTROL_DNS_CPU_SHARE = 'DNS CPU Share (%)';
+        this.CONTROL_NAMED_CPU_SHARE = "Named CPU Share (%)";
         //vRouter summary page labels
         this.VROUTER_VIEWPATH_PREFIX =
             'monitor/infrastructure/vrouter/ui/js/views/';
@@ -662,8 +664,8 @@ define([
         this.DATABASENODE_COMPACTIONS_CHART_ID = 'database-nodes-compactions-chart';
         this.DATABASENODE_PERCENTILE_SECTION_ID = "database-nodes-percentile-section-id";
         this.DATABASENODE_PERCENTILE_BAR_VIEW = "database-nodes-percentile-bar-view";
-        this.DATABSE_NODE_MEMORY = "Memory";
-        this.DATABSE_NODE_CPU_SHARE = "CPU Share(%)";
+        this.DATABSE_NODE_MEMORY = "Cassandra Memory Usage";
+        this.DATABSE_NODE_CPU_SHARE = "Cassandra CPU Share (%)";
         this.DATABSE_NODE_DISK_SPACE_USAGE = "Disk Space Usage";
         this.DATABSE_NODE_PENDING_COMPACTIONS = "Pending Compactions";
         this.DATABASE_NODE_CASSANDRA_CPU_SHARE = "Cassandra CPU Share (%)";  

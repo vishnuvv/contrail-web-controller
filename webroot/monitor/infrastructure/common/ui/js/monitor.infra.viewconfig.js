@@ -42,14 +42,14 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                             elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_API_LINE_CHART_ID,
                             viewConfig: {
                                 chartOptions: {
-                                    yFormatter: d3.format('.2f'),
-                                    yAxisLabel: 'System Memory Used',
+                                    //yFormatter: d3.format('.2f'),
+                                    yAxisLabel: ctwl.SYSTEM_MEMORY_USED,
                                     groupBy: 'Source',
                                     colors: colorFn,
                                     yField: 'MAX(system_mem_usage.used)',
                                     title: "System",
                                     yFormatter : function(d){
-                                        return formatBytes(d * 1024, true);
+                                        return formatBytes(d, true);
                                    }
                                 }
                             }
@@ -76,18 +76,22 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                             elementId : "databsenode_dbusage_chart",
                             viewConfig: {
                                 chartOptions: {
-                                    title: "Disk Usage",
+                                    title: ctwl.DISK_USAGE,
                                     xAxisLabel: '',
-                                    yAxisLabel: "Disk Usage",
+                                    yAxisLabel: ctwl.DISK_USAGE,
+                                    groupBy: 'Source',
+                                    colors: colorFn,
                                     yField: 'MAX(disk_usage_info.partition_space_used_1k)',
-                                    yFormatter : function(d){
-                                        return formatBytes(d * 1024, true);
+                                    yAxisFormatter : function(d){
+                                        return formatBytes(d, true);
+                                   },margin: {
+                                       left: 62
                                    }
                                 }
                             }
                         }),
                         itemAttr: {
-                            title: ctwl.ANALYTICS_NODE_DB_USAGE
+                            title: ctwl.DISK_USAGE
                         }
                     }
                 }

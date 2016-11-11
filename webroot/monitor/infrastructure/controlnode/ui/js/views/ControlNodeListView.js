@@ -36,8 +36,8 @@ define(
                                              widgetCfgList: [
                                                    controlNodeViewConfig.getViewConfig('controlnode-sent-updates')(),
                                                    controlNodeViewConfig.getViewConfig('controlnode-received-updates')(),
-                                                   monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
-                                                   monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
+                                                   controlNodeViewConfig.getViewConfig('controlnode-control')(),
+                                                   controlNodeViewConfig.getViewConfig('controlnode-memory')(),
                                                    controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
                                                 ]
                                              }
@@ -52,10 +52,12 @@ define(
                                                  defaultHeight: 8
                                              },
                                              widgetCfgList: [
-                                                    controlNodeViewConfig.getViewConfig('controlnode-cpu-share')(),
-                                                    controlNodeViewConfig.getViewConfig('controlnode-memory')(),
-                                                    controlNodeViewConfig.getViewConfig('controlnode-control')(),
-                                                    controlNodeViewConfig.getViewConfig('controlnode-nodemgr')(),
+                                                    //controlNodeViewConfig.getViewConfig('controlnode-cpu-share')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-dns')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-named')(),
+                                                    monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
+                                                    monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
+                                                    //controlNodeViewConfig.getViewConfig('controlnode-nodemgr')(),
                                                     controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
 
                                                 ]
@@ -71,8 +73,8 @@ define(
                                                  defaultHeight: 8
                                              },
                                              widgetCfgList: [
-                                                    controlNodeViewConfig.getViewConfig('controlnode-dns')(),
-                                                    controlNodeViewConfig.getViewConfig('controlnode-named')(),
+                                                    /*controlNodeViewConfig.getViewConfig('controlnode-dns')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-named')(),*/
                                                     monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
                                                     controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
                                                 ]

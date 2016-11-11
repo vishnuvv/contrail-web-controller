@@ -75,8 +75,9 @@ define(
                                                       widgetCfgList: [
                                                             configNodeViewConfig.getViewConfig('confignode-process-contrail-api')(),
                                                             configNodeViewConfig.getViewConfig('confignode-process-contrail-schema')(),
-                                                            configNodeViewConfig.getViewConfig('confignode-process-cpu-node-mngr')(),
+                                                            //configNodeViewConfig.getViewConfig('confignode-process-cpu-node-mngr')(),
                                                             configNodeViewConfig.getViewConfig('confignode-process-contrail-discovery')(),
+                                                            monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
                                                             configNodeViewConfig.getViewConfig('confignode-grid-view')()
                                                       ]
                                                   }
@@ -91,7 +92,6 @@ define(
                                                           defaultHeight: 8
                                                       },
                                                       widgetCfgList: [
-                                                            monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
                                                             monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
                                                             monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
                                                             configNodeViewConfig.getViewConfig('confignode-grid-view')()

@@ -36,10 +36,11 @@ define(
                                                      },
                                                      widgetCfgList: [
                                                          databaseNodeViewConfig.getViewConfig('databsenode-percentile-bar-view')(),
+                                                         //databaseNodeViewConfig.getViewConfig('databasenode-disk-space-usage')(),
+                                                         databaseNodeViewConfig.getViewConfig('databasenode-pending-compactions')(),
                                                          databaseNodeViewConfig.getViewConfig('databasenode-cpu-share')(),
                                                          databaseNodeViewConfig.getViewConfig('databasenode-memory')(),
-                                                         databaseNodeViewConfig.getViewConfig('databasenode-disk-space-usage')(),
-                                                         databaseNodeViewConfig.getViewConfig('databasenode-pending-compactions')(),
+                                                         monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
                                                          databaseNodeViewConfig.getViewConfig('database-grid-view')(),
                                                      ]
                                                 }
@@ -54,15 +55,17 @@ define(
                                                          defaultHeight : 8
                                                      },
                                                      widgetCfgList: [
-                                                         databaseNodeViewConfig.getViewConfig('databasenode-cassandra')(),
+                                                         //databaseNodeViewConfig.getViewConfig('databasenode-cassandra')(),
                                                          databaseNodeViewConfig.getViewConfig('databasenode-zookeeper')(),
                                                          databaseNodeViewConfig.getViewConfig('databasenode-kafka')(),
-                                                         monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
+                                                         monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
+                                                         monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
+                                                         //monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
                                                          databaseNodeViewConfig.getViewConfig('database-grid-view')()
                                                      ]
                                                 }
                                              },
-                                         },{
+                                         }/*,{
                                              page: {
                                                  elementId : 'database-node-grid-stackview-2',
                                                  view : "GridStackView",
@@ -72,13 +75,11 @@ define(
                                                          defaultHeight : 8
                                                      },
                                                      widgetCfgList: [
-                                                         monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
-                                                         monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
                                                          databaseNodeViewConfig.getViewConfig('database-grid-view')()
                                                      ]
                                                 }
                                              },
-                                         }
+                                         }*/
                                    ]
                                 }
                             }]
