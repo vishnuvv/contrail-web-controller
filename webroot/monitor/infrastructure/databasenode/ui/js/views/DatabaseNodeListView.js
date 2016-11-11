@@ -36,10 +36,10 @@ define(
                                                      },
                                                      widgetCfgList: [
                                                          {id:'databsenode-percentile-bar-view'},
+                                                         {id:'databasenode-pending-compactions'},
                                                          {id:'databasenode-cpu-share'},
                                                          {id:'databasenode-memory'},
-                                                         {id:'databasenode-disk-space-usage'},
-                                                         {id:'databasenode-pending-compactions'},
+                                                         {id:'disk-usage-info'},
                                                          {id:'database-grid-view'}
                                                      ]
                                                 }
@@ -55,15 +55,17 @@ define(
                                                          defaultHeight : 8
                                                      },
                                                      widgetCfgList: [
-                                                         databaseNodeViewConfig.getViewConfig('databasenode-cassandra')(),
+                                                         //databaseNodeViewConfig.getViewConfig('databasenode-cassandra')(),
                                                          databaseNodeViewConfig.getViewConfig('databasenode-zookeeper')(),
                                                          databaseNodeViewConfig.getViewConfig('databasenode-kafka')(),
-                                                         monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
+                                                         monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
+                                                         monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
+                                                         //monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
                                                          databaseNodeViewConfig.getViewConfig('database-grid-view')()
                                                      ]
                                                 }
                                              },
-                                         },{
+                                         }/*,{
                                              page: {
                                                  elementId : 'database-node-grid-stackview-2',
                                                  view : "GridStackView",
@@ -73,13 +75,11 @@ define(
                                                          defaultHeight : 8
                                                      },
                                                      widgetCfgList: [
-                                                         monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
-                                                         monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
                                                          databaseNodeViewConfig.getViewConfig('database-grid-view')()
                                                      ]
                                                 }
                                              },
-                                         }
+                                         }*/
                                    ]
                                 }
                             }]

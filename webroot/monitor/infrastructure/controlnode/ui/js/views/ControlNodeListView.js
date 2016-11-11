@@ -28,7 +28,6 @@
                                              elementId : 'control-node-grid-stackview-0',
                                              view : "GridStackView",
                                              viewConfig: {
-                                                elementId : 'control-node-grid-stackview-0',
                                                 gridAttr : {
                                                     defaultWidth : 6,
                                                     defaultHeight : 8
@@ -41,7 +40,7 @@
                                                         id: 'controlnode-received-updates',
                                                     },
                                                     {   
-                                                        id: 'controlnode-cpu-share',
+                                                        id: 'controlnode-control',
                                                     },
                                                     {   
                                                         id: 'controlnode-memory',
@@ -62,10 +61,12 @@
                                                  defaultHeight: 8
                                              },
                                              widgetCfgList: [
-                                                    controlNodeViewConfig.getViewConfig('controlnode-cpu-share')(),
-                                                    controlNodeViewConfig.getViewConfig('controlnode-memory')(),
-                                                    controlNodeViewConfig.getViewConfig('controlnode-control')(),
-                                                    controlNodeViewConfig.getViewConfig('controlnode-nodemgr')(),
+                                                    //controlNodeViewConfig.getViewConfig('controlnode-cpu-share')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-dns')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-named')(),
+                                                    monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
+                                                    monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
+                                                    //controlNodeViewConfig.getViewConfig('controlnode-nodemgr')(),
                                                     controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
 
                                                 ]
@@ -81,8 +82,8 @@
                                                  defaultHeight: 8
                                              },
                                              widgetCfgList: [
-                                                    controlNodeViewConfig.getViewConfig('controlnode-dns')(),
-                                                    controlNodeViewConfig.getViewConfig('controlnode-named')(),
+                                                    /*controlNodeViewConfig.getViewConfig('controlnode-dns')(),
+                                                    controlNodeViewConfig.getViewConfig('controlnode-named')(),*/
                                                     monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
                                                     controlNodeViewConfig.getViewConfig('controlnode-grid-view')()
                                                 ]

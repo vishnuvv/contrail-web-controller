@@ -79,6 +79,18 @@ define(
                                                             {id:'analyticsnode-api-cpu-share'},
                                                             {id:'analyticsnode-grid-view'}
                                                             ]
+                                                             gridAttr: {
+                                                                 defaultWidth: 6,
+                                                                 defaultHeight: 8
+                                                             },
+                                                             widgetCfgList: [
+                                                               analyticsNodeViewConfig.getViewConfig('analyticsnode-qe-cpu-share')(),
+                                                               analyticsNodeViewConfig.getViewConfig('analyticsnode-snmp-collector-cpu-share')(),
+                                                               analyticsNodeViewConfig.getViewConfig('analyticsnode-api-cpu-share')(),
+                                                               analyticsNodeViewConfig.getViewConfig('analyticsnode-stats-available-connections')(),
+                                                               //analyticsNodeViewConfig.getViewConfig('analyticsnode-manager-cpu-share')(),
+                                                               analyticsNodeViewConfig.getViewConfig('analyticsnode-grid-view')()
+                                                             ]
                                                          }
                                                      }
                                                  },{
@@ -94,7 +106,6 @@ define(
                                                                 monitorInfraViewConfig.getViewConfig('disk-usage-info')(),
                                                                 monitorInfraViewConfig.getViewConfig('system-cpu-share')(),
                                                                 monitorInfraViewConfig.getViewConfig('system-memory-usage')(),
-                                                                analyticsNodeViewConfig.getViewConfig('analyticsnode-stats-available-connections')(),
                                                                 analyticsNodeViewConfig.getViewConfig('analyticsnode-grid-view')()
                                                              ]
                                                          }
