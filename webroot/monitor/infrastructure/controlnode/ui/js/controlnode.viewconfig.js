@@ -17,38 +17,23 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-controlnode
                         table_name: 'StatTable.PeerStatsData.tx_update_stats',
                         select: 'T=, Source, SUM(tx_update_stats.reach), SUM(tx_update_stats.unreach)'
                     }),
-                    viewCfg:  {
-                    elementId : ctwl.CONTROLNODE_SENT_UPDATES_SCATTER_CHART_ID,
-                    view : "StackedBarChartWithFocusView",
-                    viewConfig : {
-                        class: 'mon-infra-chart chartMargin',
-                        chartOptions:{
-                            height: 230,
-                            title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                            xAxisLabel: '',
-                            yAxisLabel: 'Sent Updates',
-                            groupBy: 'Source',
-                            yField: 'SUM(tx_update_stats.reach)',
-                            yAxisOffset: 25,
-                            tickPadding: 8,
-                            margin: {
-                                left: 55,
-                                top: 20,
-                                right: 0,
-                                bottom: 40
-                            },
-                            bucketSize: monitorInfraConstants.STATS_BUCKET_DURATION,
-                            colors: colorFn,
-                            failureLabel:'Unreach',
-                            showControls: false,
-                            showLegend: true,
-                            failureCheckFn: function (d) {
-                                return ifNull(d['SUM(tx_update_stats.unreach)'],0);
-                            },
-                            defaultZeroLineDisplay: true
+                    viewCfg:  $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
+                        elementId : ctwl.CONTROLNODE_SENT_UPDATES_SCATTER_CHART_ID,
+                        viewConfig : {
+                            chartOptions:{
+                                title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                                xAxisLabel: '',
+                                yAxisLabel: 'Sent Updates',
+                                groupBy: 'Source',
+                                yField: 'SUM(tx_update_stats.reach)',
+                                colors: colorFn,
+                                failureLabel:'Unreach',
+                                failureCheckFn: function (d) {
+                                    return ifNull(d['SUM(tx_update_stats.unreach)'],0);
+                                },
+                            }
                         }
-                    }
-                },
+                    }),
                     itemAttr: {
                         title: ctwl.CONTROL_NODE_SENT_UPDATES
                     }
@@ -60,44 +45,30 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-controlnode
                         table_name: 'StatTable.PeerStatsData.rx_update_stats',
                         select: 'T=, Source, SUM(rx_update_stats.reach), SUM(rx_update_stats.unreach)'
                     }),
-                    viewCfg: {
+                    viewCfg: $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
                         elementId : ctwl.CONTROLNODE_RECEIVED_UPDATES_SCATTER_CHART_ID,
-                        view : "StackedBarChartWithFocusView",
                         viewConfig : {
-                            class: 'mon-infra-chart chartMargin',
                             chartOptions:{
-                                height: 230,
                                 xAxisLabel: '',
                                 yAxisLabel: 'Received Updates',
                                 title: ctwl.CONTROLNODE_SUMMARY_TITLE,
                                 groupBy: 'Source',
                                 yField: 'SUM(rx_update_stats.reach)',
-                                yAxisOffset: 25,
-                                tickPadding: 4,
-                                margin: {
-                                    left: 55,
-                                    top: 20,
-                                    right: 0,
-                                    bottom: 40
-                                },
-                                bucketSize: monitorInfraConstants.STATS_BUCKET_DURATION,
                                 colors: colorFn,
                                 failureLabel:'Unreach',
-                                showControls: false,
-                                showLegend: true,
                                 failureCheckFn: function (d) {
                                     return ifNull(d['SUM(rx_update_stats.unreach)'],0);
                                 },
                                 defaultZeroLineDisplay: true
                             }
                         }
-                    },
+                    }),
                     itemAttr: {
                         title: ctwl.CONTROL_NODE_RECEIVED_UPDATES
                     }
                 }
             },
-            'controlnode-cpu-share': function (){
+            /*'controlnode-cpu-share': function (){
                 return {
                      modelCfg: monitorInfraUtils.getStatsModelConfig({
                         table_name: 'StatTable.ControlCpuState.cpu_info',
@@ -113,12 +84,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-controlnode
                                      yField: 'MAX(cpu_info.cpu_share)',
                                      colors: colorFn,
                                      title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                     margin: {
-                                         left: 60,
-                                         top: 20,
-                                         right: 15,
-                                         bottom: 50
-                                     },
                                      yFormatter : function(d){
                                           return d;
                                      },
@@ -130,33 +95,27 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-controlnode
                           title: ctwl.CONTROL_NODE_CPU_SHARE
                      }
                 }
-            },
+            },*/
             'controlnode-memory': function (){
                 return {
                     modelCfg: monitorInfraUtils.getStatsModelConfig({
-                        table_name: 'StatTable.ControlCpuState.cpu_info',
-                        select: 'T=, name, MAX(cpu_info.cpu_share), MAX(cpu_info.mem_res)',
-                        where:'cpu_info.module_id = contrail-control'
+                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                        select: 'name, T=, MAX(process_mem_cpu_usage.mem_res)',
+                        where: 'process_mem_cpu_usage.__key = contrail-control'
                     }),
                      viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
                           elementId : ctwl.CONTROLNODE_MEM_SHARE_LINE_CHART_ID,
                          viewConfig: {
                              chartOptions: {
-                                     yAxisLabel: 'Control Memory',
-                                     groupBy: 'name',
-                                     yField: 'MAX(cpu_info.mem_res)',
-                                     colors: colorFn,
-                                     title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                     margin: {
-                                         left: 60,
-                                         top: 20,
-                                         right: 15,
-                                         bottom: 50
-                                     },
-                                     yFormatter : function(d){
-                                          return formatBytes(d * 1024, true);
-                                     },
-                                     xFormatter: xCPUChartFormatter,
+                                 yAxisLabel: ctwl.CONTROL_NODE_MEMORY,
+                                 groupBy: 'name',
+                                 yField: 'MAX(process_mem_cpu_usage.mem_res)',
+                                 colors: colorFn,
+                                 title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                                 yFormatter : function(d){
+                                      return formatBytes(d, true);
+                                 },
+                                 xFormatter: xCPUChartFormatter,
                              }
                          }
                      }),
@@ -176,8 +135,9 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-controlnode
                         elementId : 'control_node_control',
                         viewConfig: {
                             chartOptions: {
+                                yAxisLabel: ctwl.CONTROL_NODE_CONTROL_CPU_SHARE,
                                 yFormatter: d3.format('.2f'),
-                                yAxisLabel: "Control CPU share",
+                                yAxisLabel: ctwl.CONTROL_NODE_CONTROL_CPU_SHARE,
                                 groupBy: 'name',
                                 colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
@@ -225,7 +185,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-controlnode
                         viewConfig: {
                             chartOptions: {
                                 yFormatter: d3.format('.2f'),
-                                yAxisLabel: "DNS CPU Share (%)",
+                                yAxisLabel: ctwl.CONTROL_DNS_CPU_SHARE,
                                 groupBy: 'name',
                                 colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
@@ -249,7 +209,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-controlnode
                         viewConfig: {
                             chartOptions: {
                                 yFormatter: d3.format('.2f'),
-                                yAxisLabel: "Named CPU Share (%)",
+                                yAxisLabel: ctwl.CONTROL_NAMED_CPU_SHARE,
                                 groupBy: 'name',
                                 colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
@@ -257,7 +217,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-controlnode
                             }
                         }
                     }),itemAttr: {
-                        title: ctwl.CONTROL_DNS_CPU_SHARE
+                        title: ctwl.CONTROL_NAMED_CPU_SHARE
                     }
                 };
             },
