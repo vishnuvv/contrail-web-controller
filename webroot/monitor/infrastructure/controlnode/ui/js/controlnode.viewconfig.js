@@ -126,6 +126,83 @@ define(['underscore', 'contrail-view', 'monitor-infra-controlnode-model', 'node-
                     viewCfg: {
                         view : "eventDropsView",
                         viewConfig: {
+                            groupBy: 'MessageType',
+                            title: 'Controlnode System Logs'
+                        }
+                    },
+                    itemAttr: {
+                        title: ctwl.CONTROLNODE_CONSOLE_LOGS,
+                        width: 2
+                    }
+                }
+            },
+            'controlnode-objectbgprouter-logs': function () {
+                return {
+                    modelCfg: {
+                        modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
+                        source:'STATTABLE',
+                        config: {
+                            table_name: 'ObjectBgpRouter',
+                            table_type: 'OBJECT',
+                            select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
+                            where:'ModuleId=contrail-control'
+                        }
+                    },
+                    viewCfg: {
+                        view : "eventDropsView",
+                        viewConfig: {
+                            // groupBy: 'MessageType',
+                            title:'ObjectBgpRouter'
+                        }
+                    },
+                    itemAttr: {
+                        title: ctwl.CONTROLNODE_CONSOLE_LOGS,
+                        width: 2
+                    }
+                }
+            },
+            'controlnode-objectxmpppeer-logs': function () {
+                return {
+                    modelCfg: {
+                        modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
+                        source:'STATTABLE',
+                        config: {
+                            table_name: 'ObjectXmppPeerInfo',
+                            table_type: 'OBJECT',
+                            select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
+                            where:'ModuleId=contrail-control'
+                        }
+                    },
+                    viewCfg: {
+                        view : "eventDropsView",
+                        viewConfig: {
+                            // groupBy: 'MessageType',
+                            title:'ObjectXmppPeerInfo'
+                        }
+                    },
+                    itemAttr: {
+                        title: ctwl.CONTROLNODE_CONSOLE_LOGS,
+                        width: 2
+                    }
+                }
+            },
+            'controlnode-objectbgppeer-logs': function () {
+                return {
+                    modelCfg: {
+                        modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
+                        source:'STATTABLE',
+                        config: {
+                            table_name: 'ObjectBgpPeer',
+                            table_type: 'OBJECT',
+                            select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
+                            where:'ModuleId=contrail-control'
+                        }
+                    },
+                    viewCfg: {
+                        view : "eventDropsView",
+                        viewConfig: {
+                            // groupBy: 'MessageType',
+                            title:'ObjectBgpPeer'
                         }
                     },
                     itemAttr: {
