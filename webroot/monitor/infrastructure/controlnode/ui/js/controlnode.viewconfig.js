@@ -19,6 +19,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-controlnode
                     }),
                     viewCfg:  $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
                         elementId : ctwl.CONTROLNODE_SENT_UPDATES_SCATTER_CHART_ID,
+                        view: 'StackedAreaChartView',
                         viewConfig : {
                             chartOptions:{
                                 title: ctwl.CONTROLNODE_SUMMARY_TITLE,
@@ -47,6 +48,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-controlnode
                     }),
                     viewCfg: $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
                         elementId : ctwl.CONTROLNODE_RECEIVED_UPDATES_SCATTER_CHART_ID,
+                        view: 'StackedAreaChartView',
                         viewConfig : {
                             chartOptions:{
                                 xAxisLabel: '',

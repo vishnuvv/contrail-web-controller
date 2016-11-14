@@ -40,7 +40,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     itemAttr: {
                         height:0.25,
-                        width: 1.5,
+                        width: 2,
                         title: ctwl.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE
                     }
                 }

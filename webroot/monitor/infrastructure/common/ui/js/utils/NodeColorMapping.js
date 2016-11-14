@@ -6,30 +6,24 @@ define(
        [ 'underscore' ],
        function(_) {
             var NodeColorMapping = function() {
-                var nodeColorMap = {};
+                var nodeColorMap = {},
+                    colors = cowc.FIVE_NODE_COLOR;
+                    //unusedColors = cowc.FIVE_NODE_COLOR;
 
                 this.getNodeColorMap = function (hostNames) {
                     var self = this;
                     if (!$.isArray(hostNames)) {
                         hostNames = [hostNames];
                     }
-                    var keys = _.keys(nodeColorMap),
-                        colors = cowc.FIVE_NODE_COLOR,
-                        keysLen = 0;
                     //if hostname doesn't exists in nodeColorMap
-                    if (keys.toString().indexOf(hostNames.toString()) == -1) {
-                        keys = _.unique(keys.concat(hostNames));
-                        keys = _.sortBy(keys),
-                        keysLen = keys.length;
-                        if (keysLen == 1) {
-                            colors = cowc.SINGLE_NODE_COLOR;
-                        } else if (keysLen > 1 && keysLen <=3) {
-                            colors = cowc.THREE_NODE_COLOR;
-                        }
-                        $.each(keys, function (idx, obj) {
+                    keys = _.unique(hostNames);
+                    keys = _.sortBy(keys),
+                    $.each(keys, function (idx, obj) {
+                        if (nodeColorMap[obj] == null) {
                             nodeColorMap[obj] = colors[idx];
-                        });
-                    }
+                            colors = _.without(colors, colors[idx]);
+                        }
+                    });
                     return nodeColorMap;
                 };
             };
