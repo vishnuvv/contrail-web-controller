@@ -436,12 +436,15 @@ define([
         this.CONFIGNODE_DETAILS_APISERVER_CHART_WIDGET = 'config_node_details_apiserver_chart_widget';
         this.CONFIGNODE_DETAILS_SERVICE_MONITOR_CHART_WIDGET = 'config_node_details_service_monitor_chart_widget';
         this.CONFIGNODE_DETAILS_SCHEMA_CHART_WIDGET = 'config_node_details_schema_chart_widget';
-        this.CONFIGNODE_CONSOLE_LOGS_VIEW_ID =
-            'config_node_console_logs_view';
+        this.CONFIGNODE_CONSOLE_LOGS_VIEW_ID = 'config_node_console_logs_view';
         this.CONFIGNODE_ALARMS_GRID_VIEW_ID = "config_node_alarms_grid_view_id";
         this.CONFIG_NODE_ALARMS_GRID_SECTION_ID = "config_node_alarm_grid_section_id";
-
         this.CONFIG_NODE_OBJECT_USAGE_TITLE = 'Object Wise Usage';
+        this.CONFIG_NODE_PROCESS_WISE_USAGE = 'Process Wise Usage';
+        this.CONFIG_NODE_CLIENT_WISE_USAGE = 'Client Wise Usage';
+        this.CONFIG_NODE_PROJECT_WISE_USAGE = 'Project Wise Usage';
+        this.CONFIG_NODE_SCHEMA_CPU_SHARE = 'Schema CPU Share (%)';
+        this.CONFIG_NODE_API_CPU_SHARE = 'API CPU Share (%)';
 
         //Control node labels
         this.CONTROLNODE_VIEWPATH_PREFIX =
@@ -680,7 +683,7 @@ define([
         this.CONFIG_NODE_TOP_REMOTE_IP = "Client Wise Requests";
         this.CONFIG_NODE_NODE_MANAGER_CPU_SHARE = 'Node Manager CPU Share (%)';
         this.CONFIG_NODE_SCHEMA_CPU_SHARE = 'Schema CPU Share (%)';
-        this.CONFIG_NODE_DISCOVERY_CPU_SHARE = 'Discovery CPU Share (%)';
+        this.CONFIGNODE_DISCOVERY_CPU_SHARE = 'Discovery CPU Share (%)';
         this.CONFIG_NODE_API_CPU_SHARE = 'Api CPU Share (%)';
         this.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE = 'Response Parameters Percentile';
         this.CONFIG_NODE_REQUESTS_SERVED = 'Requests Served';

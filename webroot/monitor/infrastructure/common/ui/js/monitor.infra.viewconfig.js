@@ -11,12 +11,16 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
         self.viewConfig = {
                 'system-cpu-share': function () {
                     return {
-                        modelCfg: monitorInfraUtils.getStatsModelConfig({
-                            table_name: 'StatTable.NodeStatus.system_mem_cpu_usage',
-                            select: 'Source, T=, MAX(system_mem_cpu_usage.cpu_share)'
-                        }),
-                        viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                        modelCfg: {
+                            source: 'STATTABLE',
+                            config: {
+                                "table_name": "StatTable.NodeStatus.system_mem_cpu_usage",
+                                "select": "Source, T=, MAX(system_mem_cpu_usage.cpu_share)"
+                            }
+                        },
+                        viewCfg:{
                             elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_API_LINE_CHART_ID,
+                            view:'LineWithFocusChartView',
                             viewConfig: {
                                 chartOptions: {
                                     yFormatter: d3.format('.2f'),
@@ -27,19 +31,23 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                                     title: "System",
                                 }
                             }
-                        }),itemAttr: {
+                        },itemAttr: {
                             title: ctwl.SYSTEM_CPU_SHARE
                         }
                     };
                 },
                 'system-memory-usage': function () {
                     return {
-                        modelCfg: monitorInfraUtils.getStatsModelConfig({
-                            table_name: 'StatTable.NodeStatus.system_mem_usage',
-                            select: 'Source,T=,MAX(system_mem_usage.used)'
-                        }),
-                        viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                        modelCfg: {
+                            source: 'STATTABLE',
+                            config: {
+                                "table_name": "StatTable.NodeStatus.system_mem_usage",
+                                "select": "Source,T=,MAX(system_mem_usage.used)"
+                            }
+                        },
+                        viewCfg: {
                             elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_API_LINE_CHART_ID,
+                            view:'LineWithFocusChartView',
                             viewConfig: {
                                 chartOptions: {
                                     //yFormatter: d3.format('.2f'),
@@ -53,27 +61,31 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                                    }
                                 }
                             }
-                        }),itemAttr: {
+                        },itemAttr: {
                             title: ctwl.SYSTEM_MEMORY_USED
                         }
                     };
                 },
                 'disk-usage-info': function (){
                     return {
-                        modelCfg: monitorInfraUtils.getStatsModelConfig({
-                            table_name: 'StatTable.NodeStatus.disk_usage_info',
-                            select: 'T=, Source, MAX(disk_usage_info.partition_space_used_1k)',
-                            parser: function(response){
-                                var stats = response;
-                                $.each(stats, function(idx, obj) {
-                                    obj['MAX(disk_usage_info.partition_space_used_1k)'] =
-                                        ifNull(obj['MAX(disk_usage_info.partition_space_used_1k)'],0) * 1024; //Converting KB to Bytes
-                                });
-                                return stats;
+                        modelCfg: {
+                            source: 'STATTABLE',
+                            config: {
+                                "table_name": "StatTable.NodeStatus.disk_usage_info",
+                                "select": "T=, Source, MAX(disk_usage_info.partition_space_used_1k)",
+                                "parser": function(response){
+                                    var stats = response;
+                                    $.each(stats, function(idx, obj) {
+                                        obj['MAX(disk_usage_info.partition_space_used_1k)'] =
+                                            ifNull(obj['MAX(disk_usage_info.partition_space_used_1k)'],0) * 1024; //Converting KB to Bytes
+                                    });
+                                    return stats;
+                                }
                             }
-                        }),
-                        viewCfg: $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
+                        },
+                        viewCfg: {
                             elementId : "databsenode_dbusage_chart",
+                            view:'StackedBarChartWithFocusView',
                             viewConfig: {
                                 chartOptions: {
                                     title: ctwl.DISK_USAGE,
@@ -89,7 +101,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                                    }
                                 }
                             }
-                        }),
+                        },
                         itemAttr: {
                             title: ctwl.DISK_USAGE
                         }
@@ -100,5 +112,6 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
             return self.viewConfig[id];
         };
 };
-return MonitorInfraViewConfig;
+ return (new MonitorInfraViewConfig()).viewConfig;
+
 });

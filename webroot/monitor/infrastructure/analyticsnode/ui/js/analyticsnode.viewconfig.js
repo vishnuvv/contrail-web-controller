@@ -31,7 +31,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     itemAttr: {
                         height:0.25,
-                        width: 1.5,
+                        width: 2,
                         title: ctwl.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE
                     }
                 }
@@ -143,65 +143,60 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
 //            },
             'analyticsnode-generators-scatterchart': function (){
                 return {
-                    modelCfg: monitorInfraUtils.getStatsModelConfig({
-                        table_name: 'StatTable.SandeshMessageStat.msg_info',
-                        select: 'Source,name, T=, SUM(msg_info.messages),SUM(msg_info.bytes)',
-                        parser: function(response){
-                            var apiStats = response;
-                            var parsedData = [], parsedDataAll = [];
-                            var parsedDataNew = [];
-                            var cf = crossfilter(apiStats);
-                            var sourceDim = cf.dimension(function (d) {return d['name']});
-                            var totalResMessages = sourceDim.group().reduceSum(
-                                    function (d) {
-                                        return d['SUM(msg_info.messages)'];
+                    modelCfg: {
+                        source: 'STATTABLE',
+                        config: {
+                            "table_name": "StatTable.SandeshMessageStat.msg_info",
+                            "select": "Source,name, T=, SUM(msg_info.messages),SUM(msg_info.bytes)",
+                            "parser": function(response){
+                                var apiStats = response;
+                                var parsedData = [], parsedDataAll = [];
+                                var parsedDataNew = [];
+                                var cf = crossfilter(apiStats);
+                                var sourceDim = cf.dimension(function (d) {return d['name']});
+                                var totalResMessages = sourceDim.group().reduceSum(
+                                        function (d) {
+                                            return d['SUM(msg_info.messages)'];
+                                        });
+                                var totalResSize = sourceDim.group().reduceSum(
+                                        function (d) {
+                                            return d['SUM(msg_info.bytes)'];
+                                        });
+                                totalResMessagesData = totalResMessages.all();
+                                totalResSize = totalResSize.all();
+                                    $.each(totalResSize, function (key, value){
+                                        var xValue = Math.round(value['value']/120);
+                                        var Source = value['key'].substring(0, 6);
+                                        xValue = formatBytes(xValue);
+                                        xValue = parseFloat(xValue);
+                                        xValue = Math.round(xValue);
+                                        parsedData.push({
+                                            Source : Source,
+                                            label: value['key'],
+                                            x: parseFloat(xValue)
+                                            //color: colors[value['key']]
+                                        });
                                     });
-                            var totalResSize = sourceDim.group().reduceSum(
-                                    function (d) {
-                                        return d['SUM(msg_info.bytes)'];
+                                    
+                                    $.each(totalResMessagesData, function (key, value){
+                                        var dataWithX = _.find(parsedData, function(xValue){
+                                            return xValue.label === value["key"];
+                                        });
+                                        dataWithX.y = value['value']/120;
+                                        dataWithX.y = parseFloat(dataWithX.y);
+                                        dataWithX.y = Math.round(dataWithX.y);
                                     });
-                            totalResMessagesData = totalResMessages.all();
-                            totalResSize = totalResSize.all();
-                                $.each(totalResSize, function (key, value){
-                                    var xValue = Math.round(value['value']/120);
-                                    var Source = value['key'].substring(0, 6);
-                                    xValue = formatBytes(xValue);
-                                    xValue = parseFloat(xValue);
-                                    xValue = Math.round(xValue);
-                                    parsedData.push({
-                                        Source : Source,
-                                        label: value['key'],
-                                        x: parseFloat(xValue)
-                                        //color: colors[value['key']]
-                                    });
-                                });
-                                
-                                $.each(totalResMessagesData, function (key, value){
-                                    var dataWithX = _.find(parsedData, function(xValue){
-                                        return xValue.label === value["key"];
-                                    });
-                                    dataWithX.y = value['value']/120;
-                                    dataWithX.y = parseFloat(dataWithX.y);
-                                    dataWithX.y = Math.round(dataWithX.y);
-                                });
-                            return parsedData;
+                                return parsedData;
 
+                            }
                         }
-                    }),
-                    viewCfg: $.extend(true, {}, monitorInfraConstants.defaultScatterChartViewCfg, {
+                    },
+                    viewCfg:{
                         elementId : 'generatorsScatterChart',
+                        view:'ZoomScatterChartView',
                         viewConfig: {
                             chartOptions: {
                                 xLabelFormat: function(x) {return $.isNumeric(x) ? x : NaN;},
-                                //yField: 'SUM(msg_info.bytes)',
-//                                yFormatter: function(y) {
-//                                                return $.isNumeric(y) ? parseFloat(
-//                                                parseFloat(y / 1024).toFixed(2)) : NaN;
-//                                            },
-//                                yLabelFormat: function(y) {
-//                                    return $.isNumeric(y) ? parseFloat(
-//                                    parseFloat(y / 1024/ 1024).toFixed(2)) : NaN;
-//                                },
                                 xLabel: 'Bytes (KB)/ min',
                                 yLabel: 'Generators Messages / min',
                                 xTickCount:5,
@@ -225,7 +220,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                 itemAttr: {
                     width: 0.83,
-                    height: 0.9,
+                    height: 1.2,
                     title: ctwl.ANALYTICS_NODE_GENERATORS
                     }
                 }
@@ -263,25 +258,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     }
                 }
             },
-            'analyticsnode-grid-view': function () {
-              return {
-                  modelCfg: {
-                    listModel: new AnalyticsNodeListModel()
-                  },
-                  viewCfg: {
-                      elementId : ctwl.ANALYTICSNODE_SUMMARY_GRID_ID,
-                      title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
-                      view : "GridView",
-                      viewConfig : {
-                          elementConfig :
-                              getAnalyticsNodeSummaryGridConfig(analyticsNodeListModel, colorFn)
-                      }
-                  },
-                  itemAttr: {
-                      width: 2
-                  }
-              }
-            },
             'analyticsnode-top-messagetype': function (){
                 return {
                     modelCfg: {
@@ -308,7 +284,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },itemAttr: {
                         title: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES
                     }
-                };
+                }
             },
             'analyticsnode-top-generators': function (){
                 return {
@@ -336,7 +312,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },itemAttr: {
                         title: ctwl.ANALYTICS_NODE_TOP_GENERATORS
                     }
-                };
+                }
             },
             'analyticsnode-qe-cpu-share': function (){
                 return {
@@ -364,7 +340,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },itemAttr: {
                         title: ctwl.ANALYTICS_NODE_QE_CPU_SHARE
                     }
-                };
+                }
             },
             'analyticsnode-collector-cpu-share': function () {
                 return {
@@ -392,7 +368,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },itemAttr: {
                         title: ctwl.ANALYTICS_NODE_COLLECTOR_CPU_SHARE
                     }
-                };
+                }
             },
             'analyticsnode-alarm-gen-cpu-share': function () {
                 return {
@@ -420,7 +396,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },itemAttr: {
                         title: ctwl.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE
                     }
-                };
+                }
             },
             'analyticsnode-snmp-collector-cpu-share': function () {
                 return {
@@ -448,7 +424,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },itemAttr: {
                         title: ctwl.ANALYTICS_NODE_SNMP_COLLECTOR_CPU_SHARE
                     }
-                };
+                }
             },
             'analyticsnode-manager-cpu-share': function () {
                 return {
@@ -477,7 +453,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     itemAttr: {
                         title: ctwl.ANALYTICS_NODE_NODE_MANAGER_CPU_SHARE
                     }
-                };
+                }
             },'analyticsnode-api-cpu-share': function () {
                 return {
                     modelCfg: {
@@ -507,12 +483,16 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                 };
             },'analyticsnode-stats-available-connections': function () {
                 return {
-                    modelCfg: monitorInfraUtils.getStatsModelConfig({
-                        table_name: 'StatTable.CollectorDbStats.cql_stats.stats',
-                        select: 'T=, Source, MIN(cql_stats.stats.available_connections)'
-                    }),
-                    viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                    modelCfg: {
+                        source:'STATTABLE',
+                        config: {
+                            table_name: 'StatTable.CollectorDbStats.cql_stats.stats',
+                            select: 'T=, Source, MIN(cql_stats.stats.available_connections)'
+                        }
+                    },
+                    viewCfg:{
                         elementId : 'analytics_node_avilable_connections',
+                        view:'LineWithFocusChartView',
                         viewConfig: {
                             chartOptions: {
                                 yFormatter: d3.format('.2f'),
@@ -521,14 +501,36 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 colors: colorFn,
                                 yField: 'MIN(cql_stats.stats.available_connections)',
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
+                                yFormatter : function(d){
+                                    return cowu.numberFormatter(d,0);
+                               }
                             }
                         }
-                    }),itemAttr: {
+                    },itemAttr: {
                         title: ctwl.ANALYTICS_NODE_AVAILABLE_CONNECTIONS
                     }
-                };
-            }
-        };
+                }
+            },
+            'analyticsnode-grid-view': function () {
+                return {
+                    modelCfg: {
+                      listModel: new AnalyticsNodeListModel()
+                    },
+                    viewCfg: {
+                        elementId : ctwl.ANALYTICSNODE_SUMMARY_GRID_ID,
+                        title : ctwl.ANALYTICSNODE_SUMMARY_TITLE,
+                        view : "GridView",
+                        viewConfig : {
+                            elementConfig :
+                                getAnalyticsNodeSummaryGridConfig(analyticsNodeListModel, colorFn)
+                        }
+                    },
+                    itemAttr: {
+                        width: 2
+                    }
+                }
+             }
+         };
         function getAnalyticsNodeSummaryGridConfig(model, colorFn) {
             var columns = [
                {

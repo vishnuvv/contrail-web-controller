@@ -58,7 +58,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                      },
                      itemAttr: {
                          title: ctwl.DATABSE_NODE_CPU_SHARE,
-                     }
+                    }
                 }
             },
             'databasenode-memory': function (){
@@ -76,7 +76,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                      view:'LineWithFocusChartView',
                      viewConfig: {
                          chartOptions: {
-                                 yAxisLabel: 'Memory',
+                                 yAxisLabel: 'Cassandra Memory Usage',
                                  groupBy: 'name',
                                  yField: 'MAX(process_mem_cpu_usage.mem_res)',
                                  colors: colorFn,
@@ -85,13 +85,13 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                                      return formatBytes(d, true);
                                  },
                                  xFormatter: xCPUChartFormatter,
-                                },
+                                }
                          }
-                     }
-                 },
+                     },
                  itemAttr: {
-                      title: ctwl.DATABSE_NODE_MEMORY,
-                 }}
+                     title: ctwl.DATABSE_NODE_CPU_SHARE,
+                    }  
+                }
             },
             /*'databasenode-disk-space-usage': function (){
                 return {
@@ -152,7 +152,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                     viewCfg: {
                          elementId : ctwl.DATABASENODE_COMPACTIONS_CHART_ID,
                          view:'StackedBarChartWithFocusView',
-                        viewConfig: {
+                         viewConfig: {
                             chartOptions: {
                                 colors: colorFn,
                                 title: ctwl.DATABASENODE_SUMMARY_TITLE,
@@ -195,12 +195,16 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
             },*/
             'databasenode-zookeeper': function (){
                 return {
-                    modelCfg: monitorInfraUtils.getStatsModelConfig({
-                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                        where: 'process_mem_cpu_usage.__key = zookeeper'
-                    }),
-                    viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                    modelCfg:{
+                        source:'STATTABLE',
+                        config: {
+                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
+                            where: 'process_mem_cpu_usage.__key = zookeeper'
+                        }
+                    },
+                    viewCfg:{
+                        view:'LineWithFocusChartView',
                         elementId : 'database_node_zookeeper',
                         viewConfig: {
                             chartOptions: {
@@ -212,19 +216,23 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                                 title: ctwl.DATABASENODE_SUMMARY_TITLE,
                             }
                         }
-                    }),itemAttr: {
+                    },itemAttr: {
                         title: ctwl.DATABASE_NODE_ZOOKEEPER_CPU_SHARE
                     }
-                };
+                }
             },
             'databasenode-kafka': function (){
                 return {
-                    modelCfg: monitorInfraUtils.getStatsModelConfig({
-                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                        where: 'process_mem_cpu_usage.__key = kafka'
-                    }),
-                    viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
+                    modelCfg: {
+                        source:'STATTABLE',
+                        config: {
+                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
+                            where: 'process_mem_cpu_usage.__key = kafka'
+                        }
+                    },
+                    viewCfg:{
+                        view:'LineWithFocusChartView',
                         elementId : 'database_node_kafka',
                         viewConfig: {
                             chartOptions: {
@@ -236,10 +244,10 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                                 title: ctwl.DATABASENODE_SUMMARY_TITLE,
                             }
                         }
-                    }),itemAttr: {
+                    },itemAttr: {
                         title: ctwl.DATABASE_NODE_KAFKA_CPU_SHARE
                     }
-                };
+                }
             },
             'database-grid-view': function () {
                 return {
@@ -259,7 +267,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                         width: 2
                     }
                 }
-              },
+            },
         };
         function getDatabaseNodeSummaryGridConfig(model, colorFn) {
             var columns = [
