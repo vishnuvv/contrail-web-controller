@@ -33,22 +33,33 @@ define(
                                                     defaultHeight : 8
                                                 },
                                                 widgetCfgList: [
+                                                    // {
+                                                    //     id: 'controlnode-sent-updates',
+                                                    // },
+                                                    // {   
+                                                    //     id: 'controlnode-received-updates',
+                                                    // },
+                                                    // {   
+                                                    //     id: 'controlnode-cpu-share',
+                                                    // },
+                                                    // {   
+                                                    //     id: 'controlnode-memory',
+                                                    // },
+                                                    // {   
+                                                    //     id: 'controlnode-grid-view',
+                                                    // },
+                                                    // {
+                                                    //     id: 'controlnode-system-logs'
+                                                    // },
                                                     {
-                                                        id: 'controlnode-sent-updates',
+                                                        id: 'controlnode-objectbgprouter-logs'
                                                     },
-                                                    {   
-                                                        id: 'controlnode-received-updates',
+                                                    {
+                                                        id: 'controlnode-objectxmpppeer-logs'
                                                     },
-                                                    {   
-                                                        id: 'controlnode-cpu-share',
-                                                    },
-                                                    {   
-                                                        id: 'controlnode-memory',
-                                                    },
-                                                    {   
-                                                        id: 'controlnode-grid-view',
+                                                    {
+                                                        id: 'controlnode-objectbgppeer-logs'
                                                     }
-                                                    // 'controlnode-system-logs'
                                                 ]
                                              }
                                          },
