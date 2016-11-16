@@ -190,7 +190,7 @@ define([
                         },
                         tickPadding: 8,
                         hideFocusChart: true,
-                        forceY: false,
+                        forceY: [0, 1],
                         yFormatter : function(d){
                             return d;
                         },
@@ -207,6 +207,7 @@ define([
                         },
                         showLegend: true,
                         defaultZeroLineDisplay: true,
+                        defaultDataStatusMessage: false,
                         legendView: LegendView
                     },
                 }

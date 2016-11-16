@@ -72,7 +72,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                                 return stats;
                             }
                         }),
-                        viewCfg: $.extend(true, {}, monitorInfraConstants.stackChartDefaultViewConfig, {
+                        viewCfg: $.extend(true, {}, monitorInfraConstants.defaultLineChartViewCfg, {
                             elementId : "databsenode_dbusage_chart",
                             viewConfig: {
                                 chartOptions: {
@@ -82,7 +82,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                                     groupBy: 'Source',
                                     colors: colorFn,
                                     yField: 'MAX(disk_usage_info.partition_space_used_1k)',
-                                    yAxisFormatter : function(d){
+                                    yFormatter : function(d){
                                         return formatBytes(d, true);
                                    },margin: {
                                        left: 62
