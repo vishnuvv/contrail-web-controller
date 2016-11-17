@@ -2,12 +2,11 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore', 'contrail-view', 'monitor-infra-controlnode-model', 'node-color-mapping'],
+define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-color-mapping'],
         function(_, ContrailView,  ControlNodeListModel, NodeColorMapping) {
     var ControlNodeViewConfig = function () {
         var nodeColorMapping = new NodeColorMapping(),
-        colorFn = nodeColorMapping.getNodeColorMap,
-        controlNodeListModel = new ControlNodeListModel();
+        colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
             'controlnode-sent-updates': function (){
@@ -146,7 +145,7 @@ define(['underscore', 'contrail-view', 'monitor-infra-controlnode-model', 'node-
                 return {
                     modelCfg: {
                         modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
-                        source:'STATTABLE',
+                        source:'LOG',
                         config: {
                             table_name: 'MessageTable',
                             table_type: 'LOG',
@@ -171,7 +170,7 @@ define(['underscore', 'contrail-view', 'monitor-infra-controlnode-model', 'node-
                 return {
                     modelCfg: {
                         modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
-                        source:'STATTABLE',
+                        source:'OBJECT',
                         config: {
                             table_name: 'ObjectBgpRouter',
                             table_type: 'OBJECT',
@@ -196,7 +195,7 @@ define(['underscore', 'contrail-view', 'monitor-infra-controlnode-model', 'node-
                 return {
                     modelCfg: {
                         modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
-                        source:'STATTABLE',
+                        source:'OBJECT',
                         config: {
                             table_name: 'ObjectXmppPeerInfo',
                             table_type: 'OBJECT',
@@ -221,7 +220,7 @@ define(['underscore', 'contrail-view', 'monitor-infra-controlnode-model', 'node-
                 return {
                     modelCfg: {
                         modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
-                        source:'STATTABLE',
+                        source:'OBJECT',
                         config: {
                             table_name: 'ObjectBgpPeer',
                             table_type: 'OBJECT',
@@ -281,6 +280,7 @@ define(['underscore', 'contrail-view', 'monitor-infra-controlnode-model', 'node-
                 }
             },
             'controlnode-grid-view': function () {
+                var controlNodeListModel = new ControlNodeListModel();
                 return {
                     modelCfg:{
                         modelId: ctwl.CONTROLNODE_GRID_VIEW,

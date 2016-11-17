@@ -90,6 +90,21 @@ define(
                                             }]
                                         }
                                     }
+                                },{
+                                    page: {
+                                        elementId: 'config-node-grid-stackview-3',
+                                        view: 'GridStackView',
+                                        viewConfig: {
+                                            elementId: 'config-node-grid-stackview-3',
+                                            gridAttr: {
+                                                defaultWidth: 6,
+                                                defaultHeight: 16
+                                            },
+                                            widgetCfgList: [{
+                                                id: 'confignode-objecttable-logs'
+                                            }]
+                                        }
+                                    }
                                 }]
                             }
                         }]

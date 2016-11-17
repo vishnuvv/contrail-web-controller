@@ -416,6 +416,40 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
                     }
                 };
             },
+            'confignode-objecttable-logs': function () {
+                return {
+                    modelCfg: {
+                        source:'OBJECT',
+                        config: {
+                            table_name: 'ConfigObjectTable',
+                            table_type: 'OBJECT',
+                            select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
+                            from_time_utc: new Date('2016/11/17 12:45:18').getTime(),
+                            to_time_utc:new Date('2016/11/17 13:35:18').getTime(),
+                            where:'Messagetype = VncApiConfigLog',
+                            parser: function(data) {
+                                var retData;
+                                retData = $.map(data,function(val,idx) {
+                                    var objectLogJSON = cowu.formatXML2JSON(val['ObjectLog']);
+                                    return $.extend(true,{},{MessageTS:val['MessageTS'],Source:val['Source']},_.result(objectLogJSON,'api_log.VncApiCommon',{}));
+                                })
+                                return retData;
+                            }
+                        }
+                    },
+                    viewCfg: {
+                        view : "eventDropsView",
+                        viewConfig: {
+                            groupBy: 'object_type',
+                            title:'Configuration History'
+                        }
+                    },
+                    itemAttr: {
+                        title: ctwl.CONTROLNODE_CONSOLE_LOGS,
+                        width: 2
+                    }
+                }
+            },
         };
         function getConfigNodeSummaryGridConfig(model, colorFn) {
             var columns = [
