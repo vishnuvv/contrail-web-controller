@@ -143,9 +143,9 @@ define(['underscore', 'contrail-view', 'monitor-infra-controlnode-model', 'node-
                     modelCfg: {
                         source:'STATTABLE',
                         config: {
-                            table_name: 'StatTable.ControlCpuState.cpu_info',
-                            select: 'T=, name, MAX(cpu_info.cpu_share), MAX(cpu_info.mem_res)',
-                            where:'cpu_info.module_id = contrail-control'
+                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                            select: 'name, T=, MAX(process_mem_cpu_usage.mem_res)',
+                            where:'process_mem_cpu_usage.__key = contrail-control'
                         }
                     },
                      viewCfg: {
@@ -156,15 +156,9 @@ define(['underscore', 'contrail-view', 'monitor-infra-controlnode-model', 'node-
                                 yAxisLabel: 'BGP Memory Usage',
                                 subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                 groupBy: 'name',
-                                yField: 'MAX(cpu_info.mem_res)',
+                                yField: 'MAX(process_mem_cpu_usage.mem_res)',
                                 colors: colorFn,
                                 title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                margin: {
-                                    left: 60,
-                                    top: 20,
-                                    right: 15,
-                                    bottom: 50
-                                },
                                 yFormatter : function(d){
                                     return formatBytes(d * 1024, true);
                                 },
