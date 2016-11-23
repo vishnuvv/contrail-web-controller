@@ -14,8 +14,8 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                         modelCfg: {
                             source: 'STATTABLE',
                             config: {
-                                "table_name": "StatTable.NodeStatus.system_mem_cpu_usage",
-                                "select": "Source, T=, MAX(system_mem_cpu_usage.cpu_share)"
+                                "table_name": "StatTable.NodeStatus.system_cpu_usage",
+                                "select": "Source, T=, MAX(system_cpu_usage.cpu_share)"
                             }
                         },
                         viewCfg:{
@@ -28,7 +28,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                                     yAxisLabel: 'System CPU Share (%)',
                                     groupBy: 'Source',
                                     colors: colorFn,
-                                    yField: 'MAX(system_mem_cpu_usage.cpu_share)',
+                                    yField: 'MAX(system_cpu_usage.cpu_share)',
                                     title: "System",
                                 }
                             }
