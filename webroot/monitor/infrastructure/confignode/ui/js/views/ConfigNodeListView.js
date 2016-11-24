@@ -22,7 +22,7 @@ define(
                             elementId: 'config-node-carousel-view',
                             view: "CarouselView",
                             viewConfig: {
-                                pages: [{
+                                pages: [/*{
                                     page: {
                                         elementId: 'config-node-grid-stackview-0',
                                         view: "GridStackView",
@@ -131,12 +131,12 @@ define(
                                             }]
                                         }
                                     }
-                                },{
+                                },*/{
                                     page: {
-                                        elementId: 'config-node-grid-stackview-3',
+                                        elementId: 'config-node-grid-stackview-5',
                                         view: 'GridStackView',
                                         viewConfig: {
-                                            elementId: 'config-node-grid-stackview-3',
+                                            elementId: 'config-node-grid-stackview-5',
                                             gridAttr: {
                                                 defaultWidth: 6,
                                                 defaultHeight: 16

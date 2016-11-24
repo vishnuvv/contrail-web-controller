@@ -4,7 +4,7 @@
  */
 
 define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-color-mapping'],
-        function(_, ContrailView,  ControlNodeListModel, NodeColorMapping) {
+        function(_, ContrailView,  controlNodeListModelCfg, NodeColorMapping) {
     var ControlNodeViewConfig = function () {
         var nodeColorMapping = new NodeColorMapping(),
         colorFn = nodeColorMapping.getNodeColorMap;
@@ -13,7 +13,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
             'controlnode-sent-updates': function (){
                 return {
                     modelCfg: {
-                        modelId: ctwl.CONTROLNODE_SENT_UPDATES,
+                        modelId: 'CONTROLNODE_SENT_UPDATES_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.PeerStatsData.tx_update_stats',
@@ -47,7 +47,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
             'controlnode-received-updates': function (){
                 return {
                     modelCfg: {
-                        modelId: ctwl.CONTROLNODE_RECEIVED_UPDATES,
+                        modelId: 'CONTROLNODE_RECEIVED_UPDATES_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.PeerStatsData.rx_update_stats',
@@ -78,42 +78,10 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                     }
                 }
             },
-            'controlnode-cpu-share': function (){
-                return {
-                     modelCfg: {
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.ControlCpuState.cpu_info',
-                            select: 'T=, name, MAX(cpu_info.cpu_share), MAX(cpu_info.mem_res)',
-                            where:'cpu_info.module_id = contrail-control'
-                        }
-                    },
-                     viewCfg: {
-                         elementId : ctwl.CONTROLNODE_CPU_SHARE_LINE_CHART_ID,
-                         view: 'LineWithFocusChartView',
-                         viewConfig: {
-                             chartOptions: {
-                                yAxisLabel: 'Control CPU Share (%)',
-                                groupBy: 'name',
-                                yField: 'MAX(cpu_info.cpu_share)',
-                                colors: colorFn,
-                                title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                yFormatter : function(d){
-                                    return d;
-                                },
-                                xFormatter: xCPUChartFormatter,
-                             }
-                         }
-                     },
-                     itemAttr: {
-                          title: ctwl.CONTROL_NODE_CPU_SHARE
-                    }
-                }
-            },
             'controlnode-system-logs': function () {
                 return {
                     modelCfg: {
-                        modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
+                        modelId: 'CONTROLNODE_SYSTEM_LOGS_MODEL',
                         source:'LOG',
                         config: {
                             table_name: 'MessageTable',
@@ -138,7 +106,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
             'controlnode-objectbgprouter-logs': function () {
                 return {
                     modelCfg: {
-                        modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
+                        modelId: 'CONTROLNODE_OBJECT_BGPROUTER_MODEL',
                         source:'OBJECT',
                         config: {
                             table_name: 'ObjectBgpRouter',
@@ -163,7 +131,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
             'controlnode-objectxmpppeer-logs': function () {
                 return {
                     modelCfg: {
-                        modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
+                        modelId: 'CONTROLNODE_OBJECT_XMPPPEER_MODEL',
                         source:'OBJECT',
                         config: {
                             table_name: 'ObjectXmppPeerInfo',
@@ -188,7 +156,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
             'controlnode-objectbgppeer-logs': function () {
                 return {
                     modelCfg: {
-                        modelId: ctwl.CONTROLNODE_CONSOLE_LOGS_MODEL,
+                        modelId: 'CONTROLNODE_OBJECT_BGPPEER_MODEL',
                         source:'OBJECT',
                         config: {
                             table_name: 'ObjectBgpPeer',
@@ -213,11 +181,12 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
             'controlnode-memory': function (){
                 return {
                     modelCfg: {
+                        modelId:'CONTROLNODE_MEMORY_MODEL',
                         source:'STATTABLE',
                         config: {
-                            table_name: 'StatTable.ControlCpuState.cpu_info',
-                            select: 'T=, name, MAX(cpu_info.cpu_share), MAX(cpu_info.mem_res)',
-                            where:'cpu_info.module_id = contrail-control'
+                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                            select: 'T=, name, MAX(process_mem_cpu_usage.cpu_share), MAX(process_mem_cpu_usage.mem_res)',
+                            where:'process_mem_cpu_usage.__key = contrail-control'
                         }
                     },
                      viewCfg: {
@@ -227,7 +196,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                              chartOptions: {
                                 yAxisLabel: 'BGP Memory Usage',
                                 groupBy: 'name',
-                                yField: 'MAX(cpu_info.mem_res)',
+                                yField: 'MAX(process_mem_cpu_usage.mem_res)',
                                 colors: colorFn,
                                 title: ctwl.CONTROLNODE_SUMMARY_TITLE,
                                 margin: {
@@ -251,6 +220,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
             'controlnode-control': function (){
                 return {
                     modelCfg:{
+                        modelId:'CONTROLNODE_CPU_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -280,6 +250,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
             'controlnode-nodemgr': function (){
                 return {
                     modelCfg:{
+                        modelId: 'CONTROLNODE_NODEMGR_CPU_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -308,6 +279,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
             'controlnode-dns': function (){
                 return {
                     modelCfg:{
+                        modelId:'CONTROLNODE_DNS_CPU_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -336,6 +308,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
             'controlnode-named': function (){
                 return {
                     modelCfg:{
+                        modelId:'CONTROLNODEL_NAMED_CPU_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -362,11 +335,10 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-grid-view': function () {
-                var controlNodeListModel = new ControlNodeListModel();
                 return {
                     modelCfg:{
-                        modelId: ctwl.CONTROLNODE_GRID_VIEW,
-                        listModel: controlNodeListModel
+                        modelId: 'CONTROLNODE_LIST_MODEL',
+                        config: controlNodeListModelCfg
                     },
                     viewCfg: {
                         elementId : ctwl.CONTROLNODE_SUMMARY_GRID_ID,
@@ -374,7 +346,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                         view : "GridView",
                         viewConfig : {
                             elementConfig :
-                                getControlNodeSummaryGridConfig(controlNodeListModel, colorFn)
+                                getControlNodeSummaryGridConfig('controlnode-grid-view', colorFn)
                         }
                     },
                     itemAttr: {
@@ -383,7 +355,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
         };
-        function getControlNodeSummaryGridConfig(model, colorFn) {
+        function getControlNodeSummaryGridConfig(widgetId, colorFn) {
             var columns = [
                            {
                                field:"name",
@@ -393,7 +365,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                                       name:'name',
                                       statusBubble:true,
                                       rowData:dc,
-                                      tagColorMap:colorFn(_.pluck(model.getItems(), 'name'))});
+                                      tagColorMap:colorFn(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'))});
                                },
                                events: {
                                   onClick: onClickHostName

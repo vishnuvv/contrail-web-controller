@@ -2,17 +2,17 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-model', 'node-color-mapping'],
-        function(_, ContrailView, LegendView, ConfigNodeListModel, NodeColorMapping){
+define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-model', 'node-color-mapping'],
+        function(_, ContrailView, LegendView, configNodeListModelCfg, NodeColorMapping){
     var ConfigNodeViewConfig = function () {
         var nodeColorMapping = new NodeColorMapping(),
-        colorFn = nodeColorMapping.getNodeColorMap,
-        configNodeListModel = new ConfigNodeListModel();
+        colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
             'confignode-percentile-time-size': function (){
                 return {
                     modelCfg: {
+                        modelId: 'CONFIGNODE_PERCENTILE_TIMESIZE_MODEL',
                         source:'STATTABLE',
                         config: {
                             "table_name": "StatTable.VncApiStatsLog.api_stats",
@@ -40,6 +40,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-requests-served': function (){
                 return {
                     modelCfg: {
+                        modelId: 'CONFIGNODE_APIREQUESTS_MODEL',
                         source: 'STATTABLE',
                         config: {
                             table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -80,6 +81,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-response-time-size': function (){
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_APIREQUESTS_MODEL',
                         source: 'STATTABLE',
                         config: {
                             table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -162,6 +164,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-reads-writes-donut-chart': function (){
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_APIREQUESTS_MODEL',
                         source: 'STATTABLE',
                         config: {
                             table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -190,7 +193,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-grid-view': function () {
               return {
                   modelCfg: {
-                    listModel: configNodeListModel,
+                    modelId:'CONFIGNODE_LIST_MODEL',
+                    config:configNodeListModelCfg
                   },
                   viewCfg: {
                       elementId : ctwl.CONFIGNODE_SUMMARY_GRID_ID,
@@ -198,7 +202,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
                       view : "GridView",
                       viewConfig : {
                           elementConfig :
-                              getConfigNodeSummaryGridConfig(configNodeListModel, colorFn)
+                              getConfigNodeSummaryGridConfig('confignode-grid-view', colorFn)
                       }
                   },
                   itemAttr: {
@@ -209,6 +213,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-top-useragent': function (){
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_USERAGENT_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -238,6 +243,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-top-objecttypes': function (){
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_OBJECTTYPE_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -267,6 +273,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-top-remote-ip': function (){
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_REMOTEIP_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -296,6 +303,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-top-projects': function () {
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_PROJECTS_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -325,6 +333,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
               'confignode-process-contrail-schema': function () {
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_SCHEMA_CPU_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -354,6 +363,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-process-contrail-discovery': function () {
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_DISCOVERY_CPU_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -383,6 +393,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-process-contrail-api': function () {
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_API_CPU_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -412,6 +423,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-process-contrail-service-monitor': function () {
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_SERVICE_MONITOR_CPU_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -441,6 +453,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-process-contrail-device-manager': function () {
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_DEVICE_MANAGER_CPU_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -470,6 +483,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-process-ifmap': function () {
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_IFMAP_CPU_MODEL',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -499,20 +513,36 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
             'confignode-objecttable-logs': function () {
                 return {
                     modelCfg: {
+                        modelId:'CONFIGNODE_OBJECTTABLE_MODEL',
                         source:'OBJECT',
                         config: {
                             table_name: 'ConfigObjectTable',
                             table_type: 'OBJECT',
                             select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
-                            from_time_utc: new Date('2016/11/17 12:45:18').getTime(),
-                            to_time_utc:new Date('2016/11/17 13:35:18').getTime(),
+                            from_time_utc: new Date('2016/11/17 13:20:18').getTime(),
+                            to_time_utc:new Date('2016/11/17 13:25:18').getTime(),
                             where:'Messagetype = VncApiConfigLog',
                             parser: function(data) {
                                 var retData;
+                                console.time('formatXML2JSON')
                                 retData = $.map(data,function(val,idx) {
-                                    var objectLogJSON = cowu.formatXML2JSON(val['ObjectLog']);
-                                    return $.extend(true,{},{MessageTS:val['MessageTS'],Source:val['Source']},_.result(objectLogJSON,'api_log.VncApiCommon',{}));
+                                    var retObj = {};
+					                var objectType = cowu.getXPathValuesFromXmlDoc(val['ObjectLog'],{object_type: '/VncApiConfigLog/api_log/VncApiCommon/object_type',
+                                                                                             user: '/VncApiConfigLog/api_log/VncApiCommon/user',
+                                                                                             useragent: '/VncApiConfigLog/api_log/VncApiCommon/useragent',
+                                                                                             operation_type: '/VncApiConfigLog/api_log/VncApiCommon/operation_type',
+                                                                                             remote_ip: '/VncApiConfigLog/api_log/VncApiCommon/remote_ip',
+                                                                                             project: '/VncApiConfigLog/api_log/VncApiCommon/project_name',
+                                                                                             body: '/VncApiConfigLog/api_log/VncApiCommon/body',
+                                                                                             domain: '/VncApiConfigLog/api_log/VncApiCommon/domain_name'});
+                                    retObj['MessageTS'] = val['MessageTS'];
+                                    retObj['Source'] = val['Source'];
+                                    _.forOwn(objectType,function(val,key) {
+                                        retObj[key] = val;
+                                    });
+                                    return retObj;
                                 })
+                                console.timeEnd('formatXML2JSON')
                                 return retData;
                             }
                         }
@@ -531,7 +561,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
                 }
             },
         };
-        function getConfigNodeSummaryGridConfig(model, colorFn) {
+        function getConfigNodeSummaryGridConfig(widgetId, colorFn) {
             var columns = [
                {
                    field:"name",
@@ -542,7 +572,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-confignode-
                                       name:'name',
                                       statusBubble:true,
                                       rowData:dc,
-                                      tagColorMap:colorFn(_.pluck(model.getItems(), 'name'))
+                                      tagColorMap:colorFn(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'))
                                });
                    },
                    events: {

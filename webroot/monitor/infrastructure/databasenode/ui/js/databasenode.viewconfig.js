@@ -6,8 +6,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
         function(_, ContrailView, LegendView, DatabaseNodeListModel, NodeColorMapping){
     var DatabseNodeViewConfig = function () {
         var nodeColorMapping = new NodeColorMapping(),
-        colorFn = nodeColorMapping.getNodeColorMap,
-        databaseNodeListModel = new DatabaseNodeListModel();
+        colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
             'databsenode-percentile-bar-view': function (){
