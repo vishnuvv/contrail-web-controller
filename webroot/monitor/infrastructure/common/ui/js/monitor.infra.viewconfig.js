@@ -12,6 +12,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                 'system-cpu-share': function () {
                     return {
                         modelCfg: {
+                            modelId:'SYSTEM_CPU_MODEL',
                             source: 'STATTABLE',
                             config: {
                                 "table_name": "StatTable.NodeStatus.system_mem_cpu_usage",
@@ -39,6 +40,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                 'system-memory-usage': function () {
                     return {
                         modelCfg: {
+                            modelId:'SYSTEM_MEMORY_MODEL',
                             source: 'STATTABLE',
                             config: {
                                 "table_name": "StatTable.NodeStatus.system_mem_usage",
@@ -70,6 +72,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                     return {
                         modelCfg: {
                             source: 'STATTABLE',
+                            modelId:'SYSTEM_DISK_USAGE_MODEL',
                             config: {
                                 "table_name": "StatTable.NodeStatus.disk_usage_info",
                                 "select": "T=, Source, MAX(disk_usage_info.partition_space_used_1k)",

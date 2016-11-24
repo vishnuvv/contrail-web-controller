@@ -90,6 +90,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              "vrouter-flow-rate-area-chart" :  function (){
               return   {
                     modelCfg: {
+                        modelId:'VROUTER_FLOWRATE_MODEL',
                         source:"STATTABLE",
                         config: [
                             {
@@ -131,7 +132,10 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              },
              "vrouter-cpu-mem-scatter-chart" : function(){
                  return {
-                     modelCfg: {listModel:vRouterUIListModel},
+                     modelCfg: {
+                         listModel: vRouterUIListModel
+                     },
+                     modelId:'VROUTER_CPU_MEM_MODEL',
                      viewCfg: {
                          elementId : 'vrouter-cpu-mem-chart',
                          view:"ZoomScatterChartView",
@@ -161,6 +165,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              "vrouter-bandwidth-percentile-chart" : function() {
                  return {
                      modelCfg: {
+                        modelId:'VROUTER_BANDWIDTH_PERCENTILE_MODEL',
                         source:"STATTABLE",
                         config: [
                             {
@@ -208,6 +213,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              "vrouter-system-cpu-percentiles-chart" : function() {
                  return {
                      modelCfg: {
+                        modelId:'VROUTER_SYSTEM_CPU_PERCENTILE_MODEL',
                          source:"STATTABLE",
                          config :{
                              table_name: 'StatTable.NodeStatus.system_cpu_usage',
@@ -244,6 +250,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              "vrouter-system-memory-percentiles-chart" : function() {
                  return {
                      modelCfg: {
+                         modelId:'VROUTER_SYSTEM_MEMORY_PERCENTILE_MODEL',
                          source:"STATTABLE",
                          config: {
                              table_name: 'StatTable.NodeStatus.system_mem_usage',
@@ -283,7 +290,9 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              },
              "vrouter-summary-grid" : function() {
                  return {
-                     modelCfg: {listModel: vRouterUIListModel},
+                     modelCfg: {
+                         listModel: vRouterUIListModel
+                     },
                      viewCfg: {
                          elementId: ctwl.VROUTER_SUMMARY_GRID_ID,
                          class:"y-overflow-scroll",
@@ -301,7 +310,9 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              },
              "vrouter-crossfilters-chart" : function() {
                  return {
-                     modelCfg: {listModel: vRouterUIListModel},
+                     modelCfg: {
+                         listModel: vRouterUIListModel
+                     },
                      viewCfg: {
                          elementId: ctwl.VROUTER_SUMMARY_CROSSFILTER_ID,
                          title: ctwl.VROUTER_SUMMARY_TITLE,
@@ -333,7 +344,10 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              },
              "vrouter-system-cpu-mem-chart" : function() {
                  return {
-                     modelCfg: {listModel: vRouterListModel},
+                     modelCfg: {
+                         modelId:'VROUTER_LIST_MODEL',
+                         listModel: vRouterListModel
+                     },
                      viewCfg: {
                          elementId : 'vrouter-system-cpu-mem-chart',
                          view: 'ZoomScatterChartView',
@@ -387,7 +401,10 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              },
              "vrouter-vn-int-inst-chart" : function() {
                  return {
-                     modelCfg: {listModel: vRouterListModel},
+                     modelCfg: {
+                         modelId:'VROUTER_VN_INST_MODEL',
+                         listModel: vRouterListModel
+                     },
                      viewCfg: {
                          elementId : 'vrouter-vn-int-chart',
                          view: 'ZoomScatterChartView',
@@ -427,6 +444,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              "vrouter-agent-cpu-percentiles-chart" : function() {
                  return {
                      modelCfg: {
+                        model:'VROUTER_CPU_PERCENTILE_MODEL',
                          source:"STATTABLE",
                          config:{
                              table_name: 'StatTable.ComputeCpuState.cpu_info',
@@ -460,6 +478,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              "vrouter-agent-mem-usage-percentiles-chart" : function() {
                  return {
                      modelCfg:{
+                        modelId:'VROUTER_MEM_PERCENTIL_MODEL',
                          source:"STATTABLE",
                          config:{
                              table_name: 'StatTable.ComputeCpuState.cpu_info',
@@ -494,6 +513,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
              "vrouter-active-flows-percentiles-chart" : function() {
                  return {
                      modelCfg: {
+                        modelId:'VROUTER_ACTIVE_FLOWS_PERCENTILE_MODEL',
                          source:"STATTABLE",
                          config:{
                              table_name: 'StatTable.VrouterStatsAgent.flow_rate',
