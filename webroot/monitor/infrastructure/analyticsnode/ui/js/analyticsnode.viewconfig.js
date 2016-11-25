@@ -169,7 +169,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                     var options = {};
                                     var nodes = currObj;
                                     options['tooltipContents'] = [
-                                          {label:'Node', value: nodes.label},
+                                          {label:'', value: nodes.label},
+                                          {label:nodes.label, value: ''},
                                           {label:'Messages', value:$.isNumeric(currObj['y']) ? parseInt(currObj['y'])  : currObj['y']},
                                           {label:'Bytes(KB)', value:Math.round(currObj['x'])}
                                       ];
@@ -649,6 +650,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                    name:"95% - Messages",
                    minWidth:200,
                    formatter:function(r,c,v,cd,dc) {
+                    if(typeof dc['percentileMessages'] != 'undefined' || typeof dc['percentileSize'] != 'undefined'){
                        return '<span><b>'+"Count: "+
                                '</b></span>' +
                               '<span>' +
@@ -656,6 +658,16 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                '</b></span>' +
                               '<span>' +
                               (dc['percentileSize']) + '</span>';
+                       }
+                    else{
+                        return '<span><b>'+"Count: "+
+                        '</b></span>' +
+                       '<span>' +
+                       '-' + '</span>'+'<span><b>'+", Size: "+
+                        '</b></span>' +
+                       '<span>' +
+                       '-' + '</span>';
+                    }
                    }
                }
             ];
