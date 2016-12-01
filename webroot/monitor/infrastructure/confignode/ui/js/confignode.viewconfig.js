@@ -239,10 +239,10 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 limit: 5,
                                 yField: 'COUNT(api_stats)',
                             }
+                        }
                     },
                     itemAttr: {
                         title: ctwl.CONFIG_NODE_PROCESS_WISE_USAGE,
-                        }
                     }
                 }
             },
@@ -270,10 +270,10 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 limit: 5,
                                 yField: 'COUNT(api_stats)',
                             }
+                        }
                     },
                     itemAttr: {
                         title : ctwl.CONFIG_NODE_OBJECT_USAGE_TITLE
-                        }
                     }
                 }
             },
@@ -301,10 +301,10 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 limit: 5,
                                 yField: 'COUNT(api_stats)',
                             }
+                        }
                     },
                     itemAttr: {
                         title: ctwl.CONFIG_NODE_CLIENT_WISE_USAGE,
-                        }
                     }
                 }
             },
@@ -332,10 +332,10 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 limit: 5,
                                 yField: 'COUNT(api_stats)',
                             }
+                        }
                     },
                     itemAttr: {
                         title: ctwl.CONFIG_NODE_PROJECT_WISE_USAGE,
-                          }
                       }
                   }
               },
@@ -362,11 +362,11 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.CONFIGNODE_SUMMARY_TITLE,
+                                }
                             }
                         },
                         itemAttr: {
                             title: ctwl.CONFIG_NODE_SCHEMA_CPU_SHARE,
-                        }
                     }
                 }
             },
@@ -424,11 +424,11 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.CONFIGNODE_SUMMARY_TITLE,
+                                }
                             }
                         },
                         itemAttr: {
                             title: ctwl.CONFIG_NODE_API_CPU_SHARE,
-                        }
                     }
                 }
             },
@@ -456,10 +456,10 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                             }
-                        },
-                        itemAttr: {
-                            title: ctwl.CONFIG_NODE_SERVICE_MONITOR_CPU_SHARE,
                         }
+                    },
+                    itemAttr: {
+                            title: ctwl.CONFIG_NODE_SERVICE_MONITOR_CPU_SHARE,
                     }
                 }
             },
@@ -488,9 +488,9 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                             }
                         },
+                    },
                         itemAttr: {
                             title: ctwl.CONFIG_NODE_DEVICE_MANAGER_CPU_SHARE,
-                        }
                     }
                 }
             },
@@ -517,11 +517,11 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.CONFIGNODE_SUMMARY_TITLE,
+                                }
                             }
                         },
                         itemAttr: {
                             title: ctwl.CONFIG_NODE_IFMAP_CPU_SHARE,
-                        }
                     }
                 }
             }
