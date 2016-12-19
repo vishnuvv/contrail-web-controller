@@ -131,6 +131,21 @@ define(
                                             }]
                                         }
                                     }
+                                },{
+                                    page: {
+                                        elementId: 'config-node-grid-stackview-5',
+                                        view: 'GridStackView',
+                                        viewConfig: {
+                                            elementId: 'config-node-grid-stackview-5',
+                                            gridAttr: {
+                                                defaultWidth: 6,
+                                                defaultHeight: 16
+                                            },
+                                            widgetCfgList: [{
+                                                id: 'confignode-objecttable-logs'
+                                            }]
+                                        }
+                                    }
                                 }]
                             }
                         }]

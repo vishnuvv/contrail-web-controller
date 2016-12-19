@@ -562,7 +562,57 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         title: ctwl.CONFIG_NODE_IFMAP_CPU_SHARE,
                     }
                 }
-            }
+            },
+            'confignode-objecttable-logs': function () {
+                return {
+                    modelCfg: {
+                        modelId:'CONFIGNODE_OBJECTTABLE_MODEL',
+                        source:'OBJECT',
+                        config: {
+                            table_name: 'ConfigObjectTable',
+                            table_type: 'OBJECT',
+                            select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
+                            from_time_utc: new Date('2016/12/17 13:20:18').getTime(),
+                            to_time_utc:new Date('2016/12/17 13:25:18').getTime(),
+                            where:'Messagetype = VncApiConfigLog',
+                            parser: function(data) {
+                                var retData;
+                                console.time('formatXML2JSON')
+                                retData = $.map(cowu.getValueByJsonPath(data,'data',[]),function(val,idx) {
+                                    var retObj = {};
+					                var objectType = cowu.getXPathValuesFromXmlDoc(val['ObjectLog'],{object_type: '/VncApiConfigLog/api_log/VncApiCommon/object_type',
+                                                                                             user: '/VncApiConfigLog/api_log/VncApiCommon/user',
+                                                                                             useragent: '/VncApiConfigLog/api_log/VncApiCommon/useragent',
+                                                                                             operation_type: '/VncApiConfigLog/api_log/VncApiCommon/operation_type',
+                                                                                             remote_ip: '/VncApiConfigLog/api_log/VncApiCommon/remote_ip',
+                                                                                             project: '/VncApiConfigLog/api_log/VncApiCommon/project_name',
+                                                                                             body: '/VncApiConfigLog/api_log/VncApiCommon/body',
+                                                                                             domain: '/VncApiConfigLog/api_log/VncApiCommon/domain_name'});
+                                    retObj['MessageTS'] = val['MessageTS'];
+                                    retObj['Source'] = val['Source'];
+                                    _.forOwn(objectType,function(val,key) {
+                                        retObj[key] = val;
+                                    });
+                                    return retObj;
+                                })
+                                console.timeEnd('formatXML2JSON')
+                                return retData;
+                            }
+                        }
+                    },
+                    viewCfg: {
+                        view : "eventDropsView",
+                        viewConfig: {
+                            groupBy: 'object_type',
+                            title:'Configuration History'
+                        }
+                    },
+                    itemAttr: {
+                        title: ctwl.CONTROLNODE_CONSOLE_LOGS,
+                        width: 2
+                    }
+                }
+            },
         };
         function getConfigNodeSummaryGridConfig(widgetId, colorFn) {
             var columns = [
