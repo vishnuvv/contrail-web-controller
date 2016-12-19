@@ -22,7 +22,48 @@ define(
                             elementId: 'config-node-carousel-view',
                             view: "CarouselView",
                             viewConfig: {
-                                pages: [{
+                                pages: [
+                                {
+									page: {
+                                        elementId: 'config-node-grid-stackview-0',
+                                        view: "MonitorInfraDashboardView",
+                                        // viewPathPrefix: 'monitor/infrastructure/dashboard/ui/js/views/',
+                                        viewConfig: {
+                                        }
+                                    }
+                                },{
+                                    page: {
+                                        elementId: 'dashboard-grid-stackview-1',
+                                        view: 'GridStackView',
+                                        viewConfig: {
+                                            elementId: 'dashboard-grid-stackview-1',
+                                            gridAttr: {
+                                                defaultWidth: 3.5,
+                                                defaultHeight: 7
+                                            },
+                                            widgetCfgList: [{
+                                                id: 'system-cpu-percentiles'
+                                            }, {
+                                                id: 'system-memory-percentiles'
+                                            }, {
+                                                id: 'disk-usage-percentiles'
+                                            }, {
+                                                id: 'vrouter-bandwidth-percentile-chart'
+                                            }, {
+                                                id: 'analyticsnode-sandesh-message-info'
+                                            }, {
+                                                id: 'confignode-requests-served'
+                                            }, {
+                                                id: 'confignode-response-time-size'
+                                            }, {
+                                                id: 'controlnode-sent-updates'
+                                            }, {
+                                                id: 'controlnode-received-updates'
+                                            }]
+                                        }
+                                    }
+                                }
+                                /*{
                                     page: {
                                         elementId: 'config-node-grid-stackview-0',
                                         view: "GridStackView",
@@ -132,6 +173,22 @@ define(
                                         }
                                     }
                                 }]
+                                },{
+                                    page: {
+                                        elementId: 'config-node-grid-stackview-5',
+                                        view: 'GridStackView',
+                                        viewConfig: {
+                                            elementId: 'config-node-grid-stackview-5',
+                                            gridAttr: {
+                                                defaultWidth: 6,
+                                                defaultHeight: 16
+                                            },
+                                            widgetCfgList: [{
+                                                id: 'confignode-objecttable-logs'
+                                            }]
+                                        }
+                                    }
+                                }*/]
                             }
                         }]
                     }]
