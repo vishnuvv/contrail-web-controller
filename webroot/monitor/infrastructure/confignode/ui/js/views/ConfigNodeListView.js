@@ -22,7 +22,18 @@ define(
                             elementId: 'config-node-carousel-view',
                             view: "CarouselView",
                             viewConfig: {
-                                pages: [{
+                                pages: [
+                                {
+									page: {
+                                        elementId: 'config-node-grid-stackview-0',
+                                        view: "MonitorInfraDashboardView",
+                                        // viewPathPrefix: 'monitor/infrastructure/dashboard/ui/js/views/',
+                                        viewConfig: {
+                                        }
+                                    }
+                                }
+
+                                /*{
                                     page: {
                                         elementId: 'config-node-grid-stackview-0',
                                         view: "GridStackView",
@@ -146,7 +157,7 @@ define(
                                             }]
                                         }
                                     }
-                                }]
+                                }*/]
                             }
                         }]
                     }]
