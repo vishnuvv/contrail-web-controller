@@ -367,6 +367,8 @@ define([
 
 
         //Monitor Infra common
+        this.DASHBOARD_VIEWPATH_PREFIX =
+            'monitor/infrastructure/dashboard/ui/js/views/';
         this.MONITOR_INFRA_VIEW_PATH = 'monitor/infrastructure/common/ui/js/views/';
         this.CPU_SHARE_PERCENTAGE = "CPU Share % (in 3 mins)";
         this.VROUTER_DASHBOARD_CHART_ID = 'vrouter-dashboard-chart';
