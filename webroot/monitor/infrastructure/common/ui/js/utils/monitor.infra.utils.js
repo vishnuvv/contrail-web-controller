@@ -2438,6 +2438,24 @@ define([
             });
             return ret;
         };
+        self.getYFieldsForPercentile = function(field, percentiles) {
+            if (percentiles != null) {
+                var yFields = [];
+                if (!$.isArray(percentiles)) {
+                    percentiles = [percentiles];
+                }
+                $.each(percentiles, function (idx, obj) {
+                    yFields.push('PERCENTILES('+field+');'+obj);
+                })
+                return yFields;
+            } else {
+                return [
+                    'PERCENTILES('+field+');95',
+                    'PERCENTILES('+field+');50',
+                    'PERCENTILES('+field+');05'
+                ];
+            }
+        }
     };
     return MonitorInfraUtils;
 });

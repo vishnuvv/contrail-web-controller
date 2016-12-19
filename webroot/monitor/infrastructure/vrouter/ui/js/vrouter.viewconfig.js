@@ -285,7 +285,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
 //                                 yField: 'percentileValue',
                                  yAxisLabel: ctwl.VROUTER_SYSTEM_CPU_PERCENTILES,
 //                                 groupBy:'Source',
-                                 yFields: getYFieldsForPercentile('system_cpu_usage.cpu_share')
+                                 yFields: monitorInfraUtils.getYFieldsForPercentile('system_cpu_usage.cpu_share')
                              }
                          }
                      },
@@ -341,7 +341,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                                  subTitle:"Max Avg Min Memory Utilization",
 //                                 groupBy:'Source',
 //                                 yField: 'percentileValue',
-                                 yFields: getYFieldsForPercentile('system_mem_usage.used'),
+                                 yFields: monitorInfraUtils.getYFieldsForPercentile('system_mem_usage.used'),
                                  yFormatter: function(y) {
                                      return formatBytes(y * 1024, true, null, null,
                                              null);
@@ -539,7 +539,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                                  colors: cowc.THREE_NODE_COLOR,
                                  xAxisLabel: '',
                                  yAxisLabel: ctwl.VROUTER_AGENT_CPU_PERCENTILES,
-                                 yFields: getYFieldsForPercentile('process_mem_cpu_usage.cpu_share'),
+                                 yFields: monitorInfraUtils.getYFieldsForPercentile('process_mem_cpu_usage.cpu_share'),
                                  yFormatter: function(y) {
                                      return y;
                                  }
@@ -575,7 +575,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                                  colors: cowc.THREE_NODE_COLOR,
                                  xAxisLabel: '',
                                  yAxisLabel: ctwl.VROUTER_AGENT_MEMORY_PERCENTILES,
-                                 yFields: getYFieldsForPercentile('process_mem_cpu_usage.mem_res'),
+                                 yFields: monitorInfraUtils.getYFieldsForPercentile('process_mem_cpu_usage.mem_res'),
                                  yFormatter: function(y) {
                                      return formatBytes(y * 1024, true, null, null,
                                              null);
@@ -611,7 +611,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                                  colors: cowc.THREE_NODE_COLOR,
                                  xAxisLabel: '',
                                  yAxisLabel: 'Active Flows Percentiles',
-                                 yFields: getYFieldsForPercentile('flow_rate.active_flows')
+                                 yFields: monitorInfraUtils.getYFieldsForPercentile('flow_rate.active_flows')
                              }
                          }
                      },
@@ -626,14 +626,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
         self.getViewConfig = function(id) {
             return self.viewConfig[id]();
         };
-        function getYFieldsForPercentile (field) {
-            return [
-                        'PERCENTILES('+field+');95',
-                        'PERCENTILES('+field+');50',
-                        'PERCENTILES('+field+');05'
-                    ];
-        }
-
+        
         function parseDataForFlowsDrops (response,field) {
             var ret = [];
             var data = getValueByJsonPath(response,'data',[]);
