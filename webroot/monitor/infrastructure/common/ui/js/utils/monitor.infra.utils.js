@@ -2499,6 +2499,14 @@ define([
                 p: getValueByJsonPath(options,'hash')
             });
         }
+        self.getYFieldsForPercentile = function(field) {
+            return [
+                    'PERCENTILES('+field+');95',
+                    'PERCENTILES('+field+');50',
+                    'PERCENTILES('+field+');05'
+                ];
+        }
+
     };
     return MonitorInfraUtils;
 });

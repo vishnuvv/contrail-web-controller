@@ -34,6 +34,34 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                         }
                     };
                 },
+                'system-cpu-percentiles': function () {
+                    return {
+                        modelCfg: {
+                            source: 'STATTABLE',
+                            config: {
+                                "table_name": "StatTable.NodeStatus.system_cpu_usage",
+                                "select": "T=, PERCENTILES(system_cpu_usage.cpu_share)"
+                            }
+                        },
+                        viewCfg:{
+                            elementId : monitorInfraConstants.SYSTEM_CPU_SHARE_LINE_CHART_ID,
+                            view:'LineWithFocusChartView',
+                            viewConfig: {
+                                parseFn : cowu.parsePercentilesData,
+                                chartOptions: {
+                                    yFormatter: d3.format('.2f'),
+                                    subTitle:"Max Avg Min CPU Utilization",
+                                    yAxisLabel: 'System CPU Share (%)',
+                                    colors: cowc.THREE_NODE_COLOR,
+                                    yFields: monitorInfraUtils.getYFieldsForPercentile('system_cpu_usage.cpu_share'),
+                                    title: "System",
+                                }
+                            }
+                        },itemAttr: {
+                            title: ctwl.SYSTEM_CPU_SHARE
+                        }
+                    };
+                },
                 'system-memory-usage': function () {
                     return {
                         modelCfg: {
@@ -63,6 +91,71 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                             title: ctwl.SYSTEM_MEMORY_USED
                         }
                     };
+                },
+                'system-memory-percentiles': function () {
+                    return {
+                        modelCfg: {
+                            source: 'STATTABLE',
+                            config: {
+                                "table_name": "StatTable.NodeStatus.system_mem_usage",
+                                "select": "T=, PERCENTILES(system_mem_usage.used)"
+                            }
+                        },
+                        viewCfg: {
+                            elementId : monitorInfraConstants.SYSTEM_MEMORY_USAGE_LINE_CHART_ID,
+                            view:'LineWithFocusChartView',
+                            viewConfig: {
+                                parseFn : cowu.parsePercentilesData,
+                                chartOptions: {
+                                    //yFormatter: d3.format('.2f'),
+                                    subTitle:"Max Avg Min Memory Utilization",
+                                    yAxisLabel: ctwl.SYSTEM_MEMORY_USED,
+                                    colors: cowc.THREE_NODE_COLOR,
+                                    yFields: monitorInfraUtils.getYFieldsForPercentile('system_mem_usage.used'),
+                                    title: "System",
+                                    yFormatter : function(d){
+                                        return formatBytes(d * 1024, true);
+                                   }
+                                }
+                            }
+                        },itemAttr: {
+                            title: ctwl.SYSTEM_MEMORY_USED
+                        }
+                    }
+                },
+                'disk-usage-percentiles': function (){
+                    return {
+                        modelCfg: {
+                            source: 'STATTABLE',
+                            config: {
+                                "table_name": "StatTable.NodeStatus.disk_usage_info",
+                                "select": "T=, PERCENTILES(disk_usage_info.partition_space_used_1k)",
+                            }
+                        },
+                        viewCfg: {
+                            elementId : "databsenode_dbusage_chart",
+                            view:'LineWithFocusChartView',
+                            viewConfig: {
+                                parseFn : cowu.parsePercentilesData,
+                                chartOptions: {
+                                    title: ctwl.DISK_USAGE,
+                                    subTitle:"Max Avg Min Disk Utilization",
+                                    xAxisLabel: '',
+                                    yAxisLabel: ctwl.DISK_USAGE,
+                                    colors: cowc.THREE_NODE_COLOR,
+                                    yFields: monitorInfraUtils.getYFieldsForPercentile('disk_usage_info.partition_space_used_1k'),
+                                    yFormatter : function(d){
+                                        return formatBytes(d * 1024, true);
+                                   },margin: {
+                                       left: 62
+                                   }
+                                }
+                            }
+                        },
+                        itemAttr: {
+                            title: ctwl.DISK_USAGE
+                        }
+                    }
                 },
                 'disk-usage-info': function (){
                     return {

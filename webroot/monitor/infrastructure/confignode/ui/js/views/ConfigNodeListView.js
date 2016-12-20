@@ -29,6 +29,7 @@ define(
                                         view: "MonitorInfraDashboardView",
                                         // viewPathPrefix: 'monitor/infrastructure/dashboard/ui/js/views/',
                                         viewConfig: {
+                                            elementId: 'config-node-grid-stackview-0',
                                         }
                                     }
                                 },{
@@ -172,6 +173,7 @@ define(
                                             }]
                                         }
                                     }
+                                    
                                 }]
                                 },{
                                     page: {
