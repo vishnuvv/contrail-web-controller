@@ -5,10 +5,12 @@
 define(
        [ 'underscore' ],
        function(_) {
-            var NodeColorMapping = function() {
-                var lastUpdated;
-                var regionList = [];
-                this.getNodeColorMap = function (hostNames, resetColor) {
+		var lastUpdated;
+		var regionList = [];    
+		var NodeColorMapping = {
+                getNodeColorMap: function (hostNames, resetColor, type) {
+                    var nodeColorMap = {},
+                        lastUpdated;
                     var region = contrail.getCookie('region');
                     if(region == null) {
                         region = "####Default";
@@ -18,9 +20,11 @@ define(
                             nodeColorMap:{}
                         }
                     };
+                    if(regionList[region]['nodeColorMap'][type] == null)
+                        regionList[region]['nodeColorMap'][type] = {};
                     var self = this,
                         colors = cowc.FIVE_NODE_COLOR,
-                        assignedColors = _.values(regionList[region].nodeColorMap);
+                        assignedColors = _.values(regionList[region]['nodeColorMap'][type]);
                     if (!$.isArray(hostNames)) {
                         hostNames = [hostNames];
                     }
@@ -35,12 +39,12 @@ define(
                     // color settings then we need to overwrite the existing
                     // colors in nodecolormap
                     if (resetColor) {
-                        var existingNodes = _.keys(regionList[region].nodeColorMap),
+                        var existingNodes = _.keys(regionList[region].nodeColorMap[type]),
                             existingNodesLen = existingNodes.length;
                         //TODO overwrite the colors with the cookie colors
                         colors = cowc.FIVE_NODE_COLOR;
                         for (var i = 0; i < existingNodesLen; i++) {
-                            regionList[region].nodeColorMap[existingNodes[i]] = cowu.ifNull(colors[i], cowc.DEFAULT_COLOR);
+							regionList[region].nodeColorMap[type][existingNodes[i]] = cowu.ifNull(colors[i], cowc.DEFAULT_COLOR);
                         }
                     }
                     //if hostname doesn't exists in nodeColorMap
@@ -49,14 +53,14 @@ define(
                     //keys = _.sortBy(keys);
                     var i = 0, unassignedColors = _.difference(colors, assignedColors);
                     $.each(keys, function (idx, obj) {
-                        if (regionList[region].nodeColorMap[obj] == null) {
-                            regionList[region].nodeColorMap[obj] = unassignedColors[i] != null ? unassignedColors[i]:
+                        if (regionList[region].nodeColorMap[type][obj] == null) {
+                        	regionList[region].nodeColorMap[type][obj] = unassignedColors[i] != null ? unassignedColors[i]:
                                 ($.isArray(cowc.DEFAULT_COLOR) ? cowc.DEFAULT_COLOR[0] : cowc.DEFAULT_COLOR);
                             i++;
                         }
                     });
-                    return regionList[region].nodeColorMap;
-                };
+					return regionList[region].nodeColorMap[type];
+                }
             };
             return NodeColorMapping;
-       });
+});
