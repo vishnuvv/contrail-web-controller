@@ -30,8 +30,8 @@ define(
                                                  viewConfig: {
                                                      elementId : 'database-node-grid-stackview-0',
                                                      gridAttr : {
-                                                         defaultWidth : 6,
-                                                         defaultHeight : 8
+                                                         widthMultiplier : 6,
+                                                         heightMultiplier : 8
                                                      },
                                                      widgetCfgList: [
                                                          {id:'databsenode-percentile-bar-view'},
@@ -56,8 +56,8 @@ define(
                                                  viewConfig: {
                                                      elementId : 'database-node-grid-stackview-1',
                                                      gridAttr : {
-                                                         defaultWidth : 6,
-                                                         defaultHeight : 8
+                                                         widthMultiplier : 6,
+                                                         heightMultiplier : 8
                                                      },
                                                      widgetCfgList: [
                                                          {id:'databasenode-zookeeper'},

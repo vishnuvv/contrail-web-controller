@@ -717,7 +717,7 @@ define(
                     });
                     return parsedData;
                 };
-                self.percentileConfigNodeNodeSummaryChart = function (chartModel) {
+                self.percentileConfigNodeSummaryChart = function (chartModel) {
                     var percentileSizeobjVal = getValueByJsonPath(chartModel, 'data;0;PERCENTILES(api_stats.response_size);95', '-');
                     var percentileTimeobjVal = getValueByJsonPath(chartModel, 'data;0;PERCENTILES(api_stats.response_time_in_usec);95', '-');
                     console.log(percentileTimeobjVal);

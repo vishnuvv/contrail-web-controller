@@ -46,8 +46,8 @@ define(
                                           viewConfig: {
                                               elementId: 'grid-stack-view-page-1',
                                               gridAttr: {
-                                                  defaultWidth: 12,
-                                                  defaultHeight: 10
+                                                  widthMultiplier: 12,
+                                                  heightMultiplier: 10
                                               },
                                               widgetCfgList: [
                                                   {id:'vrouter-flow-rate-area-chart'},
@@ -82,8 +82,8 @@ define(
                                           viewConfig: {
                                               elementId: 'grid-stack-view-page-2',
                                               gridAttr: {
-                                                  defaultWidth: 12,
-                                                  defaultHeight: 10
+                                                  widthMultiplier: 12,
+                                                  heightMultiplier: 10
                                               },
                                               widgetCfgList: [
                                                   {id:'vrouter-system-cpu-mem-chart'},

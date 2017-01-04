@@ -32,8 +32,8 @@ define(
                                                          viewConfig : {
                                                             elementId : 'analytics-node-grid-stackview-0',
                                                             gridAttr : {
-                                                                defaultWidth : 6,
-                                                                defaultHeight : 8
+                                                                widthMultiplier : 6,
+                                                                heightMultiplier : 8
                                                             },
                                                             widgetCfgList: [
                                                                 {id:'analyticsnode-percentile-count-size'},
@@ -52,8 +52,8 @@ define(
                                                          viewConfig: {
                                                              elementId: 'analytics-node-grid-stackview-1',
                                                              gridAttr: {
-                                                                 defaultWidth: 6,
-                                                                 defaultHeight: 8
+                                                                 widthMultiplier: 6,
+                                                                 heightMultiplier: 8
                                                              },
                                                              widgetCfgList: [
                                                                 {id:'analyticsnode-top-messagetype'},
@@ -71,8 +71,8 @@ define(
                                                          viewConfig: {
                                                             elementId: 'analytics-node-grid-stackview-2',
                                                             gridAttr: {
-                                                                defaultWidth: 6,
-                                                                defaultHeight: 8
+                                                                widthMultiplier: 6,
+                                                                heightMultiplier: 8
                                                             },
                                                             widgetCfgList: [
                                                             {id:'analyticsnode-qe-cpu-share'},
@@ -90,8 +90,8 @@ define(
                                                          viewConfig: {
                                                              elementId: 'analytics-node-grid-stackview-3',
                                                              gridAttr: {
-                                                                 defaultWidth: 6,
-                                                                 defaultHeight: 8
+                                                                 widthMultiplier: 6,
+                                                                 heightMultiplier: 8
                                                              },
                                                              widgetCfgList: [
                                                                 {id:'analyticsnode-contrail-topology-cpu-share'},

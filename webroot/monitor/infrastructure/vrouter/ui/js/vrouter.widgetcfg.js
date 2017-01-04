@@ -240,33 +240,13 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                     }
                  }
              },
-             "vrouter-system-cpu-percentiles-chart" : function(config) {
-                 return {
+             "vrouter-system-cpu-percentiles-chart" : {
+                     baseModel:'SYSTEM_CPU_PERCENTILES_MODEL',
                      modelCfg: {
-                        modelId:'VROUTER_SYSTEM_CPU_PERCENTILE_MODEL',
-                         source:"STATTABLE",
-                         config : [
-                                   monitorInfraUtils.getNodeListQueryConfig(config),
-                                   {
-                                       "table_name": "StatTable.NodeStatus.system_cpu_usage",
-                                       "select": "T=, PERCENTILES(system_cpu_usage.cpu_share)",
-//                                       "primary_depends" : true,
-                                       "getAjaxConfig": function(primaryResponse, postData) {
-                                           //Modify post data as required
-                                           var whereClause = monitorInfraUtils.getWhereClauseForSystemStats(primaryResponse);
-                                           postData['formModelAttrs']['where'] = whereClause;
-                                           return {
-                                               url : "/api/qe/query",
-                                               type: 'POST',
-                                               data: JSON.stringify(postData)
-                                           }
-                                       },
-                                       mergeFn: function(response,primaryDS) {
-                                           primaryDS.setData([]);
-                                           cowu.parseAndMergeStats(response,primaryDS);
-                                       }
-                                   }
-                               ]
+                        modelId:'VROUTER_SYSTEM_CPU_PERCENTILES_MODEL',
+                        config : {
+                            where:'node-type = vrouter'
+                        }
                      },
                      viewCfg: {
                          view:"LineWithFocusChartView",
@@ -285,7 +265,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
 //                                 yField: 'percentileValue',
                                  yAxisLabel: ctwl.VROUTER_SYSTEM_CPU_PERCENTILES,
 //                                 groupBy:'Source',
-                                 yFields: getYFieldsForPercentile('system_cpu_usage.cpu_share')
+                                 yFields: monitorInfraUtils.getYFieldsForPercentile('system_cpu_usage.cpu_share')
                              }
                          }
                      },
@@ -294,67 +274,45 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                          height: 0.7,
                          width:0.4
                      }
-                 }
              },
-             "vrouter-system-memory-percentiles-chart" : function(config) {
-                 return {
-                     modelCfg: {
-                         modelId:'VROUTER_SYSTEM_MEMORY_PERCENTILE_MODEL',
-                         source:"STATTABLE",
-                         config: [
-                              monitorInfraUtils.getNodeListQueryConfig(config),
-                              {
-                                  "table_name": "StatTable.NodeStatus.system_mem_usage",
-                                  "select": "T=, PERCENTILES(system_mem_usage.used)",
-//                                      "primary_depends" : true,
-                                  "getAjaxConfig": function(primaryResponse, postData) {
-                                      //Modify post data as required
-                                      var whereClause = monitorInfraUtils.getWhereClauseForSystemStats(primaryResponse);
-                                      postData['formModelAttrs']['where'] = whereClause;
-                                      return {
-                                          url : "/api/qe/query",
-                                          type: 'POST',
-                                          data: JSON.stringify(postData)
-                                      }
-                                  },
-                                  mergeFn: function(response,primaryDS) {
-                                      primaryDS.setData([]);
-                                      cowu.parseAndMergeStats(response,primaryDS);
-                                  }
-                              }
-                          ]
-                     },
-                     viewCfg: {
-                         view:"LineWithFocusChartView",
-                         elementId : 'system-memory-chart',
-                         viewConfig: {
-                             parseFn : cowu.parsePercentilesData,
+             "vrouter-system-memory-percentiles-chart" : {
+                baseModel:'SYSTEM_MEMORY_PERCENTILES_MODEL',
+                modelCfg: {
+                    modelId:'VROUTER_SYSTEM_MEMORY_PERCENTILE_MODEL',
+                    config: {
+                        where:'node-type = vrouter'
+                    }
+                },
+                viewCfg: {
+                    view:"LineWithFocusChartView",
+                    elementId : 'system-memory-chart',
+                    viewConfig: {
+                        parseFn : cowu.parsePercentilesData,
 //                             parseFn : function(data, chartOptions) {
 //                                 var data = cowu.parsePercentilesDataForStack(data,chartOptions);
 //                                 return cowu.chartDataFormatter(data, chartOptions);
 //                             },
-                             chartOptions: {
-                                 title: ctwl.VROUTER_SYSTEM_MEMORY_PERCENTILES,
-                                 xAxisLabel: '',
-                                 colors: cowc.THREE_NODE_COLOR,
-                                 yAxisLabel: ctwl.VROUTER_SYSTEM_MEMORY_PERCENTILES,
-                                 subTitle:"Max Avg Min Memory Utilization",
+                        chartOptions: {
+                            title: ctwl.VROUTER_SYSTEM_MEMORY_PERCENTILES,
+                            xAxisLabel: '',
+                            colors: cowc.THREE_NODE_COLOR,
+                            yAxisLabel: ctwl.VROUTER_SYSTEM_MEMORY_PERCENTILES,
+                            subTitle:"Max Avg Min Memory Utilization",
 //                                 groupBy:'Source',
 //                                 yField: 'percentileValue',
-                                 yFields: getYFieldsForPercentile('system_mem_usage.used'),
-                                 yFormatter: function(y) {
-                                     return formatBytes(y * 1024, true, null, null,
-                                             null);
-                                 }
-                             }
-                         }
-                     },
-                     itemAttr: {
-                         title: ctwl.VROUTER_SYSTEM_MEMORY_PERCENTILES,
-                         height: 0.7,
-                         width:0.4
-                     }
-                 }
+                            yFields: monitorInfraUtils.getYFieldsForPercentile('system_mem_usage.used'),
+                            yFormatter: function(y) {
+                                return formatBytes(y * 1024, true, null, null,
+                                        null);
+                            }
+                        }
+                    }
+                },
+                itemAttr: {
+                    title: ctwl.VROUTER_SYSTEM_MEMORY_PERCENTILES,
+                    height: 0.7,
+                    width:0.4
+                }
              },
              "vrouter-summary-grid" : function() {
                  if(self.vRouterListModel == null)
@@ -539,7 +497,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                                  colors: cowc.THREE_NODE_COLOR,
                                  xAxisLabel: '',
                                  yAxisLabel: ctwl.VROUTER_AGENT_CPU_PERCENTILES,
-                                 yFields: getYFieldsForPercentile('process_mem_cpu_usage.cpu_share'),
+                                 yFields: monitorInfraUtils.getYFieldsForPercentile('process_mem_cpu_usage.cpu_share'),
                                  yFormatter: function(y) {
                                      return y;
                                  }
@@ -575,7 +533,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                                  colors: cowc.THREE_NODE_COLOR,
                                  xAxisLabel: '',
                                  yAxisLabel: ctwl.VROUTER_AGENT_MEMORY_PERCENTILES,
-                                 yFields: getYFieldsForPercentile('process_mem_cpu_usage.mem_res'),
+                                 yFields: monitorInfraUtils.getYFieldsForPercentile('process_mem_cpu_usage.mem_res'),
                                  yFormatter: function(y) {
                                      return formatBytes(y * 1024, true, null, null,
                                              null);
@@ -611,7 +569,7 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                                  colors: cowc.THREE_NODE_COLOR,
                                  xAxisLabel: '',
                                  yAxisLabel: 'Active Flows Percentiles',
-                                 yFields: getYFieldsForPercentile('flow_rate.active_flows')
+                                 yFields: monitorInfraUtils.getYFieldsForPercentile('flow_rate.active_flows')
                              }
                          }
                      },
@@ -626,13 +584,6 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
         self.getViewConfig = function(id) {
             return self.viewConfig[id]();
         };
-        function getYFieldsForPercentile (field) {
-            return [
-                        'PERCENTILES('+field+');95',
-                        'PERCENTILES('+field+');50',
-                        'PERCENTILES('+field+');05'
-                    ];
-        }
 
         function parseDataForFlowsDrops (response,field) {
             var ret = [];

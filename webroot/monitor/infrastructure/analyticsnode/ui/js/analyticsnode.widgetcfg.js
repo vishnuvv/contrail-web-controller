@@ -2,49 +2,36 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsnode-model', 'node-color-mapping', 'monitor-infra-viewconfig'],
-        function(_, ContrailView, LegendView, analyticsNodeListModelCfg, NodeColorMapping, monitorInfraViewConfig){
+define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsnode-model', 'node-color-mapping'],
+        function(_, ContrailView, LegendView, analyticsNodeListModelCfg, NodeColorMapping){
     var AnalyticsNodeViewConfig = function () {
         var nodeColorMapping = new NodeColorMapping(),
         colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
-            'analyticsnode-percentile-count-size': function (){
-                return {
-                    modelCfg: {
-                        modelId:'ANALYTICSNODE_PERCENTILE_MODEL',
-                        source: 'STATTABLE',
-                        config: {
-                            "table_name": "StatTable.SandeshMessageStat.msg_info",
-                            "select": "PERCENTILES(msg_info.bytes), PERCENTILES(msg_info.messages)",
-                            "parser": monitorInfraParsers.percentileAnalyticsNodeSummaryChart
-                        }
-                    },
-                    viewCfg: {
-                        elementId : ctwl.ANALYTICS_CHART_PERCENTILE_SECTION_ID,
-                        view : "PercentileTextView",
-                        viewConfig : {
-                            percentileTitle : ctwl.ANALYTICSNODE_CHART_PERCENTILE_TITLE,
-                            percentileXvalue : ctwl.ANALYTICSNODE_CHART_PERCENTILE_COUNT,
-                            percentileYvalue : ctwl.ANALYTICSNODE_CHART_PERCENTILE_SIZE,
-                        }
-                    },
-                    itemAttr: {
-                        height:0.25,
-                        width: 1.98,
-                        title: ctwl.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE
+            'analyticsnode-percentile-count-size': {
+                baseModel:'ANALYTICSNODE_PERCENTILE_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : ctwl.ANALYTICS_CHART_PERCENTILE_SECTION_ID,
+                    view : "PercentileTextView",
+                    viewConfig : {
+                        percentileTitle : ctwl.ANALYTICSNODE_CHART_PERCENTILE_TITLE,
+                        percentileXvalue : ctwl.ANALYTICSNODE_CHART_PERCENTILE_COUNT,
+                        percentileYvalue : ctwl.ANALYTICSNODE_CHART_PERCENTILE_SIZE,
                     }
+                },
+                itemAttr: {
+                    height:0.25,
+                    width: 1.98,
+                    title: ctwl.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE
                 }
             },
             'analyticsnode-sandesh-message-info': function (){
                 return {
+                    baseModel:'ANALYTICSNODE_SANDESH_MSG_MODEL',
                     modelCfg: {
-                        modelId:'ANALYTICSNODE_SANDESH_MSG_MODEL',
-                        source: 'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.SandeshMessageStat.msg_info',
-                            select: 'Source, T=, SUM(msg_info.messages)'
-                        }
                     },
                     viewCfg: {
                         elementId : ctwl.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID,
@@ -68,130 +55,93 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     }
                 }
             },
-            'analyticsnode-query-stats': function (){
-                return {
-                    modelCfg: {
-                        modelId:'ANALYTICSNODE_QUERYSTATS_MODEL',
-                        source: 'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.QueryPerfInfo.query_stats',
-                            select: 'Source,T=, COUNT(query_stats)',
-                            where: 'Source Starts with '
+            'analyticsnode-query-stats': {
+                baseModel:'ANALYTICSNODE_QUERYSTATS_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : ctwl.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID,
+                    view:'StackedBarChartWithFocusView',
+                    viewConfig: {
+                        chartOptions: {
+                            colors: colorFn,
+                            title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
+                            subTitle:"Queries per Collector (in 3 mins)",
+                            xAxisLabel: '',
+                            yAxisLabel: ctwl.ANALYTICS_CHART_QUERIES_LABEL,
+                            yField: 'COUNT(query_stats)',
+                            groupBy: 'Source',
+                            /*failureCheckFn: function (d) {
+                                if (d['query_stats.error'] != "None") {
+                                    return 1;
+                                } else {
+                                    return 0;
+                                }
+                            },*/
                         }
-                    },
-                    viewCfg: {
-                        elementId : ctwl.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID,
-                        view:'StackedBarChartWithFocusView',
-                        viewConfig: {
-                            chartOptions: {
-                                colors: colorFn,
-                                title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
-                                subTitle:"Queries per Collector (in 3 mins)",
-                                xAxisLabel: '',
-                                yAxisLabel: ctwl.ANALYTICS_CHART_QUERIES_LABEL,
-                                yField: 'COUNT(query_stats)',
-                                groupBy: 'Source',
-                                /*failureCheckFn: function (d) {
-                                    if (d['query_stats.error'] != "None") {
-                                        return 1;
-                                    } else {
-                                        return 0;
-                                    }
-                                },*/
-                            }
+                    }
+                },
+                itemAttr: {
+                    width: 0.67,
+                    height: 0.9,
+                    title: ctwl.ANALYTICS_NODE_QUERY_DISTRIBUTION
+                }
+            },
+            'analyticsnode-system-cpu-share': {
+                baseModel: 'SYSTEM_CPU_MODEL',
+                baseView: 'SYSTEM_CPU_SHARE_VIEW',
+                modelCfg : {
+                    modelId: 'ANALYTICSNODE_SYSTEM_CPU_MODEL',
+                    config: {
+                        where:'node-type = analytics-node'
+                    }
+                },
+                viewCfg: {
+                    viewConfig: {
+                        chartOptions: {
+                            colors:colorFn
                         }
-                    },
-                    itemAttr: {
-                        width: 0.67,
-                        height: 0.9,
-                        title: ctwl.ANALYTICS_NODE_QUERY_DISTRIBUTION
                     }
                 }
             },
-            'analyticsnode-system-cpu-share': function (cfg) {
-                var config = monitorInfraViewConfig['system-cpu-share'](cfg);
-                return $.extend(true, config,{
-                    viewCfg: {
-                        viewConfig: {
-                            chartOptions: {
-                                colors:colorFn
-                            }
+            'analyticsnode-system-memory-usage': {
+                baseModel: 'SYSTEM_MEMORY_MODEL',
+                baseView:'SYSTEM_MEMORY_USAGE_VIEW',
+                modelCfg : {
+                    modelId: 'ANALYTICSNODE_SYSTEM_MEMORY_MODEL',
+                    config: {
+                        where:'node-type = analytics-node'
+                    }
+                },
+                viewCfg: {
+                    viewConfig: {
+                        chartOptions: {
+                            colors:colorFn
                         }
                     }
-                });
+                }
             },
-            'analyticsnode-system-memory-usage': function (cfg) {
-                var config = monitorInfraViewConfig['system-memory-usage'](cfg);
-                return $.extend(true, config, {
-                    viewCfg: {
-                        viewConfig: {
-                            chartOptions: {
-                                colors:colorFn
-                            }
+            'analyticsnode-disk-usage-info': {
+                baseModel:'SYSTEM_DISK_USAGE_MODEL',
+                baseView:'SYSTEM_DISK_USAGE_VIEW',
+                modelCfg : {
+                    modelId: 'ANALYTICSNODE_DISK_USAGE_MODEL',
+                    config: {
+                        where:'node-type = analytics-node'
+                    }
+                },
+                viewCfg: {
+                    viewConfig: {
+                        chartOptions: {
+                            colors:colorFn
                         }
                     }
-                });
-            },
-            'analyticsnode-disk-usage-info': function (cfg) {
-                var config = monitorInfraViewConfig['disk-usage-info'](cfg);
-                return $.extend(true, config, {
-                    viewCfg: {
-                        viewConfig: {
-                            chartOptions: {
-                                colors:colorFn
-                            }
-                        }
-                    }
-                });
+                }
             },
             'analyticsnode-generators-scatterchart': function (){
                 return {
+                    baseModel:'ANALYTICSNODE_GENERATORS_MODEL',
                     modelCfg: {
-                        modelId:'ANALYTICSNODE_GENERATORS_MODEL',
-                        source: 'STATTABLE',
-                        config: {
-                            "table_name": "StatTable.SandeshMessageStat.msg_info",
-                            "select": "name, SUM(msg_info.messages),SUM(msg_info.bytes)",
-                            "parser": function(response){
-                                var apiStats = cowu.getValueByJsonPath(response, 'data', []),
-                                    parsedData = [];
-                                var cf = crossfilter(apiStats);
-                                var sourceDim = cf.dimension(function (d) {return d['name']});
-                                var totalResMessages = sourceDim.group().reduceSum(
-                                        function (d) {
-                                            return d['SUM(msg_info.messages)'];
-                                        });
-                                var totalResSize = sourceDim.group().reduceSum(
-                                        function (d) {
-                                            return d['SUM(msg_info.bytes)'];
-                                        });
-                                totalResMessagesData = totalResMessages.all();
-                                totalResSize = totalResSize.all();
-                                    $.each(totalResSize, function (key, value){
-                                        var xValue = Math.round(value['value']/120);
-                                        var Source = value['key'].substring(0, 6);
-                                        xValue = formatBytes(xValue);
-                                        xValue = parseFloat(xValue);
-                                        xValue = Math.round(xValue);
-                                        parsedData.push({
-                                            Source : Source,
-                                            label: value['key'],
-                                            x: parseFloat(xValue)
-                                            //color: colors[value['key']]
-                                        });
-                                    });
-                                    $.each(totalResMessagesData, function (key, value){
-                                        var dataWithX = _.find(parsedData, function(xValue){
-                                            return xValue.label === value["key"];
-                                        });
-                                        dataWithX.y = value['value']/120;
-                                        dataWithX.y = parseFloat(dataWithX.y);
-                                        dataWithX.y = Math.round(dataWithX.y);
-                                    });
-                                return parsedData;
-
-                            }
-                        }
                     },
                     viewCfg:{
                         elementId : 'generatorsScatterChart',
@@ -229,13 +179,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
             },
             'analyticsnode-database-read-write': function (){
                 return {
+                    baseModel:'ANALYTICSNODE_DB_READWRITE_MODEL',
                     modelCfg: {
-                        modelId:'ANALYTICSNODE_DB_READWRITE_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.CollectorDbStats.table_info',
-                            select: 'Source, SUM(table_info.writes), SUM(table_info.write_fails),T='
-                        }
                     },
                     viewCfg: {
                         elementId : ctwl.ANALYTICS_CHART_DATABASE_WRITE_STACKEDBARCHART_ID,

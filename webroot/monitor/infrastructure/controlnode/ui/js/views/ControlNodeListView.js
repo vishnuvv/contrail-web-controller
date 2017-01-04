@@ -31,8 +31,8 @@ define(
                                                  viewConfig: {
                                                      elementId : 'control-node-grid-stackview-0',
                                                      gridAttr : {
-                                                         defaultWidth : 6,
-                                                         defaultHeight : 8
+                                                         widthMultiplier : 6,
+                                                         heightMultiplier : 8
                                                      },
                                                      widgetCfgList: [
                                                          {id:'controlnode-sent-updates'},
@@ -50,26 +50,14 @@ define(
                                                  viewConfig: {
                                                      elementId : 'control-node-grid-stackview-1',
                                                      gridAttr : {
-                                                         defaultWidth : 6,
-                                                         defaultHeight : 8
+                                                         widthMultiplier : 6,
+                                                         heightMultiplier : 8
                                                      },
                                                      widgetCfgList: [
                                                          {id:'controlnode-dns'},
                                                          {id:'controlnode-named'},
-                                                         {id:'controlnode-system-cpu-share',
-                                                             itemAttr:{
-                                                                 config:{
-                                                                     nodeType:'control-node'
-                                                                 }
-                                                             }
-                                                         },
-                                                         {id:'controlnode-system-memory-usage',
-                                                             itemAttr:{
-                                                                 config:{
-                                                                     nodeType:'control-node'
-                                                                 }
-                                                             }
-                                                         },
+                                                         {id:'controlnode-system-cpu-share'},
+                                                         {id:'controlnode-system-memory-usage'},
                                                          {id:'controlnode-grid-view'}
                                                      ]
                                                 }
@@ -81,17 +69,11 @@ define(
                                              viewConfig: {
                                                  elementId : 'control-node-grid-stackview-2',
                                                  gridAttr : {
-                                                     defaultWidth : 6,
-                                                     defaultHeight : 8
+                                                     widthMultiplier : 6,
+                                                     heightMultiplier : 8
                                                  },
                                                  widgetCfgList: [
-                                                     {id:'controlnode-disk-usage-info',
-                                                         itemAttr:{
-                                                             config:{
-                                                                 nodeType:'control-node'
-                                                             }
-                                                         }
-                                                     },
+                                                     {id:'controlnode-disk-usage-info'},
                                                      {id:'controlnode-grid-view'}
                                                  ]
                                             }
