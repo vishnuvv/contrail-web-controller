@@ -29,31 +29,31 @@ define(
                                         viewConfig: {
                                             elementId: 'config-node-grid-stackview-0',
                                             gridAttr: {
-                                                defaultWidth: 6,
-                                                defaultHeight: 10
+                                                widthMultiplier: 6,
+                                                heightMultiplier: 10
                                             },
                                             widgetCfgList: [{
                                                 id: 'confignode-requests-served'
-                                            }, {
-                                                id: 'confignode-response-time-size'
-                                            }, {
-                                                id: 'confignode-percentile-time-size'
-                                            }, {
-                                                id: 'confignode-reads-writes-donut-chart'
-                                            }, {
-                                                id: 'confignode-grid-view'
+                                            // }, {
+                                            //     id: 'confignode-response-time-size'
+                                            // }, {
+                                            //     id: 'confignode-percentile-time-size'
+                                            // }, {
+                                            //     id: 'confignode-reads-writes-donut-chart'
+                                            // }, {
+                                            //     id: 'confignode-grid-view'
                                             }]
                                         }
                                     },
-                                },{
+                                }/*,{
                                     page: {
                                         elementId: 'config-node-grid-stackview-1',
                                         view: 'GridStackView',
                                         viewConfig: {
                                             elementId: 'config-node-grid-stackview-1',
                                             gridAttr: {
-                                                defaultWidth: 6,
-                                                defaultHeight: 8
+                                                widthMultiplier: 6,
+                                                heightMultiplier: 8
                                             },
                                             widgetCfgList: [{
                                                 id: 'confignode-top-useragent'
@@ -75,8 +75,8 @@ define(
                                         viewConfig: {
                                             elementId: 'config-node-grid-stackview-2',
                                             gridAttr: {
-                                                defaultWidth: 6,
-                                                defaultHeight: 8
+                                                widthMultiplier: 6,
+                                                heightMultiplier: 8
                                             },
                                             widgetCfgList: [{
                                                 id: 'confignode-process-contrail-api'
@@ -98,8 +98,8 @@ define(
                                         viewConfig: {
                                             elementId: 'config-node-grid-stackview-3',
                                             gridAttr: {
-                                                defaultWidth: 6,
-                                                defaultHeight: 8
+                                                widthMultiplier: 6,
+                                                heightMultiplier: 8
                                             },
                                             widgetCfgList: [{
                                                 id: 'confignode-process-ifmap'
@@ -131,8 +131,8 @@ define(
                                         viewConfig: {
                                             elementId: 'config-node-grid-stackview-4',
                                             gridAttr: {
-                                                defaultWidth: 6,
-                                                defaultHeight: 8
+                                                widthMultiplier: 6,
+                                                heightMultiplier: 8
                                             },
                                             widgetCfgList: [{
                                                 id: 'confignode-disk-usage-info',
@@ -146,7 +146,7 @@ define(
                                             }]
                                         }
                                     }
-                                }]
+                                }*/]
                             }
                         }]
                     }]

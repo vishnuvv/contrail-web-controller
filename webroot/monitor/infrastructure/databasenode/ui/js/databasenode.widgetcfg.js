@@ -2,8 +2,8 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenode-model', 'node-color-mapping', 'monitor-infra-viewconfig'],
-        function(_, ContrailView, LegendView, databaseNodeListModelCfg, NodeColorMapping, monitorInfraViewConfig){
+define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenode-model', 'node-color-mapping'],
+        function(_, ContrailView, LegendView, databaseNodeListModelCfg, NodeColorMapping){
     var DatabseNodeViewConfig = function () {
         var nodeColorMapping = new NodeColorMapping(),
         colorFn = nodeColorMapping.getNodeColorMap;
@@ -232,6 +232,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                         config: databaseNodeListModelCfg
                     },
                     viewCfg: {
+                        templates:['webroot/monitor/infrastructure/databasenode/ui/templates/databasenode.tmpl'],
                         elementId : ctwl.DATABASENODE_SUMMARY_GRID_ID,
                         title : ctwl.DATABASENODE_SUMMARY_TITLE,
                         view : "GridView",

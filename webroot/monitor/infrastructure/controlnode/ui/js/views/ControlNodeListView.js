@@ -31,8 +31,8 @@ define(
                                                  viewConfig: {
                                                      elementId : 'control-node-grid-stackview-0',
                                                      gridAttr : {
-                                                         defaultWidth : 6,
-                                                         defaultHeight : 8
+                                                         widthMultiplier : 6,
+                                                         heightMultiplier : 8
                                                      },
                                                      widgetCfgList: [
                                                          {id:'controlnode-sent-updates'},
@@ -50,8 +50,8 @@ define(
                                                  viewConfig: {
                                                      elementId : 'control-node-grid-stackview-1',
                                                      gridAttr : {
-                                                         defaultWidth : 6,
-                                                         defaultHeight : 8
+                                                         widthMultiplier : 6,
+                                                         heightMultiplier : 8
                                                      },
                                                      widgetCfgList: [
                                                          {id:'controlnode-dns'},
@@ -81,8 +81,8 @@ define(
                                              viewConfig: {
                                                  elementId : 'control-node-grid-stackview-2',
                                                  gridAttr : {
-                                                     defaultWidth : 6,
-                                                     defaultHeight : 8
+                                                     widthMultiplier : 6,
+                                                     heightMultiplier : 8
                                                  },
                                                  widgetCfgList: [
                                                      {id:'controlnode-disk-usage-info',

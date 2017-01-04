@@ -2,52 +2,36 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-model', 'node-color-mapping', 'monitor-infra-viewconfig'],
-        function(_, ContrailView, LegendView, configNodeListModelCfg, NodeColorMapping, monitorInfraViewConfig){
+define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-model', 'node-color-mapping'],
+        function(_, ContrailView, LegendView, configNodeListModelCfg, NodeColorMapping){
     var ConfigNodeViewConfig = function () {
         var nodeColorMapping = new NodeColorMapping(),
         colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
-            'confignode-percentile-time-size': function (){
-                return {
-                    modelCfg: {
-                        modelId: 'CONFIGNODE_PERCENTILE_TIMESIZE_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            "table_name": "StatTable.VncApiStatsLog.api_stats",
-                            "select": "PERCENTILES(api_stats.response_time_in_usec), PERCENTILES(api_stats.response_size)",
-                            "parser": monitorInfraParsers.percentileConfigNodeNodeSummaryChart
-                        }
-                    },
-                    viewCfg: {
-                        elementId :ctwl.CONFIGNODE_CHART_PERCENTILE_TEXT_VIEW,
-                        title : ctwl.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE,
-                        view : "PercentileTextView",
-                        viewConfig : {
-                            percentileTitle : ctwl.CONFIGNODE_CHART_PERCENTILE_TITLE,
-                            percentileXvalue : ctwl.CONFIGNODE_CHART_PERCENTILE_TIME,
-                            percentileYvalue : ctwl.CONFIGNODE_CHART_PERCENTILE_SIZE,
-                        }
-                    },
-                    itemAttr: {
-                        width:0.9,
-                        height:0.2,
-                        title: ctwl.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE
+            'confignode-percentile-time-size': {
+                baseModel: 'CONFIGNODE_PERCENTILE_TIMESIZE_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId :ctwl.CONFIGNODE_CHART_PERCENTILE_TEXT_VIEW,
+                    title : ctwl.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE,
+                    view : "PercentileTextView",
+                    viewConfig : {
+                        percentileTitle : ctwl.CONFIGNODE_CHART_PERCENTILE_TITLE,
+                        percentileXvalue : ctwl.CONFIGNODE_CHART_PERCENTILE_TIME,
+                        percentileYvalue : ctwl.CONFIGNODE_CHART_PERCENTILE_SIZE,
                     }
+                },
+                itemAttr: {
+                    width:0.9,
+                    height:0.2,
+                    title: ctwl.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE
                 }
             },
-            'confignode-requests-served': function (){
-                return {
+            'confignode-requests-served': {
+                    baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
                     modelCfg: {
-                        modelId: 'CONFIGNODE_APIREQUESTS_MODEL',
-                        source: 'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.VncApiStatsLog.api_stats',
-                            select: "Source, T, api_stats.operation_type," +
-                                " api_stats.response_time_in_usec, api_stats.response_size," +
-                                " api_stats.resp_code, name"
-                        }
                     },
                     viewCfg: {
                         elementId : 'confignode_requests_served',
@@ -81,19 +65,10 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         width: 2,
                         title: ctwl.CONFIG_NODE_REQUESTS_SERVED
                     }
-                }
             },
-            'confignode-response-time-size': function (){
-                return {
+            'confignode-response-time-size': {
+                    baseModel:'CONFIGNODE_APIREQUESTS_MODEL',
                     modelCfg: {
-                        modelId:'CONFIGNODE_APIREQUESTS_MODEL',
-                        source: 'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.VncApiStatsLog.api_stats',
-                            select: "Source, T, api_stats.operation_type," +
-                                " api_stats.response_time_in_usec, api_stats.response_size," +
-                                " api_stats.resp_code, name"
-                        }
                     },
                     viewCfg: {
                         elementId: 'confignode_response_time_size',
@@ -160,19 +135,10 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         height: 0.8,
                         title: ctwl.CONFIG_NODE_RESPONSE_TIME_VS_SIZE
                     }
-                }
             },
-            'confignode-reads-writes-donut-chart': function (){
-                return {
+            'confignode-reads-writes-donut-chart': {
+                    baseModel:'CONFIGNODE_APIREQUESTS_MODEL',
                     modelCfg: {
-                        modelId:'CONFIGNODE_APIREQUESTS_MODEL',
-                        source: 'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.VncApiStatsLog.api_stats',
-                            select: "Source, T, api_stats.operation_type," +
-                                " api_stats.response_time_in_usec, api_stats.response_size," +
-                                " api_stats.resp_code, name"
-                        }
                     },
                     viewCfg: {
                         elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_SECTION_ID,
@@ -189,10 +155,8 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         height: 0.6,
                         title: ctwl.CONFIG_NODE_REQUESTS_READ_VS_WRITE
                     }
-                }
             },
-            'confignode-grid-view': function () {
-              return {
+            'confignode-grid-view': {
                   modelCfg: {
                     modelId:'CONFIGNODE_LIST_MODEL',
                     config:configNodeListModelCfg
@@ -210,17 +174,10 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                       width: 2,
                       height: 2
                     }
-                }
             },
-            'confignode-top-useragent': function (){
-                return {
+            'confignode-top-useragent': {
+                    baseModel:'CONFIGNODE_USERAGENT_MODEL',
                     modelCfg: {
-                        modelId:'CONFIGNODE_USERAGENT_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.VncApiStatsLog.api_stats',
-                            select: "T=, api_stats.useragent, COUNT(api_stats)"
-                        }
                     },
                     viewCfg: {
                         elementId : 'useragent_top_5',
@@ -242,49 +199,36 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     itemAttr: {
                         title: ctwl.CONFIG_NODE_PROCESS_WISE_USAGE,
                     }
-                }
             },
-            'confignode-top-objecttypes': function (){
-                return {
-                    modelCfg: {
-                        modelId:'CONFIGNODE_OBJECTTYPE_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.VncApiStatsLog.api_stats',
-                            select: "T=, api_stats.object_type, COUNT(api_stats)"
+            'confignode-top-objecttypes': {
+                baseModel:'CONFIGNODE_OBJECTTYPE_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : 'objecttype_top_5',
+                    view:'StackedBarChartWithFocusView',
+                    viewConfig: {
+                        chartOptions: {
+                            colors: cowc.FIVE_NODE_COLOR,
+                            title: 'Objects',
+                            subTitle:"API requests per Config Object type (in 3 mins)",
+                            xAxisLabel: '',
+                            yAxisLabel: ctwl.CONFIG_NODE_OBJECT_USAGE_TITLE,
+                            groupBy: 'api_stats.object_type',
+                            limit: 5,
+                            yField: 'COUNT(api_stats)',
+                            showLegend: false,
                         }
-                    },
-                    viewCfg: {
-                        elementId : 'objecttype_top_5',
-                        view:'StackedBarChartWithFocusView',
-                        viewConfig: {
-                            chartOptions: {
-                                colors: cowc.FIVE_NODE_COLOR,
-                                title: 'Objects',
-                                subTitle:"API requests per Config Object type (in 3 mins)",
-                                xAxisLabel: '',
-                                yAxisLabel: ctwl.CONFIG_NODE_OBJECT_USAGE_TITLE,
-                                groupBy: 'api_stats.object_type',
-                                limit: 5,
-                                yField: 'COUNT(api_stats)',
-                                showLegend: false,
-                            }
-                        }
-                    },
-                    itemAttr: {
-                        title : ctwl.CONFIG_NODE_OBJECT_USAGE_TITLE
                     }
+                },
+                itemAttr: {
+                    title : ctwl.CONFIG_NODE_OBJECT_USAGE_TITLE
                 }
             },
             'confignode-top-remote-ip': function (){
                 return {
+                    baseModel:'CONFIGNODE_REMOTEIP_MODEL',
                     modelCfg: {
-                        modelId:'CONFIGNODE_REMOTEIP_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.VncApiStatsLog.api_stats',
-                            select: "T=, api_stats.remote_ip, COUNT(api_stats)"
-                        }
                     },
                     viewCfg: {
                         elementId : 'remote_ip_top_5',
@@ -308,48 +252,34 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     }
                 }
             },
-            'confignode-top-projects': function () {
-                return {
-                    modelCfg: {
-                        modelId:'CONFIGNODE_PROJECTS_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.VncApiStatsLog.api_stats',
-                            select: "T=, api_stats.project_name, COUNT(api_stats)"
+            'confignode-top-projects': {
+                baseModel:'CONFIGNODE_PROJECTS_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : 'projects_top_5',
+                    view:'StackedBarChartWithFocusView',
+                    viewConfig: {
+                        chartOptions: {
+                            colors: cowc.FIVE_NODE_COLOR,
+                            title: "Projects",
+                            subTitle:"API requests per project (in 3 mins)",
+                            xAxisLabel: '',
+                            yAxisLabel: "Project Wise Usage",
+                            groupBy: 'api_stats.project_name',
+                            limit: 5,
+                            yField: 'COUNT(api_stats)',
+                            showLegend: false,
                         }
-                    },
-                    viewCfg: {
-                        elementId : 'projects_top_5',
-                        view:'StackedBarChartWithFocusView',
-                        viewConfig: {
-                            chartOptions: {
-                                colors: cowc.FIVE_NODE_COLOR,
-                                title: "Projects",
-                                subTitle:"API requests per project (in 3 mins)",
-                                xAxisLabel: '',
-                                yAxisLabel: "Project Wise Usage",
-                                groupBy: 'api_stats.project_name',
-                                limit: 5,
-                                yField: 'COUNT(api_stats)',
-                                showLegend: false,
-                            }
-                        }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONFIG_NODE_PROJECT_WISE_USAGE,
                     }
-                  }
+                },
+                itemAttr: {
+                    title: ctwl.CONFIG_NODE_PROJECT_WISE_USAGE,
+                }
               },
-              'confignode-process-contrail-schema': function () {
-                return {
+              'confignode-process-contrail-schema': {
+                    baseModel:'CONFIGNODE_SCHEMA_CPU_MODEL',
                     modelCfg: {
-                        modelId:'CONFIGNODE_SCHEMA_CPU_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                            where: 'process_mem_cpu_usage.__key = contrail-schema'
-                        }
                     },
                     viewCfg: {
                         elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_SCHEMA_LINE_CHART_ID,
@@ -369,198 +299,172 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     itemAttr: {
                         title: ctwl.CONFIG_NODE_SCHEMA_CPU_SHARE,
                     }
-                };
-            },
-            'confignode-system-cpu-share': function (cfg) {
-                var config = monitorInfraViewConfig['system-cpu-share'](cfg);
-                return $.extend(true, config,{
-                    viewCfg: {
-                        viewConfig: {
-                            chartOptions: {
-                                colors:colorFn
-                            }
-                        }
+                },
+            'confignode-system-cpu-share': {
+                baseModel: 'SYSTEM_CPU_MODEL',
+                baseView: 'SYSTEM_CPU_SHARE_VIEW',
+                modelCfg : {
+                    modelId: 'CONFIGNODE_SYSTEM_CPU_MODEL',
+                    config: {
+                        where:'node-type = config-node'
                     }
-                });
-            },
-            'confignode-system-memory-usage': function (cfg) {
-                var config = monitorInfraViewConfig['system-memory-usage'](cfg);
-                return $.extend(true, config, {
-                    viewCfg: {
-                        viewConfig: {
-                            chartOptions: {
-                                colors:colorFn
-                            }
+                },
+                viewCfg: {
+                    viewConfig: {
+                        chartOptions: {
+                            colors:colorFn
                         }
-                    }
-                });
-            },
-            'confignode-disk-usage-info': function (cfg) {
-                var config = monitorInfraViewConfig['disk-usage-info'](cfg);
-                return $.extend(true, config, {
-                    viewCfg: {
-                        viewConfig: {
-                            chartOptions: {
-                                colors:colorFn
-                            }
-                        }
-                    }
-                });
-            },
-            'confignode-process-contrail-discovery': function () {
-                return {
-                    modelCfg: {
-                        modelId:'CONFIGNODE_DISCOVERY_CPU_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                            where: 'process_mem_cpu_usage.__key = contrail-discovery:0'
-                        }
-                    },
-                    viewCfg: {
-                        elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_DISCOVERYLINE_CHART_ID,
-                        view:'LineWithFocusChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: d3.format('.2f'),
-                                subTitle:ctwl.CPU_SHARE_PERCENTAGE,
-                                yAxisLabel: 'Discovery CPU Share (%)',
-                                groupBy: 'name',
-                                colors: colorFn,
-                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                title: ctwl.CONFIGNODE_SUMMARY_TITLE,
-                            }
-                        }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONFIGNODE_DISCOVERY_CPU_SHARE,
                     }
                 }
             },
-            'confignode-process-contrail-api': function () {
-                return {
-                    modelCfg: {
-                        modelId:'CONFIGNODE_API_CPU_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                            where: 'process_mem_cpu_usage.__key = contrail-api:0'
+            'confignode-system-memory-usage': {
+                baseModel: 'SYSTEM_MEMORY_MODEL',
+                baseView:'SYSTEM_MEMORY_USAGE_VIEW',
+                modelCfg : {
+                    modelId: 'CONFIGNODE_SYSTEM_MEMORY_MODEL',
+                    config: {
+                        where:'node-type = config-node'
+                    }
+                },
+                viewCfg: {
+                    viewConfig: {
+                        chartOptions: {
+                            colors:colorFn
                         }
-                    },
-                    viewCfg: {
-                        elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_API_LINE_CHART_ID,
-                        view:'LineWithFocusChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: d3.format('.2f'),
-                                subTitle:ctwl.CPU_SHARE_PERCENTAGE,
-                                yAxisLabel: 'API CPU Share (%)',
-                                groupBy: 'name',
-                                colors: colorFn,
-                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                title: ctwl.CONFIGNODE_SUMMARY_TITLE,
-                            }
+                    }
+                }
+            },
+            'confignode-disk-usage-info': {
+                baseModel:'SYSTEM_DISK_USAGE_MODEL',
+                baseView:'SYSTEM_DISK_USAGE_VIEW',
+                modelCfg : {
+                    modelId: 'CONFIGNODE_DISK_USAGE_MODEL',
+                    config: {
+                        where:'node-type = config-node'
+                    }
+                },
+                viewCfg: {
+                    viewConfig: {
+                        chartOptions: {
+                            colors:colorFn
+                        }
+                    }
+                }
+            },
+            'confignode-process-contrail-discovery': {
+                baseModel:'CONFIGNODE_DISCOVERY_CPU_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_DISCOVERYLINE_CHART_ID,
+                    view:'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yFormatter: d3.format('.2f'),
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            yAxisLabel: 'Discovery CPU Share (%)',
+                            groupBy: 'name',
+                            colors: colorFn,
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            title: ctwl.CONFIGNODE_SUMMARY_TITLE,
+                        }
+                    }
+                },
+                itemAttr: {
+                    title: ctwl.CONFIGNODE_DISCOVERY_CPU_SHARE,
+                }
+            },
+            'confignode-process-contrail-api': {
+                baseModel:'CONFIGNODE_API_CPU_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_API_LINE_CHART_ID,
+                    view:'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yFormatter: d3.format('.2f'),
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            yAxisLabel: 'API CPU Share (%)',
+                            groupBy: 'name',
+                            colors: colorFn,
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            title: ctwl.CONFIGNODE_SUMMARY_TITLE,
+                        }
 
-                        }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONFIG_NODE_API_CPU_SHARE,
                     }
+                },
+                itemAttr: {
+                    title: ctwl.CONFIG_NODE_API_CPU_SHARE,
                 }
             },
-            'confignode-process-contrail-service-monitor': function () {
-                return {
-                    modelCfg: {
-                        modelId:'CONFIGNODE_SERVICE_MONITOR_CPU_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                            where: 'process_mem_cpu_usage.__key = contrail-svc-monitor'
+            'confignode-process-contrail-service-monitor': {
+                baseModel:'CONFIGNODE_SERVICE_MONITOR_CPU_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_SERVICE_MONITOR_LINE_CHART_ID,
+                    view:'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yFormatter: d3.format('.2f'),
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            yAxisLabel: ctwl.CONFIG_NODE_SERVICE_MONITOR_CPU_SHARE,
+                            groupBy: 'name',
+                            colors: colorFn,
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         }
-                    },
-                    viewCfg: {
-                        elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_SERVICE_MONITOR_LINE_CHART_ID,
-                        view:'LineWithFocusChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: d3.format('.2f'),
-                                subTitle:ctwl.CPU_SHARE_PERCENTAGE,
-                                yAxisLabel: ctwl.CONFIG_NODE_SERVICE_MONITOR_CPU_SHARE,
-                                groupBy: 'name',
-                                colors: colorFn,
-                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                title: ctwl.CONFIGNODE_SUMMARY_TITLE,
-                            }
-                        }
-                    },
-                    itemAttr: {
-                            title: ctwl.CONFIG_NODE_SERVICE_MONITOR_CPU_SHARE,
                     }
+                },
+                itemAttr: {
+                        title: ctwl.CONFIG_NODE_SERVICE_MONITOR_CPU_SHARE,
                 }
             },
-            'confignode-process-contrail-device-manager': function () {
-                return {
-                    modelCfg: {
-                        modelId:'CONFIGNODE_DEVICE_MANAGER_CPU_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                            where: 'process_mem_cpu_usage.__key = contrail-device-manager'
+            'confignode-process-contrail-device-manager': {
+                baseModel:'CONFIGNODE_DEVICE_MANAGER_CPU_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_DEVICE_MANAGER_LINE_CHART_ID,
+                    view:'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yFormatter: d3.format('.2f'),
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            yAxisLabel: ctwl.CONFIG_NODE_DEVICE_MANAGER_CPU_SHARE,
+                            groupBy: 'name',
+                            colors: colorFn,
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         }
                     },
-                    viewCfg: {
-                        elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_DEVICE_MANAGER_LINE_CHART_ID,
-                        view:'LineWithFocusChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: d3.format('.2f'),
-                                subTitle:ctwl.CPU_SHARE_PERCENTAGE,
-                                yAxisLabel: ctwl.CONFIG_NODE_DEVICE_MANAGER_CPU_SHARE,
-                                groupBy: 'name',
-                                colors: colorFn,
-                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                title: ctwl.CONFIGNODE_SUMMARY_TITLE,
-                            }
-                        },
-                    },
-                    itemAttr: {
-                        title: ctwl.CONFIG_NODE_DEVICE_MANAGER_CPU_SHARE,
-                    }
+                },
+                itemAttr: {
+                    title: ctwl.CONFIG_NODE_DEVICE_MANAGER_CPU_SHARE,
                 }
             },
-            'confignode-process-ifmap': function () {
-                return {
-                    modelCfg: {
-                        modelId:'CONFIGNODE_IFMAP_CPU_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                            where: 'process_mem_cpu_usage.__key = ifmap'
+            'confignode-process-ifmap': {
+                baseModel:'CONFIGNODE_IFMAP_CPU_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_IFMAP_LINE_CHART_ID,
+                    view:'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yFormatter: d3.format('.2f'),
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            yAxisLabel: ctwl.CONFIG_NODE_IFMAP_CPU_SHARE,
+                            groupBy: 'name',
+                            colors: colorFn,
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         }
-                    },
-                    viewCfg: {
-                        elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_IFMAP_LINE_CHART_ID,
-                        view:'LineWithFocusChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: d3.format('.2f'),
-                                subTitle:ctwl.CPU_SHARE_PERCENTAGE,
-                                yAxisLabel: ctwl.CONFIG_NODE_IFMAP_CPU_SHARE,
-                                groupBy: 'name',
-                                colors: colorFn,
-                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                title: ctwl.CONFIGNODE_SUMMARY_TITLE,
-                            }
-                        }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONFIG_NODE_IFMAP_CPU_SHARE,
                     }
+                },
+                itemAttr: {
+                    title: ctwl.CONFIG_NODE_IFMAP_CPU_SHARE,
                 }
             }
         };

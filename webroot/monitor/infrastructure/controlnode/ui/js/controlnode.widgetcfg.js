@@ -3,8 +3,8 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-color-mapping', 'monitor-infra-viewconfig'],
-        function(_, ContrailView,  controlNodeListModelCfg, NodeColorMapping, monitorInfraViewConfig) {
+define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-color-mapping'],
+        function(_, ContrailView,  controlNodeListModelCfg, NodeColorMapping) {
     var ControlNodeViewConfig = function () {
         var nodeColorMapping = new NodeColorMapping(),
         colorFn = nodeColorMapping.getNodeColorMap;
