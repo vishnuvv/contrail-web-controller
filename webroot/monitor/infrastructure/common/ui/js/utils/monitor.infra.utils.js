@@ -430,6 +430,11 @@ define([
                                         view: 'js/views/SettingsColorView',
                                         model: 'js/models/SettingsColorModel'
                                     }, {
+                                        id: cowc.FULL_SCREEN,
+                                        title: "Toggle Full Screen",
+                                        // view: 'js/views/SettingsColorView',
+                                        // model: 'js/models/SettingsColorModel'
+                                    },{
                                         id: cowc.CHART_SETTINGS,
                                         title: "Chart Settings",
                                         view: "js/views/ChartSettingsView",
@@ -950,7 +955,7 @@ define([
             });
             primaryDS.updateData(updatedData);
         };
-        self.parseAndMergepercentileConfigNodeNodeSummaryChart =
+        self.parseAndMergepercentileConfigNodeSummaryChart =
             function (response,primaryDS) {
             var statsData = response;
             var primaryData = primaryDS.getItems();
@@ -2450,26 +2455,39 @@ define([
                 p: getValueByJsonPath(options,'hash')
             });
         }
-        self.getNodeListQueryConfig = function(config) {
-            var nodeType = getValueByJsonPath(config,"itemAttr;config;nodeType","");
+        self.fetchWhereClauseForNodeType = function(nodeType) {
+            var defObj = $.Deferred();
+            var whereClause = self.fetchHostNamesForNodeType({nodeType:nodeType}).
+                then(function(nodeNames) {
+                    return self.getWhereClauseForSystemStats(nodeNames);
+                }).done(function(whereClause) {
+                    defObj.resolve(whereClause);
+                });
+            var whereClause;
+            // listModel.onAllRequestsComplete(function() {
+            //     var nodeNames = listModel.getItems();
+            //     whereClause = self.getWhereClauseForSystemStats(nodeNames);
+            //     defObj.resolve(whereClause);
+            // });
+        }
+        self.fetchHostNamesForNodeType = function(cfg) {
+            var nodeType = getValueByJsonPath(cfg,"nodeType","");
             var postData = {"data":[{"type":nodeType,"cfilt":"ContrailConfig:elements:fq_name"}]};
-            return {
-                "remoteConfig" :{
-                    "ajaxConfig": {
-                        url : "/api/tenant/get-data",
-                        type: 'POST',
-                        data: JSON.stringify(postData),
-                    },
-                    "dataParser": function(response) {
-                        response = getValueByJsonPath(response,"0;value",[]);
-                        response = $.map(response,function(d,i){
-                            return {"fq_name":getValueByJsonPath(d,'value;ContrailConfig;elements;fq_name')};
-                        });
-                        return response;
-                    }
-                },
-                "type":"non-stats-query"
-            }
+            var defObj = $.Deferred();
+            $.ajax({
+                url:"/api/tenant/get-data/" + _.result(postData,'data.0.type',''),
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(postData),
+            }).done(function(response) {
+                response = getValueByJsonPath(response,"0;value",[]);
+                response = $.map(response,function(d,i){
+                    return {"fq_name":getValueByJsonPath(d,'value;ContrailConfig;elements;fq_name')};
+                });
+                defObj.resolve(response);
+            });
+            return defObj;
         };
 
         self.getWhereClauseForSystemStats = function (nodeList) {
@@ -2486,6 +2504,13 @@ define([
             });
             return ret;
         };
+        self.getYFieldsForPercentile = function(field) {
+            return [
+                        'PERCENTILES('+field+');95',
+                        'PERCENTILES('+field+');50',
+                        'PERCENTILES('+field+');05'
+                    ];
+        }
     };
     return MonitorInfraUtils;
 });
