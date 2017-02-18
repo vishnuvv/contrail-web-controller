@@ -103,7 +103,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     itemAttr: {
                         width: 0.67,
-                        height: 0.9,
+                        height: 0.8,
                         title: ctwl.ANALYTICS_NODE_QUERY_DISTRIBUTION
                     }
                 }
@@ -257,7 +257,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     itemAttr: {
                         width: 0.67,
-                        height: 0.9,
+                        height: 0.8,
                         title: ctwl.ANALYTICS_NODE_DB_READ_WRITE
                     }
                 }
