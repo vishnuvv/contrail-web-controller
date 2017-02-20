@@ -10,392 +10,383 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
         colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
-            'controlnode-sent-updates': function (){
-                return {
-                    modelCfg: {
-                        modelId: 'CONTROLNODE_SENT_UPDATES_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.PeerStatsData.tx_update_stats',
-                            select: 'T=, Source, SUM(tx_update_stats.reach), SUM(tx_update_stats.unreach)'
+            'controlnode-sent-updates': {
+                modelCfg: {
+                    modelId: 'CONTROLNODE_SENT_UPDATES_MODEL',
+                    source:'STATTABLE',
+                    config: {
+                        table_name: 'StatTable.PeerStatsData.tx_update_stats',
+                        select: 'T=, Source, SUM(tx_update_stats.reach), SUM(tx_update_stats.unreach)'
+                    }
+                },
+                viewCfg:{
+                    elementId : ctwl.CONTROLNODE_SENT_UPDATES_SCATTER_CHART_ID,
+                    view : "StackedAreaChartView",
+                    viewConfig : {
+                        class: 'mon-infra-chart chartMargin',
+                        chartOptions:{
+                            title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                            subTitle:"BGP, XMPP Reach/Unreach Route Updates (in 3 mins)",
+                            valueText:"",
+                            xAxisLabel: '',
+                            yAxisLabel: 'Updates sent per Control Node',
+                            groupBy: 'Source',
+                            yField: 'SUM(tx_update_stats.reach)',
+                            colors: colorFn,
+                            failureLabel:'Unreach Updates (Total)',
+                            failureColor: '#ECECEC',
+                            substractFailures: false,
+                            failureCheckFn: function (d) {
+                                return ifNull(d['SUM(tx_update_stats.unreach)'],0);
+                            },
                         }
-                    },
-                    viewCfg:{
-                        elementId : ctwl.CONTROLNODE_SENT_UPDATES_SCATTER_CHART_ID,
-                        view : "StackedAreaChartView",
-                        viewConfig : {
-                            class: 'mon-infra-chart chartMargin',
-                            chartOptions:{
-                                title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                subTitle:"BGP, XMPP Reach/Unreach Route Updates (in 3 mins)",
-                                valueText:"",
-                                xAxisLabel: '',
-                                yAxisLabel: 'Updates sent per Control Node',
-                                groupBy: 'Source',
-                                yField: 'SUM(tx_update_stats.reach)',
-                                colors: colorFn,
-                                failureLabel:'Unreach Updates (Total)',
-                                failureColor: '#ECECEC',
-                                substractFailures: false,
-                                failureCheckFn: function (d) {
-                                    return ifNull(d['SUM(tx_update_stats.unreach)'],0);
-                                },
-                            }
+                    }
+                },
+                itemAttr: {
+                    title: ctwl.CONTROL_NODE_SENT_UPDATES
+                }
+            },
+            'controlnode-received-updates': {
+                modelCfg: {
+                    modelId: 'CONTROLNODE_RECEIVED_UPDATES_MODEL',
+                    source:'STATTABLE',
+                    config: {
+                        table_name: 'StatTable.PeerStatsData.rx_update_stats',
+                        select: 'T=, Source, SUM(rx_update_stats.reach), SUM(rx_update_stats.unreach)'
+                    }
+                },
+                viewCfg: {
+                    elementId : ctwl.CONTROLNODE_RECEIVED_UPDATES_SCATTER_CHART_ID,
+                    view : "StackedAreaChartView",
+                    viewConfig : {
+                        chartOptions:{
+                            xAxisLabel: '',
+                            yAxisLabel: 'Updates received per Control Node',
+                            subTitle:"BGP, XMPP Reach/Unreach Route Updates (in 3 mins)",
+                            title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                            groupBy: 'Source',
+                            yField: 'SUM(rx_update_stats.reach)',
+                            colors: colorFn,
+                            failureLabel:'Unreach Updates (Total)',
+                            failureColor: '#ECECEC',
+                            substractFailures: false,
+                            failureCheckFn: function (d) {
+                                return ifNull(d['SUM(rx_update_stats.unreach)'],0);
+                            },
+                            defaultZeroLineDisplay: true
                         }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONTROL_NODE_SENT_UPDATES
+                    }
+                },
+                itemAttr: {
+                    title: ctwl.CONTROL_NODE_RECEIVED_UPDATES
+                }
+            },
+            'controlnode-system-cpu-share': {
+                baseModel: 'SYSTEM_CPU_MODEL',
+                baseView: 'SYSTEM_CPU_SHARE_VIEW',
+                modelCfg : {
+                    modelId: 'CONTROLNODE_SYSTEM_CPU_MODEL',
+                    config: {
+                        where:'node-type = control-node'
+                    }
+                },
+                viewCfg: {
+                    viewConfig: {
+                        chartOptions: {
+                            colors:colorFn
+                        }
                     }
                 }
             },
-            'controlnode-received-updates': function (){
-                return {
-                    modelCfg: {
-                        modelId: 'CONTROLNODE_RECEIVED_UPDATES_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.PeerStatsData.rx_update_stats',
-                            select: 'T=, Source, SUM(rx_update_stats.reach), SUM(rx_update_stats.unreach)'
+            'controlnode-system-memory-usage': {
+                baseModel: 'SYSTEM_MEMORY_MODEL',
+                baseView:'SYSTEM_MEMORY_USAGE_VIEW',
+                modelCfg : {
+                    modelId: 'CONTROLNODE_SYSTEM_MEMORY_MODEL',
+                    config: {
+                        where:'node-type = control-node'
+                    }
+                },
+                viewCfg: {
+                    viewConfig: {
+                        chartOptions: {
+                            colors:colorFn
                         }
-                    },
-                    viewCfg: {
-                        elementId : ctwl.CONTROLNODE_RECEIVED_UPDATES_SCATTER_CHART_ID,
-                        view : "StackedAreaChartView",
-                        viewConfig : {
-                            chartOptions:{
-                                xAxisLabel: '',
-                                yAxisLabel: 'Updates received per Control Node',
-                                subTitle:"BGP, XMPP Reach/Unreach Route Updates (in 3 mins)",
-                                title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                groupBy: 'Source',
-                                yField: 'SUM(rx_update_stats.reach)',
-                                colors: colorFn,
-                                failureLabel:'Unreach Updates (Total)',
-                                failureColor: '#ECECEC',
-                                substractFailures: false,
-                                failureCheckFn: function (d) {
-                                    return ifNull(d['SUM(rx_update_stats.unreach)'],0);
-                                },
-                                defaultZeroLineDisplay: true
-                            }
-                        }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONTROL_NODE_RECEIVED_UPDATES
                     }
                 }
             },
-            'controlnode-system-cpu-share': function (cfg) {
-                var config = monitorInfraViewConfig['system-cpu-share'](cfg);
-                return $.extend(true, config,{
-                    viewCfg: {
-                        viewConfig: {
-                            chartOptions: {
-                                colors:colorFn
-                            }
-                        }
+            'controlnode-disk-usage-info': {
+                baseModel:'SYSTEM_DISK_USAGE_MODEL',
+                baseView:'SYSTEM_DISK_USAGE_VIEW',
+                modelCfg : {
+                    modelId: 'CONTROLNODE_DISK_USAGE_MODEL',
+                    config: {
+                        where:'node-type = control-node'
                     }
-                });
-            },
-            'controlnode-system-memory-usage': function (cfg) {
-                var config = monitorInfraViewConfig['system-memory-usage'](cfg);
-                return $.extend(true, config, {
-                    viewCfg: {
-                        viewConfig: {
-                            chartOptions: {
-                                colors:colorFn
-                            }
+                },
+                viewCfg: {
+                    viewConfig: {
+                        chartOptions: {
+                            colors:colorFn
                         }
-                    }
-                });
-            },
-            'controlnode-disk-usage-info': function (cfg) {
-                var config = monitorInfraViewConfig['disk-usage-info'](cfg);
-                return $.extend(true, config, {
-                    viewCfg: {
-                        viewConfig: {
-                            chartOptions: {
-                                colors:colorFn
-                            }
-                        }
-                    }
-                });
-            },
-            'controlnode-system-logs': function () {
-                return {
-                    modelCfg: {
-                        modelId: 'CONTROLNODE_SYSTEM_LOGS_MODEL',
-                        source:'LOG',
-                        config: {
-                            table_name: 'MessageTable',
-                            table_type: 'LOG',
-                            select: 'Source,ModuleId,MessageTS,Messagetype,Level,Category,Xmlmessage',
-                            where:'ModuleId=contrail-control'
-                        }
-                    },
-                    viewCfg: {
-                        view : "eventDropsView",
-                        viewConfig: {
-                            groupBy: 'MessageType',
-                            title: 'Controlnode System Logs'
-                        }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONTROLNODE_CONSOLE_LOGS,
-                        width: 2
                     }
                 }
             },
-            'controlnode-objectbgprouter-logs': function () {
-                return {
-                    modelCfg: {
-                        modelId: 'CONTROLNODE_OBJECT_BGPROUTER_MODEL',
-                        source:'OBJECT',
-                        config: {
-                            table_name: 'ObjectBgpRouter',
-                            table_type: 'OBJECT',
-                            select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
-                            where:'ModuleId=contrail-control'
-                        }
-                    },
+            'controlnode-system-logs': {
+                modelCfg: {
+                    modelId: 'CONTROLNODE_SYSTEM_LOGS_MODEL',
+                    source:'LOG',
+                    config: {
+                        table_name: 'MessageTable',
+                        table_type: 'LOG',
+                        select: 'Source,ModuleId,MessageTS,Messagetype,Level,Category,Xmlmessage',
+                        where:'ModuleId=contrail-control'
+                    }
+                },
+                viewCfg: {
+                    view : "eventDropsView",
+                    viewConfig: {
+                        groupBy: 'MessageType',
+                        title: 'Controlnode System Logs'
+                    }
+                },
+                itemAttr: {
+                    title: ctwl.CONTROLNODE_CONSOLE_LOGS,
+                    width: 2
+                }
+            },
+            'controlnode-objectbgprouter-logs': {
+                modelCfg: {
+                    modelId: 'CONTROLNODE_OBJECT_BGPROUTER_MODEL',
+                    source:'OBJECT',
+                    config: {
+                        table_name: 'ObjectBgpRouter',
+                        table_type: 'OBJECT',
+                        select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
+                        where:'ModuleId=contrail-control'
+                    }
+                },
+                viewCfg: {
+                    view : "eventDropsView",
+                    viewConfig: {
+                        // groupBy: 'MessageType',
+                        title:'ObjectBgpRouter'
+                    }
+                },
+                itemAttr: {
+                    title: ctwl.CONTROLNODE_CONSOLE_LOGS,
+                    width: 2
+                }
+            },
+            'controlnode-objectxmpppeer-logs': {
+                modelCfg: {
+                    modelId: 'CONTROLNODE_OBJECT_XMPPPEER_MODEL',
+                    source:'OBJECT',
+                    config: {
+                        table_name: 'ObjectXmppPeerInfo',
+                        table_type: 'OBJECT',
+                        select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
+                        where:'ModuleId=contrail-control'
+                    }
+                },
+                viewCfg: {
+                    view : "eventDropsView",
+                    viewConfig: {
+                        // groupBy: 'MessageType',
+                        title:'ObjectXmppPeerInfo'
+                    }
+                },
+                itemAttr: {
+                    title: ctwl.CONTROLNODE_CONSOLE_LOGS,
+                    width: 2
+                }
+            },
+            'controlnode-objectbgppeer-logs': {
+                modelCfg: {
+                    modelId: 'CONTROLNODE_OBJECT_BGPPEER_MODEL',
+                    source:'OBJECT',
+                    config: {
+                        table_name: 'ObjectBgpPeer',
+                        table_type: 'OBJECT',
+                        select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
+                        where:'ModuleId=contrail-control'
+                    }
+                },
+                viewCfg: {
+                    view : "eventDropsView",
+                    viewConfig: {
+                        // groupBy: 'MessageType',
+                        title:'ObjectBgpPeer'
+                    }
+                },
+                itemAttr: {
+                    title: ctwl.CONTROLNODE_CONSOLE_LOGS,
+                    width: 2
+                }
+            },
+            'controlnode-memory': {
+                modelCfg: {
+                    modelId:'CONTROLNODE_MEMORY_MODEL',
+                    source:'STATTABLE',
+                    config: {
+                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                        select: 'name, T=, MAX(process_mem_cpu_usage.mem_res)',
+                        where:'process_mem_cpu_usage.__key = contrail-control'
+                    }
+                },
                     viewCfg: {
-                        view : "eventDropsView",
-                        viewConfig: {
-                            // groupBy: 'MessageType',
-                            title:'ObjectBgpRouter'
-                        }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONTROLNODE_CONSOLE_LOGS,
-                        width: 2
-                    }
-                }
-            },
-            'controlnode-objectxmpppeer-logs': function () {
-                return {
-                    modelCfg: {
-                        modelId: 'CONTROLNODE_OBJECT_XMPPPEER_MODEL',
-                        source:'OBJECT',
-                        config: {
-                            table_name: 'ObjectXmppPeerInfo',
-                            table_type: 'OBJECT',
-                            select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
-                            where:'ModuleId=contrail-control'
-                        }
-                    },
-                    viewCfg: {
-                        view : "eventDropsView",
-                        viewConfig: {
-                            // groupBy: 'MessageType',
-                            title:'ObjectXmppPeerInfo'
-                        }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONTROLNODE_CONSOLE_LOGS,
-                        width: 2
-                    }
-                }
-            },
-            'controlnode-objectbgppeer-logs': function () {
-                return {
-                    modelCfg: {
-                        modelId: 'CONTROLNODE_OBJECT_BGPPEER_MODEL',
-                        source:'OBJECT',
-                        config: {
-                            table_name: 'ObjectBgpPeer',
-                            table_type: 'OBJECT',
-                            select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
-                            where:'ModuleId=contrail-control'
-                        }
-                    },
-                    viewCfg: {
-                        view : "eventDropsView",
-                        viewConfig: {
-                            // groupBy: 'MessageType',
-                            title:'ObjectBgpPeer'
-                        }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONTROLNODE_CONSOLE_LOGS,
-                        width: 2
-                    }
-                }
-            },
-            'controlnode-memory': function (){
-                return {
-                    modelCfg: {
-                        modelId:'CONTROLNODE_MEMORY_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.mem_res)',
-                            where:'process_mem_cpu_usage.__key = contrail-control'
-                        }
-                    },
-                     viewCfg: {
-                         view: 'LineWithFocusChartView',
-                         elementId : ctwl.CONTROLNODE_MEM_SHARE_LINE_CHART_ID,
-                         viewConfig: {
-                             chartOptions: {
-                                yAxisLabel: 'BGP Memory Usage',
-                                subTitle:"Memory usage per system (3 mins)",
-                                groupBy: 'name',
-                                yField: 'MAX(process_mem_cpu_usage.mem_res)',
-                                colors: colorFn,
-                                title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                                yFormatter : function(d){
-                                    return formatBytes(d * 1024, true);
-                                },
-                                //xFormatter: xCPUChartFormatter,
-                             }
-                         }
-                     },
-                     itemAttr: {
-                          title: ctwl.CONTROL_NODE_MEMORY
-                    }
-                }
-            },
-            'controlnode-control': function (){
-                return {
-                    modelCfg:{
-                        modelId:'CONTROLNODE_CPU_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                            where:'process_mem_cpu_usage.__key = contrail-control'
-                        }
-                    },
-                    viewCfg:{
-                        elementId : 'control_node_control',
                         view: 'LineWithFocusChartView',
+                        elementId : ctwl.CONTROLNODE_MEM_SHARE_LINE_CHART_ID,
                         viewConfig: {
                             chartOptions: {
-                                yAxisLabel: ctwl.CONTROL_NODE_CONTROL_CPU_SHARE,
-                                subTitle:ctwl.CPU_SHARE_PERCENTAGE,
-                                yFormatter: d3.format('.2f'),
-                                groupBy: 'name',
-                                colors: colorFn,
-                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                            yAxisLabel: 'BGP Memory Usage',
+                            subTitle:"Memory usage per system (3 mins)",
+                            groupBy: 'name',
+                            yField: 'MAX(process_mem_cpu_usage.mem_res)',
+                            colors: colorFn,
+                            title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                            yFormatter : function(d){
+                                return formatBytes(d * 1024, true);
+                            },
+                            //xFormatter: xCPUChartFormatter,
                             }
-                        }
-                    },itemAttr: {
-                        title: ctwl.CONTROL_NODE_CONTROL_CPU_SHARE
-                    }
-                }
-            },
-            'controlnode-nodemgr': function (){
-                return {
-                    modelCfg:{
-                        modelId: 'CONTROLNODE_NODEMGR_CPU_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                            where:'process_mem_cpu_usage.__key = contrail-control-nodemgr'
-                        }
-                    },
-                    viewCfg:{
-                        elementId : 'control_node_nodemgr',
-                        view: 'LineWithFocusChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: d3.format('.2f'),
-                                yAxisLabel: "Node Manager CPU Share (%)",
-                                subTitle:ctwl.CPU_SHARE_PERCENTAGE,
-                                groupBy: 'name',
-                                colors: colorFn,
-                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                            }
-                        }
-                    },itemAttr: {
-                        title: ctwl.CONTROL_NODE_NODE_MANAGER_CPU_SHARE
-                    }
-                }
-            },
-            'controlnode-dns': function (){
-                return {
-                    modelCfg:{
-                        modelId:'CONTROLNODE_DNS_CPU_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                            where:'process_mem_cpu_usage.__key = contrail-dns'
-                        }
-                    },
-                    viewCfg:{
-                        elementId : 'control_node_dns',
-                        view: 'LineWithFocusChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: d3.format('.2f'),
-                                subTitle:ctwl.CPU_SHARE_PERCENTAGE,
-                                yAxisLabel: ctwl.CONTROL_DNS_CPU_SHARE,
-                                groupBy: 'name',
-                                colors: colorFn,
-                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                            }
-                        }
-                    },itemAttr: {
-                        title: ctwl.CONTROL_DNS_CPU_SHARE
-                    }
-                }
-            },
-            'controlnode-named': function (){
-                return {
-                    modelCfg:{
-                        modelId:'CONTROLNODEL_NAMED_CPU_MODEL',
-                        source:'STATTABLE',
-                        config: {
-                            table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                            select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                            where:'process_mem_cpu_usage.__key = contrail-named'
-                        }
-                    },
-                    viewCfg:{
-                        elementId : 'control_node_named',
-                        view: 'LineWithFocusChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: d3.format('.2f'),
-                                subTitle:ctwl.CPU_SHARE_PERCENTAGE,
-                                yAxisLabel: ctwl.CONTROL_NAMED_CPU_SHARE,
-                                groupBy: 'name',
-                                colors: colorFn,
-                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                            }
-                        }
-                    },itemAttr: {
-                        title: ctwl.CONTROL_NAMED_CPU_SHARE
-                    }
-                }
-            },
-            'controlnode-grid-view': function () {
-                return {
-                    modelCfg:{
-                        modelId: 'CONTROLNODE_LIST_MODEL',
-                        config: controlNodeListModelCfg
-                    },
-                    viewCfg: {
-                        elementId : ctwl.CONTROLNODE_SUMMARY_GRID_ID,
-                        title : ctwl.CONTROLNODE_SUMMARY_TITLE,
-                        view : "GridView",
-                        viewConfig : {
-                            elementConfig :
-                                getControlNodeSummaryGridConfig('controlnode-grid-view', colorFn)
                         }
                     },
                     itemAttr: {
-                        width: 2,
-                        height: 2,
-                    }
+                        title: ctwl.CONTROL_NODE_MEMORY
                 }
             },
+            'controlnode-control': {
+                modelCfg:{
+                    modelId:'CONTROLNODE_CPU_MODEL',
+                    source:'STATTABLE',
+                    config: {
+                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
+                        where:'process_mem_cpu_usage.__key = contrail-control'
+                    }
+                },
+                viewCfg:{
+                    elementId : 'control_node_control',
+                    view: 'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yAxisLabel: ctwl.CONTROL_NODE_CONTROL_CPU_SHARE,
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            yFormatter: d3.format('.2f'),
+                            groupBy: 'name',
+                            colors: colorFn,
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                        }
+                    }
+                },itemAttr: {
+                    title: ctwl.CONTROL_NODE_CONTROL_CPU_SHARE
+                }
+            },
+            'controlnode-nodemgr': {
+                modelCfg:{
+                    modelId: 'CONTROLNODE_NODEMGR_CPU_MODEL',
+                    source:'STATTABLE',
+                    config: {
+                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
+                        where:'process_mem_cpu_usage.__key = contrail-control-nodemgr'
+                    }
+                },
+                viewCfg:{
+                    elementId : 'control_node_nodemgr',
+                    view: 'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yFormatter: d3.format('.2f'),
+                            yAxisLabel: "Node Manager CPU Share (%)",
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            groupBy: 'name',
+                            colors: colorFn,
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                        }
+                    }
+                },itemAttr: {
+                    title: ctwl.CONTROL_NODE_NODE_MANAGER_CPU_SHARE
+                }
+            },
+            'controlnode-dns': {
+                modelCfg:{
+                    modelId:'CONTROLNODE_DNS_CPU_MODEL',
+                    source:'STATTABLE',
+                    config: {
+                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
+                        where:'process_mem_cpu_usage.__key = contrail-dns'
+                    }
+                },
+                viewCfg:{
+                    elementId : 'control_node_dns',
+                    view: 'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yFormatter: d3.format('.2f'),
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            yAxisLabel: ctwl.CONTROL_DNS_CPU_SHARE,
+                            groupBy: 'name',
+                            colors: colorFn,
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                        }
+                    }
+                },itemAttr: {
+                    title: ctwl.CONTROL_DNS_CPU_SHARE
+                }
+            },
+            'controlnode-named': {
+                modelCfg:{
+                    modelId:'CONTROLNODEL_NAMED_CPU_MODEL',
+                    source:'STATTABLE',
+                    config: {
+                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
+                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
+                        where:'process_mem_cpu_usage.__key = contrail-named'
+                    }
+                },
+                viewCfg:{
+                    elementId : 'control_node_named',
+                    view: 'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yFormatter: d3.format('.2f'),
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            yAxisLabel: ctwl.CONTROL_NAMED_CPU_SHARE,
+                            groupBy: 'name',
+                            colors: colorFn,
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                        }
+                    }
+                },itemAttr: {
+                    title: ctwl.CONTROL_NAMED_CPU_SHARE
+                }
+            },
+            'controlnode-grid-view': {
+                modelCfg:{
+                    modelId: 'CONTROLNODE_LIST_MODEL',
+                    config: controlNodeListModelCfg
+                },
+                viewCfg: {
+                    elementId : ctwl.CONTROLNODE_SUMMARY_GRID_ID,
+                    title : ctwl.CONTROLNODE_SUMMARY_TITLE,
+                    view : "GridView",
+                    viewConfig : {
+                        elementConfig :
+                            getControlNodeSummaryGridConfig('controlnode-grid-view', colorFn)
+                    }
+                },
+                itemAttr: {
+                    width: 2,
+                    height: 2,
+                }
+            }
         };
         function getControlNodeSummaryGridConfig(widgetId, colorFn) {
             var columns = [

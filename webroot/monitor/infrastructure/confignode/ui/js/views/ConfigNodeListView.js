@@ -34,18 +34,18 @@ define(
                                             },
                                             widgetCfgList: [{
                                                 id: 'confignode-requests-served'
-                                            // }, {
-                                            //     id: 'confignode-response-time-size'
-                                            // }, {
-                                            //     id: 'confignode-percentile-time-size'
-                                            // }, {
-                                            //     id: 'confignode-reads-writes-donut-chart'
-                                            // }, {
-                                            //     id: 'confignode-grid-view'
+                                            }, {
+                                                id: 'confignode-response-time-size'
+                                            }, {
+                                                id: 'confignode-percentile-time-size'
+                                            }, {
+                                                id: 'confignode-reads-writes-donut-chart'
+                                            }, {
+                                                id: 'confignode-grid-view'
                                             }]
                                         }
                                     },
-                                }/*,{
+                                },{
                                     page: {
                                         elementId: 'config-node-grid-stackview-1',
                                         view: 'GridStackView',
@@ -106,19 +106,9 @@ define(
                                             }, {
                                                 id: 'confignode-process-contrail-discovery'
                                             }, {
-                                                id: 'confignode-system-cpu-share',
-                                                itemAttr:{
-                                                    config:{
-                                                        nodeType:'config-node'
-                                                    }
-                                                }
+                                                id: 'confignode-system-cpu-share'
                                             }, {
                                                 id: 'confignode-system-memory-usage',
-                                                itemAttr:{
-                                                    config:{
-                                                        nodeType:'config-node'
-                                                    }
-                                                }
                                             }, {
                                                 id: 'confignode-grid-view'
                                             }]
@@ -135,18 +125,13 @@ define(
                                                 heightMultiplier: 8
                                             },
                                             widgetCfgList: [{
-                                                id: 'confignode-disk-usage-info',
-                                                itemAttr:{
-                                                    config:{
-                                                        nodeType:'config-node'
-                                                    }
-                                                }
+                                                id: 'confignode-disk-usage-info'
                                             },{
                                                 id: 'confignode-grid-view'
                                             }]
                                         }
                                     }
-                                }*/]
+                                }]
                             }
                         }]
                     }]

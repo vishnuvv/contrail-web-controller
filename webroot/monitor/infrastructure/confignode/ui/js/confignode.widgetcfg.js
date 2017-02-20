@@ -278,28 +278,28 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
               },
               'confignode-process-contrail-schema': {
-                    baseModel:'CONFIGNODE_SCHEMA_CPU_MODEL',
-                    modelCfg: {
-                    },
-                    viewCfg: {
-                        elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_SCHEMA_LINE_CHART_ID,
-                        view:'LineWithFocusChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: d3.format('.2f'),
-                                subTitle:ctwl.CPU_SHARE_PERCENTAGE,
-                                yAxisLabel: 'Schema CPU Share (%)',
-                                groupBy: 'name',
-                                colors: colorFn,
-                                yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                title: ctwl.CONFIGNODE_SUMMARY_TITLE,
-                            }
+                baseModel:'CONFIGNODE_SCHEMA_CPU_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : monitorInfraConstants.CONFIGNODE_CPU_SHARE_SCHEMA_LINE_CHART_ID,
+                    view:'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yFormatter: d3.format('.2f'),
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            yAxisLabel: 'Schema CPU Share (%)',
+                            groupBy: 'name',
+                            colors: colorFn,
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONFIG_NODE_SCHEMA_CPU_SHARE,
                     }
                 },
+                itemAttr: {
+                    title: ctwl.CONFIG_NODE_SCHEMA_CPU_SHARE,
+                }
+            },
             'confignode-system-cpu-share': {
                 baseModel: 'SYSTEM_CPU_MODEL',
                 baseView: 'SYSTEM_CPU_SHARE_VIEW',
