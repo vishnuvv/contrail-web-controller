@@ -36,7 +36,8 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                     }
                 },
                 itemAttr: {
-                    title: ctwl.CONTROL_NODE_SENT_UPDATES
+                    title: ctwl.CONTROL_NODE_SENT_UPDATES,
+                    width: 1/2,
                 }
             },
             'controlnode-received-updates': {
@@ -66,7 +67,8 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                     }
                 },
                 itemAttr: {
-                    title: ctwl.CONTROL_NODE_RECEIVED_UPDATES
+                    title: ctwl.CONTROL_NODE_RECEIVED_UPDATES,
+                    width: 1/2,
                 }
             },
             'controlnode-system-cpu-share': {
@@ -77,6 +79,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                     config: {
                         where:'node-type = control-node'
                     }
+                },
+                itemAttr: {
+                    width: 1/2,
                 }
             },
             'controlnode-system-memory-usage': {
@@ -88,6 +93,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                         where:'node-type = control-node'
                     }
                 },
+                itemAttr: {
+                    width: 1/2,
+                }
             },
             'controlnode-disk-usage-info': {
                 baseModel:'SYSTEM_DISK_USAGE_MODEL',
@@ -97,6 +105,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                     config: {
                         where:'node-type = control-node'
                     }
+                },
+                itemAttr: {
+                    width: 1/2,
                 }
             },
             'controlnode-system-logs': {
@@ -190,7 +201,8 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                     }
                 },
                 itemAttr: {
-                    title: ctwl.CONTROL_NODE_MEMORY
+                    title: ctwl.CONTROL_NODE_MEMORY,
+                    width: 1/2
                 }
             },
             'controlnode-control': {
@@ -212,7 +224,8 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                         }
                     }
                 },itemAttr: {
-                    title: ctwl.CONTROL_NODE_CONTROL_CPU_SHARE
+                    title: ctwl.CONTROL_NODE_CONTROL_CPU_SHARE,
+                    width: 1/2
                 }
             },
             'controlnode-nodemgr': {
@@ -234,7 +247,8 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                         }
                     }
                 },itemAttr: {
-                    title: ctwl.CONTROL_NODE_NODE_MANAGER_CPU_SHARE
+                    title: ctwl.CONTROL_NODE_NODE_MANAGER_CPU_SHARE,
+                    width: 1/2
                 }
             },
             'controlnode-dns': {
@@ -256,7 +270,8 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                         }
                     }
                 },itemAttr: {
-                    title: ctwl.CONTROL_DNS_CPU_SHARE
+                    title: ctwl.CONTROL_DNS_CPU_SHARE,
+                    width: 1/2
                 }
             },
             'controlnode-named': {
@@ -278,7 +293,8 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                         }
                     }
                 },itemAttr: {
-                    title: ctwl.CONTROL_NAMED_CPU_SHARE
+                    title: ctwl.CONTROL_NAMED_CPU_SHARE,
+                    width: 1/2
                 }
             },
             'controlnode-grid-view': {
@@ -295,7 +311,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                     }
                 },
                 itemAttr: {
-                    width: 2,
                     height: 2,
                 }
             }

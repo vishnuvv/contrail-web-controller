@@ -23,7 +23,8 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                     viewCfg:{
                     },
                     itemAttr: {
-                        title: ctwl.SYSTEM_CPU_SHARE
+                        title: ctwl.SYSTEM_CPU_SHARE,
+                        width: 1/2
                     }
                 },
                 'system-memory-usage': {
@@ -33,7 +34,8 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                     },
                     viewCfg: {
                     },itemAttr: {
-                        title: ctwl.SYSTEM_MEMORY_USED
+                        title: ctwl.SYSTEM_MEMORY_USED,
+                        width: 1/2
                     }
                 },
                 'disk-usage-info': function (config){
@@ -45,7 +47,8 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                         viewCfg: {
                         },
                         itemAttr: {
-                            title: ctwl.DISK_USAGE
+                            title: ctwl.DISK_USAGE,
+                            width: 1/2
                         }
                     }
                 }

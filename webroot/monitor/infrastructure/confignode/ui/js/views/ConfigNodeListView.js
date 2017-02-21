@@ -25,7 +25,7 @@ define(
                                         viewConfig: {
                                             elementId: 'config-node-grid-stackview-0',
                                             gridAttr: {
-                                                widthMultiplier: 6,
+                                                widthMultiplier: 24,
                                                 heightMultiplier: 10
                                             },
                                             widgetCfgList: [{
@@ -48,7 +48,7 @@ define(
                                         viewConfig: {
                                             elementId: 'config-node-grid-stackview-1',
                                             gridAttr: {
-                                                widthMultiplier: 6,
+                                                widthMultiplier: 24,
                                                 heightMultiplier: 8
                                             },
                                             widgetCfgList: [{
@@ -71,7 +71,7 @@ define(
                                         viewConfig: {
                                             elementId: 'config-node-grid-stackview-2',
                                             gridAttr: {
-                                                widthMultiplier: 6,
+                                                widthMultiplier: 24,
                                                 heightMultiplier: 8
                                             },
                                             widgetCfgList: [{
@@ -94,7 +94,7 @@ define(
                                         viewConfig: {
                                             elementId: 'config-node-grid-stackview-3',
                                             gridAttr: {
-                                                widthMultiplier: 6,
+                                                widthMultiplier: 24,
                                                 heightMultiplier: 8
                                             },
                                             widgetCfgList: [{
@@ -117,7 +117,7 @@ define(
                                         viewConfig: {
                                             elementId: 'config-node-grid-stackview-4',
                                             gridAttr: {
-                                                widthMultiplier: 6,
+                                                widthMultiplier: 24,
                                                 heightMultiplier: 8
                                             },
                                             widgetCfgList: [{
