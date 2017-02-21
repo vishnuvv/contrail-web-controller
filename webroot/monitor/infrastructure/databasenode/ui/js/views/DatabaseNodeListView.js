@@ -30,7 +30,7 @@ define(
                                                  viewConfig: {
                                                      elementId : 'database-node-grid-stackview-0',
                                                      gridAttr : {
-                                                         widthMultiplier : 6,
+                                                         widthMultiplier : 24,
                                                          heightMultiplier : 8
                                                      },
                                                      widgetCfgList: [
@@ -38,13 +38,7 @@ define(
                                                          {id:'databasenode-pending-compactions'},
                                                          {id:'databasenode-cpu-share'},
                                                          {id:'databasenode-memory'},
-                                                         {id:'databasenode-disk-usage-info',
-                                                             itemAttr:{
-                                                                 config:{
-                                                                     nodeType:'database-node'
-                                                                 }
-                                                             }
-                                                         },
+                                                         {id:'databasenode-disk-usage-info'},
                                                          {id:'database-grid-view'}
                                                      ]
                                                   }
@@ -56,26 +50,14 @@ define(
                                                  viewConfig: {
                                                      elementId : 'database-node-grid-stackview-1',
                                                      gridAttr : {
-                                                         widthMultiplier : 6,
+                                                         widthMultiplier : 24,
                                                          heightMultiplier : 8
                                                      },
                                                      widgetCfgList: [
                                                          {id:'databasenode-zookeeper'},
                                                          {id:'databasenode-kafka'},
-                                                         {id:'databasenode-system-cpu-share',
-                                                             itemAttr:{
-                                                                 config:{
-                                                                     nodeType:'database-node'
-                                                                 }
-                                                             }
-                                                         },
-                                                         {id:'databasenode-system-memory-usage',
-                                                             itemAttr:{
-                                                                 config:{
-                                                                     nodeType:'database-node'
-                                                                 }
-                                                             }
-                                                         },
+                                                         {id:'databasenode-system-cpu-share'},
+                                                         {id:'databasenode-system-memory-usage'},
                                                         // {id:'disk-usage-info'},
                                                          {id:'database-grid-view'}
                                                      ]

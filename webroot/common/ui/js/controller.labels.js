@@ -633,7 +633,7 @@ define([
         this.VROUTER_AGENT_CPU_PERCENTILES = "VRouter Agent CPU Share Percentiles";
         this.VROUTER_AGENT_MEMORY_PERCENTILES = "VRouter Agent Memory Usage Percentiles";
         this.VROUTER_ACTIVE_FLOWS_PERCENTILES = "Active Flows Percentiles";
-        this.VROUTER_ACTIVE_FLOWS_DROPS_LABEL = "Sampled Active Flows / Drops";
+        this.VROUTER_ACTIVE_FLOWS_DROPS_LABEL = "Active Flows";
         this.VROUTER_AGENT_CPU_PERCENTILES = "Agent CPU Percentiles";
         this.VROUTER_AGENT_MEMORY_PERCENTILES = "Agent Memory Percentiles";
 

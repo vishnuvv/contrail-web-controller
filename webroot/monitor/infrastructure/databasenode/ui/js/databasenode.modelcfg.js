@@ -1,6 +1,6 @@
-define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-databasenode-model', 'node-color-mapping'],
-        function(_, ContrailView, LegendView, databaseNodeListModelCfg, NodeColorMapping){
-    var ConfigNodeModelConfig = function () {
+define(['lodash', 'contrail-view','monitor-infra-databasenode-model'],
+        function(_, ContrailView, databaseNodeListModelCfg){
+    var DatabaseNodeModelConfig = function () {
         var self = this;
         self.modelCfg = {
             'DATABASENODE_PERCENTILE_MODEL' : {
@@ -10,11 +10,21 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-databasenode-mo
                     "select": "PERCENTILES(api_stats.response_time_in_usec), PERCENTILES(api_stats.response_size)",
                     "parser": monitorInfraParsers.percentileConfigNodeSummaryChart
                 }
-            }, 
+            },
+            'DATABASENODE_CASSANDRA_PENDING_COMPACTIONS_MODEL': {
+                source:'STATTABLE',
+                config: {
+                    table_name: 'StatTable.CassandraStatusData.cassandra_compaction_task',
+                    select: 'T=, name, MAX(cassandra_compaction_task.pending_compaction_tasks)'
+                }
+            },
+            'DATABASENODE_LIST_MODEL': {
+                config: databaseNodeListModelCfg
+            }
         }
     }
 
-    return (new ConfigNodeModelConfig()).modelCfg;
+    return (new DatabaseNodeModelConfig()).modelCfg;
 
 
 })
