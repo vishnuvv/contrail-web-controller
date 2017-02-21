@@ -23,8 +23,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     }
                 },
                 itemAttr: {
-                    height:0.25,
-                    width: 1.98,
+                    height: 0.3,
+                    width: 0.98,
                     title: ctwl.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE
                 }
             },
@@ -50,7 +50,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     itemAttr: {
                         height: 1.2,
-                        width: 2,
                         title: ctwl.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION
                     }
                 }
@@ -82,7 +81,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     }
                 },
                 itemAttr: {
-                    width: 0.67,
+                    width: 1/3,
                     height: 0.9,
                     title: ctwl.ANALYTICS_NODE_QUERY_DISTRIBUTION
                 }
@@ -102,6 +101,9 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             colors:colorFn
                         }
                     }
+                },
+                itemAttr: {
+                    width: 1/2,
                 }
             },
             'analyticsnode-system-memory-usage': {
@@ -119,6 +121,9 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             colors:colorFn
                         }
                     }
+                },
+                itemAttr: {
+                    width: 1/2,
                 }
             },
             'analyticsnode-disk-usage-info': {
@@ -136,6 +141,9 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             colors:colorFn
                         }
                     }
+                },
+                itemAttr: {
+                    width: 1/2,
                 }
             },
             'analyticsnode-generators-scatterchart': function (){
@@ -171,7 +179,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         }
                     },
                 itemAttr: {
-                    width: 0.83,
+                    width: 1/3,
                     height: 1.1,
                     title: ctwl.ANALYTICS_NODE_GENERATORS
                     }
@@ -201,7 +209,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         }
                     },
                     itemAttr: {
-                        width: 0.67,
+                        width: 1/3,
                         height: 0.9,
                         title: ctwl.ANALYTICS_NODE_DB_READ_WRITE
                     }
@@ -234,7 +242,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES
+                        title: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES,
+                        width: 1/2
                     }
                 }
             },
@@ -265,7 +274,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_TOP_GENERATORS
+                        title: ctwl.ANALYTICS_NODE_TOP_GENERATORS,
+                        width: 1/2
                     }
                 }
             },
@@ -295,7 +305,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_QE_CPU_SHARE
+                        title: ctwl.ANALYTICS_NODE_QE_CPU_SHARE,
+                        width: 1/2
                     }
                 }
             },
@@ -325,7 +336,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_COLLECTOR_CPU_SHARE
+                        title: ctwl.ANALYTICS_NODE_COLLECTOR_CPU_SHARE,
+                        width: 1/2
                     }
                 }
             },
@@ -355,7 +367,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE
+                        title: ctwl.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE,
+                        width: 1/2
                     }
                 }
             },
@@ -385,7 +398,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_SNMP_COLLECTOR_CPU_SHARE
+                        title: ctwl.ANALYTICS_NODE_SNMP_COLLECTOR_CPU_SHARE,
+                        width: 1/2
                     }
                 }
             },
@@ -415,7 +429,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_TOPOLOGY_CPU_SHARE
+                        title: ctwl.ANALYTICS_NODE_TOPOLOGY_CPU_SHARE,
+                        width: 1/2
                      }
                  }
              },
@@ -446,7 +461,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         }
                     },
                     itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_NODE_MANAGER_CPU_SHARE
+                        title: ctwl.ANALYTICS_NODE_NODE_MANAGER_CPU_SHARE,
+                        width: 1/2
                     }
                 }
             },'analyticsnode-api-cpu-share': function () {
@@ -475,7 +491,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_API_CPU_SHARE
+                        title: ctwl.ANALYTICS_NODE_API_CPU_SHARE,
+                        width: 1/2
                     }
                 };
             },'analyticsnode-stats-available-connections': function () {
@@ -506,7 +523,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_AVAILABLE_CONNECTIONS
+                        title: ctwl.ANALYTICS_NODE_AVAILABLE_CONNECTIONS,
+                        width: 1/2
                     }
                 }
             },
@@ -526,7 +544,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         }
                     },
                     itemAttr: {
-                        width: 2,
                         height: 2
                     }
                 }

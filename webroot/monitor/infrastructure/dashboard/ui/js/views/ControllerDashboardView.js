@@ -25,7 +25,7 @@ define([
         ControlNodeScatterChartView,DatabaseNodeScatterChartView,
         AnalyticsNodeScatterChartView,MonitorInfraDashboardView,VRouterDashboardView,
         analyticsNodeListModelCfg,databaseNodeListModelCfg,configNodeListModelCfg,
-        controlNodeListModelCfg,VRouterListModel,ContrailListModel) {
+        controlNodeListModelCfg,vRouterListModelCfg,ContrailListModel) {
 
     var ControllerDashboardView = Backbone.View.extend({
         el: $(contentContainer),
@@ -38,7 +38,7 @@ define([
     });
 
     function getInfoboxesConfig() {
-        var vRouterListModel = new VRouterListModel();
+        var vRouterListModel = new ContrailListModel(vRouterListModelCfg);
         var analyticsNodeListModel = new ContrailListModel(analyticsNodeListModelCfg);
         var controlNodeListModel = new ContrailListModel(controlNodeListModelCfg);
         var databaseNodeListModel = new ContrailListModel(databaseNodeListModelCfg);

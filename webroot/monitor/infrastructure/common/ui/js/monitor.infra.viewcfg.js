@@ -73,7 +73,35 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                             }
                         }
                     }
-                }
+                },
+                'NODE_PROCESS_CPU_VIEW': {
+                elementId : 'process_cpu_chart_id',
+                    view:'LineWithFocusChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            subTitle:ctwl.CPU_SHARE_PERCENTAGE,
+                            yFormatter: d3.format('.2f'),
+                            groupBy: 'name',
+                            yField: 'MAX(process_mem_cpu_usage.cpu_share)',
+                            //yTickFormat: cpuChartYTickFormat,
+                        }
+                    } 
+                },
+                'NODE_PROCESS_MEMORY_VIEW': {
+                elementId : 'process_memory_chart_id',
+                     view:'LineWithFocusChartView',
+                     viewConfig: {
+                         chartOptions: {
+                             subTitle: 'Memory usage (in 3 mins)',
+                             groupBy: 'name',
+                             yField: 'MAX(process_mem_cpu_usage.mem_res)',
+                             yFormatter : function(d){
+                                 return formatBytes(d * 1024, true);
+                             },
+                             //xFormatter: xCPUChartFormatter,
+                      }
+                     } 
+                },
         };
         self.getViewConfig = function(id) {
             return self.viewConfig[id];
