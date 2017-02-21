@@ -25,7 +25,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                     }
                 },
                 itemAttr: {
-                    height:0.30
+                    height:0.30,
+                    width: 1/2
                 }
             },
             'databasenode-cpu-share': {
@@ -58,6 +59,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                     },
                     itemAttr: {
                         title: ctwl.DATABSE_NODE_CPU_SHARE,
+                        width: 1/2,
+                        height: 0.9
                 }
             },
             'databasenode-memory': {
@@ -90,6 +93,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                      },
                  itemAttr: {
                      title: ctwl.DATABSE_NODE_MEMORY,
+                     width: 1/2
                 }
             },
             'databasenode-system-cpu-share': {
@@ -107,6 +111,9 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                             colors:colorFn
                         }
                     }
+                },
+                itemAttr: {
+                     width: 1/2
                 }
             },
             'databasenode-system-memory-usage': {
@@ -124,6 +131,10 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                             colors:colorFn
                         }
                     }
+                },
+                itemAttr: {
+                     title: ctwl.DATABSE_NODE_MEMORY,
+                     width: 1/2
                 }
             },
             'databasenode-disk-usage-info': {
@@ -141,6 +152,10 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                             colors:colorFn
                         }
                     }
+                },
+                itemAttr: {
+                     title: ctwl.DATABSE_NODE_MEMORY,
+                     width: 1/2
                 }
             },
             'databasenode-pending-compactions': {
@@ -169,7 +184,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                 },
                 itemAttr: {
                     title: ctwl.DATABSE_NODE_PENDING_COMPACTIONS,
-                    height: 1.3
+                    height: 1.2,
+                    width: 1/2
                 }
             },
             'databasenode-zookeeper': {
@@ -197,7 +213,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                         }
                     }
                 },itemAttr: {
-                    title: ctwl.DATABASE_NODE_ZOOKEEPER_CPU_SHARE
+                    title: ctwl.DATABASE_NODE_ZOOKEEPER_CPU_SHARE,
+                    width: 1/2
                 }
             },
             'databasenode-kafka': {
@@ -225,7 +242,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                         }
                     }
                 },itemAttr: {
-                    title: ctwl.DATABASE_NODE_KAFKA_CPU_SHARE
+                    title: ctwl.DATABASE_NODE_KAFKA_CPU_SHARE,
+                    width: 1/2
                 }
             },
             'database-grid-view': {
@@ -245,7 +263,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                     }
                 },
                 itemAttr: {
-                    width: 2,
                     height: 2,
                 }
             }

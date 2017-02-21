@@ -30,7 +30,7 @@ define(
                                                  viewConfig: {
                                                      elementId : 'database-node-grid-stackview-0',
                                                      gridAttr : {
-                                                         widthMultiplier : 6,
+                                                         widthMultiplier : 24,
                                                          heightMultiplier : 8
                                                      },
                                                      widgetCfgList: [
@@ -56,7 +56,7 @@ define(
                                                  viewConfig: {
                                                      elementId : 'database-node-grid-stackview-1',
                                                      gridAttr : {
-                                                         widthMultiplier : 6,
+                                                         widthMultiplier : 24,
                                                          heightMultiplier : 8
                                                      },
                                                      widgetCfgList: [

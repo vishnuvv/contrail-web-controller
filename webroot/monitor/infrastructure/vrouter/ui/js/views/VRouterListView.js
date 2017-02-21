@@ -46,7 +46,7 @@ define(
                                           viewConfig: {
                                               elementId: 'grid-stack-view-page-1',
                                               gridAttr: {
-                                                  widthMultiplier: 12,
+                                                  widthMultiplier: 24,
                                                   heightMultiplier: 10
                                               },
                                               widgetCfgList: [
@@ -82,7 +82,7 @@ define(
                                           viewConfig: {
                                               elementId: 'grid-stack-view-page-2',
                                               gridAttr: {
-                                                  widthMultiplier: 12,
+                                                  widthMultiplier: 24,
                                                   heightMultiplier: 10
                                               },
                                               widgetCfgList: [
