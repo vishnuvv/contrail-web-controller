@@ -11,13 +11,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
         var self = this;
         self.viewConfig = {
             'controlnode-sent-updates': {
+                baseModel: 'CONTROLNODE_SENT_UPDATES_MODEL',
                 modelCfg: {
-                    modelId: 'CONTROLNODE_SENT_UPDATES_MODEL',
-                    source:'STATTABLE',
-                    config: {
-                        table_name: 'StatTable.PeerStatsData.tx_update_stats',
-                        select: 'T=, Source, SUM(tx_update_stats.reach), SUM(tx_update_stats.unreach)'
-                    }
+
                 },
                 viewCfg:{
                     elementId : ctwl.CONTROLNODE_SENT_UPDATES_SCATTER_CHART_ID,
@@ -47,13 +43,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-received-updates': {
+                baseModel: 'CONTROLNODE_RECEIVED_UPDATES_MODEL',
                 modelCfg: {
-                    modelId: 'CONTROLNODE_RECEIVED_UPDATES_MODEL',
-                    source:'STATTABLE',
-                    config: {
-                        table_name: 'StatTable.PeerStatsData.rx_update_stats',
-                        select: 'T=, Source, SUM(rx_update_stats.reach), SUM(rx_update_stats.unreach)'
-                    }
+
                 },
                 viewCfg: {
                     elementId : ctwl.CONTROLNODE_RECEIVED_UPDATES_SCATTER_CHART_ID,
@@ -82,10 +74,10 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-system-cpu-share': {
-                baseModel: 'SYSTEM_CPU_MODEL',
                 baseView: 'SYSTEM_CPU_SHARE_VIEW',
+                baseModel: 'SYSTEM_CPU_MODEL',
                 modelCfg : {
-                    modelId: 'CONTROLNODE_SYSTEM_CPU_MODEL',
+                    modelId: 'CONTROLNODE_SYSTEM_CPU_SHARE_MODEL',
                     config: {
                         where:'node-type = control-node'
                     }
@@ -133,15 +125,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-system-logs': {
+                baseModel: 'CONTROLNODE_SYSTEM_LOGS_MODEL',
                 modelCfg: {
-                    modelId: 'CONTROLNODE_SYSTEM_LOGS_MODEL',
-                    source:'LOG',
-                    config: {
-                        table_name: 'MessageTable',
-                        table_type: 'LOG',
-                        select: 'Source,ModuleId,MessageTS,Messagetype,Level,Category,Xmlmessage',
-                        where:'ModuleId=contrail-control'
-                    }
+
                 },
                 viewCfg: {
                     view : "eventDropsView",
@@ -156,15 +142,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-objectbgprouter-logs': {
+                baseModel: 'CONTROLNODE_OBJECT_BGPROUTER_MODEL',
                 modelCfg: {
-                    modelId: 'CONTROLNODE_OBJECT_BGPROUTER_MODEL',
-                    source:'OBJECT',
-                    config: {
-                        table_name: 'ObjectBgpRouter',
-                        table_type: 'OBJECT',
-                        select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
-                        where:'ModuleId=contrail-control'
-                    }
+
                 },
                 viewCfg: {
                     view : "eventDropsView",
@@ -179,15 +159,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-objectxmpppeer-logs': {
+                baseModel: 'CONTROLNODE_OBJECT_XMPPPEER_MODEL',
                 modelCfg: {
-                    modelId: 'CONTROLNODE_OBJECT_XMPPPEER_MODEL',
-                    source:'OBJECT',
-                    config: {
-                        table_name: 'ObjectXmppPeerInfo',
-                        table_type: 'OBJECT',
-                        select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
-                        where:'ModuleId=contrail-control'
-                    }
+
                 },
                 viewCfg: {
                     view : "eventDropsView",
@@ -202,15 +176,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-objectbgppeer-logs': {
+                baseModel: 'CONTROLNODE_OBJECT_BGPPEER_MODEL',
                 modelCfg: {
-                    modelId: 'CONTROLNODE_OBJECT_BGPPEER_MODEL',
-                    source:'OBJECT',
-                    config: {
-                        table_name: 'ObjectBgpPeer',
-                        table_type: 'OBJECT',
-                        select: 'Source,ModuleId,MessageTS,ObjectId,Messagetype,ObjectLog,SystemLog',
-                        where:'ModuleId=contrail-control'
-                    }
+
                 },
                 viewCfg: {
                     view : "eventDropsView",
@@ -225,14 +193,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-memory': {
+                baseModel:'CONTROLNODE_MEMORY_MODEL',
                 modelCfg: {
-                    modelId:'CONTROLNODE_MEMORY_MODEL',
-                    source:'STATTABLE',
-                    config: {
-                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                        select: 'name, T=, MAX(process_mem_cpu_usage.mem_res)',
-                        where:'process_mem_cpu_usage.__key = contrail-control'
-                    }
+
                 },
                     viewCfg: {
                         view: 'LineWithFocusChartView',
@@ -257,14 +220,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-control': {
+                baseModel:'CONTROLNODE_CONTROL_CPU_MODEL',
                 modelCfg:{
-                    modelId:'CONTROLNODE_CPU_MODEL',
-                    source:'STATTABLE',
-                    config: {
-                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                        where:'process_mem_cpu_usage.__key = contrail-control'
-                    }
+
                 },
                 viewCfg:{
                     elementId : 'control_node_control',
@@ -285,14 +243,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-nodemgr': {
+                baseModel: 'CONTROLNODE_NODEMGR_CPU_MODEL',
                 modelCfg:{
-                    modelId: 'CONTROLNODE_NODEMGR_CPU_MODEL',
-                    source:'STATTABLE',
-                    config: {
-                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                        where:'process_mem_cpu_usage.__key = contrail-control-nodemgr'
-                    }
+
                 },
                 viewCfg:{
                     elementId : 'control_node_nodemgr',
@@ -313,14 +266,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-dns': {
+                baseModel:'CONTROLNODE_DNS_CPU_MODEL',
                 modelCfg:{
-                    modelId:'CONTROLNODE_DNS_CPU_MODEL',
-                    source:'STATTABLE',
-                    config: {
-                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                        where:'process_mem_cpu_usage.__key = contrail-dns'
-                    }
+
                 },
                 viewCfg:{
                     elementId : 'control_node_dns',
@@ -341,14 +289,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-named': {
+                baseModel:'CONTROLNODE_NAMED_CPU_MODEL',
                 modelCfg:{
-                    modelId:'CONTROLNODEL_NAMED_CPU_MODEL',
-                    source:'STATTABLE',
-                    config: {
-                        table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
-                        select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
-                        where:'process_mem_cpu_usage.__key = contrail-named'
-                    }
+
                 },
                 viewCfg:{
                     elementId : 'control_node_named',
@@ -369,9 +312,9 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'controlnode-grid-view': {
+                baseModel: 'CONTROLNODE_LIST_MODEL',
                 modelCfg:{
-                    modelId: 'CONTROLNODE_LIST_MODEL',
-                    config: controlNodeListModelCfg
+
                 },
                 viewCfg: {
                     elementId : ctwl.CONTROLNODE_SUMMARY_GRID_ID,

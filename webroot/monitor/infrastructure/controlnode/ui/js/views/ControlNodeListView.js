@@ -56,20 +56,8 @@ define(
                                                      widgetCfgList: [
                                                          {id:'controlnode-dns'},
                                                          {id:'controlnode-named'},
-                                                         {id:'controlnode-system-cpu-share',
-                                                             itemAttr:{
-                                                                 config:{
-                                                                     nodeType:'control-node'
-                                                                 }
-                                                             }
-                                                         },
-                                                         {id:'controlnode-system-memory-usage',
-                                                             itemAttr:{
-                                                                 config:{
-                                                                     nodeType:'control-node'
-                                                                 }
-                                                             }
-                                                         },
+                                                         {id:'controlnode-system-cpu-share'},
+                                                         {id:'controlnode-system-memory-usage'},
                                                          {id:'controlnode-grid-view'}
                                                      ]
                                                 }
@@ -85,13 +73,7 @@ define(
                                                      heightMultiplier : 8
                                                  },
                                                  widgetCfgList: [
-                                                     {id:'controlnode-disk-usage-info',
-                                                         itemAttr:{
-                                                             config:{
-                                                                 nodeType:'control-node'
-                                                             }
-                                                         }
-                                                     },
+                                                     {id:'controlnode-disk-usage-info'},
                                                      {id:'controlnode-grid-view'}
                                                  ]
                                             }

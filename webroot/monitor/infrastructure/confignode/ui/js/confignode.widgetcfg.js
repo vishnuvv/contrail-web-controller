@@ -319,7 +319,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
             },
             'confignode-system-memory-usage': {
                 baseModel: 'SYSTEM_MEMORY_MODEL',
-                baseView:'SYSTEM_MEMORY_USAGE_VIEW',
+                baseView: 'SYSTEM_MEMORY_USAGE_VIEW',
                 modelCfg : {
                     modelId: 'CONFIGNODE_SYSTEM_MEMORY_MODEL',
                     config: {
