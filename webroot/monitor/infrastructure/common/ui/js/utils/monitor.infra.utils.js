@@ -504,6 +504,11 @@ define([
                                         view: 'js/views/SettingsColorView',
                                         model: 'js/models/SettingsColorModel'
                                     }, {
+                                        id: cowc.FULL_SCREEN,
+                                        title: "Toggle Full Screen",
+                                        // view: 'js/views/SettingsColorView',
+                                        // model: 'js/models/SettingsColorModel'
+                                    },{
                                         id: cowc.CHART_SETTINGS,
                                         title: "Chart Settings",
                                         view: "js/views/ChartSettingsView",
