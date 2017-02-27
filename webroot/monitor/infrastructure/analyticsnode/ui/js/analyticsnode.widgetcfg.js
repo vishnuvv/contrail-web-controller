@@ -23,35 +23,33 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     }
                 },
                 itemAttr: {
-                    height:0.25,
+                    height: 0.4,
                     width: 0.98,
                     title: ctwl.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE
                 }
             },
-            'analyticsnode-sandesh-message-info': function (){
-                return {
-                    baseModel:'ANALYTICSNODE_SANDESH_MSG_MODEL',
-                    modelCfg: {
-                    },
-                    viewCfg: {
-                        elementId : ctwl.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID,
-                        view: 'StackedAreaChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                colors: colorFn,
-                                title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
-                                subTitle:"Messages received per Collector (in 3 mins)",
-                                xAxisLabel: '',
-                                yAxisLabel: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
-                                groupBy: 'Source',
-                                yField: 'SUM(msg_info.messages)',
-                            }
+            'analyticsnode-sandesh-message-info': {
+                baseModel:'ANALYTICSNODE_SANDESH_MSG_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : ctwl.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID,
+                    view: 'StackedAreaChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            colors: colorFn,
+                            title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
+                            subTitle:"Messages received per Collector (in 3 mins)",
+                            xAxisLabel: '',
+                            yAxisLabel: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
+                            groupBy: 'Source',
+                            yField: 'SUM(msg_info.messages)',
                         }
-                    },
-                    itemAttr: {
-                        height: 1.2,
-                        title: ctwl.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION
                     }
+                },
+                itemAttr: {
+                    height: 1.2,
+                    title: ctwl.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION
                 }
             },
             'analyticsnode-query-stats': {

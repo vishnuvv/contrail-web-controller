@@ -64,6 +64,14 @@
     margin-left: 0px;
     margin-right: 10px;
     vertical-align: middle;
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+.percentile .value-wrapper {
+    display: flex;
+    flex-direction: row-reverse;
+    flex: 1;
 }
 .percentile dl, .percentile dt, .percentile dd {
     float: left;
@@ -113,6 +121,7 @@ dl.progress-percentage dd {
 .percentile .value {
     text-align: right;
     padding: 0px 5px;
+    display: flex;
 }
 .percentile .value>span {
     background: #599ac9;

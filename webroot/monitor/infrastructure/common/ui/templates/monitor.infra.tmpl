@@ -61,9 +61,10 @@
 <script type="text/x-handlebars-template" id="percentile-text-view-template">
   <div class="percentile row">
     <label class="generator"><i class="fa fa-pie-chart"></i>{{{this.percentileTitle}}}</label>
-    <div class="pull-right">
-        <div class="value pull-left" >{{{this.percentileXvalue}}}<span>{{{this.percentileXobjVal}}}</span>&nbsp;&nbsp;&nbsp;|</div>
-        <div class="value pull-left">{{{this.percentileYvalue}}}<span>{{{this.percentileYobjVal}}}</span></div>
+    <div class="pull-right value-wrapper">
+        <div class="value pull-left">{{{this.percentileYvalue}}}<span>{{{this.percentileYobjVal}}}</span>&nbsp;&nbsp;&nbsp;</div>
+        <span> | </span>
+        <div class="value pull-left" >{{{this.percentileXvalue}}}<span>{{{this.percentileXobjVal}}}</span></div>
     </div>
     </div>
   </div>
@@ -71,7 +72,7 @@
 <script type="text/x-handlebars-template" id="percentile-bar-view-template">
   <div class="percentile row">
     <label class="generator"><i class="fa fa-database"></i> Disk Utilization</label>
-    <div class="pull-right">
+    <div class="pull-right value-wrapper">
     {{#each this}}
       <div class="value pull-left" >
         <div class="value pull-left">{{{this.name}}}</div>

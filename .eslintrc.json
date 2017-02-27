@@ -38,10 +38,11 @@
     "ctwm": true,
     "ctwl": true,
     "globalObj": true,
-    "grUtils": true
+    "grUtils": true,
+    "monitorInfraConstants": true
   },
   "rules": {
-    // relax/customize the essential rule set for R3.2
+   /* // relax/customize the essential rule set for R3.2
     // TODO: need to update/evovlve based on the readiness of codebase.
     "block-scoped-var": "off",
     "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
@@ -52,7 +53,7 @@
     "constructor-super": "off",
     "curly": "warn",
     "dot-location": ["error", "property"],
-    "dot-notation": "error",
+    "dot-notation": "warn",
     "eol-last": "error",
     // To avoid potential debugging difficulty
     "eqeqeq": "error",
@@ -96,12 +97,25 @@
     "no-unused-expressions": "error",
     "no-useless-concat": "warn",
     "no-useless-escape": "warn",
-    "quotes": ["error", "double", {
+    "quotes": ["warn", "double", {
       "avoidEscape": true,
       "allowTemplateLiterals": true
     }],
     "vars-on-top": "warn",
     "semi": "error",
-    "yoda": "warn"
+    "yoda": "warn",
+    "no-undef" : 0,
+    "no-unused-vars": 0,
+    "comma-dangle": 0,*/
+    "key-spacing": [2, {
+        "singleLine": {
+            "beforeColon": false,
+            "afterColon": true
+        }, "multiLine": {
+            "beforeColon": false,
+            "afterColon": true/*,
+            "align":"colon"*/
+        }
+    }]
   }
 }
