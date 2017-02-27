@@ -5,8 +5,6 @@
 define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenode-model', 'node-color-mapping'],
         function(_, ContrailView, LegendView, databaseNodeListModelCfg, NodeColorMapping){
     var DatabseNodeViewConfig = function () {
-        var nodeColorMapping = new NodeColorMapping(),
-        colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
             'databsenode-percentile-bar-view': {
@@ -47,7 +45,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                                 subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                 groupBy: 'name',
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
-                                colors: colorFn,
                                 title: ctwl.DATABASENODE_SUMMARY_TITLE,
                                 yTickFormat: cpuChartYTickFormat,
                                 yFormatter : function(d){
@@ -79,7 +76,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                                  subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                  groupBy: 'name',
                                  yField: 'MAX(process_mem_cpu_usage.mem_res)',
-                                 colors: colorFn,
                                  title: ctwl.DATABASENODE_SUMMARY_TITLE,
                                  yFormatter : function(d){
                                      return formatBytes(d * 1024, true);
@@ -100,13 +96,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                     config: {
                         where:'node-type = database-node'
                     }
-                },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors:colorFn
-                        }
-                    }
                 }
             },
             'databasenode-system-memory-usage': {
@@ -116,13 +105,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                     modelId: 'DATABASENODE_SYSTEM_MEMORY_MODEL',
                     config: {
                         where:'node-type = database-node'
-                    }
-                },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors:colorFn
-                        }
                     }
                 }
             },
@@ -135,13 +117,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                         where:'node-type = database-node'
                     }
                 },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors:colorFn
-                        }
-                    }
-                }
             },
             'databasenode-pending-compactions': {
                 modelCfg: {
@@ -157,7 +132,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                         view:'StackedBarChartWithFocusView',
                         viewConfig: {
                         chartOptions: {
-                            colors: colorFn,
                             title: ctwl.DATABASENODE_SUMMARY_TITLE,
                             subTitle:"Pending compactions per DB (in 3 mins)",
                             yAxisLabel: ctwl.DATABSE_NODE_PENDING_COMPACTIONS,
@@ -191,7 +165,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                             subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                             yAxisLabel: ctwl.DATABASE_NODE_ZOOKEEPER_CPU_SHARE,
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.DATABASENODE_SUMMARY_TITLE,
                         }
@@ -219,7 +192,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                             subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                             yAxisLabel: ctwl.DATABASE_NODE_KAFKA_CPU_SHARE,
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.DATABASENODE_SUMMARY_TITLE,
                         }
@@ -240,7 +212,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                     view : "GridView",
                     viewConfig : {
                         elementConfig : function() {
-                            return getDatabaseNodeSummaryGridConfig('database-grid-view', colorFn);
+                            return getDatabaseNodeSummaryGridConfig('database-grid-view','databaseNode');
                         }
                     }
                 },
@@ -250,7 +222,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                 }
             }
         };
-        function getDatabaseNodeSummaryGridConfig(widgetId, colorFn) {
+        function getDatabaseNodeSummaryGridConfig(widgetId, type) {
             var columns = [
                            {
                                field:"name",
@@ -260,7 +232,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-databasenod
                                       name:'name',
                                       statusBubble:true,
                                       rowData:dc,
-                                      tagColorMap:colorFn(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'))});
+                                      tagColorMap: NodeColorMapping.getNodeColorMap(_.without(_.pluck(data, 'key'), failureLabel),null, type)
+                                  })
                                },
                                events: {
                                   onClick: onClickHostName

@@ -6,11 +6,10 @@
 define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-color-mapping'],
         function(_, ContrailView,  controlNodeListModelCfg, NodeColorMapping) {
     var ControlNodeModelCfg = function () {
-        var nodeColorMapping = new NodeColorMapping(),
-        colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.modelCfg = {
             'CONTROLNODE_SENT_UPDATES_MODEL': {
+                type: "controlNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.PeerStatsData.tx_update_stats',
@@ -18,6 +17,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'CONTROLNODE_RECEIVED_UPDATES_MODEL': {
+                type: "controlNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.PeerStatsData.rx_update_stats',
@@ -52,6 +52,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 },
             },
             'CONTROLNODE_SYSTEM_LOGS_MODEL': {
+                type: "controlNode",
                 source:'LOG',
                 config: {
                     table_name: 'MessageTable',
@@ -61,6 +62,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'CONTROLNODE_OBJECTBGPROUTER_LOGS_MODEL': {
+                type: "controlNode",
                 source:'OBJECT',
                 config: {
                     table_name: 'ObjectBgpRouter',
@@ -70,6 +72,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'CONTROLNODE_OBJECTXMPPPEER_LOGS_MODEL': {
+                type: "controlNode",
                 source:'OBJECT',
                 config: {
                     table_name: 'ObjectXmppPeerInfo',
@@ -79,6 +82,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'CONTROLNODE_OBJECTBGPPEER_LOGS_MODEL': {
+                type: "controlNode",
                 source:'OBJECT',
                 config: {
                     table_name: 'ObjectBgpPeer',
@@ -88,6 +92,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'CONTROLNODE_MEMORY_MODEL': {
+                type: "controlNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -96,6 +101,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'CONTROLNODE_CONTROL_CPU_MODEL': {
+                type: "controlNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -104,6 +110,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'CONTROLNODE_NODEMGR_MODEL': {
+                type: "controlNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -112,6 +119,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'CONTROLNODE_DNS_CPU_MODEL': {
+                type: "controlNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -120,6 +128,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'CONTROLNODE_NAMED_CPU_MODEL': {
+                type: "controlNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -128,6 +137,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             },
             'CONTROLNODE_LIST_MODEL': {
+                type: "controlNode",
                 config: controlNodeListModelCfg
             }
         };

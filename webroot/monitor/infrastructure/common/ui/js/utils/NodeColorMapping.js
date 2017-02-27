@@ -5,15 +5,15 @@
 define(
        [ 'underscore' ],
        function(_) {
-            var NodeColorMapping = function() {
-                var nodeColorMap = {},
-                    lastUpdated;
-
-
-                this.getNodeColorMap = function (hostNames, resetColor) {
+            var NodeColorMapping = {
+                getNodeColorMap: function (hostNames, resetColor, type) {
+                    var nodeColorMap = {},
+                        lastUpdated;
+                    if(nodeColorMap[type] == null)
+                        nodeColorMap[type] = {};
                     var self = this,
                         colors = cowc.FIVE_NODE_COLOR,
-                        assignedColors = _.values(nodeColorMap);
+                        assignedColors = _.values(nodeColorMap[type]);
                     if (!$.isArray(hostNames)) {
                         hostNames = [hostNames];
                     }
@@ -28,12 +28,12 @@ define(
                     // color settings then we need to overwrite the existing
                     // colors in nodecolormap
                     if (resetColor) {
-                        var existingNodes = _.keys(nodeColorMap),
+                        var existingNodes = _.keys(nodeColorMap[type]),
                             existingNodesLen = existingNodes.length;
                         //TODO overwrite the colors with the cookie colors
                         colors = cowc.FIVE_NODE_COLOR;
                         for (var i = 0; i < existingNodesLen; i++) {
-                            nodeColorMap[existingNodes[i]] = cowu.ifNull(colors[i], cowc.DEFAULT_COLOR);
+                            nodeColorMap[type][existingNodes[i]] = cowu.ifNull(colors[i], cowc.DEFAULT_COLOR);
                         }
                     }
                     //if hostname doesn't exists in nodeColorMap
@@ -42,14 +42,14 @@ define(
                     //keys = _.sortBy(keys);
                     var i = 0, unassignedColors = _.difference(colors, assignedColors);
                     $.each(keys, function (idx, obj) {
-                        if (nodeColorMap[obj] == null) {
-                            nodeColorMap[obj] = unassignedColors[i] != null ? unassignedColors[i]:
+                        if (nodeColorMap[type][obj] == null) {
+                            nodeColorMap[type][obj] = unassignedColors[i] != null ? unassignedColors[i]:
                                 ($.isArray(cowc.DEFAULT_COLOR) ? cowc.DEFAULT_COLOR[0] : cowc.DEFAULT_COLOR);
                             i++;
                         }
                     });
-                    return nodeColorMap;
-                };
+                    return nodeColorMap[type];
+                }
             };
             return NodeColorMapping;
-       });
+});

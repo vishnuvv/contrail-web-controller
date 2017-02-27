@@ -5,8 +5,6 @@
 define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-model', 'node-color-mapping'],
         function(_, ContrailView, LegendView, configNodeListModelCfg, NodeColorMapping){
     var ConfigNodeViewConfig = function () {
-        var nodeColorMapping = new NodeColorMapping(),
-        colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
             'confignode-percentile-time-size': {
@@ -40,7 +38,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             class: 'col-xs-7 mon-infra-chart chartMargin',
                             chartOptions: {
                                 showControls: false,
-                                colors: colorFn,
                                 title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                                 failureLabel: ' Failed Requests (Total)',
                                 subTitle: "Requests served per API Server (in 3 mins)",
@@ -66,6 +63,12 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         title: ctwl.CONFIG_NODE_REQUESTS_SERVED
                     }
             },
+            'confignode-response-time-bar': {
+
+            },
+            'confignode-response-size-line': {
+
+            },
             'confignode-response-time-size': {
                     baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
                     modelCfg: {
@@ -73,17 +76,15 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     viewCfg: {
                         elementId: 'confignode_response_time_size',
                         view: 'LineBarWithFocusChartView',
+                        childWidgets: ['confignode-response-time-bar','confignode-response-size-line'],
                         viewConfig: {
                             class: 'col-xs-5 mon-infra-chart',
                             parseFn: cowu.parseLineBarChartWithFocus,
                             chartOptions: {
-                                y1AxisLabel: ctwl.RESPONSE_TIME,
-                                y2AxisLabel: ctwl.RESPONSE_SIZE,
                                 title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                                 xAxisTicksCnt: 8, //In case of time scale for every 15 mins one tick
                                 margin: {top: 20, right: 50, bottom: 40, left: 50},
                                 axisLabelDistance: -10,
-                                y2AxisWidth: 50,
                                 focusEnable: false,
                                 showLegend: true,
                                 xAxisLabel: '',
@@ -92,21 +93,12 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 insertEmptyBuckets: false,
                                 bucketSize: 4,
                                 groupBy: 'Source',
+                                legendView: LegendView,
+
+                                y1AxisLabel: ctwl.RESPONSE_TIME,
                                 //Y1 for bar
                                 y1Field: 'api_stats.response_time_in_usec',
-                                //Y2 for line
-                                y2Field: 'api_stats.response_size',
-                                y2AxisColor: monitorInfraConstants.CONFIGNODE_RESPONSESIZE_COLOR,
-                                y2FieldOperation: 'average',
                                 y1FieldOperation: 'average',
-                                colors: colorFn,
-                                xFormatter: function (xValue, tickCnt) {
-                                    // Same function is called for
-                                    // axis ticks and the tool tip
-                                    // title
-                                    var date = new Date(xValue);
-                                    return d3.time.format('%H:%M')(date);
-                                },
                                 y1Formatter: function (y1Value) {
                                     //Divide by 1000 to convert to milli secs;
                                     y1Value = ifNull(y1Value, 0)/1000;
@@ -122,11 +114,25 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                     }
                                     return formattedValue;
                                 },
+
+
+                                y2AxisLabel: ctwl.RESPONSE_SIZE,
+                                y2AxisWidth: 50,
+                                //Y2 for line
+                                y2Field: 'api_stats.response_size',
+                                y2AxisColor: monitorInfraConstants.CONFIGNODE_RESPONSESIZE_COLOR,
+                                y2FieldOperation: 'average',
+                                xFormatter: function (xValue, tickCnt) {
+                                    // Same function is called for
+                                    // axis ticks and the tool tip
+                                    // title
+                                    var date = new Date(xValue);
+                                    return d3.time.format('%H:%M')(date);
+                                },
                                 y2Formatter: function (y2Value) {
                                     var formattedValue = formatBytes(y2Value, true);
                                     return formattedValue;
                                 },
-                                legendView: LegendView,
                             },
                         }
                     },
@@ -147,7 +153,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         app: cowc.APP_CONTRAIL_CONTROLLER,
                         viewConfig: {
                             class: 'col-xs-5 mon-infra-chart',
-                            color: colorFn
                         }
                     },
                     itemAttr: {
@@ -167,7 +172,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                       view: "GridView",
                       viewConfig: {
                           elementConfig:
-                              getConfigNodeSummaryGridConfig('confignode-grid-view', colorFn)
+                              getConfigNodeSummaryGridConfig('confignode-grid-view','configNode')
                       }
                   },
                   itemAttr: {
@@ -290,7 +295,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                             yAxisLabel: 'Schema CPU Share (%)',
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         }
@@ -308,13 +312,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     config: {
                         where: 'node-type = config-node'
                     }
-                },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors: colorFn
-                        }
-                    }
                 }
             },
             'confignode-system-memory-usage': {
@@ -326,13 +323,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         where: 'node-type = config-node'
                     }
                 },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors: colorFn
-                        }
-                    }
-                }
             },
             'confignode-disk-usage-info': {
                 baseModel: 'SYSTEM_DISK_USAGE_MODEL',
@@ -343,13 +333,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         where: 'node-type = config-node'
                     }
                 },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors: colorFn
-                        }
-                    }
-                }
             },
             'confignode-process-contrail-discovery': {
                 baseModel: 'CONFIGNODE_DISCOVERY_CPU_MODEL',
@@ -364,7 +347,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                             yAxisLabel: 'Discovery CPU Share (%)',
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         }
@@ -387,7 +369,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                             yAxisLabel: 'API CPU Share (%)',
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         }
@@ -411,7 +392,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                             yAxisLabel: ctwl.CONFIG_NODE_SERVICE_MONITOR_CPU_SHARE,
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         }
@@ -434,7 +414,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                             yAxisLabel: ctwl.CONFIG_NODE_DEVICE_MANAGER_CPU_SHARE,
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         }
@@ -457,7 +436,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                             yAxisLabel: ctwl.CONFIG_NODE_IFMAP_CPU_SHARE,
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         }
@@ -468,7 +446,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             }
         };
-        function getConfigNodeSummaryGridConfig(widgetId, colorFn) {
+        function getConfigNodeSummaryGridConfig(widgetId, type) {
             var columns = [
                {
                    field: "name",
@@ -479,7 +457,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                       name: 'name',
                                       statusBubble: true,
                                       rowData: dc,
-                                      tagColorMap: colorFn(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'))
+                                      tagColorMap: NodeColorMapping.getNodeColorMap(_.without(_.pluck(data, 'key'), failureLabel),null, type)
                                });
                    },
                    events: {

@@ -4,6 +4,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
         var self = this;
         self.modelCfg = {
             'CONFIGNODE_PERCENTILE_TIMESIZE_MODEL' : {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     "table_name": "StatTable.VncApiStatsLog.api_stats",
@@ -12,6 +13,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             }, 
             'CONFIGNODE_APIREQUESTS_MODEL' : {
+                type: "configNode",
                 source: 'STATTABLE',
                 config: {
                     table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -21,6 +23,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_APIREQUESTS_MODEL' : {
+                type: "configNode",
                 source: 'STATTABLE',
                 config: {
                     table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -30,6 +33,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_USERAGENT_MODEL' : {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -37,6 +41,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_OBJECTTYPE_MODEL' : {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -44,6 +49,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_REMOTEIP_MODEL' : {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -51,6 +57,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_PROJECTS_MODEL' : {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.VncApiStatsLog.api_stats',
@@ -58,6 +65,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_SCHEMA_CPU_MODEL' : {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -66,6 +74,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_DISCOVERY_CPU_MODEL' : {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -74,6 +83,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_API_CPU_MODEL': {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -82,6 +92,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_SERVICE_MONITOR_CPU_MODEL' : {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -90,6 +101,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_DEVICE_MANAGER_CPU_MODEL' : {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -98,6 +110,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'CONFIGNODE_IFMAP_CPU_MODEL': {
+                type: "configNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',

@@ -5,8 +5,6 @@
 define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-model', 'node-color-mapping'],
         function(_, ContrailView, LegendView, configNodeListModelCfg, NodeColorMapping){
     var ConfigNodeViewConfig = function () {
-        var nodeColorMapping = new NodeColorMapping(),
-        colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
             'CONFIGNODE_PERCENTILE_TIME_SIZE_VIEW': {
@@ -26,7 +24,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     class: 'col-xs-7 mon-infra-chart chartMargin',
                     chartOptions: {
                         showControls: false,
-                        colors: colorFn,
                         title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                         failureLabel: ' Failed Requests (Total)',
                         subTitle: "Requests served per API Server (in 3 mins)",
@@ -75,7 +72,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         y2AxisColor: monitorInfraConstants.CONFIGNODE_RESPONSESIZE_COLOR,
                         y2FieldOperation: 'average',
                         y1FieldOperation: 'average',
-                        colors: colorFn,
                         xFormatter: function (xValue, tickCnt) {
                             // Same function is called for
                             // axis ticks and the tool tip
@@ -114,7 +110,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 app: cowc.APP_CONTRAIL_CONTROLLER,
                 viewConfig: {
                     class: 'col-xs-5 mon-infra-chart',
-                    color: colorFn
                 }
             },
             'CONFIGNODE_GRID_VIEW': {
@@ -123,7 +118,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 view: "GridView",
                 viewConfig: {
                     elementConfig:
-                        getConfigNodeSummaryGridConfig('confignode-grid-view', colorFn)
+                        getConfigNodeSummaryGridConfig('confignode-grid-view')
                 }
             },
             'CONFIGNODE_TOP_USERAGENT': {
@@ -203,7 +198,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                         yAxisLabel: 'Schema CPU Share (%)',
                         groupBy: 'name',
-                        colors: colorFn,
                         yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                         title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                     }
@@ -218,7 +212,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                         yAxisLabel: 'Discovery CPU Share (%)',
                         groupBy: 'name',
-                        colors: colorFn,
                         yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                         title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                     }
@@ -234,7 +227,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                         yAxisLabel: 'API CPU Share (%)',
                         groupBy: 'name',
-                        colors: colorFn,
                         yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                         title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                     }
@@ -249,7 +241,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                         yAxisLabel: ctwl.CONFIG_NODE_SERVICE_MONITOR_CPU_SHARE,
                         groupBy: 'name',
-                        colors: colorFn,
                         yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                         title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                     }
@@ -265,7 +256,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                         yAxisLabel: ctwl.CONFIG_NODE_DEVICE_MANAGER_CPU_SHARE,
                         groupBy: 'name',
-                        colors: colorFn,
                         yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                         title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                     }
@@ -280,7 +270,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         subTitle: ctwl.CPU_SHARE_PERCENTAGE,
                         yAxisLabel: ctwl.CONFIG_NODE_IFMAP_CPU_SHARE,
                         groupBy: 'name',
-                        colors: colorFn,
                         yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                         title: ctwl.CONFIGNODE_SUMMARY_TITLE,
                     }

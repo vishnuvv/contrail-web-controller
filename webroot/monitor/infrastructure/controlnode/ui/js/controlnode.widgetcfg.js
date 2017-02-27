@@ -6,8 +6,6 @@
 define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-color-mapping'],
         function(_, ContrailView,  controlNodeListModelCfg, NodeColorMapping) {
     var ControlNodeViewConfig = function () {
-        var nodeColorMapping = new NodeColorMapping(),
-        colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
             'controlnode-sent-updates': {
@@ -28,7 +26,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                             yAxisLabel: 'Updates sent per Control Node',
                             groupBy: 'Source',
                             yField: 'SUM(tx_update_stats.reach)',
-                            colors: colorFn,
                             failureLabel:'Unreach Updates (Total)',
                             failureColor: '#ECECEC',
                             substractFailures: false,
@@ -58,7 +55,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                             title: ctwl.CONTROLNODE_SUMMARY_TITLE,
                             groupBy: 'Source',
                             yField: 'SUM(rx_update_stats.reach)',
-                            colors: colorFn,
                             failureLabel:'Unreach Updates (Total)',
                             failureColor: '#ECECEC',
                             substractFailures: false,
@@ -81,13 +77,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                     config: {
                         where:'node-type = control-node'
                     }
-                },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors:colorFn
-                        }
-                    }
                 }
             },
             'controlnode-system-memory-usage': {
@@ -99,13 +88,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                         where:'node-type = control-node'
                     }
                 },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors:colorFn
-                        }
-                    }
-                }
             },
             'controlnode-disk-usage-info': {
                 baseModel:'SYSTEM_DISK_USAGE_MODEL',
@@ -114,13 +96,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                     modelId: 'CONTROLNODE_DISK_USAGE_MODEL',
                     config: {
                         where:'node-type = control-node'
-                    }
-                },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors:colorFn
-                        }
                     }
                 }
             },
@@ -197,26 +172,25 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 modelCfg: {
 
                 },
-                    viewCfg: {
-                        view: 'LineWithFocusChartView',
-                        elementId : ctwl.CONTROLNODE_MEM_SHARE_LINE_CHART_ID,
-                        viewConfig: {
-                            chartOptions: {
-                            yAxisLabel: 'BGP Memory Usage',
-                            subTitle:"Memory usage per system (3 mins)",
-                            groupBy: 'name',
-                            yField: 'MAX(process_mem_cpu_usage.mem_res)',
-                            colors: colorFn,
-                            title: ctwl.CONTROLNODE_SUMMARY_TITLE,
-                            yFormatter : function(d){
-                                return formatBytes(d * 1024, true);
-                            },
-                            //xFormatter: xCPUChartFormatter,
-                            }
+                viewCfg: {
+                    view: 'LineWithFocusChartView',
+                    elementId : ctwl.CONTROLNODE_MEM_SHARE_LINE_CHART_ID,
+                    viewConfig: {
+                        chartOptions: {
+                        yAxisLabel: 'BGP Memory Usage',
+                        subTitle:"Memory usage per system (3 mins)",
+                        groupBy: 'name',
+                        yField: 'MAX(process_mem_cpu_usage.mem_res)',
+                        title: ctwl.CONTROLNODE_SUMMARY_TITLE,
+                        yFormatter : function(d){
+                            return formatBytes(d * 1024, true);
+                        },
+                        //xFormatter: xCPUChartFormatter,
                         }
-                    },
-                    itemAttr: {
-                        title: ctwl.CONTROL_NODE_MEMORY
+                    }
+                },
+                itemAttr: {
+                    title: ctwl.CONTROL_NODE_MEMORY
                 }
             },
             'controlnode-control': {
@@ -233,7 +207,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                             subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                             yFormatter: d3.format('.2f'),
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.CONTROLNODE_SUMMARY_TITLE,
                         }
@@ -256,7 +229,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                             yAxisLabel: "Node Manager CPU Share (%)",
                             subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.CONTROLNODE_SUMMARY_TITLE,
                         }
@@ -279,7 +251,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                             subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                             yAxisLabel: ctwl.CONTROL_DNS_CPU_SHARE,
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.CONTROLNODE_SUMMARY_TITLE,
                         }
@@ -302,7 +273,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                             subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                             yAxisLabel: ctwl.CONTROL_NAMED_CPU_SHARE,
                             groupBy: 'name',
-                            colors: colorFn,
                             yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                             title: ctwl.CONTROLNODE_SUMMARY_TITLE,
                         }
@@ -321,8 +291,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                     title : ctwl.CONTROLNODE_SUMMARY_TITLE,
                     view : "GridView",
                     viewConfig : {
-                        elementConfig :
-                            getControlNodeSummaryGridConfig('controlnode-grid-view', colorFn)
+                        elementConfig : getControlNodeSummaryGridConfig('controlnode-grid-view','controlNode')
                     }
                 },
                 itemAttr: {
@@ -331,7 +300,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 }
             }
         };
-        function getControlNodeSummaryGridConfig(widgetId, colorFn) {
+        function getControlNodeSummaryGridConfig(widgetId, type) {
             var columns = [
                            {
                                field:"name",
@@ -341,7 +310,8 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                                       name:'name',
                                       statusBubble:true,
                                       rowData:dc,
-                                      tagColorMap:colorFn(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'))});
+                                      tagColorMap: NodeColorMapping.getNodeColorMap(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'),null, type)
+                                  })
                                },
                                events: {
                                   onClick: onClickHostName

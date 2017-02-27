@@ -5,8 +5,6 @@
 define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsnode-model', 'node-color-mapping'],
         function(_, ContrailView, LegendView, analyticsNodeListModelCfg, NodeColorMapping){
     var AnalyticsNodeViewConfig = function () {
-        var nodeColorMapping = new NodeColorMapping(),
-        colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
             'analyticsnode-percentile-count-size': {
@@ -38,7 +36,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         view: 'StackedAreaChartView',
                         viewConfig: {
                             chartOptions: {
-                                colors: colorFn,
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                 subTitle:"Messages received per Collector (in 3 mins)",
                                 xAxisLabel: '',
@@ -64,7 +61,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     view:'StackedBarChartWithFocusView',
                     viewConfig: {
                         chartOptions: {
-                            colors: colorFn,
                             title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                             subTitle:"Queries per Collector (in 3 mins)",
                             xAxisLabel: '',
@@ -96,13 +92,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         where:'node-type = analytics-node'
                     }
                 },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors:colorFn
-                        }
-                    }
-                }
             },
             'analyticsnode-system-memory-usage': {
                 baseModel: 'SYSTEM_MEMORY_MODEL',
@@ -113,13 +102,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         where:'node-type = analytics-node'
                     }
                 },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors:colorFn
-                        }
-                    }
-                }
             },
             'analyticsnode-disk-usage-info': {
                 baseModel:'SYSTEM_DISK_USAGE_MODEL',
@@ -130,13 +112,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         where:'node-type = analytics-node'
                     }
                 },
-                viewCfg: {
-                    viewConfig: {
-                        chartOptions: {
-                            colors:colorFn
-                        }
-                    }
-                }
             },
             'analyticsnode-generators-scatterchart': function (){
                 return {
@@ -187,7 +162,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         view:'StackedBarChartWithFocusView',
                         viewConfig: {
                             chartOptions: {
-                                colors: colorFn,
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                 subTitle:"Writes per Collector (in 3 mins)",
                                 xAxisLabel: '',
@@ -289,7 +263,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                 yAxisLabel: ctwl.ANALYTICS_NODE_QE_CPU_SHARE,
                                 groupBy: 'name',
-                                colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                             }
@@ -319,7 +292,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                 yAxisLabel: ctwl.ANALYTICS_NODE_COLLECTOR_CPU_SHARE,
                                 groupBy: 'name',
-                                colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                             }
@@ -349,7 +321,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                 yAxisLabel: ctwl.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE,
                                 groupBy: 'name',
-                                colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                             }
@@ -379,7 +350,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                 yAxisLabel: ctwl.ANALYTICS_NODE_SNMP_COLLECTOR_CPU_SHARE,
                                 groupBy: 'name',
-                                colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                             }
@@ -409,7 +379,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                 yAxisLabel: ctwl.ANALYTICS_NODE_TOPOLOGY_CPU_SHARE,
                                 groupBy: 'name',
-                                colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                             }
@@ -439,7 +408,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                 yAxisLabel: ctwl.ANALYTICS_NODE_NODE_MANAGER_CPU_SHARE,
                                 groupBy: 'name',
-                                colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                             }
@@ -469,7 +437,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                 yAxisLabel: ctwl.ANALYTICS_NODE_API_CPU_SHARE,
                                 groupBy: 'name',
-                                colors: colorFn,
                                 yField: 'MAX(process_mem_cpu_usage.cpu_share)',
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                             }
@@ -497,7 +464,6 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 subTitle:ctwl.CPU_SHARE_PERCENTAGE,
                                 yAxisLabel: ctwl.ANALYTICS_NODE_AVAILABLE_CONNECTIONS,
                                 groupBy: 'Source',
-                                colors: colorFn,
                                 yField: 'MIN(cql_stats.stats.available_connections)',
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                 yFormatter : function(d){
@@ -522,7 +488,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         view : "GridView",
                         viewConfig : {
                             elementConfig :
-                                getAnalyticsNodeSummaryGridConfig('analyticsnode-grid-view', colorFn)
+                                getAnalyticsNodeSummaryGridConfig('analyticsnode-grid-view','analyticsNode')
                         }
                     },
                     itemAttr: {
@@ -532,7 +498,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                 }
              }
          };
-        function getAnalyticsNodeSummaryGridConfig(widgetId, colorFn) {
+        function getAnalyticsNodeSummaryGridConfig(widgetId, type) {
             var columns = [
                {
                    field:"name",
@@ -544,7 +510,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                           name:'name',
                           statusBubble:true,
                           rowData:dc,
-                          tagColorMap:colorFn(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'))});
+                          tagColorMap: NodeColorMapping.getNodeColorMap(_.without(_.pluck(data, 'key'), failureLabel),null, type)
+                      })
                    },
                    exportConfig: {
                        allow: true,

@@ -4,6 +4,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
         var self = this;
         self.modelCfg = {
             'ANALYTICSNODE_SANDESH_MSG_MODEL': {
+                type: "analyticsNode",
                 source: 'STATTABLE',
                 config: {
                     table_name: 'StatTable.SandeshMessageStat.msg_info',
@@ -11,6 +12,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'ANALYTICSNODE_PERCENTILE_MODEL' : {
+                type: "analyticsNode",
                 source: 'STATTABLE',
                 config: {
                     "table_name": "StatTable.SandeshMessageStat.msg_info",
@@ -19,6 +21,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'ANALYTICSNODE_QUERYSTATS_MODEL' : {
+                type: "analyticsNode",
                 source: 'STATTABLE',
                 config: {
                     table_name: 'StatTable.QueryPerfInfo.query_stats',
@@ -27,6 +30,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'ANALYTICSNODE_GENERATORS_MODEL': {
+                type: "analyticsNode",
                 source: 'STATTABLE',
                 config: {
                     "table_name": "StatTable.SandeshMessageStat.msg_info",
@@ -73,6 +77,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'ANALYTICSNODE_DB_READWRITE_MODEL': {
+                type: "analyticsNode",
                 source:'STATTABLE',
                 config: {
                     table_name: 'StatTable.CollectorDbStats.table_info',

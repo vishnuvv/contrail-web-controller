@@ -3,18 +3,16 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view', 'node-color-mapping'],
+        [ 'underscore', 'contrail-view'],
         function(
                 _, ContrailView, NodeColorMapping) {
             var ControlNodeListView = ContrailView.extend({
                 render : function() {
-                    var nodeColorMapping = new NodeColorMapping(),
-                        colorFn = nodeColorMapping.getNodeColorMap;
                     this.renderView4Config(this.$el, null,
-                            getControlNodeListViewConfig(colorFn));
+                            getControlNodeListViewConfig());
                 }
             });
-            function getControlNodeListViewConfig(colorFn) {
+            function getControlNodeListViewConfig() {
                 var viewConfig = {
                     rows : [
                         monitorInfraUtils.getToolbarViewConfig(),
