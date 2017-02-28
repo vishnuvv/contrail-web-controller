@@ -5,8 +5,6 @@
 define(['lodash', 'contrail-view', 'monitor-infra-confignode-model', 'node-color-mapping'],
         function(_, ContrailView, configNodeListModelCfg, NodeColorMapping){
     var DatabaseNodeViewConfig = function () {
-        var nodeColorMapping = new NodeColorMapping(),
-        colorFn = nodeColorMapping.getNodeColorMap;
         var self = this;
         self.viewConfig = {
             'DATABASENODE_GRID_VIEW': {
