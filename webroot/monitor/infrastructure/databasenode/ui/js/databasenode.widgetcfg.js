@@ -41,7 +41,6 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                         chartOptions: {
                             yAxisLabel: ctwl.DATABSE_NODE_CPU_SHARE,
                             title: ctwl.DATABASENODE_SUMMARY_TITLE,
-                            colors: colorFn,
                         }
                     }
                 },
@@ -66,7 +65,6 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                         chartOptions: {
                             yAxisLabel: 'Cassandra Memory Usage',
                             title: ctwl.DATABASENODE_SUMMARY_TITLE,
-                            colors: colorFn,
                         }
                      }
                  },
@@ -156,7 +154,6 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                         chartOptions: {
                             yAxisLabel: ctwl.DATABASE_NODE_ZOOKEEPER_CPU_SHARE,
                             title: ctwl.DATABASENODE_SUMMARY_TITLE,
-                            colors: colorFn,
                         }
                     }
                 },itemAttr: {
@@ -179,7 +176,6 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                         chartOptions: {
                             yAxisLabel: ctwl.DATABASE_NODE_KAFKA_CPU_SHARE,
                             title: ctwl.DATABASENODE_SUMMARY_TITLE,
-                            colors: colorFn,
                         }
                     }
                 },itemAttr: {

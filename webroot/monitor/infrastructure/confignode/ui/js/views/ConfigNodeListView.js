@@ -29,8 +29,8 @@ define(
                                                 heightMultiplier: 10
                                             },
                                             widgetCfgList: [{
-                                                id: 'confignode-requests-served'
-                                            }, {
+                                                id: 'confignode-multi-response-time-size'
+                                            }/*, {
                                                 id: 'confignode-response-time-size'
                                             }, {
                                                 id: 'confignode-percentile-time-size'
@@ -38,7 +38,7 @@ define(
                                                 id: 'confignode-reads-writes-donut-chart'
                                             }, {
                                                 id: 'confignode-grid-view'
-                                            }]
+                                            }*/]
                                         }
                                     },
                                 },{

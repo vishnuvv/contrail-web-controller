@@ -63,10 +63,31 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     }
             },
             'confignode-response-time-bar': {
-
+                baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
+                viewCfg : {
+                    view: "AreaChartView"
+                }
             },
             'confignode-response-size-line': {
-
+                baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
+                viewCfg : {
+                    view: "LineChartView"
+                }
+            },
+            'confignode-multi-response-time-size': {
+                baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
+                viewCfg: {
+                    view: "MultiChartView"
+                }
+            },
+            'confignode-multi1-response-time-size': {
+                viewCfg: {
+                    childWidgets: {
+                        y1: ['confignode-response-time-bar'],
+                        y2: ['confignode-response-size-line']
+                    },
+                    view: "MultiChartView"
+                }
             },
             'confignode-response-time-size': {
                     baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
