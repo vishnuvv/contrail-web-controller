@@ -193,9 +193,6 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                 }
             }
         };
-        self.getViewConfig = function(id) {
-            return self.viewConfig[id];
-        };
     };
     return (new DatabseNodeViewConfig()).viewConfig;
 });

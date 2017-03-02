@@ -3,18 +3,17 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view', 'node-color-mapping'],
+        [ 'underscore', 'contrail-view'],
         function(
-                _, ContrailView, NodeColorMapping) {
+                _, ContrailView) {
             var DatabaseNodeListView = ContrailView.extend({
                 render : function() {
-                    var nodeColorMapping = new NodeColorMapping(),
-                        colorFn = nodeColorMapping.getNodeColorMap;
+                    
                     this.renderView4Config(this.$el, null,
-                            getDatabaseNodeListViewConfig(colorFn));
+                            getDatabaseNodeListViewConfig());
                 }
             });
-            function getDatabaseNodeListViewConfig(colorFn) {
+            function getDatabaseNodeListViewConfig() {
                 var viewConfig = {
                     rows : [monitorInfraUtils.getToolbarViewConfig(),
                         {

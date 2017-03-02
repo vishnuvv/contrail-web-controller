@@ -5,7 +5,7 @@
 define(
         [ 'underscore', 'contrail-view'],
         function(
-                _, ContrailView, NodeColorMapping) {
+                _, ContrailView) {
             var ControlNodeListView = ContrailView.extend({
                 render : function() {
                     this.renderView4Config(this.$el, null,

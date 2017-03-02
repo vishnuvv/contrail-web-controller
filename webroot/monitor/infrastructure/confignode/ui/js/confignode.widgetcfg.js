@@ -82,10 +82,10 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
             },
             'confignode-multi1-response-time-size': {
                 viewCfg: {
-                    childWidgets: [
+                    childWidgets: {
                         y1: ['confignode-response-time-bar'],
                         y2: ['confignode-response-size-line']
-                    }
+                    },
                     view: "MultiChartView"
                 }
             },
@@ -497,7 +497,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                       name: 'name',
                                       statusBubble: true,
                                       rowData: dc,
-                                      tagColorMap: NodeColorMapping.getNodeColorMap(_.without(_.pluck(data, 'key'), failureLabel),null, type)
+                                      tagColorMap: NodeColorMapping.getNodeColorMap(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'),null, type)
                                });
                    },
                    events: {

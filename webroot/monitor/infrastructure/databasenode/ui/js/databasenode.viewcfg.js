@@ -14,12 +14,12 @@ define(['lodash', 'contrail-view', 'monitor-infra-confignode-model', 'node-color
                 view: "GridView",
                 viewConfig: {
                     elementConfig: function() {
-                        return getDatabaseNodeSummaryGridConfig('database-grid-view', colorFn);
+                        return getDatabaseNodeSummaryGridConfig('database-grid-view', 'databaseNode');
                     }
                 }
             }
         };
-        function getDatabaseNodeSummaryGridConfig(widgetId, colorFn) {
+        function getDatabaseNodeSummaryGridConfig(widgetId, type) {
             var columns = [
                            {
                                field: "name",
@@ -29,7 +29,8 @@ define(['lodash', 'contrail-view', 'monitor-infra-confignode-model', 'node-color
                                       name: 'name',
                                       statusBubble: true,
                                       rowData: dc,
-                                      tagColorMap: colorFn(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'))});
+                                      tagColorMap: NodeColorMapping.getNodeColorMap(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'),null, type)
+                                  });
                                },
                                events: {
                                   onClick: onClickHostName
@@ -173,9 +174,6 @@ define(['lodash', 'contrail-view', 'monitor-infra-confignode-model', 'node-color
                 triggerHashChange: triggerHashChange});
 
         }
-        self.getViewConfig = function(id) {
-            return self.viewConfig[id];
-        };
     };
     return (new DatabaseNodeViewConfig()).viewConfig;
 });

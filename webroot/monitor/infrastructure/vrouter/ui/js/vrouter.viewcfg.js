@@ -2,8 +2,8 @@
  * Copyright (c) 2017 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['lodash', 'contrail-view', 'monitor-infra-confignode-model', 'node-color-mapping'],
-        function(_, ContrailView, configNodeListModelCfg, NodeColorMapping){
+define(['lodash', 'contrail-view', 'monitor-infra-confignode-model'],
+        function(_, ContrailView, configNodeListModelCfg){
     var VRouterViewConfig = function () {
         var self = this;
         self.viewConfig = {
