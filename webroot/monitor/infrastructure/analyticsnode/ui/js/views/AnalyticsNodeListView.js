@@ -3,18 +3,16 @@
  */
 
 define(
-        [ 'underscore', 'contrail-view', 'node-color-mapping'],
+        [ 'underscore', 'contrail-view'],
         function(
-                _, ContrailView, NodeColorMapping) {
+                _, ContrailView) {
             var AnalyticsNodeListView = ContrailView.extend({
                 render : function() {
-                    nodeColorMapping = new NodeColorMapping(),
-                    colorFn = nodeColorMapping.getNodeColorMap;
                     this.renderView4Config(this.$el, null,
-                            getAnalyticsNodeListViewConfig(colorFn));
+                            getAnalyticsNodeListViewConfig());
                 }
             });
-            function getAnalyticsNodeListViewConfig(colorFn) {
+            function getAnalyticsNodeListViewConfig() {
                 var viewConfig = {
                         rows : [
                                 monitorInfraUtils.getToolbarViewConfig(),
@@ -95,27 +93,9 @@ define(
                                                              },
                                                              widgetCfgList: [
                                                                 {id:'analyticsnode-contrail-topology-cpu-share'},
-                                                                {id:'analyticsnode-disk-usage-info',
-                                                                    itemAttr:{
-                                                                        config:{
-                                                                            nodeType:'analytics-node'
-                                                                        }
-                                                                    }
-                                                                },
-                                                                {id:'analyticsnode-system-cpu-share',
-                                                                    itemAttr:{
-                                                                        config:{
-                                                                            nodeType:'analytics-node'
-                                                                        }
-                                                                    }
-                                                                },
-                                                                {id:'analyticsnode-system-memory-usage',
-                                                                    itemAttr:{
-                                                                        config:{
-                                                                            nodeType:'analytics-node'
-                                                                        }
-                                                                    }
-                                                                },
+                                                                {id:'analyticsnode-disk-usage-info'},
+                                                                {id:'analyticsnode-system-cpu-share'},
+                                                                {id:'analyticsnode-system-memory-usage'},
                                                                 {id:'analyticsnode-grid-view'}
                                                              ]
                                                          }

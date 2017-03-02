@@ -5,6 +5,7 @@ define(['lodash', 'contrail-view','monitor-infra-vrouter-model'],
         self.modelCfg = {
             'VROUTER_FLOW_RATE_MODEL' : {
                 source:"STATTABLE",
+                type: 'vrouter',
                 config: {
                     table_name: 'StatTable.VrouterStatsAgent.flow_rate',
                     select: 'T=, Source, MAX(flow_rate.active_flows)',
@@ -13,6 +14,7 @@ define(['lodash', 'contrail-view','monitor-infra-vrouter-model'],
             },
             'VROUTER_DROP_PACKET_MODEL': {
                 source:"STATTABLE",
+                type: 'vrouter',
                 config: {
                      table_name: 'StatTable.VrouterStatsAgent.drop_stats',
                      select: 'T=, SUM(drop_stats.ds_drop_pkts)'
@@ -20,6 +22,7 @@ define(['lodash', 'contrail-view','monitor-infra-vrouter-model'],
             },
             'VROUTER_AGENT_CPU_PERCENTILES_MODEL': {
                  source:"STATTABLE",
+                 type: 'vrouter',
                  config:{
                      table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
                      select: 'T=, PERCENTILES(process_mem_cpu_usage.cpu_share)',
@@ -28,6 +31,7 @@ define(['lodash', 'contrail-view','monitor-infra-vrouter-model'],
             },
             'VROUTER_AGENT_MEMORY_PERCENTILES_MODEL': {
                  source:"STATTABLE",
+                 type: 'vrouter',
                  config:{
                      table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
                      select: 'T=, PERCENTILES(process_mem_cpu_usage.mem_res)',
@@ -36,12 +40,14 @@ define(['lodash', 'contrail-view','monitor-infra-vrouter-model'],
             },
             'VROUTER_ACTIVE_FLOWS_PERCENTILE_MODEL': {
                 source:"STATTABLE",
+                type: 'vrouter',
                  config:{
                      table_name: 'StatTable.VrouterStatsAgent.flow_rate',
                      select: 'T=, PERCENTILES(flow_rate.active_flows)'
                  }
              },
             'VROUTER_LIST_MODEL': {
+                type: 'vrouter',
                 config: vRouterListModel
             }
         }

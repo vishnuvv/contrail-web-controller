@@ -527,7 +527,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                           name:'name',
                           statusBubble:true,
                           rowData:dc,
-                          tagColorMap: NodeColorMapping.getNodeColorMap(_.without(_.pluck(data, 'key'), failureLabel),null, type)
+                          tagColorMap: NodeColorMapping.getNodeColorMap(_.pluck(cowu.getGridItemsForWidgetId(widgetId), 'name'),null, type)
                       })
                    },
                    exportConfig: {

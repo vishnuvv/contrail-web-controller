@@ -19,6 +19,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                             xAxisLabel: '',
                             //yField: 'percentileValue',
                             yAxisLabel: ctwl.VROUTER_SYSTEM_CPU_PERCENTILES,
+                            yFormatter: d3.format('.2f'),
                             //groupBy:'Source',
                             yFields: monitorInfraUtils.getYFieldsForPercentile('system_cpu_usage.cpu_share')
                         }
