@@ -13,28 +13,30 @@ define([
     'controller-basedir/monitor/infrastructure/common/ui/js/views/DatabaseNodeScatterChartView',
     // 'analyticsnode-scatterchart-view',
     'controller-basedir/monitor/infrastructure/common/ui/js/views/AnalyticsNodeScatterChartView',
-    'mon-infra-dashboard-view',
+    // 'mon-infra-dashboard-view',
     'vrouter-dashboard-view',
     'monitor-infra-analyticsnode-model',
     'monitor-infra-databasenode-model',
     'monitor-infra-confignode-model',
     'monitor-infra-controlnode-model',
     'monitor-infra-vrouter-model',
-    'contrail-list-model'
+    'contrail-list-model',
+    'contrail-view'
 ], function(_,Backbone,ConfigNodeScatterChartView,
         ControlNodeScatterChartView,DatabaseNodeScatterChartView,
-        AnalyticsNodeScatterChartView,MonitorInfraDashboardView,VRouterDashboardView,
+        AnalyticsNodeScatterChartView,VRouterDashboardView,
         analyticsNodeListModelCfg,databaseNodeListModelCfg,configNodeListModelCfg,
-        controlNodeListModelCfg,vRouterListModelCfg,ContrailListModel) {
+        controlNodeListModelCfg,vRouterListModelCfg,ContrailListModel,ContrailView) {
 
-    var ControllerDashboardView = Backbone.View.extend({
+    var ControllerDashboardView = ContrailView.extend({
         el: $(contentContainer),
         render: function () {
             var self = this;
             //No need to instantiate as it's a singleton class
-            var monitorInfraDashboardView = MonitorInfraDashboardView;
-            monitorInfraDashboardView.addInfoboxes(getInfoboxesConfig());
-        }
+            // var monitorInfraDashboardView = MonitorInfraDashboardView;
+            // monitorInfraDashboardView.addInfoboxes(getInfoboxesConfig());
+        },
+        getInfoboxesConfig : getInfoboxesConfig
     });
 
     function getInfoboxesConfig() {
