@@ -367,6 +367,8 @@ define([
 
 
         //Monitor Infra common
+        this.DASHBOARD_VIEWPATH_PREFIX =
+            'monitor/infrastructure/dashboard/ui/js/views/';
         this.MONITOR_INFRA_VIEW_PATH = 'monitor/infrastructure/common/ui/js/views/';
         this.CPU_SHARE_PERCENTAGE = "CPU Share % (in 3 mins)";
         this.VROUTER_DASHBOARD_CHART_ID = 'vrouter-dashboard-chart';
@@ -375,7 +377,7 @@ define([
         //Analytics node labels
         this.ANALYTICS_CHART_SANDESH_SECTION_ID = "analytics-chart-sandesh-section-id";
         this.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID = "analytics-chart-sandesh-stackedbarchart-id";
-        this.ANALYTICS_CHART_SANDESH_LABEL = "Sandesh messages";
+        this.ANALYTICS_CHART_SANDESH_LABEL = "Analytics messages";
         this.ANALYTICS_CHART_QUERIES_SECTION_ID = "analytics-chart-queries-section-id";
         this.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID = "analytics-chart-queries-stackedbarchart-id";
         this.ANALYTICS_CHART_QUERIES_LABEL = "Queries";

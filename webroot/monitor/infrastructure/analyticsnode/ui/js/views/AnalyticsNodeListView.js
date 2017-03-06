@@ -32,7 +32,7 @@ define(
                                                          viewConfig : {
                                                             elementId : 'analytics-node-grid-stackview-0',
                                                             gridAttr : {
-                                                                defaultWidth : 6,
+                                                                defaultWidth : 24,
                                                                 defaultHeight : 8
                                                             },
                                                             widgetCfgList: [
@@ -52,7 +52,7 @@ define(
                                                          viewConfig: {
                                                              elementId: 'analytics-node-grid-stackview-1',
                                                              gridAttr: {
-                                                                 defaultWidth: 6,
+                                                                 defaultWidth: 24,
                                                                  defaultHeight: 8
                                                              },
                                                              widgetCfgList: [
@@ -90,7 +90,7 @@ define(
                                                          viewConfig: {
                                                              elementId: 'analytics-node-grid-stackview-3',
                                                              gridAttr: {
-                                                                 defaultWidth: 6,
+                                                                 defaultWidth: 24,
                                                                  defaultHeight: 8
                                                              },
                                                              widgetCfgList: [

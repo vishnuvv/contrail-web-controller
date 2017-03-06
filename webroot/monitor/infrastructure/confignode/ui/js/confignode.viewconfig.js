@@ -57,12 +57,19 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             chartOptions: {
                                 showControls: false,
                                 colors: colorFn,
-                                title: ctwl.CONFIGNODE_SUMMARY_TITLE,
+                                title: 'Config Requests',
                                 failureLabel: ' Failed Requests (Total)',
                                 subTitle:"Requests served per API Server (in 3 mins)",
                                 xAxisLabel: '',
-                                yAxisLabel: 'Requests Served',
+                                yAxisLabel: '',
                                 groupBy: 'Source',
+                                margin: {
+                                    left: 20
+                                },
+                                overviewTextOptions: {
+                                    label: 'Avg response time',
+                                    value: '32 ms'
+                                },
                                 yAxisFormatter: function (d) {
                                     return cowu.numberFormatter(d, 0);
                                 },
