@@ -375,7 +375,7 @@ define([
         //Analytics node labels
         this.ANALYTICS_CHART_SANDESH_SECTION_ID = "analytics-chart-sandesh-section-id";
         this.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID = "analytics-chart-sandesh-stackedbarchart-id";
-        this.ANALYTICS_CHART_SANDESH_LABEL = "Sandesh messages";
+        this.ANALYTICS_CHART_SANDESH_LABEL = "Analytics messages";
         this.ANALYTICS_CHART_QUERIES_SECTION_ID = "analytics-chart-queries-section-id";
         this.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID = "analytics-chart-queries-stackedbarchart-id";
         this.ANALYTICS_CHART_QUERIES_LABEL = "Queries";
