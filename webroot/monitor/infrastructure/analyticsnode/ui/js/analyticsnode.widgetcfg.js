@@ -21,7 +21,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     }
                 },
                 itemAttr: {
-                    height: 0.25,
+                    height: 0.3,
                     width: 0.98,
                     title: ctwl.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE
                 }
@@ -35,12 +35,29 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     view: 'StackedAreaChartView',
                     viewConfig: {
                         chartOptions: {
-                            title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
+                            title: 'Analytics Messages',
                             subTitle:"Messages received per Collector (in 3 mins)",
                             xAxisLabel: '',
-                            yAxisLabel: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
+                            //yAxisLabel: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
+                            yAxisLabel: '',
                             groupBy: 'Source',
                             yField: 'SUM(msg_info.messages)',
+                            overViewText: true,
+                            overviewTextOptions: {
+                                label: 'Avg Size',
+                                value: '200',
+                                key: 'AVG(msg_info.bytes)',
+                                operator: 'average',
+                                formatter: function (d) {
+                                    return formatBytes(d , true);
+                                }
+                            },
+                            margin: {
+                                left: 40,
+                                top: 15,
+                                right: 10,
+                                bottom: 20
+                            },
                         }
                     }
                 },
@@ -55,7 +72,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                 },
                 viewCfg: {
                     elementId : ctwl.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID,
-                    view:'StackedBarChartWithFocusView',
+                    view:'StackedAreaChartView',
                     viewConfig: {
                         chartOptions: {
                             title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
@@ -64,6 +81,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             yAxisLabel: ctwl.ANALYTICS_CHART_QUERIES_LABEL,
                             yField: 'COUNT(query_stats)',
                             groupBy: 'Source',
+                            bar: true,
                             /*failureCheckFn: function (d) {
                                 if (d['query_stats.error'] != "None") {
                                     return 1;
@@ -155,7 +173,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     itemAttr: {
                         width: 1/3,
-                        height: 1.1,
+                        height: 0.9,
                         title: ctwl.ANALYTICS_NODE_GENERATORS
                     }
             },
@@ -165,12 +183,13 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     viewCfg: {
                         elementId : ctwl.ANALYTICS_CHART_DATABASE_WRITE_STACKEDBARCHART_ID,
-                        view:'StackedBarChartWithFocusView',
+                        view:'StackedAreaChartView',
                         viewConfig: {
                             chartOptions: {
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                 subTitle:"Writes per Collector (in 3 mins)",
                                 xAxisLabel: '',
+                                bar: true,
                                 yAxisLabel: ctwl.ANALYTICS_CHART_DATABASE_WRITE_LABEL,
                                 groupBy: 'Source',
                                 failureCheckFn: function (d) {
@@ -198,13 +217,14 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     viewCfg: {
                         elementId : 'message_type_top_5_section',
-                        view : "StackedBarChartWithFocusView",
+                        view : "StackedAreaChartView",
                         viewConfig: {
                             chartOptions: {
                                 colors: cowc.FIVE_NODE_COLOR,
                                 title: 'Message Types',
                                 subTitle:"Messages per Object type (in 3 mins)",
                                 xAxisLabel: '',
+                                bar: true,
                                 yAxisLabel: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES,
                                 groupBy: 'msg_info.type',
                                 limit: 5,
@@ -213,8 +233,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES,
-                        width: 1/2
+                        width: 1/2,
+                        title: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES
                     }
             },
             'analyticsnode-top-generators': {
@@ -229,7 +249,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     viewCfg: {
                         elementId : 'generator_top_5_section',
-                        view : "StackedBarChartWithFocusView",
+                        view : "StackedAreaChartView",
                         viewConfig: {
                             chartOptions: {
                                 colors: cowc.FIVE_NODE_COLOR,
@@ -239,6 +259,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 yAxisLabel: ctwl.ANALYTICS_NODE_TOP_GENERATORS,
                                 groupBy: 'name',
                                 limit: 5,
+                                bar: true,
                                 yField: 'SUM(msg_info.messages)',
                                 showLegend: false
                             }

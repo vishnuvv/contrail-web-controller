@@ -30,6 +30,11 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         xAxisLabel: '',
                         yAxisLabel: 'Requests Served',
                         groupBy: 'Source',
+                        overViewText: true,
+                        overviewTextOptions: {
+                            label: 'Avg response time',
+                            value: '32 ms'
+                        },
                         yAxisFormatter: function (d) {
                             return cowu.numberFormatter(d, 0);
                         },

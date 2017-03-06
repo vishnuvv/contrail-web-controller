@@ -2,8 +2,8 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore', 'contrail-view', 'node-color-mapping'],
-        function(_, ContrailView, NodeColorMapping) {
+define(['underscore', 'contrail-view', 'node-color-mapping', 'core-utils'],
+        function(_, ContrailView, NodeColorMapping, cowu) {
     var MonitorInfraViewConfig = function () {
         var self = this;
         self.viewConfig = {
@@ -61,16 +61,21 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                     view:'LineWithFocusChartView',
                     viewConfig: {
                         chartOptions: {
-                            title: ctwl.DISK_USAGE,
+                            title: 'DB Usage',
                             subTitle:"Disk Utilization (in 3 mins)",
-                            xAxisLabel: '',
                             yAxisLabel: ctwl.DISK_USAGE,
                             groupBy: 'Source',
+                            overViewText: true,
+                            overviewTextOptions: {
+                                label: 'Peak Usage',
+                                value: '20 GB',
+                                operator: 'max'
+                            },
                             yField: 'MAX(disk_usage_info.partition_space_used_1k)',
                             yFormatter : function(d){
                                 return formatBytes(d * 1024, true);
                             },margin: {
-                                left: 62
+                                left: 30
                             }
                         }
                     }
@@ -102,7 +107,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                              //xFormatter: xCPUChartFormatter,
                       }
                      } 
-                },
+                }
         };
         self.getViewConfig = function(id) {
             return self.viewConfig[id];

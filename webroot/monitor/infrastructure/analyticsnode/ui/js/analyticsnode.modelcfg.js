@@ -8,7 +8,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 source: 'STATTABLE',
                 config: {
                     table_name: 'StatTable.SandeshMessageStat.msg_info',
-                    select: 'Source, T=, SUM(msg_info.messages)'
+                    select: 'Source, T=, SUM(msg_info.messages), AVG(msg_info.bytes)'
                 }
             },
             'ANALYTICSNODE_PERCENTILE_MODEL' : {

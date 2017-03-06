@@ -27,6 +27,64 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     title: ctwl.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE
                 }
             },
+            'confignode-reads-donut': {
+                baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_ONE_ID,
+                        view: 'DonutChartView',
+                        viewConfig: {
+                            //class: 'col-xs-6',
+                            parseFn: function (response, viewConfig) {
+                                return monitorInfraParsers
+                                    .parseConfigNodeRequestForDonutChart(
+                                         response, ['GET'], viewConfig);
+                            },
+                            chartOptions: {
+                                margin: {
+                                    top: 10,
+                                    bottom: 10
+                                },
+                                showLabels: false,
+                                showLegend: false,
+                                title: 'Reads per API server',
+                                defaultDataStatusMessage: false,
+                                showEmptyDonut: true,
+                                isChartSettingsOverride: false
+                            },
+                        }
+                }
+            },
+            'confignode-writes-donut': {
+                baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_TWO_ID,
+                    view: 'DonutChartView',
+                    viewConfig: {
+                        //class: 'col-xs-6',
+                        parseFn: function (response, viewConfig) {
+                            return monitorInfraParsers
+                                .parseConfigNodeRequestForDonutChart(
+                                     response, ['POST', 'PUT', 'DELETE'], viewConfig);
+                        },
+                        chartOptions: {
+                            margin: {
+                                bottom: 10,
+                                top: 10
+                            },
+                            showLabels: false,
+                            title: 'Writes per API server',
+                            defaultDataStatusMessage: false,
+                            showEmptyDonut: true,
+                            showLegend: false,
+                            isChartSettingsOverride: false
+                        },
+                    }
+                }
+            },
             'confignode-requests-served': {
                     baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
                     modelCfg: {
@@ -38,12 +96,35 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             class: 'col-xs-7 mon-infra-chart chartMargin',
                             chartOptions: {
                                 showControls: false,
-                                title: ctwl.CONFIGNODE_SUMMARY_TITLE,
+                                title: 'Config Requests',
                                 failureLabel: ' Failed Requests (Total)',
                                 subTitle: "Requests served per API Server (in 3 mins)",
                                 xAxisLabel: '',
-                                yAxisLabel: 'Requests Served',
+                                //yAxisLabel: 'Requests Served',
+                                yAxisLabel: '',
                                 groupBy: 'Source',
+                                overViewText: true,
+                                overviewTextOptions: {
+                                    label: 'Avg Response time',
+                                    key: 'api_stats.response_time_in_usec',
+                                    formatter: function (y1Value) {
+                                        //Divide by 1000 to convert to milli secs;
+                                        y1Value = ifNull(y1Value, 0)/1000;
+                                        var formattedValue = Math.round(y1Value) + ' ms';
+                                        if (y1Value > 1000){
+                                            // seconds block
+                                            formattedValue = Math.round(y1Value/1000);
+                                            formattedValue = formattedValue + ' secs'
+                                        } else if (y1Value > 60000) {
+                                            // minutes block
+                                            formattedValue = Math.round(y1Value/(60 * 1000))
+                                            formattedValue = formattedValue + ' mins'
+                                        }
+                                        return formattedValue;
+                                    },
+                                    value: '32 ms',
+                                    operator: 'average'
+                                },
                                 yAxisFormatter: function (d) {
                                     return cowu.numberFormatter(d, 0);
                                 },
@@ -53,7 +134,13 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                     } else {
                                         return 0;
                                     }
-                                }
+                                },
+                                margin: {
+                                    left: 25,
+                                    top: 15,
+                                    right: 10,
+                                    bottom: 20
+                                },
                             }
                         }
                     },
@@ -116,7 +203,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 bucketSize: 4,
                                 groupBy: 'Source',
                                 legendView: LegendView,
-
                                 y1AxisLabel: ctwl.RESPONSE_TIME,
                                 //Y1 for bar
                                 y1Field: 'api_stats.response_time_in_usec',
@@ -169,12 +255,15 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     modelCfg: {
                     },
                     viewCfg: {
-                        elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_SECTION_ID,
-                        view: 'ConfigNodeDonutChartView',
-                        viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
-                        app: cowc.APP_CONTRAIL_CONTROLLER,
+                        elementId: 'confignode-donut-charts',
+                        view: 'CustomView',
                         viewConfig: {
-                            class: 'col-xs-5 mon-infra-chart',
+                            template: 'one-row-two-column-template',
+                            //title: 'Resource Utilization',
+                            childWidgets: [
+                                'confignode-reads-donut',
+                                'confignode-writes-donut'
+                            ]
                         }
                     },
                     itemAttr: {
