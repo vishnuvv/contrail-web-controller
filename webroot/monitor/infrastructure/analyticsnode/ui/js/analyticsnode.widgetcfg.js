@@ -26,6 +26,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     title: ctwl.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE
                 }
             },
+<<<<<<< HEAD:webroot/monitor/infrastructure/analyticsnode/ui/js/analyticsnode.widgetcfg.js
             'analyticsnode-sandesh-message-info': {
                 baseModel:'ANALYTICSNODE_SANDESH_MSG_MODEL',
                 modelCfg: {
@@ -49,6 +50,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     title: ctwl.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION
                 }
             },
+<<<<<<< HEAD:webroot/monitor/infrastructure/analyticsnode/ui/js/analyticsnode.widgetcfg.js
             'analyticsnode-query-stats': {
                 baseModel:'ANALYTICSNODE_QUERYSTATS_MODEL',
                 modelCfg: {
@@ -172,6 +174,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
                                 subTitle:"Writes per Collector (in 3 mins)",
                                 xAxisLabel: '',
+                                bar: true,
                                 yAxisLabel: ctwl.ANALYTICS_CHART_DATABASE_WRITE_LABEL,
                                 groupBy: 'Source',
                                 bar: true,
@@ -208,6 +211,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 title: 'Message Types',
                                 subTitle:"Messages per Object type (in 3 mins)",
                                 xAxisLabel: '',
+                                bar: true,
                                 yAxisLabel: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES,
                                 groupBy: 'msg_info.type',
                                 limit: 5,
@@ -217,8 +221,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             }
                         }
                     },itemAttr: {
-                        title: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES,
-                        width: 1/2
+                        width: 1/2,
+                        title: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES
                     }
                 }
             },
