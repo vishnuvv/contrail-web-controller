@@ -54,9 +54,6 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                         }
                     };
                 },
-<<<<<<< HEAD
-                'system-memory-usage': function (config) {
-=======
                 'system-cpu-percentiles': function () {
                     return {
                         modelCfg: {
@@ -85,8 +82,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                         }
                     };
                 },
-                'system-memory-usage': function () {
->>>>>>> Carousel for dashboard
+                'system-memory-usage': function (config) {
                     return {
                         modelCfg: {
                             modelId:'SYSTEM_MEMORY_MODEL' + getValueByJsonPath(config,"itemAttr;config;nodeType",""),
@@ -136,9 +132,6 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                         }
                     };
                 },
-<<<<<<< HEAD
-                'disk-usage-info': function (config){
-=======
                 'system-memory-percentiles': function () {
                     return {
                         modelCfg: {
@@ -204,8 +197,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                         }
                     }
                 },
-                'disk-usage-info': function (){
->>>>>>> Carousel for dashboard
+                'disk-usage-info': function (config){
                     return {
                         modelCfg: {
                             source: 'STATTABLE',
@@ -235,19 +227,23 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                         },
                         viewCfg: {
                             elementId : "databsenode_dbusage_chart",
-                            view:'LineWithFocusChartView',
+                            view:'StackedAreaChartView',
                             viewConfig: {
                                 chartOptions: {
-                                    title: ctwl.DISK_USAGE,
+                                    title: 'DB Usage',
                                     subTitle:"Disk Utilization (in 3 mins)",
                                     xAxisLabel: '',
-                                    yAxisLabel: ctwl.DISK_USAGE,
+                                    yAxisLabel: '',
                                     groupBy: 'Source',
+                                    overviewTextOptions: {
+                                        label: 'Peak Usage',
+                                        value: '20'
+                                    },
                                     yField: 'MAX(disk_usage_info.partition_space_used_1k)',
                                     yFormatter : function(d){
                                         return formatBytes(d * 1024, true);
                                    },margin: {
-                                       left: 62
+                                       left: 40
                                    }
                                 }
                             }

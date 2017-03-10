@@ -55,12 +55,15 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 title: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
                                 subTitle:"Messages received per Collector (in 3 mins)",
                                 xAxisLabel: '',
-                                yAxisLabel: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
+                                yAxisLabel: '',
                                 groupBy: 'Source',
+                                margin: {
+                                    left: 30
+                                },
                                 yField: 'SUM(msg_info.messages)',
                                 overviewTextOptions: {
                                     label: 'Avg Size',
-                                    value: '120 KB'
+                                    value: '120'
                                 }
                             }
                         }
