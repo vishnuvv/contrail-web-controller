@@ -100,7 +100,7 @@ function getControllerAppPaths (ctBaseDir, ctBuildDir,env) {
             'analyticsnode-viewconfig': ctWebDir + '/monitor/infrastructure/analyticsnode/ui/js/analyticsnode.viewconfig',
             'controlnode-viewconfig': ctWebDir + '/monitor/infrastructure/controlnode/ui/js/controlnode.viewconfig',
             'databasenode-viewconfig': ctWebDir + '/monitor/infrastructure/databasenode/ui/js/databasenode.viewconfig',
-            'vrouter-viewconfig': ctWebDir + '/monitor/infrastructure/vrouter/ui/js/vrouter.viewconfig'
+            'vrouter-viewconfig': ctWebDir + '/monitor/infrastructure/vrouter/ui/js/vrouter.viewconfig',
         }
     } else if(env == "prod") {
         return {

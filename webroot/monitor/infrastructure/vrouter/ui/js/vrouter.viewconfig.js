@@ -117,7 +117,13 @@ define(['underscore', 'contrail-view','contrail-list-model', 'cf-datasource', 'l
                                  },
                                  groupBy:null,
                                  yAxisLabel: ctwl.VROUTER_ACTIVE_FLOWS_DROPS_LABEL,
-                                 yField: 'MAX(flow_rate.active_flows)'
+                                 yField: 'MAX(flow_rate.active_flows)',
+                                 margin: {
+                                    left: 30,
+                                    top: 20,
+                                    right: 10,
+                                    bottom: 20
+                                },
                              }
                          }
                     },

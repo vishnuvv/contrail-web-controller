@@ -197,6 +197,60 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                         }
                     }
                 },
+                'dashboard-resource-utilization': function (){
+                    return {
+                        viewCfg: {
+                            elementId: 'dashboard_resource_utilization_view',
+                            view: 'ResourceUtilizationView',
+                            viewPathPrefix: ctwl.DASHBOARD_VIEWPATH_PREFIX,
+                            app : cowc.APP_CONTRAIL_CONTROLLER,
+                            viewConfig: {
+
+                            }
+                        },
+                        itemAttr: {
+                            width: 0.9,
+                            height: 0.6,
+                            title: 'Resource Utilization'
+                        }
+                    }
+                },
+                'monitor-infra-scatterchart-view': function (){
+                    return {
+                        viewCfg: {
+                            elementId: 'monitor-infra-scatterchart-view',
+                            view: 'MonitorInfraScatterChartView',
+                            /*viewPathPrefix: ctwl.DASHBOARD_VIEWPATH_PREFIX,
+                            app : cowc.APP_CONTRAIL_CONTROLLER,*/
+                            viewConfig: {
+
+                            }
+                        },
+                        itemAttr: {
+                            width: 0.9,
+                            height: 0.6,
+                            title: 'Resource Utilization'
+                        }
+                    }
+                },
+                'dashboard-virtualization-overview': function (){
+                    return {
+                        viewCfg: {
+                            elementId: 'dashboard_virtualization_overview_view',
+                            view: 'VirtualizationView',
+                            viewPathPrefix: ctwl.DASHBOARD_VIEWPATH_PREFIX,
+                            app : cowc.APP_CONTRAIL_CONTROLLER,
+                            viewConfig: {
+
+                            }
+                        },
+                        itemAttr: {
+                            width: 0.9,
+                            height: 0.6,
+                            title: 'Virtualization Overview'
+                        }
+                    }
+                },
                 'disk-usage-info': function (config){
                     return {
                         modelCfg: {
