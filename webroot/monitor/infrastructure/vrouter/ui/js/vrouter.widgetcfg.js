@@ -103,6 +103,7 @@ define(['underscore', 'contrail-view'],
                  return {
                      modelCfg: {
                         source: "STATTABLE",
+                        type: 'vRouter',
                         config: [
                             {
                                 table_name: 'StatTable.VrouterStatsAgent.phy_band_in_bps',
@@ -144,6 +145,7 @@ define(['underscore', 'contrail-view'],
              "vrouter-system-cpu-percentiles-chart": {
                      baseModel: 'SYSTEM_CPU_PERCENTILES_MODEL',
                      modelCfg: {
+                        type: 'vRouter',
                         modelId: 'VROUTER_SYSTEM_CPU_PERCENTILES_MODEL',
                         config: {
                             where: 'node-type = vrouter'
@@ -179,6 +181,7 @@ define(['underscore', 'contrail-view'],
              "vrouter-system-memory-percentiles-chart": {
                 baseModel: 'SYSTEM_MEMORY_PERCENTILES_MODEL',
                 modelCfg: {
+                    type: 'vRouter',
                     modelId: 'VROUTER_SYSTEM_MEMORY_PERCENTILE_MODEL',
                     config: {
                         where: 'node-type = vrouter'

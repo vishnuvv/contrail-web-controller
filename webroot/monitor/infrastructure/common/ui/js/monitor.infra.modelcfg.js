@@ -4,6 +4,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
         var self = this;
         self.modelCfg = {
             'SYSTEM_CPU_MODEL' : {
+                type: 'common',
                 source: 'STATTABLE',
                 config: {
                     "table_name": "StatTable.NodeStatus.system_cpu_usage",
@@ -11,6 +12,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'SYSTEM_CPU_PERCENTILES_MODEL' : {
+                type: 'common',
                 source: 'STATTABLE',
                 config: {
                     table_name: "StatTable.NodeStatus.system_cpu_usage",
@@ -18,6 +20,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 },
             },
             'SYSTEM_MEMORY_PERCENTILES_MODEL' : {
+                type: 'common',
                 source: 'STATTABLE',
                 config: {
                     table_name: "StatTable.NodeStatus.system_cpu_usage",
@@ -25,13 +28,15 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 },
             },
             'SYSTEM_MEMORY_MODEL' : {
+                type: 'common',
                 source: 'STATTABLE',
                 config: {
                     "table_name": "StatTable.NodeStatus.system_mem_usage",
                     "select": "Source,T=,MAX(system_mem_usage.used)",
-            }
+                }
             },
             'SYSTEM_DISK_USAGE_MODEL' : {
+                type: 'common',
                 source: 'STATTABLE',
                 config: {
                     "table_name": "StatTable.NodeStatus.disk_usage_info",
@@ -39,14 +44,16 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 }
             },
             'NODE_PROCESS_CPU_MODEL': {
-                source:'STATTABLE',
+                type: 'common',
+                source: 'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
                     select: 'name, T=, MAX(process_mem_cpu_usage.cpu_share)',
                 }
             },
             'NODE_PROCESS_MEMORY_MODEL': {
-                source:'STATTABLE',
+                type: 'common',
+                source: 'STATTABLE',
                 config: {
                     table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
                     select: 'name, T=, MAX(process_mem_cpu_usage.mem_res)',

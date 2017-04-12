@@ -26,29 +26,27 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     title: ctwl.ANALYTICS_NODE_MESSAGE_PARAMS_PERCENTILE
                 }
             },
-            'analyticsnode-sandesh-message-info': function (){
-                return {
-                    baseModel:'ANALYTICSNODE_SANDESH_MSG_MODEL',
-                    modelCfg: {
-                    },
-                    viewCfg: {
-                        elementId : ctwl.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID,
-                        view: 'StackedAreaChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
-                                subTitle:"Messages received per Collector (in 3 mins)",
-                                xAxisLabel: '',
-                                yAxisLabel: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
-                                groupBy: 'Source',
-                                yField: 'SUM(msg_info.messages)',
-                            }
+            'analyticsnode-sandesh-message-info': {
+                baseModel:'ANALYTICSNODE_SANDESH_MSG_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId : ctwl.ANALYTICS_CHART_SANDESH_STACKEDBARCHART_ID,
+                    view: 'StackedAreaChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
+                            subTitle:"Messages received per Collector (in 3 mins)",
+                            xAxisLabel: '',
+                            yAxisLabel: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
+                            groupBy: 'Source',
+                            yField: 'SUM(msg_info.messages)',
                         }
-                    },
-                    itemAttr: {
-                        height: 1.2,
-                        title: ctwl.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION
                     }
+                },
+                itemAttr: {
+                    height: 1.2,
+                    title: ctwl.ANALYTICS_NODE_SANDESH_MESSAGE_DISTRIBUTION
                 }
             },
             'analyticsnode-query-stats': {
@@ -86,6 +84,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                 baseModel: 'SYSTEM_CPU_MODEL',
                 baseView: 'SYSTEM_CPU_SHARE_VIEW',
                 modelCfg : {
+                    type: 'analyticsNode',
                     modelId: 'ANALYTICSNODE_SYSTEM_CPU_MODEL',
                     config: {
                         where:'node-type = analytics-node'
@@ -99,6 +98,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                 baseModel: 'SYSTEM_MEMORY_MODEL',
                 baseView:'SYSTEM_MEMORY_USAGE_VIEW',
                 modelCfg : {
+                    type: 'analyticsNode',
                     modelId: 'ANALYTICSNODE_SYSTEM_MEMORY_MODEL',
                     config: {
                         where:'node-type = analytics-node'
@@ -112,6 +112,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                 baseModel:'SYSTEM_DISK_USAGE_MODEL',
                 baseView:'SYSTEM_DISK_USAGE_VIEW',
                 modelCfg : {
+                    type: 'analyticsNode',
                     modelId: 'ANALYTICSNODE_DISK_USAGE_MODEL',
                     config: {
                         where:'node-type = analytics-node'
@@ -121,8 +122,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     width: 1/2,
                 }
             },
-            'analyticsnode-generators-scatterchart': function (){
-                return {
+            'analyticsnode-generators-scatterchart': {
                     baseModel:'ANALYTICSNODE_GENERATORS_MODEL',
                     modelCfg: {
                     },
@@ -158,10 +158,8 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         height: 1.1,
                         title: ctwl.ANALYTICS_NODE_GENERATORS
                     }
-                }
             },
-            'analyticsnode-database-read-write': function (){
-                return {
+            'analyticsnode-database-read-write': {
                     baseModel:'ANALYTICSNODE_DB_READWRITE_MODEL',
                     modelCfg: {
                     },
@@ -187,12 +185,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         height: 0.9,
                         title: ctwl.ANALYTICS_NODE_DB_READ_WRITE
                     }
-                }
             },
-            'analyticsnode-top-messagetype': function (){
-                return {
+            'analyticsnode-top-messagetype': {
                     modelCfg: {
                         modelId:'ANALYTICSNODE_MESSAGETYPE_MODEL',
+                        type: 'analyticsNode',
                         source: 'STATTABLE',
                         config: {
                             table_name: 'StatTable.SandeshMessageStat.msg_info',
@@ -219,12 +216,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         title: ctwl.ANALYTICS_NODE_TOP_MESSAGE_TYPES,
                         width: 1/2
                     }
-                }
             },
-            'analyticsnode-top-generators': function (){
-                return {
+            'analyticsnode-top-generators': {
                     modelCfg: {
                         modelId:'ANALYTICSNODE_TOP_GENERATORS_MODEL',
+                        type: 'analyticsNode',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.SandeshMessageStat.msg_info',
@@ -251,12 +247,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         title: ctwl.ANALYTICS_NODE_TOP_GENERATORS,
                         width: 1/2
                     }
-                }
             },
-            'analyticsnode-qe-cpu-share': function (){
-                return {
+            'analyticsnode-qe-cpu-share': {
                     modelCfg: {
                         modelId:'ANALYTICSNODE_QE_CPU_MODEL',
+                        type: 'analyticsNode',
                         source: 'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -281,12 +276,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         title: ctwl.ANALYTICS_NODE_QE_CPU_SHARE,
                         width: 1/2
                     }
-                }
             },
-            'analyticsnode-collector-cpu-share': function () {
-                return {
+            'analyticsnode-collector-cpu-share': {
                     modelCfg: {
                         modelId:'ANALYTICSNODE_COLLECTOR_CPU_MODEL',
+                        type: 'analyticsNode',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -311,12 +305,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         title: ctwl.ANALYTICS_NODE_COLLECTOR_CPU_SHARE,
                         width: 1/2
                     }
-                }
             },
-            'analyticsnode-alarm-gen-cpu-share': function () {
-                return {
+            'analyticsnode-alarm-gen-cpu-share': {
                     modelCfg: {
                         modelId:'ANALYTICSNODE_ALARMGEN_CPU_MODEL',
+                        type: 'analyticsNode',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -341,12 +334,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         title: ctwl.ANALYTICS_NODE_ALARM_GEN_CPU_SHARE,
                         width: 1/2
                     }
-                }
             },
-            'analyticsnode-snmp-collector-cpu-share': function () {
-                return {
+            'analyticsnode-snmp-collector-cpu-share': {
                     modelCfg: {
                         modelId:'ANALYTICSNODE_SNMP_COLLECTOR_CPU_MODEL',
+                        type: 'analyticsNode',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -371,12 +363,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         title: ctwl.ANALYTICS_NODE_SNMP_COLLECTOR_CPU_SHARE,
                         width: 1/2
                     }
-                }
             },
-            'analyticsnode-contrail-topology-cpu-share': function () {
-                return {
+            'analyticsnode-contrail-topology-cpu-share': {
                     modelCfg: {
                         modelId:'ANALYTICSNODE_TOPOLOGY_CPU_MODEL',
+                        type: 'analyticsNode',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -401,12 +392,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         title: ctwl.ANALYTICS_NODE_TOPOLOGY_CPU_SHARE,
                         width: 1/2
                      }
-                 }
              },
-            'analyticsnode-manager-cpu-share': function () {
-                return {
+            'analyticsnode-manager-cpu-share': {
                     modelCfg: {
                         modelId:'ANALYTICSNODE_NODEMGR_CPU_MODEL',
+                        type: 'analyticsNode',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -432,11 +422,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         title: ctwl.ANALYTICS_NODE_NODE_MANAGER_CPU_SHARE,
                         width: 1/2
                     }
-                }
-            },'analyticsnode-api-cpu-share': function () {
-                return {
+            },
+            'analyticsnode-api-cpu-share': {
                     modelCfg: {
                         modelId:'ANALYTICSNODE_API_CPU_MODEL',
+                        type: 'analyticsNode',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.NodeStatus.process_mem_cpu_usage',
@@ -461,11 +451,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         title: ctwl.ANALYTICS_NODE_API_CPU_SHARE,
                         width: 1/2
                     }
-                };
-            },'analyticsnode-stats-available-connections': function () {
-                return {
+            },
+            'analyticsnode-stats-available-connections': {
                     modelCfg: {
                         modelId:'ANALYTICSNODE_DB_CONNECTIONS_MODEL',
+                        type: 'analyticsNode',
                         source:'STATTABLE',
                         config: {
                             table_name: 'StatTable.CollectorDbStats.cql_stats.stats',
@@ -492,12 +482,11 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                         title: ctwl.ANALYTICS_NODE_AVAILABLE_CONNECTIONS,
                         width: 1/2
                     }
-                }
             },
-            'analyticsnode-grid-view': function () {
-                return {
+            'analyticsnode-grid-view': {
                     modelCfg: {
                       modelId:'ANAYTICSNODE_LIST_MODEL',
+                      type: 'analyticsNode',
                       config:analyticsNodeListModelCfg
                     },
                     viewCfg: {
@@ -512,8 +501,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     itemAttr: {
                         height: 2
                     }
-                }
-             }
+            }
          };
         function getAnalyticsNodeSummaryGridConfig(widgetId, type) {
             var columns = [

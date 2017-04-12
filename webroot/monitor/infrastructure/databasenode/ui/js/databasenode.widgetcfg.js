@@ -30,6 +30,7 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                 baseModel: 'NODE_PROCESS_CPU_MODEL',
                 baseView: 'NODE_PROCESS_CPU_VIEW',
                 modelCfg: {
+                    type: 'databaseNode',
                     modelId: 'DATABASENODE_CASSANDRA_CPU_MODEL',
                     config: {
                         where: 'process_mem_cpu_usage.__key = cassandra'
@@ -54,6 +55,7 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                 baseModel: 'NODE_PROCESS_MEMORY_MODEL',
                 baseView: 'NODE_PROCESS_MEMORY_VIEW',
                 modelCfg: {
+                    type: 'databaseNode',
                    modelId: 'DATABASENODE_CASSANDRA_MEMORY_MODEL',
                     config: {
                         where: 'process_mem_cpu_usage.__key = cassandra'
@@ -77,6 +79,7 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                 baseModel:'SYSTEM_CPU_MODEL',
                 baseView:'SYSTEM_CPU_SHARE_VIEW',
                 modelCfg : {
+                    type: 'databaseNode',
                     modelId: 'DATABASENODE_SYSTEM_CPU_MODEL',
                     config: {
                         where:'node-type = database-node'
@@ -90,6 +93,7 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                 baseModel: 'SYSTEM_MEMORY_MODEL',
                 baseView:'SYSTEM_MEMORY_USAGE_VIEW',
                 modelCfg : {
+                    type: 'databaseNode',
                     modelId: 'DATABASENODE_SYSTEM_MEMORY_MODEL',
                     config: {
                         where:'node-type = database-node'
@@ -104,6 +108,7 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                 baseModel:'SYSTEM_DISK_USAGE_MODEL',
                 baseView:'SYSTEM_DISK_USAGE_VIEW',
                 modelCfg : {
+                    type: 'databaseNode',
                     modelId: 'DATABASENODE_DISK_USAGE_MODEL',
                     config: {
                         where:'node-type = database-node'
@@ -144,6 +149,7 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                 baseView: 'NODE_PROCESS_CPU_VIEW',
                 modelCfg:{
                     modelId: 'DATABASENODE_ZOO_KEEPER_CPU_MODEL',
+                    type: 'databaseNode',
                     config: {
                         where: 'process_mem_cpu_usage.__key = zookeeper'
                     }
@@ -165,6 +171,7 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                 baseModel: 'NODE_PROCESS_CPU_MODEL',
                 baseView: 'NODE_PROCESS_CPU_VIEW',
                 modelCfg: {
+                    type: 'databaseNode',
                     modelId: 'DATABASENODE_KAFKA_CPU_MODEL',
                     config: {
                         where: 'process_mem_cpu_usage.__key = kafka'

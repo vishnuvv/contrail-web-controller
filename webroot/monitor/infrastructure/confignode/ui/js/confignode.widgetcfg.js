@@ -80,7 +80,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     view: "MultiChartView"
                 }
             },
-            'confignode-multi1-response-time-size': {
+            /*'confignode-multi1-response-time-size': {
                 viewCfg: {
                     childWidgets: {
                         y1: ['confignode-response-time-bar'],
@@ -88,7 +88,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     },
                     view: "MultiChartView"
                 }
-            },
+            },*/
             'confignode-response-time-size': {
                     baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
                     modelCfg: {
@@ -186,6 +186,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
             'confignode-grid-view': {
                   modelCfg: {
                     modelId: 'CONFIGNODE_LIST_MODEL',
+                    type: 'configNode',
                     config: configNodeListModelCfg
                   },
                   viewCfg: {
@@ -334,6 +335,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 baseModel: 'SYSTEM_CPU_MODEL',
                 baseView: 'SYSTEM_CPU_SHARE_VIEW',
                 modelCfg: {
+                    type: 'configNode',
                     modelId: 'CONFIGNODE_SYSTEM_CPU_MODEL',
                     config: {
                         where: 'node-type = config-node'
@@ -347,6 +349,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 baseModel: 'SYSTEM_MEMORY_MODEL',
                 baseView: 'SYSTEM_MEMORY_USAGE_VIEW',
                 modelCfg: {
+                    type: 'configNode',
                     modelId: 'CONFIGNODE_SYSTEM_MEMORY_MODEL',
                     config: {
                         where: 'node-type = config-node'
@@ -360,6 +363,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 baseModel: 'SYSTEM_DISK_USAGE_MODEL',
                 baseView: 'SYSTEM_DISK_USAGE_VIEW',
                 modelCfg: {
+                    type: 'configNode',
                     modelId: 'CONFIGNODE_DISK_USAGE_MODEL',
                     config: {
                         where: 'node-type = config-node'

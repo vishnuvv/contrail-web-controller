@@ -75,6 +75,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 baseView: 'SYSTEM_CPU_SHARE_VIEW',
                 baseModel: 'SYSTEM_CPU_MODEL',
                 modelCfg : {
+                    type: 'controlNode',
                     modelId: 'CONTROLNODE_SYSTEM_CPU_SHARE_MODEL',
                     config: {
                         where:'node-type = control-node'
@@ -88,6 +89,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 baseModel: 'SYSTEM_MEMORY_MODEL',
                 baseView:'SYSTEM_MEMORY_USAGE_VIEW',
                 modelCfg : {
+                    type: 'controlNode',
                     modelId: 'CONTROLNODE_SYSTEM_MEMORY_MODEL',
                     config: {
                         where:'node-type = control-node'
@@ -101,6 +103,7 @@ define(['lodash', 'contrail-view', 'monitor-infra-controlnode-model', 'node-colo
                 baseModel:'SYSTEM_DISK_USAGE_MODEL',
                 baseView:'SYSTEM_DISK_USAGE_VIEW',
                 modelCfg : {
+                    type: 'controlNode',
                     modelId: 'CONTROLNODE_DISK_USAGE_MODEL',
                     config: {
                         where:'node-type = control-node'
