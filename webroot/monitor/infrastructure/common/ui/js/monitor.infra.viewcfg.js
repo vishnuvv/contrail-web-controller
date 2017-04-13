@@ -2,8 +2,8 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore', 'contrail-view', 'node-color-mapping'],
-        function(_, ContrailView, NodeColorMapping) {
+define(['underscore', 'contrail-view', 'node-color-mapping', 'core-utils'],
+        function(_, ContrailView, NodeColorMapping, cowu) {
     var MonitorInfraViewConfig = function () {
         var self = this;
         self.viewConfig = {
@@ -102,7 +102,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping'],
                              //xFormatter: xCPUChartFormatter,
                       }
                      } 
-                },
+                }
         };
         self.getViewConfig = function(id) {
             return self.viewConfig[id];

@@ -64,6 +64,8 @@
     margin-left: 0px;
     margin-right: 10px;
     vertical-align: middle;
+    display: flex;
+    flex: 1;
 }
 .percentile dl, .percentile dt, .percentile dd {
     float: left;
