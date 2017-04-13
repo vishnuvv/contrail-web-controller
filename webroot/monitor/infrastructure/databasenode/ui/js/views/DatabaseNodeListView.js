@@ -15,7 +15,7 @@ define(
             });
             function getDatabaseNodeListViewConfig() {
                 var viewConfig = {
-                    rows : [monitorInfraUtils.getToolbarViewConfig(),
+                    rows : [
                         {
                             columns : [{
                                 elementId: 'database-node-carousel-view',

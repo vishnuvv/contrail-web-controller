@@ -15,7 +15,6 @@ define(
             function getControlNodeListViewConfig() {
                 var viewConfig = {
                     rows : [
-                        monitorInfraUtils.getToolbarViewConfig(),
                         {
                             columns : [{
                                 elementId: 'control-node-carousel-view',

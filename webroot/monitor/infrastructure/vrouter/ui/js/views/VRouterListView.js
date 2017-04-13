@@ -21,7 +21,6 @@ define(
                         view: "SectionView",
                         viewConfig:{
                             rows:[
-                                monitorInfraUtils.getToolbarViewConfig(),
                                 {
                                     columns:[
                                         getVRouterListCarouselViewConfig(self)

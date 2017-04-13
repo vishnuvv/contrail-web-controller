@@ -13,7 +13,7 @@ define(
             });
             function getConfigNodeListViewConfig() {
                 var viewConfig = {
-                    rows: [monitorInfraUtils.getToolbarViewConfig(), {
+                    rows: [{
                         columns: [{
                             elementId: 'config-node-carousel-view',
                             view: "CarouselView",
