@@ -35,12 +35,24 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     view: 'StackedAreaChartView',
                     viewConfig: {
                         chartOptions: {
-                            title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
+                            title: 'Analytics Messages',
                             subTitle:"Messages received per Collector (in 3 mins)",
                             xAxisLabel: '',
-                            yAxisLabel: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
+                            //yAxisLabel: ctwl.ANALYTICS_CHART_SANDESH_LABEL,
+                            yAxisLabel: '',
                             groupBy: 'Source',
                             yField: 'SUM(msg_info.messages)',
+                            overViewText: true,
+                            overviewTextOptions: {
+                                label: 'Avg Size',
+                                value: '200'
+                            },
+                            margin: {
+                                left: 25,
+                                top: 15,
+                                right: 10,
+                                bottom: 20
+                            },
                         }
                     }
                 },

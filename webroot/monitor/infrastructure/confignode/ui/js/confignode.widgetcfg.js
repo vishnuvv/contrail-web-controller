@@ -38,11 +38,12 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             class: 'col-xs-7 mon-infra-chart chartMargin',
                             chartOptions: {
                                 showControls: false,
-                                title: ctwl.CONFIGNODE_SUMMARY_TITLE,
+                                title: 'Requests Served',
                                 failureLabel: ' Failed Requests (Total)',
                                 subTitle: "Requests served per API Server (in 3 mins)",
                                 xAxisLabel: '',
-                                yAxisLabel: 'Requests Served',
+                                //yAxisLabel: 'Requests Served',
+                                yAxisLabel: '',
                                 groupBy: 'Source',
                                 overViewText: true,
                                 overviewTextOptions: {
@@ -58,7 +59,13 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                     } else {
                                         return 0;
                                     }
-                                }
+                                },
+                                margin: {
+                                    left: 25,
+                                    top: 15,
+                                    right: 10,
+                                    bottom: 20
+                                },
                             }
                         }
                     },
@@ -121,7 +128,6 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 bucketSize: 4,
                                 groupBy: 'Source',
                                 legendView: LegendView,
-
                                 y1AxisLabel: ctwl.RESPONSE_TIME,
                                 //Y1 for bar
                                 y1Field: 'api_stats.response_time_in_usec',

@@ -61,16 +61,20 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'core-utils'],
                     view:'LineWithFocusChartView',
                     viewConfig: {
                         chartOptions: {
-                            title: ctwl.DISK_USAGE,
+                            title: 'DB Usage',
                             subTitle:"Disk Utilization (in 3 mins)",
-                            xAxisLabel: '',
                             yAxisLabel: ctwl.DISK_USAGE,
                             groupBy: 'Source',
+                            overViewText: true,
+                            overviewTextOptions: {
+                                label: 'Peak Usage',
+                                value: '20 GB'
+                            },
                             yField: 'MAX(disk_usage_info.partition_space_used_1k)',
                             yFormatter : function(d){
                                 return formatBytes(d * 1024, true);
                             },margin: {
-                                left: 62
+                                left: 30
                             }
                         }
                     }

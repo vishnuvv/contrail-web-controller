@@ -11,6 +11,48 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     "select": "Source,T=,MAX(system_cpu_usage.cpu_share)",
                 }
             },
+            'VROUTER_ACTIVE_DROP_FLOWS': {
+                source: "STATTABLE",
+                type: 'vRouter',
+                config: [
+                    {
+                        table_name: 'StatTable.VrouterStatsAgent.flow_rate',
+                        select: 'T=, MAX(flow_rate.active_flows)',
+                    },{
+                        table_name: 'StatTable.VrouterStatsAgent.drop_stats',
+                        select: 'T=, SUM(drop_stats.ds_drop_pkts)',
+                        mergeFn: cowu.parseAndMergeStats
+                    }
+                ]
+            },
+            'INTERFACES_MODEL': {
+                source: 'STATTABLE',
+                config: {
+                     "table_name": "StatTable.VrouterAgent.vmi_count",
+                     "select": "T=, SUM(vmi_count.active)"
+                }
+            },
+            'INSTANCES_MODEL': {
+                source: 'STATTABLE',
+                config: {
+                     "table_name": "StatTable.VrouterAgent.vm_count",
+                     "select": "T=, SUM(vm_count.active)"
+                }
+            },
+            'SERVICE_INSTANCES_MODEL': {
+                source: 'STATTABLE',
+                config: {
+                     "table_name": "StatTable.VrouterAgent.vmi_count",
+                     "select": "T=, SUM(vmi_count.active)"
+                }
+            },
+            'FLOATING_IPS_MODEL': {
+                source: 'STATTABLE',
+                config: {
+                     "table_name": "StatTable.VrouterAgent.vm_count",
+                     "select": "T=, SUM(vm_count.active)"
+                }
+            },
             'SYSTEM_OVERALL_CPU_MODEL': {
                 source: 'STATTABLE',
                 config: {
