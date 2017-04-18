@@ -45,10 +45,14 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             overViewText: true,
                             overviewTextOptions: {
                                 label: 'Avg Size',
-                                value: '200'
+                                value: '200',
+                                key: 'AVG(msg_info.bytes)',
+                                formatter: function (d) {
+                                    return formatBytes(d , true);
+                                }
                             },
                             margin: {
-                                left: 25,
+                                left: 40,
                                 top: 15,
                                 right: 10,
                                 bottom: 20

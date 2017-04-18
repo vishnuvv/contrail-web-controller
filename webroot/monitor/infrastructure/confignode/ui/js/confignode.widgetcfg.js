@@ -38,7 +38,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                             class: 'col-xs-7 mon-infra-chart chartMargin',
                             chartOptions: {
                                 showControls: false,
-                                title: 'Requests Served',
+                                title: 'Config Requests',
                                 failureLabel: ' Failed Requests (Total)',
                                 subTitle: "Requests served per API Server (in 3 mins)",
                                 xAxisLabel: '',
@@ -48,6 +48,22 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 overViewText: true,
                                 overviewTextOptions: {
                                     label: 'Avg response time',
+                                    key: 'api_stats.response_time_in_usec',
+                                    formatter: function (y1Value) {
+                                        //Divide by 1000 to convert to milli secs;
+                                        y1Value = ifNull(y1Value, 0)/1000;
+                                        var formattedValue = Math.round(y1Value) + ' ms';
+                                        if (y1Value > 1000){
+                                            // seconds block
+                                            formattedValue = Math.round(y1Value/1000);
+                                            formattedValue = formattedValue + ' secs'
+                                        } else if (y1Value > 60000) {
+                                            // minutes block
+                                            formattedValue = Math.round(y1Value/(60 * 1000))
+                                            formattedValue = formattedValue + ' mins'
+                                        }
+                                        return formattedValue;
+                                    },
                                     value: '32 ms'
                                 },
                                 yAxisFormatter: function (d) {

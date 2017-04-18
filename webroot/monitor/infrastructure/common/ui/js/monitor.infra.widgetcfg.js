@@ -174,7 +174,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 margin: {top: 20, right: 20, bottom: 20, left: 20},
                                 axisLabelDistance: -10,
                                 focusEnable: false,
-                                showLegend: true,
+                                showLegend: false,
                                 showXMinMax: true,
                                 showYMinMax: true,
                                 xAxisLabel: '',
@@ -182,14 +182,18 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 overViewText: true,
                                 overviewTextOptions: {
                                     label: 'Drops in 3hrs',
-                                    value: '-'
+                                    value: '-',
+                                    key: 'SUM(drop_stats.ds_drop_pkts)',
+                                    formatter: function (value) {
+                                        return cowu.numberFormatter(value, 0);
+                                    }
                                 },
                                 defaultDataStatusMessage: false,
                                 insertEmptyBuckets: false,
-                                //bucketSize: 4,
+                                bucketSize: 2.5,
                                 legendView: LegendView,
                                 y1AxisLabel: 'Active Flows',
-                                y1AxisColor: ['#81D4FA'],
+                                y1AxisColor: ['#03a9f4'],
                                 //Y1 for bar
                                 y1Field: 'MAX(flow_rate.active_flows)',
                                 y1FieldOperation: 'average',
