@@ -71,7 +71,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                 },
                 viewCfg: {
                     elementId : ctwl.ANALYTICS_CHART_QUERIES_STACKEDBARCHART_ID,
-                    view:'StackedBarChartWithFocusView',
+                    view:'StackedAreaChartView',
                     viewConfig: {
                         chartOptions: {
                             title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
@@ -80,6 +80,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                             yAxisLabel: ctwl.ANALYTICS_CHART_QUERIES_LABEL,
                             yField: 'COUNT(query_stats)',
                             groupBy: 'Source',
+                            bar: true,
                             /*failureCheckFn: function (d) {
                                 if (d['query_stats.error'] != "None") {
                                     return 1;
@@ -181,7 +182,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     viewCfg: {
                         elementId : ctwl.ANALYTICS_CHART_DATABASE_WRITE_STACKEDBARCHART_ID,
-                        view:'StackedBarChartWithFocusView',
+                        view:'StackedAreaChartView',
                         viewConfig: {
                             chartOptions: {
                                 title: ctwl.ANALYTICSNODE_SUMMARY_TITLE,
@@ -215,7 +216,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     viewCfg: {
                         elementId : 'message_type_top_5_section',
-                        view : "StackedBarChartWithFocusView",
+                        view : "StackedAreaChartView",
                         viewConfig: {
                             chartOptions: {
                                 colors: cowc.FIVE_NODE_COLOR,
@@ -247,7 +248,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     viewCfg: {
                         elementId : 'generator_top_5_section',
-                        view : "StackedBarChartWithFocusView",
+                        view : "StackedAreaChartView",
                         viewConfig: {
                             chartOptions: {
                                 colors: cowc.FIVE_NODE_COLOR,
@@ -257,6 +258,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 yAxisLabel: ctwl.ANALYTICS_NODE_TOP_GENERATORS,
                                 groupBy: 'name',
                                 limit: 5,
+                                bar: true,
                                 yField: 'SUM(msg_info.messages)',
                                 showLegend: false
                             }
