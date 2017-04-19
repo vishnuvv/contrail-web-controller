@@ -126,7 +126,7 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                 },
                 viewCfg: {
                         elementId : ctwl.DATABASENODE_COMPACTIONS_CHART_ID,
-                        view:'StackedBarChartWithFocusView',
+                        view:'StackedAreaChartView',
                         viewConfig: {
                         chartOptions: {
                             title: ctwl.DATABASENODE_SUMMARY_TITLE,
@@ -134,6 +134,7 @@ define(['underscore', 'contrail-view','node-color-mapping'],
                             yAxisLabel: ctwl.DATABSE_NODE_PENDING_COMPACTIONS,
                             xAxisLabel: '',
                             groupBy: 'name',
+                            bar: true,
                             yField: 'MAX(cassandra_compaction_task.pending_compaction_tasks)',
                         }
                     }
