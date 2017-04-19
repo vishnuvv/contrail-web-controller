@@ -2,8 +2,8 @@
  * Copyright (c) 2015 Juniper Networks, Inc. All rights reserved.
  */
 
-define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
-        function(_, ContrailView, NodeColorMapping, LegendView){
+define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view', 'chart-utils'],
+        function(_, ContrailView, NodeColorMapping, LegendView, chUtils){
     var MonitorInfraViewConfig = function () {
         var self = this;
         self.viewConfig = {
@@ -33,9 +33,9 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 staticColor: true,
                                 area: true,
                                 showTicks: false,
+                                forceY: [0, 1],
                                 overViewText: true,
                                 showXMinMax: false,
-                                overviewCss: 'flex-2',
                                 xAxisLabel: '',
                                 overviewTextOptions: {
                                     label: '',
@@ -68,10 +68,10 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 area: true,
                                 colors: ['#7dc48a'],
                                 staticColor: true,
+                                forceY: [0, 1],
                                 showTicks: false,
                                 overViewText: true,
                                 showXMinMax: false,
-                                overviewCss: 'flex-2',
                                 xAxisLabel: '',
                                 overviewTextOptions: {
                                     label: '',
@@ -105,8 +105,8 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 area: true,
                                 showTicks: false,
                                 overViewText: true,
+                                forceY: [0, 1],
                                 showXMinMax: false,
-                                overviewCss: 'flex-2',
                                 xAxisLabel: '',
                                 overviewTextOptions: {
                                     label: '',
@@ -142,8 +142,8 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 area: true,
                                 showTicks: false,
                                 overViewText: true,
+                                forceY: [0, 1],
                                 showXMinMax: false,
-                                overviewCss: 'flex-2',
                                 xAxisLabel: '',
                                 overviewTextOptions: {
                                     label: '',
@@ -244,11 +244,13 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 showTicks: false,
                                 overViewText: true,
                                 showXMinMax: false,
-                                overviewCss: 'flex-2',
                                 xAxisLabel: '',
                                 overviewTextOptions: {
                                     label: '',
-                                    value: '-'
+                                    value: '-',
+                                    valueFn: function (selector, data, viewConfig) {
+                                        valueFn(selector, data, viewConfig);
+                                    }
                                 },
                                 margin: {
                                     left: 5,
@@ -278,11 +280,13 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 showTicks: false,
                                 showXMinMax: false,
                                 overViewText: true,
-                                overviewCss: 'flex-2',
                                 xAxisLabel: '',
                                 overviewTextOptions: {
                                     label: '',
-                                    value: '-'
+                                    value: '-',
+                                    valueFn: function (selector, data, viewConfig) {
+                                        valueFn(selector, data, viewConfig);
+                                    }
                                 },
                                 margin: {
                                     left: 5,
@@ -313,10 +317,12 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 showTicks: false,
                                 showXMinMax: false,
                                 overViewText: true,
-                                overviewCss: 'flex-2',
                                 overviewTextOptions: {
                                     label: '',
-                                    value: '-'
+                                    value: '-',
+                                    valueFn: function (selector, data, viewConfig) {
+                                        valueFn(selector, data, viewConfig);
+                                    }
                                 },
                                 margin: {
                                     left: 5,
@@ -357,13 +363,15 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 showTicks: false,
                                 showXMinMax: false,
                                 overViewText: true,
-                                overviewCss: 'flex-2',
                                 yFormatter: function(y) {
                                       return formatBytes(y, 1, null, null, null, true);
                                 },
                                 overviewTextOptions: {
                                     label: '',
-                                    value: '-'
+                                    value: '-',
+                                    valueFn: function (selector, data, viewConfig) {
+                                        valueFn(selector, data, viewConfig);
+                                    }
                                 },
                                 margin: {
                                     left: 5,
@@ -481,7 +489,26 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
         self.getViewConfig = function(id) {
             return self.viewConfig[id];
         };
-
+        function valueFn(selector, data, viewConfig) {
+            var yValue = '-', yValueArr = [];
+            if (data.length) {
+                yValue = chUtils.getLastYValue(data, viewConfig);
+                var yFormatter = cowu.getValueByJsonPath(viewConfig, 'chartOptions;overviewTextOptions;formatter',
+                                    cowu.getValueByJsonPath(viewConfig, 'chartOptions;yFormatter'));
+                var yField = cowu.getValueByJsonPath(viewConfig, 'chartOptions;overviewTextOptions;key',
+                                cowu.getValueByJsonPath(viewConfig, 'chartOptions;yField', 'y'));
+                if ($.isNumeric(yValue) || yValue == '-') {
+                    $(selector).find('.value').text(yValue);
+                } else {
+                    var valueArr = _.pluck(data, yField);
+                    var min = yFormatter(_.min(valueArr)), max = yFormatter(_.max(valueArr)), minArr = [], maxArr = [];
+                    minArr = min.match(/([0-9]+)(.*)/), maxArr = max.match(/([0-9]+)(.*)/);
+                    yValueArr = yValue.match(/([0-9]+)(.*)/);
+                    html = ''+yValueArr[1]+'<span class="unit">'+yValueArr[2]+'</span><img src="img/upArrow.svg"><dl style=""><dt>'+minArr[1]+' Max</dt><dt>'+minArr[1]+' Min</dt></dl>';
+                    $(selector).find('.value').html(html);
+                }
+            }
+        }
 };
  return (new MonitorInfraViewConfig()).viewConfig;
 
