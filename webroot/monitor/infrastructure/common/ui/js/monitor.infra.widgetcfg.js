@@ -182,8 +182,8 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view'],
                                 overViewText: true,
                                 overviewTextOptions: {
                                     label: 'Drops in 3hrs',
-                                    value: '-',
                                     key: 'SUM(drop_stats.ds_drop_pkts)',
+                                    operator: 'sum',
                                     formatter: function (value) {
                                         return cowu.numberFormatter(value, 0);
                                     }

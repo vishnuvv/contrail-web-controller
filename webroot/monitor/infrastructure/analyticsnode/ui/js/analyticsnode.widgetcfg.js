@@ -47,6 +47,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                                 label: 'Avg Size',
                                 value: '200',
                                 key: 'AVG(msg_info.bytes)',
+                                operator: 'average',
                                 formatter: function (d) {
                                     return formatBytes(d , true);
                                 }

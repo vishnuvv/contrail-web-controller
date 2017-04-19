@@ -47,7 +47,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                 groupBy: 'Source',
                                 overViewText: true,
                                 overviewTextOptions: {
-                                    label: 'Avg response time',
+                                    label: 'Avg Response time',
                                     key: 'api_stats.response_time_in_usec',
                                     formatter: function (y1Value) {
                                         //Divide by 1000 to convert to milli secs;
@@ -64,7 +64,8 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                                         }
                                         return formattedValue;
                                     },
-                                    value: '32 ms'
+                                    value: '32 ms',
+                                    operator: 'average'
                                 },
                                 yAxisFormatter: function (d) {
                                     return cowu.numberFormatter(d, 0);
@@ -202,7 +203,7 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                         app: cowc.APP_CONTRAIL_CONTROLLER,
                         viewConfig: {
                             class: 'col-xs-5 mon-infra-chart',
-                        }
+                    }
                     },
                     itemAttr: {
                         width: 0.45,

@@ -68,7 +68,8 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'core-utils'],
                             overViewText: true,
                             overviewTextOptions: {
                                 label: 'Peak Usage',
-                                value: '20 GB'
+                                value: '20 GB',
+                                operator: 'max'
                             },
                             yField: 'MAX(disk_usage_info.partition_space_used_1k)',
                             yFormatter : function(d){
