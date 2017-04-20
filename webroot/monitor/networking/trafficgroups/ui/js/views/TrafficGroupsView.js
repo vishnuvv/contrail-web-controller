@@ -8,8 +8,13 @@ define(
             var ControlNodeListView = ContrailView.extend({
                 render : function() {
                     var trafficGroupsTmpl = contrail.getTemplate4Id('traffic-groups-template');
+                    var collapsableWidgetTmpl = contrail.getTemplate4Id('collapsable-widget-template');
+
                     this.$el.html(trafficGroupsTmpl());
                     this.$el.addClass('traffic-groups-view');
+                    this.$el.find('[name="search-form"]').wrapCollapsibleWidget({
+                            title: 'Traffic Groups'
+                    });
                     //Render-dropdowns
                     
                     var tagTypes = [{
@@ -74,12 +79,18 @@ define(
 
 
                     var currElem = this.$el;
+                    var SelectionModel = Backbone.Model.extend({
+                        select: '',
+                        where: ''
+                    });
+                    var selectionModel = new SelectionModel();
 
                     $(currElem).find('#multiselect-1').select2({
                         placeholder: 'Select tags',
                         data: tagTypes,
                         multiple:true,
                         change: function(e) {
+                            console.info('Hello');
                         }
                     });
 
@@ -111,7 +122,37 @@ define(
                     });
 
                     $(currElem).find('.btn-update').on('click',function() {
-                        // trafficGroupsModel.set('data',cowu.getTrafficGroupsData());
+                        var config = {
+                            hierarchyConfig: {
+                                parse: function (d) {
+                                    //Get selected tags
+                                    var selTags = $('#multiselect-1').val().split(',');
+                                    var srcHierarchy = [d.sourcevn, d.sourceip, d.sport];
+                                    srcHierarchy = [d.src.application, d.src.deployment];
+                                    srcHierarchy = [];
+                                    var dstHierarchy = [d.destvn, d.destip, d.dport];
+                                    dstHierarchy = [d.dst.application, d.dst.deployment];
+                                    dstHierarchy = [];
+                                    $.each(selTags,function(idx,val) {
+                                        srcHierarchy.push(_.result(d,'src.' + val));
+                                        dstHierarchy.push(_.result(d,'dst.' + val));
+                                    });
+                                    var src = {
+                                        names: srcHierarchy,
+                                        id: srcHierarchy.join('-'),
+                                        value: d['agg-bytes']
+                                    };
+                                    var dst = {
+                                        names: dstHierarchy,
+                                        id: dstHierarchy.join('-'),
+                                        value: d['agg-bytes']
+                                    };
+                                    return [src, dst];
+                                }
+                            }
+                        }
+                        viewInst.updateConfig(config);
+                        trafficGroupsModel.set('data',cowu.getTrafficGroupsData());
                         viewInst.render();
                     });
                     /*$(currElem).find('.widget-dropdown').on('change',function(e) {
@@ -134,7 +175,7 @@ define(
                         el: this.$el.find('#traffic-groups-radial-chart'),
                         model: trafficGroupsModel
                     });
-                    viewInst.render();
+                    // viewInst.render();
                     // this.renderView4Config(this.$el.find('#traffic-groups-radial-chart'), trafficGroupsModel,
                     //         getControlNodeListViewConfig(colorFn));
                 }
