@@ -504,7 +504,7 @@ define(['underscore', 'contrail-view', 'node-color-mapping', 'legend-view', 'cha
                     var min = yFormatter(_.min(valueArr)), max = yFormatter(_.max(valueArr)), minArr = [], maxArr = [];
                     minArr = min.match(/([0-9]+)(.*)/), maxArr = max.match(/([0-9]+)(.*)/);
                     yValueArr = yValue.match(/([0-9]+)(.*)/);
-                    html = ''+yValueArr[1]+'<span class="unit">'+yValueArr[2]+'</span><img src="img/upArrow.svg"><dl style=""><dt>'+minArr[1]+' Max</dt><dt>'+minArr[1]+' Min</dt></dl>';
+                    html = ''+yValueArr[1]+'<span class="unit">'+yValueArr[2]+'</span><img src="img/upArrow.svg"><dl style=""><dt>'+maxArr[1]+' Max</dt><dt>'+minArr[1]+' Min</dt></dl>';
                     $(selector).find('.value').html(html);
                 }
             }

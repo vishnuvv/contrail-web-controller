@@ -147,3 +147,6 @@ dl.progress-percentage dd {
 #config-nodes-donutchart-one .contrail-chart-title text, #config-nodes-donutchart-two .contrail-chart-title text {
     transform: translateY(-2px);
 }
+.confignode-donut-chart .item-content {
+    padding: 0px 15px;
+}

@@ -35,7 +35,10 @@ define(
                                             }, {
                                                 id: 'confignode-percentile-time-size'
                                             }, {
-                                                id: 'confignode-reads-writes-donut-chart'
+                                                id: 'confignode-reads-writes-donut-chart',
+                                                itemAttr: {
+                                                    cssClass: 'confignode-donut-chart'
+                                                }
                                             }, {
                                                 id: 'confignode-grid-view'
                                             }]

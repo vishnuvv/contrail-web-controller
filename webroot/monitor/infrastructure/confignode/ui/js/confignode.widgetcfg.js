@@ -23,8 +23,66 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                 },
                 itemAttr: {
                     width: 0.4,
-                    height: 0.3,
+                    height: 0.2,
                     title: ctwl.CONFIG_NODE_RESPONSE_PARAMS_PERCENTILE
+                }
+            },
+            'confignode-reads-donut': {
+                baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_ONE_ID,
+                        view: 'DonutChartView',
+                        viewConfig: {
+                            //class: 'col-xs-6',
+                            parseFn: function (response, viewConfig) {
+                                return monitorInfraParsers
+                                    .parseConfigNodeRequestForDonutChart(
+                                         response, ['GET'], viewConfig);
+                            },
+                            chartOptions: {
+                                margin: {
+                                    top: 10,
+                                    bottom: 10
+                                },
+                                showLabels: false,
+                                showLegend: false,
+                                title: 'Reads per API server',
+                                defaultDataStatusMessage: false,
+                                showEmptyDonut: true,
+                                isChartSettingsOverride: false
+                            },
+                        }
+                }
+            },
+            'confignode-writes-donut': {
+                baseModel: 'CONFIGNODE_APIREQUESTS_MODEL',
+                modelCfg: {
+                },
+                viewCfg: {
+                    elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_TWO_ID,
+                    view: 'DonutChartView',
+                    viewConfig: {
+                        //class: 'col-xs-6',
+                        parseFn: function (response, viewConfig) {
+                            return monitorInfraParsers
+                                .parseConfigNodeRequestForDonutChart(
+                                     response, ['POST', 'PUT', 'DELETE'], viewConfig);
+                        },
+                        chartOptions: {
+                            margin: {
+                                bottom: 10,
+                                top: 10
+                            },
+                            showLabels: false,
+                            title: 'Writes per API server',
+                            defaultDataStatusMessage: false,
+                            showEmptyDonut: true,
+                            showLegend: false,
+                            isChartSettingsOverride: false
+                        },
+                    }
                 }
             },
             'confignode-requests-served': {
@@ -197,13 +255,16 @@ define(['lodash', 'contrail-view', 'legend-view', 'monitor-infra-confignode-mode
                     modelCfg: {
                     },
                     viewCfg: {
-                        elementId: ctwl.CONFIGNODE_SUMMARY_DONUTCHART_SECTION_ID,
-                        view: 'ConfigNodeDonutChartView',
-                        viewPathPrefix: ctwl.MONITOR_INFRA_VIEW_PATH,
-                        app: cowc.APP_CONTRAIL_CONTROLLER,
+                        elementId: 'confignode-donut-charts',
+                        view: 'CustomView',
                         viewConfig: {
-                            class: 'col-xs-5 mon-infra-chart',
-                    }
+                            template: 'one-row-two-column-template',
+                            //title: 'Resource Utilization',
+                            childWidgets: [
+                                'confignode-reads-donut',
+                                'confignode-writes-donut'
+                            ]
+                        }
                     },
                     itemAttr: {
                         width: 0.45,

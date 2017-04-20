@@ -173,7 +173,7 @@ define(['underscore', 'contrail-view', 'legend-view', 'monitor-infra-analyticsno
                     },
                     itemAttr: {
                         width: 1/3,
-                        height: 1.1,
+                        height: 0.9,
                         title: ctwl.ANALYTICS_NODE_GENERATORS
                     }
             },
