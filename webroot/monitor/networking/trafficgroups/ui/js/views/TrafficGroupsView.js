@@ -26,7 +26,7 @@ define(
                             id:'deployment',
                             text:'Deployment'
                         },{
-                            id:'Site',
+                            id:'site',
                             text:'Site'
                     }];
 
@@ -141,7 +141,13 @@ define(
                     });
 
                     $(currElem).find('.btn-update').on('click',function() {
+                        var selTags = selectionModel.get('select');
+                        var levels = [];
+                        selTags.forEach(function(val,idx) {
+                            levels.push({level:idx,label:val});
+                        });
                         var config = {
+                            levels : levels,
                             hierarchyConfig: {
                                 parse: function (d) {
                                     //Get selected tags
