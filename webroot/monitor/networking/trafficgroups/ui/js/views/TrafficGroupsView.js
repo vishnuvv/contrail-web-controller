@@ -15,7 +15,6 @@ define(
                     this.$el.find('[name="search-form"]').wrapCollapsibleWidget({
                             title: 'Traffic Groups'
                     });
-                    //Render-dropdowns
                     
                     var tagTypes = [{
                             id: 'application', 
@@ -80,18 +79,21 @@ define(
 
                     var currElem = this.$el;
                     var SelectionModel = Backbone.Model.extend({
-                        select: '',
-                        where: ''
+                        defaults : {
+                            select: '',
+                            where: []
+                        }
                     });
                     var selectionModel = new SelectionModel();
 
+                    //Render-dropdowns
                     $(currElem).find('#multiselect-1').select2({
                         placeholder: 'Select tags',
                         data: tagTypes,
                         multiple:true,
-                        change: function(e) {
-                            console.info('Hello');
-                        }
+                    });
+                    $(currElem).find('.select-dropdown').on('change',function(e) {
+                        selectionModel.set('select',e.val);
                     });
 
                     $(currElem).find('.where-dropdown').select2({
@@ -109,15 +111,32 @@ define(
                                 else
                                     return null;
                             } else {
-                                // console.info("Hello");
                                 if(data['tag'] == null) 
                                     return data;
                                 else
                                     return data;
-                                    // return null;
                             }
                         },
-                        change: function(e) {
+                    });
+
+                    $(currElem).find('.where-dropdown').on('select',function(e) {
+                        selectionModel.get('where').push(e.added);
+                    });
+                    $(currElem).find('.where-dropdown').on('unselect',function(e) {
+                        _.remove(selectionModel.get('where'),function(val,idx) {
+                            var removedElem = e.removed;
+                            return (val.id == removedElem.id && val.tag == removedElem.tag && val.text == removedElem.text);
+                        });
+                    });
+                    $(currElem).find('.where-dropdown').on('change',function(e) {
+                        if(e.added != null) {
+                            selectionModel.get('where').push(e.added);
+                        }
+                        if(e.removed != null) {
+                            _.remove(selectionModel.get('where'),function(val,idx) {
+                                var removedElem = e.removed;
+                                return (val.id == removedElem.id && val.tag == removedElem.tag && val.text == removedElem.text);
+                            });
                         }
                     });
 
@@ -126,7 +145,8 @@ define(
                             hierarchyConfig: {
                                 parse: function (d) {
                                     //Get selected tags
-                                    var selTags = $('#multiselect-1').val().split(',');
+                                    var selTags = selectionModel.get('select');
+                                    var matchTags = selectionModel.get('where');
                                     var srcHierarchy = [d.sourcevn, d.sourceip, d.sport];
                                     srcHierarchy = [d.src.application, d.src.deployment];
                                     srcHierarchy = [];
@@ -152,32 +172,44 @@ define(
                             }
                         }
                         viewInst.updateConfig(config);
-                        trafficGroupsModel.set('data',cowu.getTrafficGroupsData());
+                        // trafficGroupsModel.set('data',cowu.getTrafficGroupsData());
+                        //Apply backbone filter
+                        trafficGroupsModel.set('data',trafficGroupsCollection.byMatchTags(selectionModel.get('where')));
                         viewInst.render();
                     });
-                    /*$(currElem).find('.widget-dropdown').on('change',function(e) {
-                        //Remove the current widget
-                        var currView = $(currElem).find('.item-content').data('ContrailView');
-                        if(currView != null)
-                        currView.destroy();
-                        $(currElem).find('.item-content').empty();
-                        self.renderWidget({widgetCfg:{id:e.val}},currElem);
-                    });*/
-                    // this.$el.find('#multiselect-1').select2({
-                    // });
+
+                    var TrafficGroupsCollection = Backbone.Collection.extend({
+                        model : Backbone.Model,
+                        byMatchTags : function(matchTags) {
+                            filtered = this.filter(function(data) {
+                                var matched = true;
+                                $.each(matchTags,function(idx,obj) {
+                                    if(data.get('src')[obj['tag']] != obj['text'] || data.get('dst')[obj['tag']] != obj['text']) {
+                                        matched = false;
+                                    }
+                                });
+                                return matched;
+                            });
+                            return new TrafficGroupsCollection(filtered);
+                        }
+                    });
+                    var trafficGroupsCollection = new TrafficGroupsCollection();
+
+                    // trafficGroupsModel.set('data',cowu.getTrafficGroupsData());
+                    trafficGroupsCollection.add(cowu.getTrafficGroupsData());
 
                     var TrafficGroupsModel = Backbone.Model.extend({
-                        data: []
+                        defaults: {
+                            data: trafficGroupsCollection,
+                        }
                     });
                     var trafficGroupsModel = new TrafficGroupsModel();
-                    trafficGroupsModel.set('data',cowu.getTrafficGroupsData());
+                    trafficGroupsModel.set('data',trafficGroupsCollection);
+
                     var viewInst = new ContrailChartsView({
                         el: this.$el.find('#traffic-groups-radial-chart'),
                         model: trafficGroupsModel
                     });
-                    // viewInst.render();
-                    // this.renderView4Config(this.$el.find('#traffic-groups-radial-chart'), trafficGroupsModel,
-                    //         getControlNodeListViewConfig(colorFn));
                 }
             });
             function getControlNodeListViewConfig(colorFn) {
