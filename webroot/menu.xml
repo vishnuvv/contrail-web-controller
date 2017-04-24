@@ -308,23 +308,6 @@ and need to add the iconClass tag wherever we need to show some icons
                             </queryParams>
                             <searchStrings>Monitor interfaces</searchStrings>
                         </item>
-                    </items>
-                </item>
-                <item>
-                    <name>debug</name>
-                    <label>Debug</label>
-                    <iconClass>menu-icon fa fa-puzzle-piece</iconClass>
-                    <access>
-                        <orchModels>
-                            <model>openstack</model>
-                            <model>cloudstack</model>
-                        </orchModels>
-                        <roles>
-                            <role>cloudAdmin</role>
-                            <role>member</role>
-                        </roles>
-                    </access>
-                    <items>
                         <item>
                             <label>Packet Capture</label>
                             <hash>mon_debug_pcapture</hash>
@@ -341,29 +324,6 @@ and need to add the iconClass tag wherever we need to show some icons
                             </resources>
                             <searchStrings>Packet Capture, Analyzer</searchStrings>
                         </item>
-                        <!--
-                                    <item>
-                                        <label>Ping</label>
-                                        <hash>mon_ping</hash>
-                                        <resources>
-                                            <resource>
-                                        <rootDir>/monitor/ping</rootDir>
-                                        <view>mon_ping.view</view>
-                                        <js>mon_ping.js</js>
-                                        <class>monitorPingView</class>
-                                            </resource>
-                                        </resources>
-                                    </item>
-                                   <item>
-                                       <label>Trace Route</label>
-                                   </item>
-                                   <item>
-                                       <label>DHCP</label>
-                                   </item>
-                                   <item>
-                                       <label>DNS</label>
-                                   </item>
-                                    -->
                     </items>
                 </item>
                 <item>
@@ -600,6 +560,325 @@ and need to add the iconClass tag wherever we need to show some icons
                   </items>
                 </item>
                 <item>
+                    <label>Networking</label>
+                    <access>
+                        <roles>
+                            <role>member</role>
+                        </roles>
+                        <orchModels>
+                            <model>openstack</model>
+                            <model>vcenter</model>
+                        </orchModels>
+                    </access>
+                    <iconClass>menu-icon fa fa-sitemap</iconClass>
+                    <items>
+                        <item>
+                            <label>Project Editor</label>
+                            <hash>config_networking_topology</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>    
+                                    <rootDir>/monitor/networking/ui</rootDir>
+                                    <css>nm.main.css</css>
+                                </resource>
+                                <resource>
+                                    <rootDir>/monitor/networking/ui</rootDir>
+                                    <template>networking.tmpl</template>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/topology/ui</rootDir>
+                                    <js>cfgTopology.main.js</js>
+                                    <class>configTopologyPageLoader</class>
+                                    <function>renderProjectTopology</function>
+                                </resource>
+                            </resources>
+                            <!--<searchStrings>Configure Network, Virtual Network, Virtual Networks, VN, Networks</searchStrings>-->
+                        </item>
+                        <item>
+                            <label>Networks</label>
+                            <hash>config_networking_networks</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/networks/ui</rootDir>
+                                    <js>vnCfg.main.js</js>
+                                    <class>vnCfgLoader</class>
+                                    <function>renderVNCfg</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Network, Virtual Network, Virtual Networks, VN, Networks</searchStrings>
+                        </item>
+                        <item>
+                            <label>Ports</label>
+                            <hash>config_net_ports</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/port/ui</rootDir>
+                                    <js>port.main.js</js>
+                                    <class>configPortLoader</class>
+                                    <function>renderPort</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Ports</searchStrings>
+                        </item>
+                        <item>
+                            <label>Policies</label>
+                            <hash>config_net_policies</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/policy/ui</rootDir>
+                                    <js>policy.main.js</js>
+                                    <class>configPoliciesLoader</class>
+                                    <function>renderPolicies</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Network Policies</searchStrings>
+                        </item>
+                        <item>
+                            <label>Security Groups</label>
+                            <hash>config_net_sg</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/securitygroup/ui</rootDir>
+                                    <js>secGrp.main.js</js>
+                                    <class>secGrpPageLoader</class>
+                                    <function>renderSecGrp</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Security Groups</searchStrings>
+                        </item>
+                        <item>
+                            <label>Routers</label>
+                            <hash>config_net_routers</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/logicalrouter/ui</rootDir>
+                                    <js>logicalRouter.main.js</js>
+                                    <class>configLogicalRouterLoader</class>
+                                    <function>renderLogicalRouter</function>
+                                </resource>
+                            </resources>
+                            <access>
+                                <orchModels>
+                                    <model>openstack</model>
+                                    <model>cloudstack</model>
+                                </orchModels>
+                            </access>
+                            <searchStrings>Routers</searchStrings>
+                        </item>
+                        <item>
+                            <label>IP Address Management</label>
+                            <hash>config_networking_ipam</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/ipam/ui</rootDir>
+                                    <js>ipamCfg.main.js</js>
+                                    <class>ipamCfgLoader</class>
+                                    <function>renderipamCfg</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>IP Address Management, IPAM</searchStrings>
+                        </item>
+                        <item>
+                            <label>Floating IPs</label>
+                            <hash>config_networking_fip</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/fip/ui</rootDir>
+                                    <js>fipCfg.main.js</js>
+                                    <class>fipCfgLoader</class>
+                                    <function>renderFipCfg</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Floating IPs, Floating IP, FIP</searchStrings>
+                        </item>
+                        <!-- <item>
+                            <label>Routing Policies</label>
+                            <hash>config_net_rpolicies</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/routingpolicy/ui</rootDir>
+                                    <js>routingPolicy.main.js</js>
+                                    <class>routingPolicyPageLoader</class>
+                                    <function>renderRoutingPolicy</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Routing Policies</searchStrings>
+                        </item> -->
+                        <item>
+                            <label>Routing</label>
+                            <hash>config_net_routing</hash>
+                            <resources>
+                            <resource>
+                                <rootDir>/common/ui</rootDir>
+                            </resource>
+                            <resource>
+                                    <rootDir>/config/networking/routetable/ui</rootDir>
+                                    <js>rtTable.main.js</js>
+                                    <class>rtTablePageLoader</class>
+                                    <function>renderRtTable</function>
+                                </resource>
+                                <resource>
+                                     <rootDir>/reports/qe/ui</rootDir>
+                                     <css>qe.main.css</css>
+                                </resource>                                
+                            </resources>                            
+                            <searchStrings>Route Tables</searchStrings>
+                        </item>
+                        <!-- <item>
+                            <label>Route Aggregates</label>
+                            <hash>config_net_rtaggregates</hash>
+                            <resources>
+                            <resource>
+                                <rootDir>/common/ui</rootDir>
+                            </resource>
+                            <resource>
+                                    <rootDir>/config/networking/routeaggregate/ui</rootDir>
+                                    <js>routeAggregate.main.js</js>
+                                    <class>configRouteAggregatePageLoader</class>
+                                    <function>renderRouteAggregate</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Route Aggregates</searchStrings>
+                        </item> -->
+                        <item>
+                            <label>QoS</label>
+                            <hash>config_net_qos</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/qos/ui</rootDir>
+                                    <js>qos.main.js</js>
+                                    <class>configQOSPageLoader</class>
+                                    <function>renderQOS</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>QoS</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                <item>
+                    <label>Services</label>
+                    <access>
+                        <roles>
+                            <role>member</role>
+                        </roles>
+                        <orchModels>
+                            <model>openstack</model>
+                            <model>vcenter</model>
+                        </orchModels>
+                    </access>
+                    <iconClass>menu-icon fa fa-link</iconClass>
+                    <items>
+                        <item>
+                            <label>Service Templates</label>
+                            <hash>config_service_templates</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/services/templates/ui</rootDir>
+                                    <js>svcTemplateCfg.main.js</js>
+                                    <class>svcTemplateCfgLoader</class>
+                                    <function>renderSvcTemplateCfg</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Service Template, Templates, Service, Configure Service Templates</searchStrings>
+                        </item>
+                        <item>
+                            <label>Service Instances</label>
+                            <hash>config_sc_svcInstances</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/services/instances/ui</rootDir>
+                                    <js>svcInst.main.js</js>
+                                    <class>svcInstPageLoader</class>
+                                    <function>renderSvcInst</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Service Instances</searchStrings>
+                            </item>
+                            <item>
+                            <label>Health Check</label>
+                            <hash>config_service_healthchk</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/services/svchealthcheck/ui</rootDir>
+                                    <js>svcHealthChkCfg.main.js</js>
+                                    <class>svcHealthChkCfgLoader</class>
+                                    <function>rendersvcHealthChkCfg</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Service Health Check, Health, Check</searchStrings>
+                        </item>
+                        <item>
+                            <label>BGP as a Service</label>
+                            <hash>config_sc_bgpasaservice</hash>
+                            <access>
+                                <orchModels>
+                                    <model>openstack</model>
+                                </orchModels>
+                            </access>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/services/bgpasaservice/ui</rootDir>
+                                    <js>bgpAsAService.main.js</js>
+                                    <class>configBGPAsAServicePageLoader</class>
+                                    <function>renderBGPAsAService</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure BGP as a Service</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                <item>
                     <label>Infrastructure</label>
                     <access>
                         <roles>
@@ -801,321 +1080,6 @@ and need to add the iconClass tag wherever we need to show some icons
                                 </resource>
                             </resources>
                             <searchStrings>Configure Interfaces</searchStrings>
-                        </item>
-                    </items>
-                </item>
-                <item>
-                    <label>Networking</label>
-                    <access>
-                        <roles>
-                            <role>member</role>
-                        </roles>
-                        <orchModels>
-                            <model>openstack</model>
-                            <model>vcenter</model>
-                        </orchModels>
-                    </access>
-                    <iconClass>menu-icon fa fa-sitemap</iconClass>
-                    <items>
-                        <item>
-                            <label>Networks</label>
-                            <hash>config_networking_networks</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/networks/ui</rootDir>
-                                    <js>vnCfg.main.js</js>
-                                    <class>vnCfgLoader</class>
-                                    <function>renderVNCfg</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Configure Network, Virtual Network, Virtual Networks, VN, Networks</searchStrings>
-                        </item>
-                        <item>
-                            <label>Ports</label>
-                            <hash>config_net_ports</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/port/ui</rootDir>
-                                    <js>port.main.js</js>
-                                    <class>configPortLoader</class>
-                                    <function>renderPort</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Ports</searchStrings>
-                        </item>
-                        <item>
-                            <label>Policies</label>
-                            <hash>config_net_policies</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/policy/ui</rootDir>
-                                    <js>policy.main.js</js>
-                                    <class>configPoliciesLoader</class>
-                                    <function>renderPolicies</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Configure Network Policies</searchStrings>
-                        </item>
-                        <item>
-                            <label>Security Groups</label>
-                            <hash>config_net_sg</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/securitygroup/ui</rootDir>
-                                    <js>secGrp.main.js</js>
-                                    <class>secGrpPageLoader</class>
-                                    <function>renderSecGrp</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Security Groups</searchStrings>
-                        </item>
-                        <item>
-                            <label>Routers</label>
-                            <hash>config_net_routers</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/logicalrouter/ui</rootDir>
-                                    <js>logicalRouter.main.js</js>
-                                    <class>configLogicalRouterLoader</class>
-                                    <function>renderLogicalRouter</function>
-                                </resource>
-                            </resources>
-                            <access>
-                                <orchModels>
-                                    <model>openstack</model>
-                                    <model>cloudstack</model>
-                                </orchModels>
-                            </access>
-                            <searchStrings>Routers</searchStrings>
-                        </item>
-                        <item>
-                            <label>IP Address Management</label>
-                            <hash>config_networking_ipam</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/ipam/ui</rootDir>
-                                    <js>ipamCfg.main.js</js>
-                                    <class>ipamCfgLoader</class>
-                                    <function>renderipamCfg</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>IP Address Management, IPAM</searchStrings>
-                        </item>
-                        <item>
-                            <label>Floating IPs</label>
-                            <hash>config_networking_fip</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/fip/ui</rootDir>
-                                    <js>fipCfg.main.js</js>
-                                    <class>fipCfgLoader</class>
-                                    <function>renderFipCfg</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Floating IPs, Floating IP, FIP</searchStrings>
-                        </item>
-                        <!-- <item>
-                            <label>Routing Policies</label>
-                            <hash>config_net_rpolicies</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/routingpolicy/ui</rootDir>
-                                    <js>routingPolicy.main.js</js>
-                                    <class>routingPolicyPageLoader</class>
-                                    <function>renderRoutingPolicy</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Routing Policies</searchStrings>
-                        </item> -->
-                        <item>
-                            <label>Routing</label>
-                            <hash>config_net_routing</hash>
-                            <resources>
-                            <resource>
-                                <rootDir>/common/ui</rootDir>
-                            </resource>
-                            <resource>
-                                    <rootDir>/config/networking/routetable/ui</rootDir>
-                                    <js>rtTable.main.js</js>
-                                    <class>rtTablePageLoader</class>
-                                    <function>renderRtTable</function>
-                                </resource>
-                                <resource>
-                                     <rootDir>/reports/qe/ui</rootDir>
-                                     <css>qe.main.css</css>
-                                </resource>                                
-                            </resources>                            
-                            <searchStrings>Route Tables</searchStrings>
-                        </item>
-                        <!-- <item>
-                            <label>Route Aggregates</label>
-                            <hash>config_net_rtaggregates</hash>
-                            <resources>
-                            <resource>
-                                <rootDir>/common/ui</rootDir>
-                            </resource>
-                            <resource>
-                                    <rootDir>/config/networking/routeaggregate/ui</rootDir>
-                                    <js>routeAggregate.main.js</js>
-                                    <class>configRouteAggregatePageLoader</class>
-                                    <function>renderRouteAggregate</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Route Aggregates</searchStrings>
-                        </item> -->
-                        <item>
-                            <label>QoS</label>
-                            <hash>config_net_qos</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/qos/ui</rootDir>
-                                    <js>qos.main.js</js>
-                                    <class>configQOSPageLoader</class>
-                                    <function>renderQOS</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>QoS</searchStrings>
-                        </item>
-                        <item>
-                            <label>Topology</label>
-                            <hash>config_networking_topology</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/monitor/networking/ui</rootDir>
-                                    <template>networking.tmpl</template>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/topology/ui</rootDir>
-                                    <js>cfgTopology.main.js</js>
-                                    <class>configTopologyPageLoader</class>
-                                    <function>renderProjectTopology</function>
-                                </resource>
-                            </resources>
-                            <!--<searchStrings>Configure Network, Virtual Network, Virtual Networks, VN, Networks</searchStrings>-->
-                        </item>
-                    </items>
-                </item>
-                <item>
-                    <label>Services</label>
-                    <access>
-                        <roles>
-                            <role>member</role>
-                        </roles>
-                        <orchModels>
-                            <model>openstack</model>
-                            <model>vcenter</model>
-                        </orchModels>
-                    </access>
-                    <iconClass>menu-icon fa fa-link</iconClass>
-                    <items>
-                        <item>
-                            <label>Service Templates</label>
-                            <hash>config_service_templates</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/services/templates/ui</rootDir>
-                                    <js>svcTemplateCfg.main.js</js>
-                                    <class>svcTemplateCfgLoader</class>
-                                    <function>renderSvcTemplateCfg</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Service Template, Templates, Service, Configure Service Templates</searchStrings>
-                        </item>
-                        <item>
-                            <label>Service Instances</label>
-                            <hash>config_sc_svcInstances</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/services/instances/ui</rootDir>
-                                    <js>svcInst.main.js</js>
-                                    <class>svcInstPageLoader</class>
-                                    <function>renderSvcInst</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Configure Service Instances</searchStrings>
-                            </item>
-                            <item>
-                            <label>Health Check</label>
-                            <hash>config_service_healthchk</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/services/svchealthcheck/ui</rootDir>
-                                    <js>svcHealthChkCfg.main.js</js>
-                                    <class>svcHealthChkCfgLoader</class>
-                                    <function>rendersvcHealthChkCfg</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Service Health Check, Health, Check</searchStrings>
-                        </item>
-                        <item>
-                            <label>BGP as a Service</label>
-                            <hash>config_sc_bgpasaservice</hash>
-                            <access>
-                                <orchModels>
-                                    <model>openstack</model>
-                                </orchModels>
-                            </access>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/services/bgpasaservice/ui</rootDir>
-                                    <js>bgpAsAService.main.js</js>
-                                    <class>configBGPAsAServicePageLoader</class>
-                                    <function>renderBGPAsAService</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Configure BGP as a Service</searchStrings>
                         </item>
                     </items>
                 </item>
