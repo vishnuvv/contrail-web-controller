@@ -14,7 +14,7 @@ define([
     var NetworkingGraphView = ContrailView.extend({
         render: function () {
             var self = this,
-                graphTemplate = contrail.getTemplate4Id(cowc.TMPL_NETWORKING_GRAPH_VIEW),
+                templateId = cowc.TMPL_NETWORKING_GRAPH_VIEW,
                 viewConfig = self.attributes.viewConfig,
                 connectedGraph = viewConfig['connectedGraph'],
                 configGraph = viewConfig['configGraph'],
@@ -22,13 +22,15 @@ define([
                 connectedSelectorId = '#' + ctwl.GRAPH_CONNECTED_ELEMENTS_ID,
                 configSelectorId = '#' + ctwl.GRAPH_CONFIG_ELEMENTS_ID,
                 graphLoadingSelectorId = '#' + ctwl.GRAPH_LOADING_ID,
-                connectedGraphView, connectedGraphModel,
-                configGraphView, configGraphModel;
+                connectedGraphView, connectedGraphModel,renderTopRow = false,
+                configGraphView, configGraphModel, graphTemplate;
             if (arguments.length > 0) {
                 connectedGraph = $.extend(true, {}, connectedGraph, getValueByJsonPath(arguments, '0;connectedGraph', {}));
                 configGraph = $.extend(true, {}, configGraph, getValueByJsonPath(arguments, '0;configGraph', {}));
+                templateId = cowu.getValueByJsonPath(arguments, '0;templateId');
+                self.controlPanelConfig = cowu.getValueByJsonPath(arguments, '0;controlPanelConfig');
             }
-            self.$el.html(graphTemplate());
+            self.$el.html(contrail.getTemplate4Id(templateId));
 
             // setTimeout(function () {
                 connectedGraphView = self.renderConnectedGraph(configGraph, connectedGraph, selectorId, connectedSelectorId, configSelectorId);
@@ -93,7 +95,7 @@ define([
                 }),
                 successCallback: function (graphView) {
                     var configGraphModel = graphView.model;
-
+                    $(configSelectorId).data('graphView', graphView);
                     $(configSelectorId).data('graph-size', {height: configGraphModel.elementsDataObj.configSVGHeight});
 
                     if (adjustGraphDimension(configGraph, connectedGraph, selectorId, connectedSelectorId, configSelectorId, true)) {
@@ -140,7 +142,7 @@ define([
                 'cell:pointerdblclick': cgPointerDblClick,
                 'blank:pointerdblclick': getCgBlankDblClick(self, connectedSelectorId, connectedGraph)
             }),
-            controlPanel: getControlPanelConfig(self, configGraph, connectedGraph, selectorId, connectedSelectorId, configSelectorId),
+            controlPanel: $.extend(true, {}, getControlPanelConfig(self, configGraph, connectedGraph, selectorId, connectedSelectorId, configSelectorId), self.controlPanelConfig),
             emptyCallback: function (contrailGraphModel) {
                 var notFoundTemplate = contrail.getTemplate4Id(cowc.TMPL_NOT_FOUND_MESSAGE),
                     notFoundConfig = $.extend(true, {}, cowc.DEFAULT_CONFIG_NOT_FOUND_PAGE, {

@@ -417,29 +417,6 @@ and need to add the iconClass tag wherever we need to show some icons
                             </resources>
                             <searchStrings>Packet Capture, Analyzer</searchStrings>
                         </item>
-                        <!--
-                                    <item>
-                                        <label>Ping</label>
-                                        <hash>mon_ping</hash>
-                                        <resources>
-                                            <resource>
-                                        <rootDir>/monitor/ping</rootDir>
-                                        <view>mon_ping.view</view>
-                                        <js>mon_ping.js</js>
-                                        <class>monitorPingView</class>
-                                            </resource>
-                                        </resources>
-                                    </item>
-                                   <item>
-                                       <label>Trace Route</label>
-                                   </item>
-                                   <item>
-                                       <label>DHCP</label>
-                                   </item>
-                                   <item>
-                                       <label>DNS</label>
-                                   </item>
-                                    -->
                     </items>
                 </item>
                 <item>
@@ -683,19 +660,18 @@ and need to add the iconClass tag wherever we need to show some icons
                   </items>
                 </item>
                 <item>
-                    <label>Infrastructure</label>
+                    <label>Networking</label>
                     <access>
                         <roles>
-                            <role>cloudAdmin</role>
+                            <role>member</role>
                         </roles>
                         <orchModels>
                             <model>openstack</model>
-                            <model>cloudstack</model>
                             <model>vcenter</model>
                         </orchModels>
                         <accessFn>hideInFederatedvCenterOrGlobalController</accessFn>
                     </access>
-                    <iconClass>menu-icon fa fa-desktop</iconClass>
+                    <iconClass>menu-icon fa fa-sitemap</iconClass>
                     <items>
                        <item>
                             <label>Global Config</label>
@@ -808,21 +784,29 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Configure RBAC</searchStrings>
                         </item>
                         <item>
-                            <label>Nodes</label>
-                            <hash>config_infra_nodes</hash>
+                            <label>Project Editor</label>
+                            <hash>config_networking_topology</hash>
                             <resources>
                                 <resource>
                                     <rootDir>/common/ui</rootDir>
                                     <js>controller.app.js</js>
                                 </resource>
+                                <resource>    
+                                    <rootDir>/monitor/networking/ui</rootDir>
+                                    <css>nm.main.css</css>
+                                </resource>
                                 <resource>
-                                    <rootDir>/config/infra/nodes/ui</rootDir>
-                                    <js>nodesCfg.main.js</js>
-                                    <class>configNodesLoader</class>
-                                    <function>renderNodesConfig</function>
+                                    <rootDir>/monitor/networking/ui</rootDir>
+                                    <template>networking.tmpl</template>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/networking/topology/ui</rootDir>
+                                    <js>cfgTopology.main.js</js>
+                                    <class>configTopologyPageLoader</class>
+                                    <function>renderProjectTopology</function>
                                 </resource>
                             </resources>
-                            <searchStrings>Configure Nodes</searchStrings>
+                            <searchStrings>Project Editor</searchStrings>
                         </item>
                         <item>
                             <label>Project Settings</label>
@@ -1006,23 +990,8 @@ and need to add the iconClass tag wherever we need to show some icons
                                     <js>physicalrouters.main.js</js>
                                     <class>configPhysicalRoutersPageLoader</class>
                                     <function>renderPhysicalRouters</function>
-                                </resource>
                             </resources>
-                            <searchStrings>Configure Physical Routers</searchStrings>
-                        </item>
-                        <item>
-                            <label>Interfaces</label>
-                            <hash>config_pd_interfaces</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/config/physicaldevices/interfaces/ui</rootDir>
-                                    <js>interfaces.main.js</js>
-                                    <template>interfaces.tmpl</template>
-                                    <class>configInterfacesPageLoader</class>
-                                    <function>renderInterfaces</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Configure Interfaces</searchStrings>
+                            <!--<searchStrings>Configure Network, Virtual Network, Virtual Networks, VN, Networks</searchStrings>-->
                         </item>
                     </items>
                 </item>
@@ -1233,27 +1202,6 @@ and need to add the iconClass tag wherever we need to show some icons
                             </resources>
                             <searchStrings>QoS</searchStrings>
                         </item>
-                        <item>
-                            <label>Topology</label>
-                            <hash>config_networking_topology</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/monitor/networking/ui</rootDir>
-                                    <template>networking.tmpl</template>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/networking/topology/ui</rootDir>
-                                    <js>cfgTopology.main.js</js>
-                                    <class>configTopologyPageLoader</class>
-                                    <function>renderProjectTopology</function>
-                                </resource>
-                            </resources>
-                            <!--<searchStrings>Configure Network, Virtual Network, Virtual Networks, VN, Networks</searchStrings>-->
-                        </item>
                     </items>
                 </item>
                <!-- <item>
@@ -1458,6 +1406,211 @@ and need to add the iconClass tag wherever we need to show some icons
                                 </resource>
                             </resources>
                             <searchStrings>Configure BGP as a Service</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                <item>
+                    <label>Infrastructure</label>
+                    <access>
+                        <roles>
+                            <role>cloudAdmin</role>
+                        </roles>
+                        <orchModels>
+                            <model>openstack</model>
+                            <model>cloudstack</model>
+                            <model>vcenter</model>
+                        </orchModels>
+                        <accessFn>hideInFederatedvCenter</accessFn>
+                    </access>
+                    <iconClass>menu-icon fa fa-desktop</iconClass>
+                    <items>
+                       <item>
+                            <label>Global Config</label>
+                            <hash>config_infra_gblconfig</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/infra/globalconfig/ui</rootDir>
+                                    <js>globalconfig.main.js</js>
+                                    <class>globalConfigPageLoader</class>
+                                    <function>renderGlobalConfig</function>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/alarm/common/ui</rootDir>
+                                    <template>ConfigAlarm.tmpl</template>
+                                </resource>
+                                <resource>
+                                     <rootDir>/reports/qe/ui</rootDir>
+                                     <css>qe.main.css</css>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Global Config</searchStrings>
+                        </item>
+                        <item>
+                            <label>BGP Routers</label>
+                            <hash>config_infra_bgp</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/infra/bgp/ui</rootDir>
+                                    <template>bgp.tmpl</template>
+                                    <js>bgp.main.js</js>
+                                    <class>configBGPPageLoader</class>
+                                    <function>renderBGP</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure BGP Routers</searchStrings>
+                        </item>
+                        <item>
+                            <label>Link Local Services</label>
+                            <hash>config_infra_lls</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/infra/linklocalservices/ui</rootDir>
+                                    <js>linkLocalServices.main.js</js>
+                                    <class>linkLocalServicesPageLoader</class>
+                                    <function>renderLinkLocalServices</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Link Local Services</searchStrings>
+                        </item>
+                        <item>
+                            <label>RBAC</label>
+                            <hash>config_infra_rbac</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/infra/rbac/ui</rootDir>
+                                    <js>rbac.main.js</js>
+                                    <class>configRBACPageLoader</class>
+                                    <function>renderRBAC</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure RBAC</searchStrings>
+                        </item>
+                        <item>
+                            <label>Nodes</label>
+                            <hash>config_infra_nodes</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/infra/nodes/ui</rootDir>
+                                    <js>nodesCfg.main.js</js>
+                                    <class>configNodesLoader</class>
+                                    <function>renderNodesConfig</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Nodes</searchStrings>
+                        </item>
+                        <item>
+                            <label>Project Quotas</label>
+                            <hash>config_net_quotas</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/infra/quotas/ui</rootDir>
+                                    <js>quotas.main.js</js>
+                                    <class>quotasPageLoader</class>
+                                    <function>renderQuotas</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Project Quotas</searchStrings>
+                        </item>
+                        <item>
+                            <label>Service Appliance Sets</label>
+                            <hash>config_infra_sapset</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/infra/serviceapplianceset/ui</rootDir>
+                                    <js>svcApplianceSet.main.js</js>
+                                    <class>svcApplianceSetPageLoader</class>
+                                    <function>renderSvcApplianceSet</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Service Appliance Set</searchStrings>
+                        </item>
+                        <item>
+                            <label>Service Appliances</label>
+                            <hash>config_infra_sap</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/infra/serviceappliance/ui</rootDir>
+                                    <js>svcAppliance.main.js</js>
+                                    <class>svcAppliancePageLoader</class>
+                                    <function>renderSvcAppliance</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Service Appliance</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                <item>
+                    <label>Physical Devices</label>
+                    <hash>config_pd</hash>
+                    <access>
+                        <roles>
+                            <role>cloudAdmin</role>
+                        </roles>
+                        <orchModels>
+                            <model>openstack</model>
+                            <model>vcenter</model>
+                        </orchModels>
+                    </access>
+                    <iconClass>menu-icon fa fa-tasks</iconClass>
+                    <resources>
+                        <resource>
+                            <rootDir>/common/ui</rootDir>
+                            <js>controller.app.js</js>
+                        </resource>
+                    </resources>
+                    <items>
+                        <item>
+                            <label>Physical Routers</label>
+                            <hash>config_pd_physicalRouters</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/config/physicaldevices/physicalrouters/ui</rootDir>
+                                    <js>physicalrouters.main.js</js>
+                                    <class>configPhysicalRoutersPageLoader</class>
+                                    <function>renderPhysicalRouters</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Physical Routers</searchStrings>
+                        </item>
+                        <item>
+                            <label>Interfaces</label>
+                            <hash>config_pd_interfaces</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/config/physicaldevices/interfaces/ui</rootDir>
+                                    <js>interfaces.main.js</js>
+                                    <template>interfaces.tmpl</template>
+                                    <class>configInterfacesPageLoader</class>
+                                    <function>renderInterfaces</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Interfaces</searchStrings>
                         </item>
                     </items>
                 </item>

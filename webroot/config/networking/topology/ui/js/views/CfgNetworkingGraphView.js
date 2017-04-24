@@ -5,11 +5,54 @@
 define([
     'underscore',
     'contrail-view',
+    'joint.contrail',
+    'contrail-element',
     'networking-graph-view',
     'config/networking/networks/ui/js/models/vnCfgModel',
     'config/networking/networks/ui/js/views/vnCfgEditView',
-], function (_, ContrailView, NetworkingGraphView, VNCfgModel, VNCfgEditView) {
-    var vnCfgEditView = new VNCfgEditView();
+    'config/networking/policy/ui/js/models/policyModel',
+    'config/networking/policy/ui/js/views/policyEditView',
+    'config/networking/securitygroup/ui/js/models/SecGrpModel',
+    'config/networking/securitygroup/ui/js/views/SecGrpEditView',
+    'config/networking/securitygroup/ui/js/SecGrpUtils',
+    'config/networking/ipam/ui/js/models/ipamCfgModel',
+    'config/networking/ipam/ui/js/views/ipamCfgEditView',
+], function (_, ContrailView, joint, ContrailElement, NetworkingGraphView,
+     VNCfgModel, VNCfgEditView, PolicyModel, PolicyEditView,
+    SecGrpModel, SecGrpEditView, SecGrpUtils, IPAMCfgModel, IPAMCfgEditView) {
+    var vnCfgEditView = new VNCfgEditView(),
+        policyEditView = new PolicyEditView(),
+        secGrpEditView = new SecGrpEditView(),
+        ipamEditView = new IPAMCfgEditView(),
+        sgUtils = new SecGrpUtils();
+        
+    var elementModelViewMap = {
+        'virtual-network': {
+            model: VNCfgModel,
+            view: vnCfgEditView,
+            label: 'Virtual Network',
+            gridId: ctwl.CFG_VN_GRID_ID
+        },
+        'network-policy': {
+            model: PolicyModel,
+            view: policyEditView,
+            label: 'Policy',
+            gridId: ctwl.POLICIES_GRID_ID
+        },
+        'security-group': {
+            model: SecGrpModel,
+            view: secGrpEditView,
+            label: 'Security Group',
+            gridId: ctwl.SEC_GRP_GRID_ID
+        },
+        'network-ipam': {
+            model: IPAMCfgModel,
+            view: ipamEditView,
+            label: 'IPAM',
+            gridId: ctwl.CFG_IPAM_GRID_ID
+        }
+
+    }
     var CfgNetworkingGraphView = NetworkingGraphView.extend({
         render: function () {
             var self = this;
@@ -20,8 +63,115 @@ define([
                 },configGraph: {
                     tooltipConfig: getConfigGraphTooltipConfig(), 
                     clickEvents: {},
+                },
+                templateId: 'config-networking-graph-template',
+                controlPanelConfig: {
+                    custom: {
+                        resize: {
+                            iconClass: 'fa fa-compress'
+                        }
+                    }
                 }
             });
+            self.renderConfigNetworkElements();
+        },
+        renderConfigNetworkElements: function () {
+            var graph = new joint.dia.Graph;
+
+            var paper = new joint.dia.Paper({
+                el: $('.top-row-config-elements'),
+                gridSize: 1,
+                width: 1250,
+                height: 60,
+                model: graph
+            });
+            var options = {
+                            "attrs": {
+                                "text": {
+                                    //"text": "Virtual Network"
+                                }
+                            },
+                            "position": {
+                                x: 50,
+                                y: 20
+                            },
+                            "size": {
+                                "width": 25,
+                                "height": 25
+                            },
+                            "nodeDetails": {
+                                "name": "Virtual Network",
+                                "node_type": "virtual-network",
+                                "status": "Active"
+                            },
+                            "font": {
+                                "iconClass": "icon-contrail-virtual-network"
+                            },
+                            "elementType": "virtual-network"
+                        };
+            $.each(_.keys(elementModelViewMap), function(idx, id) {
+                //options['attrs']['text']['text'] = nodeMap[id];
+                options['nodeDetails']['name'] = elementModelViewMap[id]['label'];
+                options['nodeDetails']['node_type'] = id;
+                options['elementType'] = id;
+                options['position']['x'] = 1050 + idx * 50;
+                options['font']['iconClass'] = 'icon-contrail-'+id;
+                graph.addCell(new ContrailElement(id, options));
+            });
+            paper.on('cell:pointerclick', function (cellView, evt, x, y) {
+                var node = paper.model.getCell(cellView.$el.attr('model-id'));
+                var nodeType = cowu.getValueByJsonPath(node, 'attributes;nodeDetails;node_type');
+                var model = new elementModelViewMap[nodeType]['model']();
+                var editView = elementModelViewMap[nodeType]['view'];
+                var dataView = $('#' + elementModelViewMap[nodeType]['gridId']).data("contrailGrid")._dataView;
+                editView.model = model;
+                switch (nodeType) {
+                    case 'virtual-network': 
+                        editView.renderAddVNCfg({
+                            "title": ctwl.CFG_VN_TITLE_CREATE,
+                            callback: function () {
+                                refreshPage(dataView);
+                                //dataView.refreshData();
+                            }
+                        });
+                    break;
+                    
+                    case 'network-policy':
+                         editView.renderPolicyPopup({
+                             "title": ctwl.TITLE_ADD_POLICY,
+                             mode : "add",
+                             callback: function () {
+                                 refreshPage(dataView);
+                            }
+                        });
+                    break;
+                    
+                    case 'security-group':
+                        var projFqn = [getCookie('domain'),
+                            getCookie('project')];
+                        sgUtils.addCurrentSG();
+                        editView.renderConfigureSecGrp({
+                            "title": ctwl.TITLE_CREATE_SEC_GRP,
+                            "isEdit": false,
+                            projFqn: projFqn,
+                            callback: function() {
+                                refreshPage(dataView);
+                            }
+                        });
+                    break;
+
+                    case 'network-ipam':
+                        editView.renderAddIpamCfg({
+                            "title": ctwl.CFG_IPAM_TITLE_CREATE,
+                            callback: function () {
+                                refreshPage(dataView);
+                            }
+                        });
+                    break;
+
+                }
+            });
+
         }      
     });
     function getConnectedGraphTooltipConfig() {
@@ -40,15 +190,22 @@ define([
         return {
             VirtualNetwork: {
                 title: function (element, graphView) {
-                    var viewElement = graphView.model.getCell(element.attr('model-id')),
-                        virtualNetworkName = viewElement.attributes.nodeDetails['name'].split(':')[2];
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    //Seems this config is getting applied to all the vn elements 
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var virtualNetworkName = viewElement.attributes.nodeDetails['name'].split(':')[2];
 
                     return tooltipTitleTmpl({name: virtualNetworkName, type: ctwl.TITLE_GRAPH_ELEMENT_VIRTUAL_NETWORK});
 
                 },
                 content: function (element, graphView) {
-                    var viewElement = graphView.model.getCell(element.attr('model-id')),
-                        networkFQN = viewElement.attributes.nodeDetails['name'],
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var networkFQN = viewElement.attributes.nodeDetails['name'],
                         virtualNetworkName = networkFQN.split(':'),
                         actions = defaultActions;
 
@@ -305,19 +462,25 @@ define([
         return {
             NetworkPolicy: {
                 title: function (element, graphView) {
-                    var viewElement = graphView.model.getCell(element.attr('model-id')),
-                        networkPolicyName = viewElement.attributes.nodeDetails['fq_name'][2];
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var networkPolicyName = viewElement.attributes.nodeDetails['fq_name'][2];
 
                     return tooltipTitle({name: networkPolicyName, type: ctwl.TITLE_GRAPH_ELEMENT_NETWORK_POLICY});
 
                 },
                 content: function (element, graphView) {
-                    var viewElement = graphView.model.getCell(element.attr('model-id')),
-                        actions = [], nodeDetails = viewElement.attributes.nodeDetails;
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var   actions = [], nodeDetails = viewElement.attributes.nodeDetails;
 
                     actions.push({
-                        text: 'Configure',
-                        iconClass: 'fa fa-cog'
+                        text: 'Edit',
+                        iconClass: 'fa fa-pencil-square-o',
                     });
 
                     return tooltipContent({
@@ -332,7 +495,7 @@ define([
                             },
                             {
                                 label: 'Rule Count',
-                                value: nodeDetails['network_policy_entries']['policy_rule'].length
+                                value: cowu.getValueByJsonPath(nodeDetails, 'network_policy_entries;policy_rule', []).length
                             }
 
                         ],
@@ -345,11 +508,23 @@ define([
                 },
                 actionsCallback: function (element, graphView) {
                     var viewElement = graphView.model.getCell(element.attr('model-id')),
+                        uuid = getValueByJsonPath(viewElement, 'attributes;nodeDetails;uuid'),
                         actions = [];
 
+                    var dataView = $("#"+elementModelViewMap['network-policy']['gridId']).data('contrailGrid')._dataView;
+                    var rowItem = rowItemByUUID(uuid, elementModelViewMap['network-policy']['gridId']);
                     actions.push({
                         callback: function (key, options) {
-                            loadFeature({p: 'config_net_policies'});
+                            //Edit block
+                            if (rowItem != null) {
+                                var polModel = new elementModelViewMap['network-policy']['model'](rowItem);
+                                elementModelViewMap['network-policy']['view'].model = polModel;
+                                elementModelViewMap['network-policy']['view'].renderPolicyPopup({
+                                    "title": ctwl.EDIT,
+                                    callback: function () {
+                                        refreshPage(dataView, graphView);
+                                    }});
+                            }
                         }
                     });
 
@@ -358,18 +533,24 @@ define([
             },
             SecurityGroup: {
                 title: function (element, graphView) {
-                    var viewElement = graphView.model.getCell(element.attr('model-id')),
-                        securityGroupName = viewElement.attributes.nodeDetails['fq_name'][2];
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var securityGroupName = viewElement.attributes.nodeDetails['fq_name'][2];
 
                     return tooltipTitle({name: securityGroupName, type: ctwl.TITLE_GRAPH_ELEMENT_SECURITY_GROUP});
                 },
                 content: function (element, graphView) {
-                    var viewElement = graphView.model.getCell(element.attr('model-id')),
-                        actions = [], nodeDetails = viewElement.attributes.nodeDetails;
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var actions = [], nodeDetails = viewElement.attributes.nodeDetails;
 
                     actions.push({
-                        text: 'Configure',
-                        iconClass: 'fa fa-cog'
+                        text: 'Edit',
+                        iconClass: 'fa fa-pencil-square-o',
                     });
 
                     return tooltipContent({
@@ -392,11 +573,24 @@ define([
                 },
                 actionsCallback: function (element, graphView) {
                     var viewElement = graphView.model.getCell(element.attr('model-id')),
+                        uuid = getValueByJsonPath(viewElement, 'attributes;nodeDetails;uuid'),
                         actions = [];
 
+                    var dataView = $("#"+elementModelViewMap['security-group']['gridId']).data('contrailGrid')._dataView;
+                    var rowItem = rowItemByUUID(uuid, elementModelViewMap['security-group']['gridId']);
                     actions.push({
                         callback: function (key, options) {
-                            loadFeature({p: 'config_net_sg'});
+                            //Edit block
+                            if (rowItem != null) {
+                                var polModel = new elementModelViewMap['security-group']['model'](rowItem);
+                                sgUtils.deleteCurrentSG();
+                                elementModelViewMap['security-group']['view'].model = polModel;
+                                elementModelViewMap['security-group']['view'].renderPolicyPopup({
+                                    "title": ctwl.EDIT,
+                                    callback: function () {
+                                        refreshPage(dataView, graphView);
+                                    }});
+                            }
                         }
                     });
 
@@ -405,18 +599,24 @@ define([
             },
             NetworkIPAM: {
                 title: function (element, graphView) {
-                    var viewElement = graphView.model.getCell(element.attr('model-id')),
-                        NetworkIPAMName = viewElement.attributes.nodeDetails['fq_name'][2];
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var NetworkIPAMName = viewElement.attributes.nodeDetails['fq_name'][2];
 
                     return tooltipTitle({name: NetworkIPAMName, type: ctwl.TITLE_GRAPH_ELEMENT_NETWORK_IPAM});
                 },
                 content: function (element, graphView) {
-                    var viewElement = graphView.model.getCell(element.attr('model-id')),
-                        actions = [], nodeDetails = viewElement.attributes.nodeDetails;
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var actions = [], nodeDetails = viewElement.attributes.nodeDetails;
 
                     actions.push({
-                        text: 'Configure',
-                        iconClass: 'fa fa-cog'
+                        text: 'Edit',
+                        iconClass: 'fa fa-pencil-square-o',
                     });
 
                     return tooltipContent({
@@ -439,11 +639,23 @@ define([
                 },
                 actionsCallback: function (element, graphView) {
                     var viewElement = graphView.model.getCell(element.attr('model-id')),
+                        uuid = getValueByJsonPath(viewElement, 'attributes;nodeDetails;uuid'),
                         actions = [];
 
+                    var dataView = $("#"+elementModelViewMap['network-ipam']['gridId']).data('contrailGrid')._dataView;
+                    var rowItem = rowItemByUUID(uuid, elementModelViewMap['network-ipam']['gridId']);
                     actions.push({
                         callback: function (key, options) {
-                            loadFeature({p: 'config_net_ipam'});
+                            //Edit block
+                            if (rowItem != null) {
+                                var polModel = new elementModelViewMap['network-ipam']['model'](rowItem);
+                                elementModelViewMap['network-ipam']['view'].model = polModel;
+                                elementModelViewMap['network-ipam']['view'].renderPolicyPopup({
+                                    "title": ctwl.EDIT,
+                                    callback: function () {
+                                        refreshPage(dataView, graphView);
+                                    }});
+                            }
                         }
                     });
 
@@ -453,10 +665,13 @@ define([
         }
     }
     function refreshPage(dataView, graphView) {
+        $('.control-panel-item.refresh').find('i').toggleClass('fa-spin fa-spinner');
         setTimeout(function(){
             dataView.refreshData();
-            graphView.model.refreshData();
-        }, 1000);
+            $('#graph-config-elements').data('graphView').model.refreshData();
+            $('#graph-connected-elements').data('graphView').model.refreshData();
+            $('.control-panel-item.refresh').find('i').toggleClass('fa-spin fa-spinner');
+        }, 5000);
     }
     function rowItemByUUID(uuid, gridId) {
         var gridObj = $("#"+gridId).data('contrailGrid'),
