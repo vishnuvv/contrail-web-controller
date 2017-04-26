@@ -96,6 +96,30 @@ define(
                         selectionModel.set('select',e.val);
                     });
 
+                     function select2_sortable($select2){
+						var ul = $select2.prev('.select2-container');
+						/*ul.sortable({
+							placeholder : 'ui-state-highlight',
+							forcePlaceholderSize: true,
+							items       : 'li:not(.select2-search__field)',
+							tolerance   : 'pointer',
+							stop: function() {
+								$($(ul).find('.select2-search-choice').get().reverse()).each(function() {
+									var id = $(this).data('data').id;
+									var option = $select2.find('option[value="' + id + '"]')[0];
+									$select2.prepend(option);
+								});
+							}
+						});*/
+						ul.find('.select2-search-choice').sortable({});
+					}
+					// select2_sortable($("#multiselect-1"));
+					
+
+					//$('#multiselect-1').prev('.select2-container').find('.select2-choices').sortable({});
+		            // $('#multiselect-1').val('tier,application');
+                    // $('#multiselect-1').trigger('change.select2');
+
                     $(currElem).find('.where-dropdown').select2({
                         placeholder: 'Match tags',
                         data: data,
@@ -119,7 +143,7 @@ define(
                         },
                     });
 
-                    $(currElem).find('.where-dropdown').on('select',function(e) {
+                    /*$(currElem).find('.where-dropdown').on('select',function(e) {
                         selectionModel.get('where').push(e.added);
                     });
                     $(currElem).find('.where-dropdown').on('unselect',function(e) {
@@ -127,7 +151,7 @@ define(
                             var removedElem = e.removed;
                             return (val.id == removedElem.id && val.tag == removedElem.tag && val.text == removedElem.text);
                         });
-                    });
+                    });*/
                     $(currElem).find('.where-dropdown').on('change',function(e) {
                         if(e.added != null) {
                             selectionModel.get('where').push(e.added);
@@ -138,6 +162,10 @@ define(
                                 return (val.id == removedElem.id && val.tag == removedElem.tag && val.text == removedElem.text);
                             });
                         }
+                    });
+
+                    $(currElem).find('.btn-reset').on('click',function() {
+                        
                     });
 
                     $(currElem).find('.btn-update').on('click',function() {
