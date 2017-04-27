@@ -1198,6 +1198,8 @@ define([
         var networkPolicys = configData['network-policys'],
             securityGroups = configData['security-groups'],
             networkIPAMS = configData['network-ipams'],
+            floatingIPs = configData['floating-ips'],
+            logicalRouters = configData['logical-routers'],
             name, i;
 
         if (networkPolicys != null && networkPolicys.length > 0) {
@@ -1250,6 +1252,41 @@ define([
                 });
             }
         }
+
+        if (floatingIPs != null && floatingIPs.length > 0) {
+            var font = {
+                iconClass: 'networking-Floating_IP'
+            };
+            collections.floatingIPs = {name: 'Floating IPs', node_type: 'collection-element', nodes: []};
+            for (i = 0; floatingIPs != null && i < floatingIPs.length; i++) {
+                name = floatingIPs[i]['fq_name'].join(':');
+                collections.floatingIPs.nodes.push({
+                    name: name,
+                    node_type: 'floating-ip',
+                    elementType: 'floating-ip',
+                    nodeDetails: floatingIPs[i],
+                    font: font
+                });
+            }
+        }
+
+        if (logicalRouters != null && logicalRouters.length > 0) {
+            var font = {
+                iconClass: 'icon-contrail-router'
+            };
+            collections.logicalRouters = {name: 'Router', node_type: 'collection-element', nodes: []};
+            for (i = 0; logicalRouters != null && i < logicalRouters.length; i++) {
+                name = logicalRouters[i]['fq_name'].join(':');
+                collections.logicalRouters.nodes.push({
+                    name: name,
+                    node_type: 'router',
+                    elementType: 'router',
+                    nodeDetails: logicalRouters[i],
+                    font: font
+                });
+            }
+        }
+
     }
 
     function createNodeElements(nodes, elements, elementMap, config) {
