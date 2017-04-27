@@ -17,13 +17,26 @@ define([
     'config/networking/securitygroup/ui/js/SecGrpUtils',
     'config/networking/ipam/ui/js/models/ipamCfgModel',
     'config/networking/ipam/ui/js/views/ipamCfgEditView',
+    'config/networking/fip/ui/js/models/fipCfgModel',
+    'config/networking/fip/ui/js/views/fipCfgEditView',
+    'config/networking/port/ui/js/models/portModel',
+    'config/networking/port/ui/js/views/portEditView',
+    'config/networking/port/ui/js/views/portFormatters',
+    'config/networking/logicalrouter/ui/js/models/logicalRouterModel',
+    'config/networking/logicalrouter/ui/js/views/logicalRouterEditView'
 ], function (_, ContrailView, joint, ContrailElement, NetworkingGraphView,
      VNCfgModel, VNCfgEditView, PolicyModel, PolicyEditView,
-    SecGrpModel, SecGrpEditView, SecGrpUtils, IPAMCfgModel, IPAMCfgEditView) {
+    SecGrpModel, SecGrpEditView, SecGrpUtils, IPAMCfgModel, IPAMCfgEditView,
+    FipCfgModel, FipCfgEditView, PortModel, PortEditView, PortFormatters,
+    LogicalRouterModel, LogicalRouterEditView) {
     var vnCfgEditView = new VNCfgEditView(),
         policyEditView = new PolicyEditView(),
         secGrpEditView = new SecGrpEditView(),
         ipamEditView = new IPAMCfgEditView(),
+        fipCfgEditView = new FipCfgEditView(),
+        portCfgEditView = new PortEditView(),
+        logicalRouterEditView = new LogicalRouterEditView(),
+        portFormatters = new PortFormatters(),
         sgUtils = new SecGrpUtils();
         
     var elementModelViewMap = {
@@ -50,6 +63,27 @@ define([
             view: ipamEditView,
             label: 'IPAM',
             gridId: ctwl.CFG_IPAM_GRID_ID
+        },
+        'floating-ip': {
+            model: FipCfgModel,
+            view: fipCfgEditView,
+            label: 'Floating IP',
+            iconClass: 'networking-Floating_IP',
+            gridId: ctwl.CFG_FIP_GRID_ID
+        },
+        'port': {
+            model: PortModel,
+            view: portCfgEditView,
+            label: 'Port',
+            iconClass: 'networking-port',
+            //id: 'virtual-machine',
+            gridId: ctwc.PORT_GRID_ID
+        },
+        'router': {
+            model: LogicalRouterModel,
+            view: logicalRouterEditView,
+            label: 'Router',
+            gridId: ctwl.LOGICAL_ROUTER_GRID_ID
         }
 
     }
@@ -83,6 +117,9 @@ define([
                 gridSize: 1,
                 width: 1250,
                 height: 60,
+                interactive: function(cellView) {
+                    return false;
+                },
                 model: graph
             });
             var options = {
@@ -93,7 +130,7 @@ define([
                             },
                             "position": {
                                 x: 50,
-                                y: 20
+                                y: 15
                             },
                             "size": {
                                 "width": 25,
@@ -114,8 +151,8 @@ define([
                 options['nodeDetails']['name'] = elementModelViewMap[id]['label'];
                 options['nodeDetails']['node_type'] = id;
                 options['elementType'] = id;
-                options['position']['x'] = 1050 + idx * 50;
-                options['font']['iconClass'] = 'icon-contrail-'+id;
+                options['position']['x'] =  890+ idx * 50;
+                options['font']['iconClass'] = elementModelViewMap[id]['iconClass'] != null ? elementModelViewMap[id]['iconClass'] : 'icon-contrail-'+id;
                 graph.addCell(new ContrailElement(id, options));
             });
             paper.on('cell:pointerclick', function (cellView, evt, x, y) {
@@ -127,6 +164,7 @@ define([
                 editView.model = model;
                 switch (nodeType) {
                     case 'virtual-network': 
+                        subscribeVNModelChangeEvents(editView.model)
                         editView.renderAddVNCfg({
                             "title": ctwl.CFG_VN_TITLE_CREATE,
                             callback: function () {
@@ -169,11 +207,84 @@ define([
                         });
                     break;
 
+                    case 'floating-ip':
+                        editView.renderAllocateFipCfg({
+                           "title": "Allocate",
+                           callback: function () {
+                                refreshPage(dataView);
+                           }
+                        });
+                    break;
+
+                    case 'port':
+                        var dataItem = {};
+                        dataItem.securityGroupValue = portFormatters.getProjectFqn()+":default";
+                        dataItem.is_sec_grp = true;
+                        //var portModel = new PortModel(dataItem);
+                        editView.model = new elementModelViewMap[nodeType]['model'](dataItem);
+                        showHidePortModelAttrs(editView.model);
+                        subscribePortModelChangeEvents(editView.model, ctwl.CREATE_ACTION);
+                        editView.renderPortPopup({
+                            "title": ctwl.CREATE,
+                            mode : ctwl.CREATE_ACTION,
+                            callback: function () {
+                                refreshPage(dataView);
+                            }
+                        });
+                    break;
+
+                    case 'router':
+                        editView.renderLogicalRouterPopup({
+                             "title": ctwl.CREATE,
+                             mode : "add",
+                            callback: function () {
+                                refreshPage(dataView);
+                            }
+                        });
+
                 }
             });
 
         }      
     });
+    
+    function subscribeVNModelChangeEvents (vnModel) {
+        vnModel.__kb.view_model.model().on('change:router_external',
+            function(backBoneModel, value) {
+                vnModel.externalRouterHandler(value);
+        });
+        vnModel.__kb.view_model.model().on('change:address_allocation_mode',
+            function(backBoneModel, value) {
+                vnModel.updateModelAttrsForCurrentAllocMode(value);
+        });
+    };
+    function subscribePortModelChangeEvents(portModel, mode) {
+        portModel.__kb.view_model.model().on('change:virtualNetworkName',
+            function(model, newValue){
+                portModel.onVNSelectionChanged(portFormatters, newValue, mode);
+            }
+        );
+    };
+    function showHidePortModelAttrs(portModel) {
+        portModel.is_sec_grp_disabled = ko.computed((function() {
+            if(this.port_security_enabled() == true) {
+                if (this.securityGroupValue() == "") {
+                    var sgDefaultVal = [portFormatters.getProjectFqn()+":default"];
+                    this.securityGroupValue(sgDefaultVal);
+                }
+                return false;
+            } else {
+                this.securityGroupValue([]);
+                return true;
+            }
+        }), portModel);
+        portModel.deviceComputeShow = ko.computed((function(){
+            return (this.deviceOwnerValue().toLowerCase() === "compute");
+        }), portModel);
+        portModel.deviceRouterShow = ko.computed((function(){
+            return (this.deviceOwnerValue().toLowerCase() === "router");
+        }), portModel);
+    };
     function getConnectedGraphTooltipConfig() {
         var tooltipTitleTmpl = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_TITLE),
             tooltipContentTmpl = contrail.getTemplate4Id(cowc.TMPL_ELEMENT_TOOLTIP_CONTENT),
@@ -585,7 +696,7 @@ define([
                                 var polModel = new elementModelViewMap['security-group']['model'](rowItem);
                                 sgUtils.deleteCurrentSG();
                                 elementModelViewMap['security-group']['view'].model = polModel;
-                                elementModelViewMap['security-group']['view'].renderPolicyPopup({
+                                elementModelViewMap['security-group']['view'].renderConfigureSecGrp({
                                     "title": ctwl.EDIT,
                                     callback: function () {
                                         refreshPage(dataView, graphView);
@@ -650,7 +761,137 @@ define([
                             if (rowItem != null) {
                                 var polModel = new elementModelViewMap['network-ipam']['model'](rowItem);
                                 elementModelViewMap['network-ipam']['view'].model = polModel;
-                                elementModelViewMap['network-ipam']['view'].renderPolicyPopup({
+                                elementModelViewMap['network-ipam']['view'].renderEditIpamCfg({
+                                    "title": ctwl.EDIT,
+                                    callback: function () {
+                                        refreshPage(dataView, graphView);
+                                    }});
+                            }
+                        }
+                    });
+
+                    return actions;
+                }
+            },
+            FloatingIP: {
+                title: function (element, graphView) {
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var NetworkIPAMName = viewElement.attributes.nodeDetails['fq_name'][2];
+
+                    return tooltipTitle({name: NetworkIPAMName, type: ctwl.TITLE_GRAPH_ELEMENT_FLOATING_IP});
+                },
+                content: function (element, graphView) {
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var actions = [], nodeDetails = viewElement.attributes.nodeDetails;
+
+                    actions.push({
+                        text: 'Edit',
+                        iconClass: 'fa fa-pencil-square-o',
+                    });
+
+                    return tooltipContent({
+                        info: [
+                            {
+                                label: 'Project',
+                                value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
+                            },
+                            {
+                                label: 'UUID',
+                                value: nodeDetails['uuid']
+                            }
+                        ],
+                        iconClass: 'networking-Floating_IP',
+                        actions: actions
+                    });
+                },
+                dimension: {
+                    width: 355
+                },
+                actionsCallback: function (element, graphView) {
+                    var viewElement = graphView.model.getCell(element.attr('model-id')),
+                        uuid = getValueByJsonPath(viewElement, 'attributes;nodeDetails;uuid'),
+                        actions = [];
+
+                    var dataView = $("#"+elementModelViewMap['floating-ip']['gridId']).data('contrailGrid')._dataView;
+                    var rowItem = rowItemByUUID(uuid, elementModelViewMap['floating-ip']['gridId']);
+                    actions.push({
+                        callback: function (key, options) {
+                            //Edit block
+                            if (rowItem != null) {
+                                var polModel = new elementModelViewMap['floating-ip']['model'](rowItem);
+                                elementModelViewMap['floating-ip']['view'].model = polModel;
+                                elementModelViewMap['floating-ip']['view'].renderAssociateFipCfg({
+                                    "title": ctwl.EDIT,
+                                    callback: function () {
+                                        refreshPage(dataView, graphView);
+                                    }});
+                            }
+                        }
+                    });
+
+                    return actions;
+                }
+            },
+            LogicalRouter: {
+                title: function (element, graphView) {
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var NetworkIPAMName = viewElement.attributes.nodeDetails['fq_name'][2];
+
+                    return tooltipTitle({name: NetworkIPAMName, type: ctwl.TITLE_GRAPH_ELEMENT_LOGICAL_ROUTER});
+                },
+                content: function (element, graphView) {
+                    var viewElement = graphView.model.getCell(element.attr('model-id'));
+                    if (viewElement == null) {
+                        return;
+                    }
+                    var actions = [], nodeDetails = viewElement.attributes.nodeDetails;
+
+                    actions.push({
+                        text: 'Edit',
+                        iconClass: 'fa fa-pencil-square-o',
+                    });
+
+                    return tooltipContent({
+                        info: [
+                            {
+                                label: 'Project',
+                                value: viewElement.attributes.nodeDetails['fq_name'][0] + ':' + viewElement.attributes.nodeDetails['fq_name'][1]
+                            },
+                            {
+                                label: 'UUID',
+                                value: nodeDetails['uuid']
+                            }
+                        ],
+                        iconClass: 'icon-contrail-router',
+                        actions: actions
+                    });
+                },
+                dimension: {
+                    width: 355
+                },
+                actionsCallback: function (element, graphView) {
+                    var viewElement = graphView.model.getCell(element.attr('model-id')),
+                        uuid = getValueByJsonPath(viewElement, 'attributes;nodeDetails;uuid'),
+                        actions = [];
+
+                    var dataView = $("#"+elementModelViewMap['router']['gridId']).data('contrailGrid')._dataView;
+                    var rowItem = rowItemByUUID(uuid, elementModelViewMap['router']['gridId']);
+                    actions.push({
+                        callback: function (key, options) {
+                            //Edit block
+                            if (rowItem != null) {
+                                var polModel = new elementModelViewMap['router']['model'](rowItem);
+                                elementModelViewMap['router']['view'].model = polModel;
+                                elementModelViewMap['router']['view'].renderLogicalRouterPopup({
                                     "title": ctwl.EDIT,
                                     callback: function () {
                                         refreshPage(dataView, graphView);
@@ -665,13 +906,13 @@ define([
         }
     }
     function refreshPage(dataView, graphView) {
-        $('.control-panel-item.refresh').find('i').toggleClass('fa-spin fa-spinner');
+        $('.top-row-config-elements .spinner').show();
         setTimeout(function(){
             dataView.refreshData();
             $('#graph-config-elements').data('graphView').model.refreshData();
             $('#graph-connected-elements').data('graphView').model.refreshData();
-            $('.control-panel-item.refresh').find('i').toggleClass('fa-spin fa-spinner');
-        }, 5000);
+            $('.top-row-config-elements .spinner').hide();
+        }, 4000);
     }
     function rowItemByUUID(uuid, gridId) {
         var gridObj = $("#"+gridId).data('contrailGrid'),

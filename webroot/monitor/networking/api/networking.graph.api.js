@@ -970,8 +970,15 @@ function getProjectConfigGraph(req, res, appData) {
     reqUrl = '/network-ipams?parent_type=project&parent_fq_name_str=' + fqName;
     commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
 
+    reqUrl = '/floating-ips'
+    commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
+
+    reqUrl = '/logical-routers?parent_type=project&parent_fq_name_str=' + fqName;
+    commonUtils.createReqObj(dataObjArr, reqUrl, global.HTTP_REQUEST_GET, null, configApiServer, null, appData);
+
     async.map(dataObjArr, commonUtils.getServerResponseByRestApi(configApiServer, false), function (err, projectConfigData) {
         processProjectConfigGraph(fqName, projectConfigData, appData, function (err, result) {
+            console.log('Config graph data', JSON.stringify(result));
             commonUtils.handleJSONResponse(null, res, result);
         });
     });
@@ -985,12 +992,19 @@ function processProjectConfigGraph(fqName, projectConfigData, appData, callback)
             "1;security-groups", [], false),
         configIPAM = commonUtils.getValueByJsonPath(projectConfigData,
             "2;network-ipams", [], false),
+        fip = commonUtils.getValueByJsonPath(projectConfigData,
+            "3;floating-ips", [], false),
+        lRouters = commonUtils.getValueByJsonPath(projectConfigData,
+            "4;logical-routers", [], false),
+
         configGraphJSON = {};
 
     configGraphJSON['configData'] = {
         'network-policys': configNP,
         'security-groups': configSG,
-        'network-ipams': configIPAM
+        'network-ipams': configIPAM,
+        'floating-ips':fip,
+        'logical-routers': lRouters 
     };
 
     updatePolicyConfigData(configGraphJSON, appData, function (resultJSON) {

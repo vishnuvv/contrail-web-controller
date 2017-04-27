@@ -357,6 +357,8 @@ define([
         this.TITLE_GRAPH_ELEMENT_NETWORK_POLICY = 'network policy';
         this.TITLE_GRAPH_ELEMENT_SECURITY_GROUP = 'security group';
         this.TITLE_GRAPH_ELEMENT_NETWORK_IPAM = 'network ipam';
+        this.TITLE_GRAPH_ELEMENT_LOGICAL_ROUTER = 'logical router';
+        this.TITLE_GRAPH_ELEMENT_FLOATING_IP = 'floating IP';
         this.TITLE_GRAPH_ELEMENT_SERVICE_INSTANCE = 'service instance';
         this.TITLE_GRAPH_ELEMENT_VIRTUAL_NETWORK = 'virtual network';
         this.TITLE_GRAPH_ELEMENT_VIRTUAL_MACHINE = 'virtual machine';
