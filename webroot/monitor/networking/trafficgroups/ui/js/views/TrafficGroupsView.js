@@ -111,9 +111,21 @@ define(
 								});
 							}
 						});*/
-						ul.find('.select2-search-choice').sortable({});
+						ul.find('.select2-choices').sortable({
+                            stop: function() {
+                                var changedOrder = $('#multiselect-1').prev('.select2-container').find('.select2-choices').find('.select2-search-choice')
+                                var selOptions = []
+                                $.each(changedOrder,function(idx,val) {
+                                    selOptions.push($(this).text().trim().toLowerCase());
+                                });
+                                $('#multiselect-1').val(selOptions.join(','));
+                                selectionModel.set('select',selOptions);
+                                updateChart();
+                                console.info("hello");
+                            }
+                        });
 					}
-					// select2_sortable($("#multiselect-1"));
+					select2_sortable($("#multiselect-1"));
 					
 
 					//$('#multiselect-1').prev('.select2-container').find('.select2-choices').sortable({});
@@ -168,7 +180,7 @@ define(
                         
                     });
 
-                    $(currElem).find('.btn-update').on('click',function() {
+                    function updateChart() {
                         var selTags = selectionModel.get('select');
                         var levels = [];
                         selTags.forEach(function(val,idx) {
@@ -210,6 +222,10 @@ define(
                         //Apply backbone filter
                         trafficGroupsModel.set('data',trafficGroupsCollection.byMatchTags(selectionModel.get('where')));
                         viewInst.render();
+                    }
+
+                    $(currElem).find('.btn-update').on('click',function() {
+                        updateChart();
                     });
 
                     var TrafficGroupsCollection = Backbone.Collection.extend({
