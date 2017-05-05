@@ -13,8 +13,9 @@ define(
                     this.$el.html(trafficGroupsTmpl());
                     this.$el.addClass('traffic-groups-view');
                     this.$el.find('[name="search-form"]').wrapCollapsibleWidget({
-                            title: 'Traffic Groups'
+                        title: 'Traffic Groups'
                     });
+                    this.$el.find('.widget-box').addClass('collapsed');
                     
                     var tagTypes = [{
                             id: 'application', 
@@ -80,11 +81,12 @@ define(
                     var currElem = this.$el;
                     var SelectionModel = Backbone.Model.extend({
                         defaults : {
-                            select: '',
+                            select: ['application'],
                             where: []
                         }
                     });
                     var selectionModel = new SelectionModel();
+
 
                     //Render-dropdowns
                     $(currElem).find('#multiselect-1').select2({
@@ -128,10 +130,6 @@ define(
 					select2_sortable($("#multiselect-1"));
 					
 
-					//$('#multiselect-1').prev('.select2-container').find('.select2-choices').sortable({});
-		            // $('#multiselect-1').val('tier,application');
-                    // $('#multiselect-1').trigger('change.select2');
-
                     $(currElem).find('.where-dropdown').select2({
                         placeholder: 'Match tags',
                         data: data,
@@ -155,15 +153,6 @@ define(
                         },
                     });
 
-                    /*$(currElem).find('.where-dropdown').on('select',function(e) {
-                        selectionModel.get('where').push(e.added);
-                    });
-                    $(currElem).find('.where-dropdown').on('unselect',function(e) {
-                        _.remove(selectionModel.get('where'),function(val,idx) {
-                            var removedElem = e.removed;
-                            return (val.id == removedElem.id && val.tag == removedElem.tag && val.text == removedElem.text);
-                        });
-                    });*/
                     $(currElem).find('.where-dropdown').on('change',function(e) {
                         if(e.added != null) {
                             selectionModel.get('where').push(e.added);
@@ -218,7 +207,6 @@ define(
                             }
                         }
                         viewInst.updateConfig(config);
-                        // trafficGroupsModel.set('data',cowu.getTrafficGroupsData());
                         //Apply backbone filter
                         trafficGroupsModel.set('data',trafficGroupsCollection.byMatchTags(selectionModel.get('where')));
                         viewInst.render();
@@ -245,7 +233,6 @@ define(
                     });
                     var trafficGroupsCollection = new TrafficGroupsCollection();
 
-                    // trafficGroupsModel.set('data',cowu.getTrafficGroupsData());
                     trafficGroupsCollection.add(cowu.getTrafficGroupsData());
 
                     var TrafficGroupsModel = Backbone.Model.extend({
@@ -260,6 +247,7 @@ define(
                         el: this.$el.find('#traffic-groups-radial-chart'),
                         model: trafficGroupsModel
                     });
+                    updateChart();
                 }
             });
             function getControlNodeListViewConfig(colorFn) {
