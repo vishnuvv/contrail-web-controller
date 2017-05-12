@@ -2533,7 +2533,9 @@ define([
             }).done(function(response) {
                 response = getValueByJsonPath(response,"0;value",[]);
                 response = $.map(response,function(d,i){
-                    return {"fq_name":getValueByJsonPath(d,'value;ContrailConfig;elements;fq_name')};
+                    // getValueByJsonPath(d,'value;ContrailConfig;elements;0;fq_name') is hack to fix the multiple generators
+                    // reporting the same object issue
+                    return {"fq_name":getValueByJsonPath(d,'value;ContrailConfig;elements;fq_name', getValueByJsonPath(d,'value;ContrailConfig;elements;0;0;fq_name'))};
                 });
                 defObj.resolve(response);
             });
