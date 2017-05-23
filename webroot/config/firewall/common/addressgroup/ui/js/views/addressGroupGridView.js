@@ -261,7 +261,9 @@ define([
         }
         if(prefixlList.length > 0){
             for(var j = 0; j< prefixlList.length,j < 2; j++){
-                returnString += prefixlList[j] + "<br>";
+                if(prefixlList[j]) {
+                    returnString += prefixlList[j] + "<br>";
+                }
             }
             if (prefixlList.length > 2) {
                 returnString += '<span class="moredataText">(' +
