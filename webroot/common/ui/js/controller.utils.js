@@ -131,6 +131,21 @@ define([
             }
         };
 
+        self.getTagsExpandDetails = function() {
+            var tagsList = [
+            {
+                keyClass:'col-xs-3',
+                valueClass:'col-xs-9',
+                key: 'tag_refs',
+                name:"tag_refs",
+                label:"Associated Tags",
+                templateGenerator: 'TextGenerator',
+                templateGeneratorConfig:{
+                    formatter: "tagsFormatter"
+                }
+            }]
+            return tagsList;
+        };
         self.getPermissionsValidation = function() {
             return {
                 key: 'share_list',
@@ -1096,6 +1111,36 @@ define([
         return retStr;
     };
 
+    this.tagsFormatter = function(v,dc) {
+        var tagsBinding = "";
+        var tagsData ="";
+        var data = getValueByJsonPath(dc,
+                "tag_refs",
+                []);
+        tagsBinding = "<table width='100%'><thead></thead><tbody>";
+        var data_length = data.length;
+        var tagsData ="";
+        var projectData = [];
+        for(var i = 0; i < data_length;i++) {
+            tagsData = data[i].to;
+            tagsBinding += "<tr><td>";
+            if(tagsData.length === 1){
+                tagsBinding += data[i].to;
+            }
+            else{
+                var reverseTagsData = tagsData.reverse();
+                var tagsDataString = reverseTagsData.toString();
+                tagsDataString = tagsDataString.replace(",", " (");
+                tagsDataString = tagsDataString+")";
+                tagsDataString = tagsDataString.replace(",", ":");
+                tagsBinding += tagsDataString;
+            }
+
+            tagsBinding += "</td></tr>";
+        }
+        tagsBinding += "</tbody></table>";
+        return tagsBinding;
+    };
     this.sharedPermissionFormatter = function(v, dc) {
         var formattedSharedPerms = "", sharedPermsStr = "",
             sharedPerms =  getValueByJsonPath(dc, "perms2;share", []),
