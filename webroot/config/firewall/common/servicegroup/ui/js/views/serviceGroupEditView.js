@@ -167,7 +167,7 @@ define([
                                        },
                                        {
                                           elementId: 'src_port',
-                                          name: 'Port',
+                                          name: 'Ports',
                                           view: "FormInputView",
                                           class: "col-xs-6",
                                           //width: 200,

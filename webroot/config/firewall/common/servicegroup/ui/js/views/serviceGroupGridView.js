@@ -98,7 +98,7 @@ define([
                         {
                             id: "srcport",
                             field: "port",
-                            name: "Port",
+                            name: "Ports",
                             formatter: srcPortFormatter,
                             sortable: {
                                 sortBy: 'formattedValue'
@@ -260,7 +260,9 @@ define([
         }
         if(list.length > 0){
             for(var j = 0; j < list.length,j < 2; j++){
-                returnString += list[j] + "<br>";
+                if(list[j]) {
+                    returnString += list[j] + "<br>";
+                }
             }
             if (list.length > 2) {
                 returnString += '<span class="moredataText">(' +
@@ -284,7 +286,9 @@ define([
         }
         if(portList.length > 0){
             for(var j = 0; j< portList.length,j < 2; j++){
-                returnString += portList[j] + "<br>";
+                if(portList[j]) {
+                    returnString += portList[j] + "<br>";
+                }
             }
             if (portList.length > 2) {
                 returnString += '<span class="moredataText">(' +
