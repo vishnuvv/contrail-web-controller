@@ -361,6 +361,28 @@ and need to add the iconClass tag wherever we need to show some icons
                             </queryParams>
                             <searchStrings>Monitor interfaces</searchStrings>
                         </item>
+                        <item>
+                            <hash>mon_networking_trafficgroups</hash>
+                            <label>Traffic Groups</label>
+                            <resources>
+                                <resource>
+                                    <rootDir>/monitor/networking/trafficgroups/ui</rootDir>
+                                    <js>trafficgroups.main.js</js>
+                                    <class>trafficGroupsLoader</class>
+                                    <renderFn>renderTrafficGroups</renderFn>
+                                </resource>
+                            </resources>
+                            <searchStrings>Monitor Traffic Groups</searchStrings>
+                        </item>
+                        <!--<item>
+                            <hash>mon_networking_trafficgroups</hash>
+                            <label>Traffic Groups</label>
+                            <loader>
+                                <class>mnPageLoader</class>
+                                <function>renderTrafficGroups</function>
+                            </loader>
+                            <searchStrings>Networking Traffic Groups</searchStrings>
+                        </item>-->
                     </items>
                 </item>
                 <item>
