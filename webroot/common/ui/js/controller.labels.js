@@ -813,6 +813,13 @@ define([
         this.EDIT = "Edit";
         this.CREATE = "Create";
 
+        /* Firewall labels */
+        this.TITLE_FW_POLICY = 'Firewall Policies';
+        this.CONFIG_SECURITY_POLICY_PAGE_ID = 'config-security-policy-page';
+        this.TITLE_SEC_GRP_TAG = "Tags";
+        this.TITLE_SEC_GRP_SERVICE_GROUP = "Service Groups";
+        this.TITLE_SEC_GRP_ADDRESS_GROUP = "Address Groups";
+
         /* RBAC labels */
         this.TITLE_RBAC = 'API Access';
         this.TITLE_GLOBAL_RBAC = 'Global API Access';

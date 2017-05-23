@@ -695,6 +695,26 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Configure Global Config</searchStrings>
                         </item>
                         <item>
+                             <label>Firewall</label>
+                             <hash>config_infra_firewall</hash>
+                             <resources>
+                                 <resource>
+                                     <rootDir>/common/ui</rootDir>
+                                 </resource>
+                                 <resource>
+                                     <rootDir>/config/infra/firewall/ui</rootDir>
+                                     <js>fwGlobal.main.js</js>
+                                     <class>fwGlobalPageLoader</class>
+                                     <function>renderFirewall</function>
+                                 </resource>
+                                 <resource>
+                                      <rootDir>/reports/qe/ui</rootDir>
+                                      <css>qe.main.css</css>
+                                 </resource>
+                             </resources>
+                             <searchStrings>Configure Firewall</searchStrings>
+                        </item>
+                        <item>
                             <label>BGP Routers</label>
                             <hash>config_infra_bgp</hash>
                             <resources>
@@ -1067,6 +1087,90 @@ and need to add the iconClass tag wherever we need to show some icons
                                 </resource>
                             </resources>
                             <searchStrings>QoS</searchStrings>
+                        </item>
+                    </items>
+                </item>
+                <item>
+                    <label>Firewall</label>
+                    <access>
+                        <roles>
+                            <role>member</role>
+                        </roles>
+                        <orchModels>
+                            <model>openstack</model>
+                            <model>vcenter</model>
+                        </orchModels>
+                        <accessFn>hideInGlobalController</accessFn>
+                    </access>
+                    <iconClass>menu-icon icon-contrail-network-policy</iconClass>
+                    <items>
+                        <item>
+                            <label>Firewall Policies</label>
+                            <hash>config_firewall_fwpolicies</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/firewall/project/fwpolicy/ui</rootDir>
+                                    <js>fwPolicyProject.main.js</js>
+                                    <class>fwPolicyProjectPageLoader</class>
+                                    <function>renderFWPolicy</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Firewall Policies, Firewall Policy</searchStrings>
+                        </item>
+                        <item>
+                            <label>Tags</label>
+                            <hash>config_firewall_tags</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/firewall/project/tag/ui</rootDir>
+                                    <js>tagProject.main.js</js>
+                                    <class>tagProjectPageLoader</class>
+                                    <function>renderProjectTag</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Tags</searchStrings>
+                        </item>
+                        <item>
+                            <label>Service Groups</label>
+                            <hash>config_firewall_servicegroups</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/firewall/project/servicegroup/ui</rootDir>
+                                    <js>serviceGroupProject.main.js</js>
+                                    <class>serviceGroupProjectPageLoader</class>
+                                    <function>renderServiceGroup</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Service Group</searchStrings>
+                        </item>
+                        <item>
+                            <label>Address Groups</label>
+                            <hash>config_firewall_addressgroups</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/firewall/project/addressgroup/ui</rootDir>
+                                    <js>addressGroupProject.main.js</js>
+                                    <class>addressGroupProjectPageLoader</class>
+                                    <function>renderAddressGroup</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Address Group</searchStrings>
                         </item>
                     </items>
                 </item>

@@ -873,6 +873,39 @@ define([
         this.DNS_RECORDS_GRID_ID = 'dns-records-grid';
         this.DNS_RECORDS_PREFIX_ID = 'dns_record';
 
+        /* Firewall constants */
+        this.FW_POLICY_GLOBAL_PAGE_ID = "config-fw-policy-global-list";
+        this.CONFIG_FW_POLICY_GLOBAL_SECTION_ID = "config-fw-policy-global-section";
+        this.CONFIG_FW_POLICY_GLOBAL_ID = "config-fw-policy-global";
+        this.FW_POLICY_GLOBAL_TAB_ID = "config-fw-policy-tab";
+        this.CONFIG_SECURITY_POLICY_PAGE_ID = 'config-security-policy-page';
+        this.TITLE_SEC_GRP_TAG = "Tags";
+        this.TITLE_SEC_GRP_SERVICE_GROUP = "Service Groups";
+        this.TITLE_SEC_GRP_ADDRESS_GROUP = "Address Groups";
+        this.GLOBAL_SECURITY_POLICY_TAB_ID = 'security-policy-tab';
+        this.SECURITY_POLICY_TAG_GRID_ID = "security-policy-tag-grid";
+        this.SECURITY_POLICY_TAG_LIST_VIEW_ID = "security-policy-tag-list-view";
+        this.SECURITY_POLICY_TAG_SECTION_ID = 'security-policy-tag-section';
+        this.SECURITY_POLICY_SERVICE_GRP_SECTION_ID = 'security-policy-service-group-section';
+        this.SEC_POL_TAG_TITLE_CREATE = 'Create Tag';
+        this.TITLE_TAG_MULTI_DELETE = 'Delete Tag (s)'
+        this.SEC_POLICY_TAG_PREFIX_ID = "tag";
+        this.SECURITY_POLICY_TAG_ID = 'security-policy-tag';
+        this.SECURITY_POLICY_SERVICE_GRP_GRID_ID = 'security-policy-service-grp-grid'
+        this.SECURITY_POLICY_SERVICE_GRP_LIST_VIEW_ID = "security-policy-service-grp-list-view";
+        this.SECURITY_POLICY_SERVICE_GRP_GRID_ID = "security-policy-service-grp-grid";
+        this.SECURITY_POLICY_SERVICE_GRP_ID = 'security-policy-service-group';
+        this.SEC_POLICY_SERVICE_GRP_PREFIX_ID = "sergroup";
+        this.SEC_POL_SEC_GRP_TITLE_CREATE = 'Create Service Group';
+        this.SEC_POLICY_ADDRESS_GRP_PREFIX_ID = "addressgroup";
+        this.SECURITY_POLICY_ADDRESS_GRP_SECTION_ID = 'security-policy-address-group-section';
+        this.SECURITY_POLICY_ADDRESS_GRP_ID = 'security-policy-address-group';
+        this.SECURITY_POLICY_ADDRESS_GRP_LIST_VIEW_ID = "security-policy-address-grp-list-view";
+        this.SECURITY_POLICY_SERVICE_GRP_GRID_ID = "security-policy-service-grp-grid";
+        this.SECURITY_POLICY_ADDRESS_GRP_GRID_ID = "security-policy-address-grp-grid";
+        this.FW_POLICY_GRID_ID = "fw-policy-grid";
+        this.CONFIG_FW_POLICY_LIST_VIEW_ID = "config-fw-policy-list-view";
+
         /* RBAC constants */
         this.RBAC_GLOBAL_PAGE_ID = "config-rbac-global-list";
         this.CONFIG_RBAC_GLOBAL_SECTION_ID = "config-rbac-global-section";
