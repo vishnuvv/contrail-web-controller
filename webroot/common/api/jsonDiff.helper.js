@@ -87,7 +87,8 @@ var configJsonModifyObj = {
             'virtual_machine_interface_disable_policy',
             'qos_config_refs',
             'port_security_enabled',
-            'perms2'
+            'perms2',
+            'tag_refs'
         ],
         'mandateFields': ['fq_name', 'uuid', 'display_name']
     },
