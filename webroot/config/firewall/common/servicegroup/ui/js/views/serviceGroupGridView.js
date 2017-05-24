@@ -96,9 +96,18 @@ define([
                             }
                         },
                         {
+                            id: "dstport",
+                            field: "dstport",
+                            name: "Destination Ports",
+                            formatter: dstPortFormatter,
+                            sortable: {
+                                sortBy: 'formattedValue'
+                            }
+                        },
+                        {
                             id: "srcport",
-                            field: "port",
-                            name: "Ports",
+                            field: "srcport",
+                            name: "Source Ports",
                             formatter: srcPortFormatter,
                             sortable: {
                                 sortBy: 'formattedValue'
@@ -298,17 +307,48 @@ define([
         }
         return  returnString;
     }
-    function serviceGroupList(r, c, v, cd, dc, showAll){
-        var serviceList = [], returnString = '', port;
+    function dstPortFormatter(r, c, v, cd, dc, showAll){
+        var portList = [], returnString = '', port;
         var  firewalService = getValueByJsonPath(dc, 'service_group_firewall_service_list;firewall_service',[]);
-        serviceList.push('<span class="rule-format" style="margin-right:17%;">Protocol</span><span class="rule-format">Port</span>');
+        for(var i = 0; i < firewalService.length; i++){
+            if(firewalService[i].dst_ports.start_port === firewalService[i].dst_ports.end_port){
+                port = firewalService[i].dst_ports.start_port;
+            }else{
+                port = firewalService[i].dst_ports.start_port + '-' + firewalService[i].dst_ports.end_port;
+            }
+            var portText = '<span>'+ port +'</span>';
+            portList.push(portText);
+        }
+        if(portList.length > 0){
+            for(var j = 0; j< portList.length,j < 2; j++){
+                if(portList[j]) {
+                    returnString += portList[j] + "<br>";
+                }
+            }
+            if (portList.length > 2) {
+                returnString += '<span class="moredataText">(' +
+                    (portList.length-2) + ' more)</span> \
+                    <span class="moredata" style="display:none;" ></span>';
+            }
+        }
+        return  returnString;
+    }
+    function serviceGroupList(r, c, v, cd, dc, showAll){
+        var serviceList = [], returnString = '', srcPort, dstPort;
+        var  firewalService = getValueByJsonPath(dc, 'service_group_firewall_service_list;firewall_service',[]);
+        serviceList.push('<span class="rule-format" style="width: 180px !important;display:inline-block;">Protocol</span><span class="rule-format" style="width: 180px !important;display:inline-block;">Destination Ports</span><span class="rule-format">Source Ports</span>');
         for(var i = 0; i < firewalService.length; i++){
             if(firewalService[i].src_ports.start_port === firewalService[i].src_ports.end_port){
-                port = firewalService[i].src_ports.start_port;
+            	srcPort = firewalService[i].src_ports.start_port;
             }else{
-                port = firewalService[i].src_ports.start_port + '-' + firewalService[i].src_ports.end_port;
+            	srcPort = firewalService[i].src_ports.start_port + '-' + firewalService[i].src_ports.end_port;
             }
-            var portText = '<span style="margin-right:20%;">'+ firewalService[i].protocol.toUpperCase() +'</span><span>'+ port +'</span>';
+            if(firewalService[i].dst_ports.start_port === firewalService[i].dst_ports.end_port){
+            	dstPort = firewalService[i].dst_ports.start_port;
+            }else{
+            	dstPort = firewalService[i].dst_ports.start_port + '-' + firewalService[i].dst_ports.end_port;
+            }
+            var portText = '<span style="width: 180px !important;display:inline-block;">'+ firewalService[i].protocol.toUpperCase() +'</span><span style="width: 180px !important;display:inline-block;">'+ dstPort +'</span><span>'+ srcPort + '</span>';
             serviceList.push(portText);
         }
         if(serviceList.length > 0){

@@ -905,6 +905,12 @@ define([
         this.SECURITY_POLICY_ADDRESS_GRP_GRID_ID = "security-policy-address-grp-grid";
         this.FW_POLICY_GRID_ID = "fw-policy-grid";
         this.CONFIG_FW_POLICY_LIST_VIEW_ID = "config-fw-policy-list-view";
+        this.APPLICATION_POLICY_LIST_VIEW_ID = "application-policy-list-view";
+        this.FIREWALL_APPLICATION_POLICY_SECTION_ID = 'firewall-application-policy-section';
+        this.FIREWALL_APP_POLICY_ID = 'firewall-application-policy';
+        this.FIREWALL_APPLICATION_POLICY_GRID_ID = "firewall-application-policy-grid";
+        this.FIREWALL_APPLICATION_POLICY_LIST_VIEW_ID = "firewall-application-policy-list-view";
+        this.FIREWALL_APPLICATION_POLICY_PREFIX_ID = "applicationpolicy";
 
         /* RBAC constants */
         this.RBAC_GLOBAL_PAGE_ID = "config-rbac-global-list";

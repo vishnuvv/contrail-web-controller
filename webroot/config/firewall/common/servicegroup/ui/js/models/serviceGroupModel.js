@@ -87,8 +87,10 @@ define([
             var collection = type.toJSON();
                 for(var j = 0; j < collection.length;j++){
                 	var obj = {};
-                	var str = collection[j].src_port().toString();
-                    var srcPort = str.split('-');
+                	var srcStr = collection[j].src_port().toString();
+                    var srcPort = srcStr.split('-');
+                    var dstStr = collection[j].dst_port().toString();
+                    var dstPort = dstStr.split('-');
                 	if(srcPort[0] === ''){
                 		var srcStartPort = 0;
                     	var srcEndPort = 0;
@@ -96,8 +98,13 @@ define([
                 		var srcStartPort = parseInt(srcPort[0].trim());
                     	var srcEndPort = parseInt(srcPort[srcPort.length-1].trim());
                 	}
-                	var dstStartPort = srcStartPort;
-                	var dstEndPort = srcEndPort;
+                	if(dstPort[0] === ''){
+                		var dstStartPort = 0;
+                    	var dstEndPort = 0;
+                	}else{
+                		var dstStartPort = parseInt(dstPort[0].trim());
+                    	var dstEndPort = parseInt(dstPort[dstPort.length-1].trim());
+                	}
                 	obj.protocol = collection[j].protocol();
                 	obj.dst_ports = {};
                 	obj.dst_ports.end_port = dstEndPort;
