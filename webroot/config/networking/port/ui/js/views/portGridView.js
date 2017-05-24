@@ -199,6 +199,15 @@ define([
             formatter: portFormatters.uuidWithName
         },
         {
+            field:"tag_refs",
+            name:"Tags",
+            sortable: {
+               sortBy: 'formattedValue'
+            },
+            minWidth : 200,
+            formatter: ctwu.tagsPortGridFormatter
+        },
+        {
             id:"network",
             field:"network",
             name:"Network",
@@ -215,7 +224,7 @@ define([
             sortable: {
                sortBy: 'formattedValue'
             },
-            minWidth : 200,
+            minWidth : 100,
             formatter: portFormatters.fixedIPFormater
         },
         {
