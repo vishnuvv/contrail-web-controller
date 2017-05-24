@@ -17,7 +17,7 @@ define([
         },
         formatModelConfig: function (modelConfig) {
             self = this;
-            var srcRange;
+            var srcRange, dstRange;
             modelConfig["protocol"] = getValueByJsonPath(modelConfig, "protocol");
             var srcMax = getValueByJsonPath(modelConfig,"src_end_port");
             var srcMin = getValueByJsonPath(modelConfig,"src_start_port");
@@ -34,7 +34,11 @@ define([
             var dstMax = getValueByJsonPath(modelConfig,"dst_end_port");
             var dstMin = getValueByJsonPath(modelConfig,"dst_start_port");
             if(dstMax !== '' && dstMin !== ''){
-                var dstRange = dstMin +' - '+ dstMax;
+            	if(dstMin === dstMax){
+            	  dstRange = dstMin;
+            	}else{
+            		dstRange = dstMin +'-'+ dstMax;
+            	}
                 modelConfig["dst_port"] = dstRange;
             }else{
                 modelConfig["dst_port"] = '';

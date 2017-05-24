@@ -145,12 +145,12 @@ define([
                                         elementId: 'protocol',
                                         name: 'Protocol',
                                         view: "FormComboboxView",
-                                        class: "col-xs-6",
-                                        //width: 230,
+                                        class: "",
+                                        width: 230,
                                         viewConfig: {
                                             templateId: cowc.TMPL_EDITABLE_GRID_COMBOBOX_VIEW,
                                             path: "protocol",
-                                            //width: 230,
+                                            width: 230,
                                             dataBindValue: "protocol()",
                                             elementConfig:{
                                                 dataTextField: 'text',
@@ -166,22 +166,8 @@ define([
                                            }
                                        },
                                        {
-                                          elementId: 'src_port',
-                                          name: 'Ports',
-                                          view: "FormInputView",
-                                          class: "col-xs-6",
-                                          //width: 200,
-                                          viewConfig: {
-                                             templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
-                                             //width: 180,
-                                             placeholder: '0 - 65535',
-                                             path: 'src_port',
-                                             dataBindValue: 'src_port()'
-                                          }
-                                       }
-                                       /*{
                                            elementId: 'dst_port',
-                                           name: 'Destination Port',
+                                           name: 'Destination Ports',
                                            view: "FormInputView",
                                            class: "",
                                            width: 200,
@@ -192,7 +178,21 @@ define([
                                               path: 'dst_port',
                                               dataBindValue: 'dst_port()'
                                            }
-                                        }*/
+                                       },
+                                       {
+                                          elementId: 'src_port',
+                                          name: 'Source Ports',
+                                          view: "FormInputView",
+                                          class: "",
+                                          width: 200,
+                                          viewConfig: {
+                                             templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                             width: 180,
+                                             placeholder: '0 - 65535',
+                                             path: 'src_port',
+                                             dataBindValue: 'src_port()'
+                                          }
+                                       } 
                                   ]
                                 }],
                                 gridActions: [

@@ -1144,6 +1144,23 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Configure Firewall Policies, Firewall Policy</searchStrings>
                         </item>
                         <item>
+                            <label>Application Policy Sets</label>
+                            <hash>config_firewall_applicationpolicies</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/firewall/project/applicationpolicy/ui</rootDir>
+                                    <js>applicationPolicyProject.main.js</js>
+                                    <class>applicationPolicyProjectPageLoader</class>
+                                    <function>renderApplicationPolicy</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Application Policies, Application Policy</searchStrings>
+                        </item>
+                        <item>
                             <label>Tags</label>
                             <hash>config_firewall_tags</hash>
                             <resources>
