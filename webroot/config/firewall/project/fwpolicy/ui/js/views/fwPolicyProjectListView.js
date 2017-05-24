@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Juniper Networks, Inc. All rights reserved.
+ * Copyright (c) 2017 Juniper Networks, Inc. All rights reserved.
  */
 
 define([
@@ -31,8 +31,9 @@ define([
         },
         parseFWPolicyData : function(response){
             var dataItems = [],
-                tagData = getValueByJsonPath(response, "0;firewall-policys", []);
-                _.each(tagData, function(val){
+                fwPolicyData =
+                    getValueByJsonPath(response, "0;firewall-policys", []);
+                _.each(fwPolicyData, function(val){
                         if('firewall-policy' in val) {
                             dataItems.push(val['firewall-policy']);
                         }
@@ -43,7 +44,8 @@ define([
 
     var getfwPolicyGridViewConfig = function () {
         return {
-            elementId: cowu.formatElementId([ctwc.CONFIG_FW_POLICY_GLOBAL_SECTION_ID]),
+            elementId:
+                cowu.formatElementId([ctwc.CONFIG_FW_POLICY_GLOBAL_SECTION_ID]),
             view: "SectionView",
             viewConfig: {
                 rows: [
@@ -52,7 +54,8 @@ define([
                             {
                                 elementId: ctwc.CONFIG_FW_POLICY_GLOBAL_ID,
                                 view: "fwPolicyGridView",
-                                viewPathPrefix: "config/firewall/common/fwpolicy/ui/js/views/",
+                                viewPathPrefix:
+                                    "config/firewall/common/fwpolicy/ui/js/views/",
                                 app: cowc.APP_CONTRAIL_CONTROLLER,
                                 viewConfig: {
                                     pagerOptions: {

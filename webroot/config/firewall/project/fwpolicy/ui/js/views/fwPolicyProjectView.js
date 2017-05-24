@@ -6,14 +6,29 @@ define([
     'underscore',
     'contrail-view'
 ], function (_, ContrailView) {
-    var tagProjectView = ContrailView.extend({
+    var fwPolicyProjectView = ContrailView.extend({
         el: $(contentContainer),
         renderFWPolicy: function (viewConfig) {
             var self = this;
             self.renderView4Config(self.$el, null,
                                    getFWPolicyProjectConfig(viewConfig));
+        },
+        renderFWRule: function(viewConfig) {
+            var self = this;
+            this.renderView4Config(self.$el, null,
+                getFWRuleProjectConfig(viewConfig));
         }
     });
+
+    function getFWRuleProjectConfig(viewConfig) {
+        return {
+            elementId: cowu.formatElementId([ctwc.CONFIG_FW_RULE_LIST_VIEW_ID]),
+            view: "fwRuleProjectListView",
+            viewPathPrefix: "config/firewall/project/fwpolicy/ui/js/views/",
+            app: cowc.APP_CONTRAIL_CONTROLLER,
+            viewConfig: viewConfig
+        }
+    };
 
     function getFWPolicyProjectConfig (viewConfig) {
         var hashParams = viewConfig.hashParams,
@@ -38,7 +53,7 @@ define([
             selectedDomainProjectData = projectSelectedValueData;
             return {
                 elementId:
-                    cowu.formatElementId([ctwc.SECURITY_POLICY_TAG_LIST_VIEW_ID]),
+                    cowu.formatElementId([ctwc.CONFIG_FW_POLICY_LIST_VIEW_ID]),
                 view: "fwPolicyProjectListView",
                 app: cowc.APP_CONTRAIL_CONTROLLER,
                 viewPathPrefix: "config/firewall/project/fwpolicy/ui/js/views/",
@@ -48,6 +63,6 @@ define([
             }
         }
     };
-    return tagProjectView;
+    return fwPolicyProjectView;
 });
 

@@ -876,7 +876,9 @@ define([
         /* Firewall constants */
         this.FW_POLICY_GLOBAL_PAGE_ID = "config-fw-policy-global-list";
         this.CONFIG_FW_POLICY_GLOBAL_SECTION_ID = "config-fw-policy-global-section";
+        this.CONFIG_FW_RULE_SECTION_ID = "config-fw-rule-section";
         this.CONFIG_FW_POLICY_GLOBAL_ID = "config-fw-policy-global";
+        this.CONFIG_FW_RULE_ID = "config-fw-rule";
         this.FW_POLICY_GLOBAL_TAB_ID = "config-fw-policy-tab";
         this.CONFIG_SECURITY_POLICY_PAGE_ID = 'config-security-policy-page';
         this.TITLE_SEC_GRP_TAG = "Tags";
@@ -904,6 +906,7 @@ define([
         this.SECURITY_POLICY_SERVICE_GRP_GRID_ID = "security-policy-service-grp-grid";
         this.SECURITY_POLICY_ADDRESS_GRP_GRID_ID = "security-policy-address-grp-grid";
         this.FW_POLICY_GRID_ID = "fw-policy-grid";
+        this.FW_RULE_GRID_ID = "fw-rule-grid";
         this.CONFIG_FW_POLICY_LIST_VIEW_ID = "config-fw-policy-list-view";
         this.APPLICATION_POLICY_LIST_VIEW_ID = "application-policy-list-view";
         this.FIREWALL_APPLICATION_POLICY_SECTION_ID = 'firewall-application-policy-section';
@@ -911,6 +914,8 @@ define([
         this.FIREWALL_APPLICATION_POLICY_GRID_ID = "firewall-application-policy-grid";
         this.FIREWALL_APPLICATION_POLICY_LIST_VIEW_ID = "firewall-application-policy-list-view";
         this.FIREWALL_APPLICATION_POLICY_PREFIX_ID = "applicationpolicy";
+        this.CONFIG_FW_RULE_LIST_VIEW_ID = "config-fw-rule-list-view";
+        this.FW_POLICY_RULE_IDS = 'fw-policy-rule-ids';
 
         /* RBAC constants */
         this.RBAC_GLOBAL_PAGE_ID = "config-rbac-global-list";

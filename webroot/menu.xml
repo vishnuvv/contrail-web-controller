@@ -1128,7 +1128,7 @@ and need to add the iconClass tag wherever we need to show some icons
                     <items>
                         <item>
                             <label>Firewall Policies</label>
-                            <hash>config_firewall_fwpolicies</hash>
+                            <hash>config_firewall_policies</hash>
                             <resources>
                                 <resource>
                                     <rootDir>/common/ui</rootDir>
@@ -1144,7 +1144,7 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Configure Firewall Policies, Firewall Policy</searchStrings>
                         </item>
                         <item>
-                            <label>Application Policy Sets</label>
+                            <label>Application Policies</label>
                             <hash>config_firewall_applicationpolicies</hash>
                             <resources>
                                 <resource>

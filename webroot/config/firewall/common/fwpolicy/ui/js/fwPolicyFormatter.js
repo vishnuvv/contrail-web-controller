@@ -2,7 +2,7 @@
  * Copyright (c) 2017 Juniper Networks, Inc. All rights reserved.
  */
 
- define(["underscore"], function(_){
+ define(["underscore", "moment"], function(_, moment){
      var fwPolicyFormatter = function(){
 
          /*
@@ -45,7 +45,8 @@
                 var lastUpdated = getValueByJsonPath(dc,
                     "id_perms;last_modified", '', false);
                 if(lastUpdated) {
-                    lastUpdated = new Date(lastUpdated);
+                    lastUpdated =
+                        moment(lastUpdated, '').format('DD MMM YYYY');
                 } else {
                     lastUpdated = '-';
                 }
