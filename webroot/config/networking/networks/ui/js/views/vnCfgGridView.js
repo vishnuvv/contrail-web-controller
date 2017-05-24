@@ -160,7 +160,7 @@ define([
                 ]
             },
         };
-        return gridElementConfig;
+        return gridElementConfig
     };
 
 
@@ -580,7 +580,7 @@ define([
                                                             'BridgeDomainFormatter',
                                                     }
                                                 }
-                                            ]
+                                            ].concat(ctwu.getTagsExpandDetails())
                                         },
                                         //permissions
                                         ctwu.getRBACPermissionExpandDetails()

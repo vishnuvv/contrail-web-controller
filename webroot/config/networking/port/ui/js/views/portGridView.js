@@ -623,7 +623,7 @@ define([
                                 title: ctwl.TITLE_PORT_DETAILS,
                                 templateGenerator: 'BlockListTemplateGenerator',
                                 templateGeneratorConfig:
-                                    getBlockListTemplateGeneratorCfg()
+                                    getBlockListTemplateGeneratorCfg().concat(ctwu.getTagsExpandDetails())
                             },
                             //permissions
                             ctwu.getRBACPermissionExpandDetails('col-xs-3')]
