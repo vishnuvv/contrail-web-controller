@@ -146,6 +146,40 @@ define([
             }]
             return tagsList;
         };
+        self.tagsPortGridFormatter = function(d, c, v, cd, dc) {
+            var tags = "";
+            var formattedtags = "";
+            var tags_ref = getValueByJsonPath(dc, "tag_refs", "");
+            if(tags_ref != ""){
+                var tags_ref_length = tags_ref.length;
+                for(var i = 0; i < tags_ref_length; i++) {
+                    var tags_ref_to = getValueByJsonPath(tags_ref[i], "to", "");
+                    if(tags_ref_to.length === 3){
+                        var reverseTagsData = tags_ref_to.reverse();
+                        var tagsDataString = reverseTagsData.toString();
+                        tagsDataString = tagsDataString.replace(",", " (");
+                        tagsDataString = tagsDataString+")";
+                        tagsDataString = tagsDataString.replace(",", ":");
+                    }
+                    else if(tags_ref_to.length === 1){
+                        tagsDataString = tags_ref_to;
+                    }
+                    tags += tagsDataString;
+                    if(tags != "") {
+                        tags += "<br> ";
+                    }
+                }
+                var tags_length = (tags.match(/<br>/g) || []).length;
+                if(tags_length < 3){
+                    formattedtags = tags;
+                }
+                else{
+                    tags_length = tags_length-1
+                    formattedtags = tags.substring(0, tags.indexOf('<br>'))+ " View more ("+tags_length+") ...";
+                }
+            }
+            return formattedtags;
+        };
         self.getPermissionsValidation = function() {
             return {
                 key: 'share_list',
