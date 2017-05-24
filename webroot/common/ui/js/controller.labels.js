@@ -815,6 +815,7 @@ define([
 
         /* Firewall labels */
         this.TITLE_FW_POLICY = 'Firewall Policies';
+        this.TITLE_FW_RULE = 'Firewall Rules';
         this.CONFIG_SECURITY_POLICY_PAGE_ID = 'config-security-policy-page';
         this.TITLE_SEC_GRP_TAG = "Tags";
         this.TITLE_SEC_GRP_SERVICE_GROUP = "Service Groups";

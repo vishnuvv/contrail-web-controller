@@ -27,11 +27,15 @@ function FWPolicyProjectPageLoader ()
     }
     this.renderView = function (renderFn, hashParams) {
         $(contentContainer).html("");
-        switch (renderFn) {
-            case 'renderFWPolicy':
-                this.fwPolicyView[renderFn]({hashParams: hashParams});
-                break;
-        }
+        if (hashParams.view == "config_firewall_rules") {
+            this.fwPolicyView.renderFWRule({
+                hashParams: hashParams
+            });
+        } else {
+            this.fwPolicyView.renderFWPolicy({
+                hashParams: hashParams
+            });
+        }        
     };
 
     this.updateViewByHash = function (hashObj, lastHashObj) {

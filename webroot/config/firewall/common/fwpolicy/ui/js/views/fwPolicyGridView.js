@@ -93,35 +93,55 @@ define([
     var fwPolicyColumns = [{
                               id: 'name',
                               field: 'name',
-                              minWidth: 200,
-                              name: 'Poilcy Name'
+                              name: 'Policy Name',
+                              cssClass :'cell-hyperlink-blue',
+                              events : {
+                                  onClick : function(e, dc) {
+                                      var hashParams = null,
+                                          hashObj = {
+                                              view: "config_firewall_rules",
+                                              focusedElement: {
+                                                  policy: dc.name,
+                                                  uuid: dc.uuid,
+                                                  tab: 'config_firewall_rules'
+                                              }
+                                          };
+                                      if (contrail.checkIfKeyExistInObject(true,
+                                              hashParams,
+                                              'clickedElement')) {
+                                          hashObj.clickedElement =
+                                              hashParams.clickedElement;
+                                      }
+
+                                      layoutHandler.setURLHashParams(hashObj, {
+                                          p: "config_firewall_policies",
+                                          merge: false,
+                                          triggerHashChange: true
+                                      });
+                                  }
+                              }
                            }, {
                                id: 'id_perms.description',
                                field: 'id_perms.description',
-                               minWidth: 200,
                                name: 'Description',
                                formatter: fwPolicyFormatter.policyDescriptionFormatter
                             }, {
                                 id: 'application_policy_set_back_refs',
                                 field: 'application_policy_set_back_refs',
-                                minWidth: 150,
                                 name: 'Member Of',
                                 formatter: fwPolicyFormatter.policySetFormatter
                              }, {
                                id: 'firewall_rule_refs',
                                field: 'firewall_rule_refs',
-                               minWidth: 100,
                                name: 'Number of Rules',
                                formatter:
                                    fwPolicyFormatter.fwRuleFormatter
                            }, {
                                id: 'id_perms.last_modified',
                                field: 'id_perms.last_modified',
-                               minWidth: 250,
                                name: 'Last Updated',
                                formatter: fwPolicyFormatter.lastUpdateFormatter
                            }];
-
 
     function getFWPolicyExpDetailsTemplateConfig() {
         return {
@@ -183,7 +203,7 @@ define([
                                 },{
                                     key: "id_perms.last_modified",
                                     templateGenerator: "TextGenerator",
-                                    label: "Address Family",
+                                    label: "Last Updated",
                                     templateGeneratorConfig: {
                                         formatter: "lastUpdateFormatter"
                                     }

@@ -4,10 +4,11 @@
 
 define([
     'underscore',
+    'moment',
     'contrail-view',
     'config/firewall/common/applicationpolicy/ui/js/models/applicationPolicyModel',
     'config/firewall/common/applicationpolicy/ui/js/views/applicationPolicyEditView'
-], function (_, ContrailView, ApplicationPolicyModel, ApplicationPolicyEditView) {
+], function (_, moment, ContrailView, ApplicationPolicyModel, ApplicationPolicyEditView) {
     var applicationPolicyEditView = new ApplicationPolicyEditView(),
         gridElId = "#" + ctwc.FIREWALL_APPLICATION_POLICY_GRID_ID;
 
@@ -83,7 +84,7 @@ define([
                 columns: [
                         {
                              field: 'name',
-                             name: 'Set Name',
+                             name: 'Policy Set Name',
                              id: 'name'
                         },
                         {
@@ -285,7 +286,7 @@ define([
     function lastUpdateFormatter(r, c, v, cd, dc, showAll){
         var lastUpdated = getValueByJsonPath(dc, "id_perms;last_modified", '', false);
         if(lastUpdated) {
-            lastUpdated = new Date(lastUpdated);
+            lastUpdated = moment(lastUpdated, '').format('DD MMM YYYY');
         } else {
             lastUpdated = '-';
         }
