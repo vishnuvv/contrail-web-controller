@@ -3,8 +3,9 @@
  */
 
 define(
-        [ 'lodashv4', 'contrail-view', 'contrail-charts-view'],
-        function(_, ContrailView, ContrailChartsView) {
+        [ 'lodashv4', 'contrail-view',
+         'contrail-charts-view', 'contrail-list-model'],
+        function(_, ContrailView, ContrailChartsView, ContrailListModel) {
             var TrafficGroupsView = ContrailView.extend({
                 render : function() {
                     var trafficGroupsTmpl = contrail.getTemplate4Id('traffic-groups-template'),
@@ -19,166 +20,15 @@ define(
                     });
                     self.$el.find('.widget-box').addClass('collapsed');
                     TrafficGroupsView.colorMap = {};
-                    var tagTypes = [{
-                            id: 'application', 
-                            text: 'Application'
-                        },{
-                            id: 'tier',
-                            text: 'Tier',
-                        },{
-                            id:'deployment',
-                            text:'Deployment'
-                        },{
-                            id:'site',
-                            text:'Site'
-                    }];
-
-                    var data = [{
-                        text: 'Application',
-                        children: [{
-                                tag: 'application',
-                                id:'hr',
-                                text:'HR'
-                            },{
-                                tag: 'application',
-                                id:'finance',
-                                text:'Finance'
-                            }]
-                    },{
-                        text: 'Tier',
-                        children: [{
-                                tag: 'tier',
-                                id:'web',
-                                text:'Web'
-                            },{
-                                tag: 'tier',
-                                id:'database',
-                                text:'Database'
-                            }]
-                    },{
-                        text: 'Deployment',
-                        children: [{
-                                tag: 'deployment',
-                                id:'production',
-                                text:'Production'
-                            },{
-                                tag: 'deployment',
-                                id:'development',
-                                text:'Development'
-                            }]
-                    },{
-                        text: 'Site',
-                        children: [{
-                                tag: 'site',
-                                id:'bangalore',
-                                text:'Bangalore'
-                            },{
-                                tag: 'site',
-                                id:'sunnyvalue',
-                                text:'Sunnyvale'
-                            }]
-                    }];
-
-
-                    var currElem = this.$el;
-                    var SelectionModel = Backbone.Model.extend({
-                        defaults : {
-                            select: ['application','tier'],
-                            where: []
-                        }
-                    });
-                    var selectionModel = new SelectionModel();
-
-
-                    //Render-dropdowns
-                    $(currElem).find('#multiselect-1').select2({
-                        placeholder: 'Select tags',
-                        data: tagTypes,
-                        multiple:true,
-                    });
-                    $(currElem).find('.select-dropdown').on('change',function(e) {
-                        selectionModel.set('select',e.val);
-                    });
-
-                     function select2_sortable($select2){
-						var ul = $select2.prev('.select2-container');
-						/*ul.sortable({
-							placeholder : 'ui-state-highlight',
-							forcePlaceholderSize: true,
-							items       : 'li:not(.select2-search__field)',
-							tolerance   : 'pointer',
-							stop: function() {
-								$($(ul).find('.select2-search-choice').get().reverse()).each(function() {
-									var id = $(this).data('data').id;
-									var option = $select2.find('option[value="' + id + '"]')[0];
-									$select2.prepend(option);
-								});
-							}
-						});*/
-						ul.find('.select2-choices').sortable({
-                            stop: function() {
-                                var changedOrder = $('#multiselect-1').prev('.select2-container').find('.select2-choices').find('.select2-search-choice')
-                                var selOptions = []
-                                $.each(changedOrder,function(idx,val) {
-                                    selOptions.push($(this).text().trim().toLowerCase());
-                                });
-                                $('#multiselect-1').val(selOptions.join(','));
-                                selectionModel.set('select',selOptions);
-                                updateChart();
-                                console.info("hello");
-                            }
-                        });
-					}
-					select2_sortable($("#multiselect-1"));
-					
-
-                    $(currElem).find('.where-dropdown').select2({
-                        placeholder: 'Match tags',
-                        data: data,
-                        multiple:true,
-                        formatSelection: function(d) {
-                            return '<span class="tag">' + _.capitalize(d.tag) + '</span>: ' + d.text;
-                        },
-                        matcher: function(searchParams,text,data) {
-                            if(searchParams.indexOf(':') > 0) {
-                                if(data['tag'] == _.split(searchParams,':')[0] && 
-                                     (_.toLower(data.text).indexOf(_.toLower(_.trim(_.split(searchParams,':')[1]))) > -1))
-                                    return text;
-                                else
-                                    return null;
-                            } else {
-                                if(data['tag'] == null) 
-                                    return data;
-                                else
-                                    return data;
-                            }
-                        },
-                    });
-
-                    $(currElem).find('.where-dropdown').on('change',function(e) {
-                        if(e.added != null) {
-                            selectionModel.get('where').push(e.added);
-                        }
-                        if(e.removed != null) {
-                            _.remove(selectionModel.get('where'),function(val,idx) {
-                                var removedElem = e.removed;
-                                return (val.id == removedElem.id && val.tag == removedElem.tag && val.text == removedElem.text);
-                            });
-                        }
-                    });
-
-                    $(currElem).find('.btn-reset').on('click',function() {
-                        
-                    });
-
+                    TrafficGroupsView.tagMap = {};
                     function updateChart() {
-                        var selTags = selectionModel.get('select');
+                        var selTags = ['HR', 'Finance']
                         var levels = [];
                         selTags.forEach(function(val,idx) {
                             levels.push({level:idx,label:val});
                         });
                         var config = {
-                            levels : levels,
+                            levels : [{level: 0,label: 'Application'},{level: 1,label: 'Tier'}],
                             parentSeparation: 1.0,
                             parentSeparationShrinkFactor: 0.05,
                             parentSeparationDepthThreshold: 4,
@@ -206,167 +56,88 @@ define(
                             },
                             hierarchyConfig: {
                                 parse: function (d) {
-                                    //Get selected tags
-                                    var selTags = selectionModel.get('select');
-                                    var matchTags = selectionModel.get('where');
-                                    var srcHierarchy = [d.sourcevn, d.sourceip, d.sport];
-                                    srcHierarchy = [d.src.application, d.src.deployment];
-                                    srcHierarchy = [];
-                                    var dstHierarchy = [d.destvn, d.destip, d.dport];
-                                    dstHierarchy = [d.dst.application, d.dst.deployment];
-                                    dstHierarchy = [];
-                                    $.each(selTags,function(idx,val) {
-                                        srcHierarchy.push(_.result(d,'src.' + val, 'External'));
-                                        dstHierarchy.push(_.result(d,'dst.' + val, 'External'));
-                                    });
+                                    var srcHierarchy = [d['app'], d['tier']],
+                                        dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
                                     var src = {
                                         names: srcHierarchy,
                                         id: srcHierarchy.join('-'),
-                                        value: d['agg-bytes']
+                                        value: d['SUM(eps.traffic.in_pkts)']
                                     };
                                     var dst = {
                                         names: dstHierarchy,
                                         id: dstHierarchy.join('-'),
-                                        value: d['agg-bytes']
+                                        value: d['SUM(eps.traffic.out_pkts)']
                                     };
                                     return [src, dst];
                                 }
                             }
                         }
                         viewInst.updateConfig(config);
-                        //Apply backbone filter
-                        trafficGroupsModel.set('data',trafficGroupsCollection.byMatchTags(selectionModel.get('where')));
                         viewInst.render();
                     }
-
-                    $(currElem).find('.btn-update').on('click',function() {
-                        updateChart();
-                    });
-
-                    var TrafficGroupsCollection = Backbone.Collection.extend({
-                        model : Backbone.Model,
-                        byMatchTags : function(matchTags) {
-                            filtered = this.filter(function(data) {
-                                var matched = true;
-                                $.each(matchTags,function(idx,obj) {
-                                    if(data.get('src')[obj['tag']] != obj['text'] || data.get('dst')[obj['tag']] != obj['text']) {
-                                        matched = false;
+                    var postData = {
+                        "async": false,
+                        "formModelAttrs": {
+                            "time_granularity_unit": "secs",
+                            "from_time_utc": "now-20h",
+                            "to_time_utc": "now",
+                            "time_granularity": 60,
+                            "select": "T=, eps.traffic.remote_app_id, eps.traffic.remote_tier_id, eps.traffic.remote_site_id,"+
+                                 "eps.traffic.remote_deployment_id, eps.traffic.remote_prefix, eps.traffic.remote_vn, eps.__key,"+
+                                 " app, tier, site, deployment, vn, name, SUM(eps.traffic.hits), SUM(eps.traffic.in_bytes),"+
+                                 " SUM(eps.traffic.out_bytes), SUM(eps.traffic.in_pkts), SUM(eps.traffic.out_pkts)",
+                            "table_type": "STAT",
+                            "table_name": "StatTable.EndpointSecurityStats.eps.traffic",
+                            //"where": "(eps.__key = default-domain:admin:*)"
+                        }
+                    }
+                    var listModelConfig = {
+                        remote : {
+                            ajaxConfig : {
+                                url: monitorInfraConstants.monitorInfraUrls['QUERY'],
+                                type: 'POST',
+                                data: JSON.stringify(postData)
+                            },
+                            dataParser : function (response) {
+                                return response['data'];
+                            }
+                        },
+                        vlRemoteConfig: {
+                            vlRemoteList: [{
+                                getAjaxConfig: function() {
+                                    return {
+                                        url: 'api/tenants/config/get-config-details',
+                                        type:'POST',
+                                        data:JSON.stringify({data:[{type: 'tags'}]})
                                     }
-                                });
-                                return matched;
-                            });
-                            return new TrafficGroupsCollection(filtered);
-                        }
-                    });
-                    var trafficGroupsCollection = new TrafficGroupsCollection();
+                                },
+                                successCallback: function(response, contrailListModel) {
+                                    TrafficGroupsView.tagMap = _.groupBy(_.map(_.result(response, '0.tags', []), 'tag'), 'tag_id');
+                                    var data = contrailListModel.getItems();
+                                    var chartData = [];
+                                    $.each(data, function (idx, value) {
+                                        $.each(['eps.traffic.remote_app_id', 'eps.traffic.remote_deployment_id',
+                                            'eps.traffic.remote_prefix', 'eps.traffic.remote_site_id',
+                                            'eps.traffic.remote_tier_id'], function (jdx, val) {
+                                                value[val] == '0' ?  value[val] = '' : value[val] = _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.tag_type', '')
+                                                 +'-'+ _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.tag_value', '');
+                                        }); 
+                                    });
+                                    return data;
+                                }
+                            }]
+                        },
+                        cacheConfig : {
 
-                    trafficGroupsCollection.add(cowu.getTrafficGroupsData());
-
-                    var TrafficGroupsModel = Backbone.Model.extend({
-                        defaults: {
-                            data: trafficGroupsCollection,
                         }
-                    });
-                    var trafficGroupsModel = new TrafficGroupsModel();
-                    trafficGroupsModel.set('data',trafficGroupsCollection);
+                    };
 
                     var viewInst = new ContrailChartsView({
                         el: this.$el.find('#traffic-groups-radial-chart'),
-                        model: trafficGroupsModel
+                        model: new ContrailListModel(listModelConfig)
                     });
                     updateChart();
                 }
             });
-            function getControlNodeListViewConfig() {
-                var viewConfig = {
-                    rows : [
-                        /*monitorInfraUtils.getToolbarViewConfig(),*/
-                        {
-                            columns : [{
-                                elementId: 'traffic-groups-carousel-view',
-                                view: "CarouselView",
-                                viewConfig: {
-                                pages : [
-                                         {
-                                             page: {
-                                                 elementId : 'traffic-groups-grid-stackview-0',
-                                                 view : "GridStackView",
-                                                 viewConfig: {
-                                                     elementId : 'traffic-groups-grid-stackview-0',
-                                                     gridAttr : {
-                                                         defaultWidth : cowc.GRID_STACK_DEFAULT_WIDTH,
-                                                         defaultHeight : 8
-                                                     },
-                                                     widgetCfgList: [
-                                                         {id:'radial-chart'}
-                                                     ]
-                                                  }
-                                               }
-                                         }/*,{
-                                             page: {
-                                                 elementId : 'traffic-groups-grid-stackview-1',
-                                                 view : "GridStackView",
-                                                 viewConfig: {
-                                                     elementId : 'traffic-groups-grid-stackview-1',
-                                                     gridAttr : {
-                                                         defaultWidth : cowc.GRID_STACK_DEFAULT_WIDTH,
-                                                         defaultHeight : 8
-                                                     },
-                                                     widgetCfgList: [
-                                                         {id:'controlnode-dns'},
-                                                         {id:'controlnode-named'},
-                                                         {id:'controlnode-system-cpu-share',
-                                                             itemAttr:{
-                                                                 config:{
-                                                                     nodeType:'traffic-groups'
-                                                                 }
-                                                             }
-                                                         },
-                                                         {id:'controlnode-system-memory-usage',
-                                                             itemAttr:{
-                                                                 config:{
-                                                                     nodeType:'traffic-groups'
-                                                                 }
-                                                             }
-                                                         },
-                                                         {id:'controlnode-grid-view'}
-                                                     ]
-                                                }
-                                             },
-                                         },{
-                                             page: {
-                                             elementId : 'traffic-groups-grid-stackview-2',
-                                             view : "GridStackView",
-                                             viewConfig: {
-                                                 elementId : 'traffic-groups-grid-stackview-2',
-                                                 gridAttr : {
-                                                     defaultWidth : cowc.GRID_STACK_DEFAULT_WIDTH,
-                                                     defaultHeight : 8
-                                                 },
-                                                 widgetCfgList: [
-                                                     {id:'controlnode-disk-usage-info',
-                                                         itemAttr:{
-                                                             config:{
-                                                                 nodeType:'control-node'
-                                                             }
-                                                         }
-                                                     },
-                                                     {id:'controlnode-grid-view'}
-                                                 ]
-                                            }
-                                         },
-                                      }*/
-                                   ]
-                                }
-                            }]
-                        }]
-                };
-                return {
-                    elementId : cowu.formatElementId([
-                          ctwl.CONTROLNODE_SUMMARY_LIST_SECTION_ID ]),
-                    view : "SectionView",
-                    viewConfig : viewConfig
-                };
-            }
             return TrafficGroupsView;
         });
