@@ -820,7 +820,7 @@ define([
         this.TITLE_SEC_GRP_TAG = "Tags";
         this.TITLE_SEC_GRP_SERVICE_GROUP = "Service Groups";
         this.TITLE_SEC_GRP_ADDRESS_GROUP = "Address Groups";
-        this.TITLE_FIREWALL_APPLICATION_POLICY = "Application Policy Sets";
+        this.TITLE_FIREWALL_APPLICATION_POLICY = "Application Policies";
 
         /* RBAC labels */
         this.TITLE_RBAC = 'API Access';

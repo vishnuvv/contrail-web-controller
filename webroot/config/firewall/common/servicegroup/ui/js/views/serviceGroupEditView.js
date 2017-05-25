@@ -51,7 +51,7 @@ define([
             self.renderView4Config($("#" + modalId).find(formId),
                                    this.model,
                                    getServiceGroupViewConfig(disable),
-                                   "",
+                                   "serviceGroupValidation",
                                    null, null, function() {
                 self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
                 Knockback.applyBindings(self.model,
@@ -130,7 +130,7 @@ define([
                             viewConfig: {
                                 path: "serviceTypeCollection",
                                 class: 'col-xs-12',
-                                //validation: 'ruleValidation',
+                                validation: 'serviceCollectionValidation',
                                 templateId: cowc.TMPL_COLLECTION_HEADING_VIEW,
                                 collection: "serviceTypeCollection",
                                 rows:[{

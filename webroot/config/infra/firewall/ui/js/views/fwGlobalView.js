@@ -82,7 +82,7 @@ define([
            },
            {
                elementId: 'application_policy_tab',
-               title: 'Application Policy Sets',
+               title: 'Application Policies',
                view: "applicationPolicyGlobalListView",
                viewPathPrefix: "config/infra/firewall/ui/js/views/",
                viewConfig: viewConfig,

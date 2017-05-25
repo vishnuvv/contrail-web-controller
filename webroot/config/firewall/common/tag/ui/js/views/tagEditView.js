@@ -47,13 +47,12 @@ define([
             self.renderView4Config($("#" + modalId).find(formId),
                                    this.model,
                                    getTagViewConfig(),
-                                   "",
+                                   "tagValidation",
                                    null, null, function() {
                 self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
                 Knockback.applyBindings(self.model,
                                         document.getElementById(modalId));
-                //kbValidation.bind(self, {collection:
-                                  //self.model.model().attributes.ipFabricSubnets});
+                kbValidation.bind(self);
             },null,false);
         },
         renderDeleteTag: function(options) {
@@ -99,24 +98,8 @@ define([
             elementId: ctwc.SEC_POLICY_TAG_PREFIX_ID,
             view: 'SectionView',
             title: "Tag",
-           // active:false,
             viewConfig: {
                 rows: [
-                    /*{
-                        columns: [
-                            {
-                                elementId: 'name',
-                                view: 'FormInputView',
-                                viewConfig: {
-                                    label: 'Name',
-                                    placeholder: 'Enter Tag Name',
-                                    path: 'name',
-                                    class: 'col-xs-6',
-                                    dataBindValue: 'name',
-                                }
-                            }
-                        ]
-                    },*/
                     {
                         columns: [
                             {
@@ -156,7 +139,6 @@ define([
                             }
                         ]
                     }
-                    //{}
                 ]
             }
         }

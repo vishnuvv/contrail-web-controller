@@ -897,7 +897,7 @@ define([
         this.SECURITY_POLICY_SERVICE_GRP_LIST_VIEW_ID = "security-policy-service-grp-list-view";
         this.SECURITY_POLICY_SERVICE_GRP_GRID_ID = "security-policy-service-grp-grid";
         this.SECURITY_POLICY_SERVICE_GRP_ID = 'security-policy-service-group';
-        this.SEC_POLICY_SERVICE_GRP_PREFIX_ID = "sergroup";
+        this.SEC_POLICY_SERVICE_GRP_PREFIX_ID = "serviceGroup";
         this.SEC_POL_SEC_GRP_TITLE_CREATE = 'Create Service Group';
         this.SEC_POLICY_ADDRESS_GRP_PREFIX_ID = "addressgroup";
         this.SECURITY_POLICY_ADDRESS_GRP_SECTION_ID = 'security-policy-address-group-section';
@@ -907,6 +907,7 @@ define([
         this.SECURITY_POLICY_ADDRESS_GRP_GRID_ID = "security-policy-address-grp-grid";
         this.FW_POLICY_GRID_ID = "fw-policy-grid";
         this.FW_RULE_GRID_ID = "fw-rule-grid";
+        this.FW_RULE_PREFIX_ID = 'firewallRule',
         this.CONFIG_FW_POLICY_LIST_VIEW_ID = "config-fw-policy-list-view";
         this.APPLICATION_POLICY_LIST_VIEW_ID = "application-policy-list-view";
         this.FIREWALL_APPLICATION_POLICY_SECTION_ID = 'firewall-application-policy-section';
