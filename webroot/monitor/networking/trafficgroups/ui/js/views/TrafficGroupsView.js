@@ -9,9 +9,9 @@ define(
             var TrafficGroupsView = ContrailView.extend({
                 render : function() {
                     var trafficGroupsTmpl = contrail.getTemplate4Id('traffic-groups-template'),
-                        collapsableWidgetTmpl = contrail.getTemplate4Id('collapsable-widget-template'),
-                        self = this;
-
+                        trafficLinkInfoTmpl = contrail.getTemplate4Id('traffic-link-widget-template'),
+                        collapsableWidgetTmpl = contrail.getTemplate4Id('collapsable-widget-template');
+                    self = this;
                     self.$el.html(trafficGroupsTmpl());
                     self.$el.addClass('traffic-groups-view');
 
@@ -21,6 +21,54 @@ define(
                     self.$el.find('.widget-box').addClass('collapsed');
                     TrafficGroupsView.colorMap = {};
                     TrafficGroupsView.tagMap = {};
+                    function showLinkInfo(d,el,e){
+						//static data... need to remove
+						var srcDest = d.id.match(/[^-]+(\-[^-]+)?/g);
+						var data = {
+							'src': srcDest[0],
+							'dest':srcDest[1],
+							'policyRules': [{
+								 'rule_name':'Policy1:Rule1',
+								 'pol_name':'log, permit',
+								 'src': {
+									'name' : 'src ip',
+									'value' : '10.84.5.0/24'
+								  },
+								 'dest': {
+									'name' : 'dst ip',
+									'value' : '10.84.5.0/24'
+								 }
+								},
+								{
+								 'rule_name':'Policy1:Rule2',
+								 'pol_name':'mirror protocol TCP, permit',
+								 'src': {
+									'name' : 'src tags',
+									'value' : 'application=HR'
+								 },
+								'dest': {
+									'name' : 'dst tags',
+									'value' : 'application=Finance'
+								 }
+								},
+								{
+								 'rule_name':'Policy1:Rule3',
+								 'pol_name':'permit',
+								 'src': {
+									'name' : 'src ip',
+									'value' : '10.0.5.0/24'
+								 },
+								 'dest': {
+									'name' : 'dst ip',
+									'value' : 'any'
+								 }
+								}
+							]
+						};
+						$('#traffic-groups-radial-chart').addClass('showLinkInfo')
+						$('#traffic-groups-link-info').html(trafficLinkInfoTmpl(data));
+                    }
+
                     function updateChart() {
                         var selTags = ['HR', 'Finance']
                         var levels = [];
@@ -28,33 +76,34 @@ define(
                             levels.push({level:idx,label:val});
                         });
                         var config = {
-                            levels : [{level: 0,label: 'Application'},{level: 1,label: 'Tier'}],
-                            parentSeparation: 1.0,
-                            parentSeparationShrinkFactor: 0.05,
-                            parentSeparationDepthThreshold: 4,
-                            drawLinks: false,
-                            drawRibbons: true,
-                            arcWidth: 15,
-                            arcLabelLetterWidth: 5,
-                            showArcLabels: true,
-                            //labelFlow: 'along-arc',
-                            labelFlow: 'perpendicular',
-                            //arcLabelXOffset: 2,
-                            arcLabelXOffset: 0,
-                            //arcLabelYOffset: 25,
-                            arcLabelYOffset: 20,
-                            colorScale: function (item) {
-                                var unassignedColors = _.difference(cowc.TRAFFIC_GROUP_COLOR, _.values(TrafficGroupsView.colorMap[item.level]));
-                                if ( TrafficGroupsView.colorMap[item.level] == null) {
-                                    TrafficGroupsView.colorMap[item.level] = {};
-                                    TrafficGroupsView.colorMap[item.level][item.name] = unassignedColors.pop();
-                                } else if (TrafficGroupsView.colorMap[item.level] != null &&
-                                     TrafficGroupsView.colorMap[item.level][item.name] == null) {
-                                    TrafficGroupsView.colorMap[item.level][item.name] = unassignedColors.pop();
-                                } 
-                                return TrafficGroupsView.colorMap[item.level][item.name];
-                            },
-                            hierarchyConfig: {
+			                id: 'chartBox',
+			                levels : levels,
+			                components: [{
+			                    id: 'dendrogram-chart-id',
+			                    type: 'RadialDendrogram',
+			                    config: {
+			                        arcWidth: 12,
+			                        showArcLabels: true,
+			                        parentSeparationShrinkFactor: 0.02,
+			                        labelFlow: 'along-arc',
+			                        arcLabelXOffset: 0,
+			                        arcLabelYOffset: -7,
+		                            colorScale: function (item) {
+										var levelKey = 'TRAFFIC_GROUP_COLOR_LEVEL'+item.level,
+											unassignedColors = _.difference(cowc[levelKey], _.values(TrafficGroupsView.colorMap[item.level]));
+		                                if ( TrafficGroupsView.colorMap[item.level] == null) {
+		                                    TrafficGroupsView.colorMap[item.level] = {};
+		                                    TrafficGroupsView.colorMap[item.level][item.name] = unassignedColors.pop();
+		                                } else if (TrafficGroupsView.colorMap[item.level] != null &&
+		                                    TrafficGroupsView.colorMap[item.level][item.name] == null) {
+		                                    TrafficGroupsView.colorMap[item.level][item.name] = unassignedColors.pop();
+		                                }
+		                                return TrafficGroupsView.colorMap[item.level][item.name];
+		                            },
+		                            showLinkTooltip:false,
+                                    showLinkInfo:false,
+			                        levels: levels,
+									hierarchyConfig: {
                                 parse: function (d) {
                                     var srcHierarchy = [d['app'], d['tier']],
                                         dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
@@ -71,7 +120,9 @@ define(
                                     return [src, dst];
                                 }
                             }
-                        }
+			                    }
+			                }]
+			            }
                         viewInst.updateConfig(config);
                         viewInst.render();
                     }
