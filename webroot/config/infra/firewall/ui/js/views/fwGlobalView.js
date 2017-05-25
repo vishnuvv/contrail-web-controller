@@ -35,21 +35,6 @@ define([
             theme: 'default',
             active: 0,
             tabs: [{
-               elementId: 'tags_tab',
-               title: 'Tags',
-               view: "tagGlobalListView",
-               viewPathPrefix: "config/infra/firewall/ui/js/views/",
-               viewConfig: viewConfig,
-               tabConfig: {
-                   activate: function(event, ui) {
-                       var gridId = $('#' + ctwc.SECURITY_POLICY_TAG_GRID_ID);
-                       if (gridId.data('contrailGrid')) {
-                           gridId.data('contrailGrid').refreshView();
-                       }
-                   },
-                   renderOnActivate: true
-               }
-           }, {
                elementId: 'service_group_tab',
                title: 'Service Groups',
                view: "serviceGroupGlobalListView",
