@@ -717,6 +717,22 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Configure Global Config</searchStrings>
                         </item>
                         <item>
+                            <label>Tags</label>
+                            <hash>config_infra_tag</hash>
+                            <resources>
+                            <resource>
+                                <rootDir>/common/ui</rootDir>
+                            </resource>
+                            <resource>
+                                <rootDir>/config/infra/tag/ui</rootDir>
+                                <js>tagGlobal.main.js</js>
+                                <class>tagGlobalPageLoader</class>
+                                <function>renderTagView</function>
+                            </resource>
+                        </resources>
+                        <searchStrings>Configure Tags</searchStrings>
+                        </item>
+                        <item>
                              <label>Firewall</label>
                              <hash>config_infra_firewall</hash>
                              <resources>
@@ -1161,23 +1177,6 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Configure Application Policies, Application Policy</searchStrings>
                         </item>
                         <item>
-                            <label>Tags</label>
-                            <hash>config_firewall_tags</hash>
-                            <resources>
-                                <resource>
-                                    <rootDir>/common/ui</rootDir>
-                                    <js>controller.app.js</js>
-                                </resource>
-                                <resource>
-                                    <rootDir>/config/firewall/project/tag/ui</rootDir>
-                                    <js>tagProject.main.js</js>
-                                    <class>tagProjectPageLoader</class>
-                                    <function>renderProjectTag</function>
-                                </resource>
-                            </resources>
-                            <searchStrings>Configure Tags</searchStrings>
-                        </item>
-                        <item>
                             <label>Service Groups</label>
                             <hash>config_firewall_servicegroups</hash>
                             <resources>
@@ -1212,6 +1211,34 @@ and need to add the iconClass tag wherever we need to show some icons
                             <searchStrings>Configure Address Group</searchStrings>
                         </item>
                     </items>
+                </item>
+                <item>
+                    <access>
+                        <roles>
+                            <role>member</role>
+                        </roles>
+                        <orchModels>
+                            <model>openstack</model>
+                            <model>vcenter</model>
+                        </orchModels>
+                        <accessFn>hideInGlobalController</accessFn>
+                    </access>
+                    <iconClass>menu-icon fa fa-tags</iconClass>
+                            <label>Tags</label>
+                            <hash>config_firewall_tags</hash>
+                            <resources>
+                                <resource>
+                                    <rootDir>/common/ui</rootDir>
+                                    <js>controller.app.js</js>
+                                </resource>
+                                <resource>
+                                    <rootDir>/config/firewall/project/tag/ui</rootDir>
+                                    <js>tagProject.main.js</js>
+                                    <class>tagProjectPageLoader</class>
+                                    <function>renderProjectTag</function>
+                                </resource>
+                            </resources>
+                            <searchStrings>Configure Tags</searchStrings>
                 </item>
                 <item>
                     <label>Services</label>

@@ -173,7 +173,7 @@ define([
                 }
                 else{
                     tags_length = tags_length-1
-                    formattedtags = tags.substring(0, tags.indexOf('<br>'))+"<br>"+" View more ("+tags_length+") ...";
+                    formattedtags = tags.substring(0, tags.indexOf('<br>'))+"<br>"+"   ("+tags_length+" more)";
                 }
             }
             return formattedtags;
