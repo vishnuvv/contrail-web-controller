@@ -156,10 +156,8 @@ define([
                     var tags_ref_to = getValueByJsonPath(tags_ref[i], "to", "");
                     if(tags_ref_to.length === 3){
                         var reverseTagsData = tags_ref_to.reverse();
+                        reverseTagsData = reverseTagsData[0];
                         var tagsDataString = reverseTagsData.toString();
-                        tagsDataString = tagsDataString.replace(",", " (");
-                        tagsDataString = tagsDataString+")";
-                        tagsDataString = tagsDataString.replace(",", ":");
                     }
                     else if(tags_ref_to.length === 1){
                         tagsDataString = tags_ref_to;
@@ -175,7 +173,7 @@ define([
                 }
                 else{
                     tags_length = tags_length-1
-                    formattedtags = tags.substring(0, tags.indexOf('<br>'))+ " View more ("+tags_length+") ...";
+                    formattedtags = tags.substring(0, tags.indexOf('<br>'))+"<br>"+" View more ("+tags_length+") ...";
                 }
             }
             return formattedtags;
