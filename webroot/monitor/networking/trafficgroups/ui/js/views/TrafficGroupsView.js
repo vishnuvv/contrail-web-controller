@@ -19,6 +19,7 @@ define(
                         title: 'Traffic Groups'
                     });
                     self.$el.find('.widget-box').addClass('collapsed');
+
                     TrafficGroupsView.colorMap = {};
                     TrafficGroupsView.tagMap = {};
                     function showLinkInfo(d,el,e){
@@ -70,14 +71,14 @@ define(
                     }
 
                     function updateChart() {
-                        var selTags = ['HR', 'Finance']
+                        /*var selTags = ['HR', 'Finance']
                         var levels = [];
                         selTags.forEach(function(val,idx) {
                             levels.push({level:idx,label:val});
-                        });
+                        });*/
                         var config = {
 			                id: 'chartBox',
-			                levels : levels,
+			                //levels : levels,
 			                components: [{
 			                    id: 'dendrogram-chart-id',
 			                    type: 'RadialDendrogram',
@@ -102,24 +103,30 @@ define(
 		                            },
 		                            showLinkTooltip:false,
                                     showLinkInfo:false,
-			                        levels: levels,
+			                        // levels: levels,
 									hierarchyConfig: {
-                                parse: function (d) {
-                                    var srcHierarchy = [d['app'], d['tier']],
-                                        dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
-                                    var src = {
-                                        names: srcHierarchy,
-                                        id: srcHierarchy.join('-'),
-                                        value: d['SUM(eps.traffic.in_pkts)']
-                                    };
-                                    var dst = {
-                                        names: dstHierarchy,
-                                        id: dstHierarchy.join('-'),
-                                        value: d['SUM(eps.traffic.out_pkts)']
-                                    };
-                                    return [src, dst];
-                                }
-                            }
+                                        parse: function (d) {
+                                            var srcHierarchy = [d['app'], d['tier']],
+                                                dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
+                                                // srcHierarchy = [d['app']];
+                                                // dstHierarchy = [d['eps.traffic.remote_app_id']];
+                                            var src = {
+                                                names: srcHierarchy,
+                                                id: srcHierarchy.join('-'),
+                                                value: d['SUM(eps.traffic.in_bytes)'],
+                                                inBytes: d['SUM(eps.traffic.in_bytes)'],
+                                                outBytes: d['SUM(eps.traffic.out_bytes)']
+                                            };
+                                            var dst = {
+                                                names: dstHierarchy,
+                                                id: dstHierarchy.join('-'),
+                                                value: d['SUM(eps.traffic.out_bytes)'],
+                                                inBytes: d['SUM(eps.traffic.in_bytes)'],
+                                                outBytes: d['SUM(eps.traffic.out_bytes)']
+                                            };
+                                            return [src, dst];
+                                        }
+                                    }
 			                    }
 			                }]
 			            }
@@ -146,7 +153,10 @@ define(
                         remote : {
                             ajaxConfig : {
                                 url: monitorInfraConstants.monitorInfraUrls['QUERY'],
+                                url: 'fakeData/sessionStats.json',
+                                // url: 'fakeData/First5Sessions.json',
                                 type: 'POST',
+                                type: 'GET',
                                 data: JSON.stringify(postData)
                             },
                             dataParser : function (response) {
@@ -158,7 +168,9 @@ define(
                                 getAjaxConfig: function() {
                                     return {
                                         url: 'api/tenants/config/get-config-details',
+                                        url: 'fakeData/tagMap.json',
                                         type:'POST',
+                                        type:'GET',
                                         data:JSON.stringify({data:[{type: 'tags'}]})
                                     }
                                 },
@@ -170,10 +182,12 @@ define(
                                         $.each(['eps.traffic.remote_app_id', 'eps.traffic.remote_deployment_id',
                                             'eps.traffic.remote_prefix', 'eps.traffic.remote_site_id',
                                             'eps.traffic.remote_tier_id'], function (jdx, val) {
-                                                value[val] == '0' ?  value[val] = '' : value[val] = _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.tag_type', '')
-                                                 +'-'+ _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.tag_value', '');
-                                        }); 
+                                                // value[val] == '0' ?  value[val] = '' : value[val] = _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.tag_type', '')
+                                                //  +'-'+ _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.tag_value', '');
+                                                value[val] == '0' ?  value[val] = '' : value[val] = _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.name', '')
+                                        });
                                     });
+                                    cowu.populateTrafficGroupsData(data);
                                     return data;
                                 }
                             }]
