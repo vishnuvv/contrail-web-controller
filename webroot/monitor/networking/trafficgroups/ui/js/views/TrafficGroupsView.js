@@ -115,7 +115,6 @@ define(
                                                 // dstHierarchy = [d['eps.traffic.remote_app_id']];
                                             var src = {
                                                 names: srcHierarchy,
-                                                labelAppend: d['deployment'],
                                                 id: srcHierarchy.join('-'),
                                                 value: d['SUM(eps.traffic.in_bytes)'],
                                                 inBytes: d['SUM(eps.traffic.in_bytes)'],
@@ -123,7 +122,6 @@ define(
                                             };
                                             var dst = {
                                                 names: dstHierarchy,
-                                                labelAppend: d['eps.traffic.remote_deployment_id'],
                                                 id: dstHierarchy.join('-'),
                                                 value: d['SUM(eps.traffic.out_bytes)'],
                                                 inBytes: d['SUM(eps.traffic.in_bytes)'],
