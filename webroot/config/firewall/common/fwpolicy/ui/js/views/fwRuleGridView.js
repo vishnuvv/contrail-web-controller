@@ -5,10 +5,13 @@
 define([
     'underscore',
     'contrail-view',
-    'config/firewall/common/fwpolicy/ui/js/fwRuleFormatter'
-], function(_, ContrailView, FWRuleFormatter) {
+    'config/firewall/common/fwpolicy/ui/js/fwRuleFormatter',
+    'config/firewall/common/fwpolicy/ui/js/views/fwRuleEditView',
+    'config/firewall/common/fwpolicy/ui/js/models/fwRuleModel'
+], function(_, ContrailView, FWRuleFormatter, FWRuleEditView, FWRuleModel) {
     var self, gridElId = '#' + ctwc.FW_RULE_GRID_ID, gridObj,
       fwRuleFormatter = new FWRuleFormatter();
+    var fwRuleEditView = new FWRuleEditView();
     var fwRuleGridView = ContrailView.extend({
         el: $(contentContainer),
 
@@ -53,7 +56,7 @@ define([
                 title: {
                     text: ctwl.TITLE_FW_RULE
                 },
-               advanceControls: []//getHeaderActionConfig(viewConfig)
+               advanceControls: getHeaderActionConfig(viewConfig)
             },
             body: {
                 options: {
@@ -89,7 +92,52 @@ define([
         };
         return gridElementConfig;
     };
+    function getHeaderActionConfig(viewConfig) {
+    	var headerActionConfig = [
+    		/*{
+                "type" : "link",
+                "title" : ctwl.TITLE_TAG_MULTI_DELETE,
+                "iconClass": 'fa fa-trash',
+                "linkElementId": 'btnDeleteServiceGrp',
+                "onClick" : function() {
+                    var serviceGroupModel = new ServiceGroupModel();
+                    var checkedRows = $('#' + ctwc.SECURITY_POLICY_SERVICE_GRP_GRID_ID).data("contrailGrid").getCheckedRows();
+                    if(checkedRows && checkedRows.length > 0) {
+                    	serviceGroupEditView.model = serviceGroupModel;
+                    	serviceGroupEditView.renderDeleteServiceGrp(
+                            {"title": 'Delete Service Group',
+                            	selectedGridData: checkedRows,
+                                callback: function () {
+                                    var dataView =
+                                        $('#' + ctwc.SECURITY_POLICY_SERVICE_GRP_GRID_ID).
+                                        data("contrailGrid")._dataView;
+                                    dataView.refreshData();
+                                }
+                            }
+                        );
+                    }
+                }
 
+            },*/
+            {
+                "type": "link",
+                "title": ctwc.SEC_POL_SEC_GRP_TITLE_CREATE,
+                "iconClass": "fa fa-plus",
+                "onClick": function () {
+                	fwRuleEditView.model = new FWRuleModel();
+                	fwRuleEditView.renderAddEditFwRule({
+                                              "title": 'Create Firewall Rule',
+                                              'mode': 'add',
+                                              'isGlobal': viewConfig.isGlobal,
+                                              callback: function () {
+                       $('#' + ctwc.FW_RULE_GRID_ID).data("contrailGrid")._dataView.refreshData();
+                    }});
+                }
+            }
+
+        ];
+        return headerActionConfig;
+    }
     var fwRuleColumns = [{
                               id: 'action_list.simple_action',
                               field: 'action_list.simple_action',
