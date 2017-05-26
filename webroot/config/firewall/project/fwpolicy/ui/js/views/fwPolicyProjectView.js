@@ -23,8 +23,8 @@ define([
     function getFWRuleProjectConfig(viewConfig) {
         return {
             elementId: cowu.formatElementId([ctwc.CONFIG_FW_RULE_LIST_VIEW_ID]),
-            view: "fwRuleProjectListView",
-            viewPathPrefix: "config/firewall/project/fwpolicy/ui/js/views/",
+            view: "fwRuleTabView",
+            viewPathPrefix: "config/firewall/common/fwpolicy/ui/js/views/",
             app: cowc.APP_CONTRAIL_CONTROLLER,
             viewConfig: viewConfig
         }
