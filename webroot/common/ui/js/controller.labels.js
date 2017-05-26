@@ -240,6 +240,7 @@ define([
         this.NETWORK_INSTANCES_ID = "network-instances";
         this.NETWORK_INTERFACES_ID = "network-interfaces";
         this.NETWORK_TRAFFIC_STATS_ID = "network-traffic-stats";
+        this.NETWORK_TRAFFIC_VIEW_ID = "network-traffic-group-view";
         this.NETWORK_PORT_HEAT_CHART_ID = "network-port-heat-chart";
         this.NETWORKS_BREADCRUMB_DROPDOWN = "networks-breadcrumb-dropdown";
         this.NETWORK_INTERFACE_GRID_ID = "network-interface-grid";

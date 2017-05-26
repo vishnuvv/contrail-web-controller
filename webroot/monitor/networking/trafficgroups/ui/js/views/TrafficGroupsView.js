@@ -8,6 +8,9 @@ define(
         function(_, ContrailView, ContrailChartsView, ContrailListModel) {
             var TrafficGroupsView = ContrailView.extend({
                 render : function() {
+                    if(!($('#breadcrumb li:last a').text() == ctwc.TRAFFIC_GROUPS_ALL_APPS)){
+						pushBreadcrumb([ctwc.TRAFFIC_GROUPS_ALL_APPS]);
+                    }
                     var trafficGroupsTmpl = contrail.getTemplate4Id('traffic-groups-template'),
                         trafficLinkInfoTmpl = contrail.getTemplate4Id('traffic-link-widget-template'),
                         collapsableWidgetTmpl = contrail.getTemplate4Id('collapsable-widget-template');

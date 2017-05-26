@@ -8,15 +8,15 @@ function TrafficGroupsLoader() {
         var self = this, currMenuObj = globalObj.currMenuObj,
             hashParams = paramObject['hashParams'],
             rootDir = currMenuObj['resources']['resource'][0]['rootDir'],
-            pathTrafficGroupsView = rootDir + '/js/views/TrafficGroupsView.js',
+            pathTrafficGroupsInitView = rootDir + '/js/views/TrafficGroupsInitView.js',
             renderFn = paramObject['renderFn'];
 
-            if (self.trafficGroupsView == null) {
-                requirejs([pathTrafficGroupsView], function (TrafficGroupsView){
-                    self.trafficGroupsView = new TrafficGroupsView({
+            if (self.TrafficGroupsInitView == null) {
+                requirejs([pathTrafficGroupsInitView], function (TrafficGroupsInitView){
+                    self.TrafficGroupsInitView = new TrafficGroupsInitView({
                         el: $(contentContainer)
                     });
-                    self.trafficGroupsView.render(renderFn, hashParams);
+                    self.TrafficGroupsInitView.renderTrafficView({hashParams: hashParams});
                 });
             } /*else {
                 self.renderView(renderFn, hashParams);

@@ -917,6 +917,7 @@ define([
         this.FIREWALL_APPLICATION_POLICY_PREFIX_ID = "applicationpolicy";
         this.CONFIG_FW_RULE_LIST_VIEW_ID = "config-fw-rule-list-view";
         this.FW_POLICY_RULE_IDS = 'fw-policy-rule-ids';
+        this.TRAFFIC_GROUPS_ALL_APPS = 'All Applications';
 
         /* RBAC constants */
         this.RBAC_GLOBAL_PAGE_ID = "config-rbac-global-list";
