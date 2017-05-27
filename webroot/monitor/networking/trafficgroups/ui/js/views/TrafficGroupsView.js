@@ -25,7 +25,7 @@ define(
 
                     TrafficGroupsView.colorMap = {};
                     TrafficGroupsView.tagMap = {};
-                    function showLinkInfo(d,el,e){
+                    function showLinkInfo(d,el,e,chartScope){
 						//static data... need to remove
 						var srcDest = d.id.match(/[^-]+(\-[^-]+)?/g);
 						var data = {
@@ -69,8 +69,33 @@ define(
 								}
 							]
 						};
-						$('#traffic-groups-radial-chart').addClass('showLinkInfo')
-						$('#traffic-groups-link-info').html(trafficLinkInfoTmpl(data));
+						_.each(chartScope.ribbons, function (ribbon) {
+					       ribbon.selected = false;
+					       ribbon.active = false;
+					    });
+					    d.selected = true;
+					    d.active = true;
+					    chartScope._render();
+						$('#traffic-groups-radial-chart')
+							.addClass('showLinkInfo');
+						$('#traffic-groups-link-info')
+							.html(trafficLinkInfoTmpl(data));
+						$('#traffic-groups-radial-chart')
+						 .on('click',{ thisChart:chartScope,thisRibbon:d },
+						  function(ev){
+							if(ev.data.thisChart && $(ev.target)
+							  .parents('#'+ev.data.thisChart.id).length == 0){
+								_.each(ev.data.thisChart.ribbons,
+								 function (ribbon) {
+							       ribbon.selected = false;
+							       ribbon.active = false;
+							    });
+							    ev.data.thisChart._render();
+							    $('#traffic-groups-radial-chart')
+								.removeClass('showLinkInfo');
+								$('#traffic-groups-link-info').html('');
+							}
+						});
                     }
 
                     function updateChart() {
