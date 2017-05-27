@@ -821,7 +821,7 @@ define([
         this.TITLE_SEC_GRP_TAG = "Tags";
         this.TITLE_SEC_GRP_SERVICE_GROUP = "Service Groups";
         this.TITLE_SEC_GRP_ADDRESS_GROUP = "Address Groups";
-        this.TITLE_FIREWALL_APPLICATION_POLICY = "Application Policies";
+        this.TITLE_FIREWALL_APPLICATION_POLICY = "Application Policy Sets";
         this.TITLE_CREATE_FW_POLICY = 'Policy Info';
         this.TITLE_CREATE_FW_RULES = 'Rules';
         this.TITLE_SAVE_NEXT = "Save &amp; Next";

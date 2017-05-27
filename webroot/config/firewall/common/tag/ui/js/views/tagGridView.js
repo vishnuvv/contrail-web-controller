@@ -81,11 +81,11 @@ define([
             },
             columnHeader: {
                 columns: [
-                        {
+                        /*{
                              field: 'name',
                              name: 'Name',
                              id: 'name'
-                        },
+                        },*/
                         {
                             field: 'tag_type',
                             name: 'Type',

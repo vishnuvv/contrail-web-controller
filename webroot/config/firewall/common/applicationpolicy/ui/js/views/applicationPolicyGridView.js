@@ -73,10 +73,10 @@ define([
                 dataSource: {},
                 statusMessages: {
                     loading: {
-                        text: 'Loading Application Policy..'
+                        text: 'Loading Application Policy Sets..'
                     },
                     empty: {
-                        text: 'No Application Policy Found.'
+                        text: 'No Application Policy Set Found.'
                     }
                 }
             },

@@ -11,7 +11,7 @@ define([
         self;
     var fwRuleModel = ContrailModel.extend({
         defaultConfig: {
-            'action_list':{'simple_action':'pass',
+            'action_list':{
                 'apply_service':null,
                 'gateway_name':null,
                 'log':false,
@@ -86,12 +86,13 @@ define([
             'status': true,
             'user_created_service': '',
             'match_tags': [],
-            'sequence': null
+            'sequence': null,
+            'simple_action': 'pass'
         },
         formatModelConfig: function (modelConfig) {
             self = this;
-            var domain = ctwu.getGlobalVariable('domain').name,
-                project = ctwu.getGlobalVariable('project').name,
+            var domain = contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME),
+                project = contrail.getCookie(cowc.COOKIE_PROJECT_DISPLAY_NAME),
                 simpleAction = getValueByJsonPath(modelConfig,
                                "action_list;simple_action", "");
             if (simpleAction != "") {

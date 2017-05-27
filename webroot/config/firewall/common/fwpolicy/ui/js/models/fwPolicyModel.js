@@ -127,7 +127,7 @@ define([
             if(srcArr.length == 2 && (srcArr[1] === 'Application' ||
                     srcArr[1] === 'Deployment' ||  srcArr[1] === 'Site' || srcArr[1] === 'Tier')) {
                 endpoint["tags"].push(srcArr[0]);
-            } else if(srcArr.length == 2 && srcArr[1] === 'service_group'){
+            } else if(srcArr.length == 2 && srcArr[1] === 'address_group'){
                 endpoint[srcArr[1]] = srcArr[0];
             }  else {
                 endpoint[srcArr[1]] = self.getPostAddressFormat(srcArr[0], selectedDomain,
@@ -273,6 +273,9 @@ define([
                         newFWRuleData['service']['src_ports'] =
                             policyFormatters.formatPort(service[2])[0];
                     }
+                    newFWRuleData['action_list'] = {};
+                    newFWRuleData['action_list']['simple_action'] = attr['simple_action'];
+                    newFWRuleData['direction'] = attr['direction'];
                     newFWRuleData['sequence'] = attr['sequence'];
                     newFWRuleData['match_tags'] = {};
                     newFWRuleData['match_tags']['tag_list'] = attr.match_tags.split(',');

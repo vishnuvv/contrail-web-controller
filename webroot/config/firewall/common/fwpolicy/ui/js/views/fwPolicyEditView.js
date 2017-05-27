@@ -59,40 +59,14 @@ define([
 
         fetchAllData : function(self, callback) {
             var getAjaxs = [];
-            var selectedDomainUUID = ctwu.getGlobalVariable('domain').uuid;;
-            var selectedDomain = ctwu.getGlobalVariable('domain').name;;
-            var selectedProject = ctwu.getGlobalVariable('project').name;;
-
+            var selectedDomain = contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME);
+            var selectedProject = contrail.getCookie(cowc.COOKIE_PROJECT_DISPLAY_NAME);
             getAjaxs[0] = $.ajax({
                 url:"/api/tenants/config/virtual-networks",
                 type:"GET"
             });
-
-            getAjaxs[1] = $.ajax({
-                url:"/api/tenants/config/service-instance-templates/"
-                + selectedDomainUUID,
-                type:"GET"
-            });
-
-            /*getAjaxs[2] = $.ajax({
-                url:"/api/tenants/config/service-instances-details/",
-                type:"GET"
-            });*/
-
-            //get policies
-            getAjaxs[3] = $.ajax({
-                url:"/api/tenants/config/policys",
-                type:"GET"
-            });
-
-            //get securty groups
-            getAjaxs[4] = $.ajax({
-                url:"/api/tenants/config/securitygroup",
-                type:"GET"
-            });
-
             //get tags
-            getAjaxs[5] = $.ajax({
+            getAjaxs[1] = $.ajax({
                 url:"/api/tenants/config/get-config-details",
                 type:"POST",
                 dataType: "json",
@@ -102,7 +76,7 @@ define([
             });
 
             //get address groups
-            getAjaxs[6] = $.ajax({
+            getAjaxs[2] = $.ajax({
                 url:"/api/tenants/config/get-config-details",
                 type:"POST",
                 dataType: "json",
@@ -182,143 +156,8 @@ define([
                             }
                         }
                     }
-
-                    var sts = jsonPath(results[1][0],
-                              "$.service_templates[*].service-template");
-                    //process policies data
-                    var policies = results[3][0]["network-policys"];
-                    if(null !== policies && policies.length > 0) {
-                       returnArr["policys-input"] = policies;
-                    }
-                    //prepare policies sub array
-                    var allPolicies = [{text:'Enter or Select a Policy',
-                                        value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "network_policy",
-                                        //value:"dummy",
-                                        disabled : true }];
-                    for(var i = 0; i < policies.length; i++) {
-                        var policy = policies[i];
-                        var fqn =  policy["fq_name"];
-                        var domain = fqn[0];
-                        var project = fqn[1];
-                        if(domain === selectedDomain &&
-                           project === selectedProject) {
-                            allPolicies.push(
-                                {text : policy["fq_name"][2],
-                                 value : (policy["fq_name"]).join(":")
-                                         + cowc.DROPDOWN_VALUE_SEPARATOR + "network_policy",
-                                 id : (policy["fq_name"]).join(":")
-                                         + cowc.DROPDOWN_VALUE_SEPARATOR + "network_policy",
-                                 //value : (policy["fq_name"]).join(":"),
-                                 //id : (policy["fq_name"]).join(":"),
-                                 parent : "network_policy"});
-                        }
-                    }
-
-                    //prepare security group sub array
-                    var allSGs = [{ text: "Enter or Select a SG",
-                        value: "dummy" +
-                           cowc.DROPDOWN_VALUE_SEPARATOR +
-                           "security_group",
-                        disabled: true}],
-                        sgs = getValueByJsonPath(results,
-                            "4;0;security-groups", []);
-                    _.each(sgs, function(sg){
-                        var fqn =  getValueByJsonPath(sg, "fq_name", [], false);
-                        var domain = fqn[0];
-                        var project = fqn[1];
-                        if(domain === selectedDomain &&
-                           project === selectedProject) {
-                            allSGs.push(
-                                {text : fqn.length === 3 ? fqn[2] : "",
-                                 value : fqn.join(":")
-                                         + cowc.DROPDOWN_VALUE_SEPARATOR +
-                                         "security_group",
-                                 id : fqn.join(":")
-                                         + cowc.DROPDOWN_VALUE_SEPARATOR +
-                                         "security_group",
-                                 parent : "security_group"});
-                        } else {
-                            allSGs.push(
-                                    {text : fqn.length === 3 ? fqn[2] + " (" +
-                                            fqn[1] + ":" + fqn[2] + ")" : "",
-                                     value : fqn.join(":")
-                                             + cowc.DROPDOWN_VALUE_SEPARATOR +
-                                             "security_group",
-                                     id : fqn.join(":")
-                                             + cowc.DROPDOWN_VALUE_SEPARATOR +
-                                             "security_group",
-                                     parent : "security_group"});
-                        }
-                    });
-
-
-
-                    returnArr["service_instances"] = [];
-                    returnArr["service_instances_ref"] = [];
-                    var analyzerInsts = [];
-                    var serviceInsts = [];
-                    var serviceInstsRef = [];
-                    if (null !== sts && sts.length > 0) {
-                        for (var i = 0; i < sts.length; i++) {
-                            var serviceTemplateMode = getValueByJsonPath(sts[i],
-                                    "service_template_properties;service_mode",
-                                    "");
-                            var serviceTemplateType = getValueByJsonPath(sts[i],
-                                    "service_template_properties;service_type",
-                                    "");
-                            if (typeof sts[i].service_instance_back_refs
-                                                      !== "undefined" &&
-                                sts[i].service_instance_back_refs.length > 0) {
-                                var si_backRef =
-                                    sts[i].service_instance_back_refs;
-                                var si_backRef_len =
-                                   sts[i].service_instance_back_refs.length;
-                                for (var j = 0; j < si_backRef_len; j++) {
-                                    var siBackRefTo = getValueByJsonPath(
-                                                  si_backRef[j], "to" , []);
-                                    var text = fqnameDisplayFormat(
-                                                    siBackRefTo ,
-                                                    selectedDomain,
-                                                    selectedProject);
-                                    var si_backRef_join = siBackRefTo.join(":");
-                                    var si_val_obj = {
-                                                         "text":text,
-                                                         "value":si_backRef_join
-                                                     };
-                                    if(serviceTemplateType == "analyzer") {
-                                        analyzerInsts.push(si_val_obj);
-                                    }
-                                    var si_val_objClon =
-                                            $.extend(true,{},si_val_obj);
-                                    serviceInsts.push(si_val_objClon);
-                                    serviceInstsRef[si_val_obj.value] =
-                                            si_val_objClon.value;
-                                }
-                            }
-                        }
-                    }
-                    returnArr["service_instances"] = serviceInsts;
-                    returnArr["service_instances_ref"] = serviceInstsRef;
-                    returnArr["analyzerInsts"] = analyzerInsts;
-                    //add other project policies at the end
-                    for(var i = 0; i < policies.length; i++) {
-                        var policy = policies[i];
-                        var fqn =  policy["fq_name"];
-                        var project = fqn[1];
-                        if(project !== selectedProject) {
-                            var fqNameTxt = policy["fq_name"][2]+' (' +
-                                            domain + ':' +
-                                            project +')';
-                            var fqNameValue = policy["fq_name"].join(":");
-                            allPolicies.push({text : fqNameTxt,
-                                              value : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "network_policy",
-                                              id : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "network_policy",
-                                              parent : 'network_policy'});
-                        }
-                    }
-
                     //tags
-                    var tags = getValueByJsonPath(results, '5;0;0;tags', [], false);
+                    var tags = getValueByJsonPath(results, '1;0;0;tags', [], false);
                     var addrFields = [];
                     //application
                     var tagGroupData = parseTags(tags);
@@ -344,7 +183,7 @@ define([
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         disabled : true }];
-                    var addressGroups = getValueByJsonPath(results, '6;0;0;address-groups', [], false);
+                    var addressGroups = getValueByJsonPath(results, '2;0;0;address-groups', [], false);
                     if(addressGroups.length > 0){
                         for(var k = 0; k < addressGroups.length; k++){
                             var address = addressGroups[k]['address-group'];
@@ -518,7 +357,7 @@ define([
                                 },
                                 {
                                  elementId: 'simple_action',
-                                 name: 'Actions',
+                                 name: 'Action',
                                  view: "FormDropdownView",
                                  class: "",
                                  width: 60,
@@ -528,7 +367,7 @@ define([
                                      disabled: "showService()",
                                      dataBindValue: "simple_action()",
                                      elementConfig:{
-                                         data:['PASS','DENY']
+                                         data:['pass','deny']
                                     }}
                                 },
                                 {
