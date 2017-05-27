@@ -21,7 +21,10 @@
                var serviceStr = "", service = getValueByJsonPath(dc,
                    "service", null, false);
                serviceStr = service && service.protocol ?
-                       service.protocol + " : " + service.dst_ports + ":" + service.src_ports : '-';
+                       service.protocol + " : " +
+                       service.dst_ports.start_port + '-' +
+                       service.dst_ports.end_port + ":" +
+                       service.src_ports.start_port + '-' + service.src_ports.end_port: '-';
                return serviceStr;
            };
 

@@ -918,6 +918,18 @@ define([
         this.CONFIG_FW_RULE_LIST_VIEW_ID = "config-fw-rule-list-view";
         this.FW_POLICY_RULE_IDS = 'fw-policy-rule-ids';
         this.TRAFFIC_GROUPS_ALL_APPS = 'All Applications';
+        this.CONFIG_FW_POLICY_SECTION_ID = "config-firewall_policye-section";
+        this.CONFIG_FW_POLICY_ID = "config-firewall_policy";
+        this.CONFIG_FW_POLICY_LIST_VIEW_ID = "config-firewall_policy-list-view";
+        this.FW_POLICY_PREFIX_ID = "firewall_policy";
+        this.URL_CREATE_FW_POLICY = "/firewall-policys";
+        this.URL_UPDATE_FW_POLICY = "/firewall-policy/";
+        this.URL_CREATE_POLICY_RULES = '/api/tenants/config/firewall-rules'
+        this.RULE_MATCH_TAGS = [{text: "Application", value: "Application"},
+                                {text: 'Tier', value: 'Tier'},
+                                {text:'Deployment', value: 'Deployment'},
+                                {text: 'Site', value: 'Site'}];
+
 
         /* RBAC constants */
         this.RBAC_GLOBAL_PAGE_ID = "config-rbac-global-list";

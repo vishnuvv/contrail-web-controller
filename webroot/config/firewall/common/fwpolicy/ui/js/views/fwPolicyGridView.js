@@ -5,10 +5,13 @@
 define([
     'underscore',
     'contrail-view',
-    'config/firewall/common/fwpolicy/ui/js/fwPolicyFormatter'
-], function(_, ContrailView, FWPolicyFormatter) {
+    'config/firewall/common/fwpolicy/ui/js/fwPolicyFormatter',
+    'config/firewall/common/fwpolicy/ui/js/models/fwPolicyModel',
+    'config/firewall/common/fwpolicy/ui/js/views/fwPolicyEditView'
+], function(_, ContrailView, FWPolicyFormatter, FWPolicyModel, FWPolicyEditView) {
     var self, gridElId = '#' + ctwc.FW_POLICY_GRID_ID, gridObj,
-      fwPolicyFormatter = new FWPolicyFormatter();
+      fwPolicyFormatter = new FWPolicyFormatter(),
+      fwPolicyEditView =  new FWPolicyEditView();
     var fwPolicyGridView = ContrailView.extend({
         el: $(contentContainer),
 
@@ -53,16 +56,16 @@ define([
                 title: {
                     text: ctwl.TITLE_FW_POLICY
                 },
-               advanceControls: []//getHeaderActionConfig(viewConfig)
+               advanceControls: getHeaderActionConfig(viewConfig)
             },
             body: {
                 options: {
                     checkboxSelectable: {
                         onNothingChecked: function(e){
-                            $('#btnDeleteRBAC').addClass('disabled-link');
+                            $('#btnDeleteFWPolicy').addClass('disabled-link');
                         },
                         onSomethingChecked: function(e){
-                            $('#btnDeleteRBAC').
+                            $('#btnDeleteFWPolicy').
                                 removeClass('disabled-link');
                         }
                     },
@@ -90,6 +93,60 @@ define([
         return gridElementConfig;
     };
 
+    function getHeaderActionConfig(viewConfig) {
+        var headerActionConfig;
+            var headerActionConfig = [
+                {
+                    "type" : "link",
+                    "title" : ctwl.TITLE_FW_POLICY_MULTI_DELETE,
+                    "iconClass": 'fa fa-trash',
+                    "linkElementId": 'btnDeleteFWPolicy',
+                    "onClick" : function() {
+                        var fwPolicyModel = new FWPolicyModel();
+                        var checkedRows =
+                            $(gridElId).data("contrailGrid").
+                            getCheckedRows();
+                        if(checkedRows && checkedRows.length > 0) {
+                            fwPolicyEditView.model = fwPolicyModel;
+                            fwPolicyEditView.renderDeleteFWPolicy(
+                                {"title": ctwl.TITLE_FW_POLICY_MULTI_DELETE,
+                                    checkedRows: checkedRows,
+                                    callback: function () {
+                                        var dataView =
+                                            $(gridElId).
+                                            data("contrailGrid")._dataView;
+                                        dataView.refreshData();
+                                    }
+                                }
+                            );
+                        }
+                    }
+                },
+                {
+                    "type" : "link",
+                    "title" : ctwl.TITLE_CREATE_FW_POLICY,
+                    "iconClass" : "fa fa-plus",
+                    "onClick" : function() {
+                        var fwPolicyModel = new FWPolicyModel();
+                        fwPolicyEditView.model = fwPolicyModel;
+                        fwPolicyEditView.renderAddEditFWPolicy(
+                            {"title": ctwl.CREATE,
+                                callback: function () {
+                                    var dataView =
+                                        $(gridElId).
+                                        data("contrailGrid")._dataView;
+                                    dataView.refreshData();
+                                },
+                                mode : ctwl.CREATE_ACTION,
+                                isGlobal: viewConfig.isGlobal
+                            }
+                        );
+                    }
+                }
+            ];
+
+        return headerActionConfig;
+    };
     var fwPolicyColumns = [{
                               id: 'name',
                               field: 'name',
