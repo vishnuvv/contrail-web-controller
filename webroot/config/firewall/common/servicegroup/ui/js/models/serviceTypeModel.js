@@ -75,12 +75,6 @@ define([
                         }
                     }
                 },
-                'src_port' : function(val, attr, data) {
-                    var result = self.validatePort(val);
-                    if (result != "") {
-                        return result;
-                    }
-                },
                 'dst_port' : function(val, attr, data) {
                     var result = self.validatePort(val);
                     if (result != "") {

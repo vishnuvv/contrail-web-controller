@@ -69,7 +69,7 @@ define([
                                 removeClass('disabled-link');
                         }
                     },
-                    actionCell: [],//getRowActionConfig(viewConfig),
+                    actionCell: getRowActionConfig(viewConfig),
                     detail: {
                         template:
                             cowu.generateDetailTemplateHTML(
@@ -92,24 +92,51 @@ define([
         };
         return gridElementConfig;
     };
+    function getRowActionConfig (viewConfig) {
+        var rowActionConfig = [
+            ctwgc.getEditConfig('Edit', function(rowIndex) {
+                dataView = $('#' + ctwc.FW_RULE_GRID_ID).data("contrailGrid")._dataView;
+                fwRuleEditView.model = new FWRuleModel(dataView.getItem(rowIndex));
+                fwRuleEditView.renderAddEditFwRule({
+                                      "title": 'Edit Firewall Rule',
+                                      'mode':'edit',
+                                      'isGlobal': viewConfig.isGlobal,
+                                       callback: function () {
+                                          dataView.refreshData();
+                }});
+            }),
+            ctwgc.getDeleteConfig('Delete', function(rowIndex) {
+               var dataItem = $('#' + ctwc.FW_RULE_GRID_ID).data('contrailGrid')._dataView.getItem(rowIndex);
+               fwRuleEditView.model = new FWRuleModel(dataItem);
+               fwRuleEditView.renderDeleteFirewallRule({
+                                      "title": 'Delete Firewall Rule',
+                                      selectedGridData: [dataItem],
+                                      callback: function () {
+                                          var dataView = $('#' + ctwc.FW_RULE_GRID_ID).data("contrailGrid")._dataView;
+                                          dataView.refreshData();
+                }});
+            })
+        ];
+        return rowActionConfig;
+    };
     function getHeaderActionConfig(viewConfig) {
     	var headerActionConfig = [
-    		/*{
+    		{
                 "type" : "link",
                 "title" : ctwl.TITLE_TAG_MULTI_DELETE,
                 "iconClass": 'fa fa-trash',
-                "linkElementId": 'btnDeleteServiceGrp',
+                "linkElementId": 'btnDeleteFWRule',
                 "onClick" : function() {
-                    var serviceGroupModel = new ServiceGroupModel();
-                    var checkedRows = $('#' + ctwc.SECURITY_POLICY_SERVICE_GRP_GRID_ID).data("contrailGrid").getCheckedRows();
+                    var fwRuleModel = new FWRuleModel();
+                    var checkedRows = $('#' + ctwc.FW_RULE_GRID_ID).data("contrailGrid").getCheckedRows();
                     if(checkedRows && checkedRows.length > 0) {
-                    	serviceGroupEditView.model = serviceGroupModel;
-                    	serviceGroupEditView.renderDeleteServiceGrp(
-                            {"title": 'Delete Service Group',
+                    	fwRuleEditView.model = fwRuleModel;
+                    	fwRuleEditView.renderDeleteFirewallRule(
+                            {"title": 'Delete Firewall Rule',
                             	selectedGridData: checkedRows,
                                 callback: function () {
                                     var dataView =
-                                        $('#' + ctwc.SECURITY_POLICY_SERVICE_GRP_GRID_ID).
+                                        $('#' + ctwc.FW_RULE_GRID_ID).
                                         data("contrailGrid")._dataView;
                                     dataView.refreshData();
                                 }
@@ -118,7 +145,7 @@ define([
                     }
                 }
 
-            },*/
+            },
             {
                 "type": "link",
                 "title": ctwc.SEC_POL_SEC_GRP_TITLE_CREATE,

@@ -25,7 +25,7 @@ define([
             cowu.createModal({'modalId': modalId, 'className': 'modal-610',
                              'title': options['title'], 'body': editLayout,
                              'onSave': function () {
-                self.model.addEditServiceGroup({
+                self.model.addEditFirewallRule({
                     init: function () {
                         cowu.enableModalLoading(modalId);
                     },
@@ -64,7 +64,7 @@ define([
                );
             
         },
-        renderDeleteServiceGrp: function(options) {
+        renderDeleteFirewallRule: function(options) {
             var delTemplate =
                 contrail.getTemplate4Id('core-generic-delete-form-template');
             var self = this;
@@ -74,7 +74,7 @@ define([
                              'title': options['title'], 'btnName': 'Confirm',
                              'body': delLayout,
                'onSave': function () {
-                self.model.deleteServiceGroup(options['selectedGridData'], {
+                self.model.deleteFirewallRule(options['selectedGridData'], {
                     init: function () {
                         cowu.enableModalLoading(modalId);
                     },
@@ -226,9 +226,8 @@ define([
     function tagDropDownFormatter(response){
     	var matchList = [{text:'Application', id:'Application' },
             {text:'Tier', id:'Tier' },
-            {text:'Deployment', id:'deployment' },
-            {text:'Site', id:'Site' },
-            {text:'Label', id:'Label' }];
+            {text:'Deployment', id:'Deployment' },
+            {text:'Site', id:'Site' }];
     	
         return matchList;
     };
@@ -264,28 +263,28 @@ define([
                     {
                         columns: [
                         	{
-                                elementId: 'order',
+                                elementId: 'sequence',
                                 name:'Order',
                                 view: 'FormInputView',
                                 viewConfig: {
                                     label: 'Order',
                                     placeholder: 'Enter Order',
-                                    path: 'order',
+                                    path: 'sequence',
                                     class:'col-xs-6',
-                                    dataBindValue: 'order'
+                                    dataBindValue: 'sequence'
                                 }
                             },
                             {
-                                elementId: 'action',
+                                elementId: 'simple_action',
                                 name:'Action',
                                 view: "FormDropdownView",
                                 viewConfig: {
                                     label: 'Action',
-                                    path: "action",
+                                    path: "simple_action",
                                     class:'col-xs-6',
-                                    dataBindValue: "action",
+                                    dataBindValue: "simple_action",
                                     elementConfig:{
-                                        data:['PASS','DENY']
+                                        data:['pass','deny']
                                  }}
                              }
                         ]
@@ -349,11 +348,11 @@ define([
                                         dataValueField: "value",
                                         data: allData.addrFields,
                                         queryMap: [
-                                            { name : 'Application',  value : 'application', iconClass:'fa fa-tags' },
-                                            { name : 'Tier',  value : 'tier', iconClass:'fa fa-tags' },
-                                            { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-tags' },
-                                            { name : 'Site',  value : 'site', iconClass:'fa fa-tags' },
-                                            { name : 'Address Group',  value : 'address_group', iconClass:'icon-contrail-network-policy' },
+                                            { name : 'Application',  value : 'application', iconClass:'fa fa-object-group' },
+                                            { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-database' },
+                                            { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
+                                            { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' },
+                                            { name : 'Address Group',  value : 'address_group', iconClass:'icon-contrail-network-ipam' },
                                             { name : 'Virtual Networks',  value : 'virtual_network', iconClass:'icon-contrail-virtual-network' }]
                                     }
                                 }
@@ -392,11 +391,11 @@ define([
                                         dataValueField: "value",
                                         data: allData.addrFields,
                                         queryMap: [
-                                            { name : 'Application',  value : 'application', iconClass:'fa fa-tags' },
-                                            { name : 'Tier',  value : 'tier', iconClass:'fa fa-tags' },
-                                            { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-tags' },
-                                            { name : 'Site',  value : 'site', iconClass:'fa fa-tags' },
-                                            { name : 'Address Group',  value : 'address_group', iconClass:'icon-contrail-network-policy' },
+                                        	{ name : 'Application',  value : 'application', iconClass:'fa fa-object-group' },
+                                            { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-database' },
+                                            { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
+                                            { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' },
+                                            { name : 'Address Group',  value : 'address_group', iconClass:'icon-contrail-network-ipam' },
                                             { name : 'Virtual Networks',  value : 'virtual_network', iconClass:'icon-contrail-virtual-network' }]
                                     }
                                 }
@@ -405,13 +404,13 @@ define([
                     },
                     {
                         columns: [{
-                            elementId: 'match',
+                            elementId: 'match_tags',
                             view: "FormMultiselectView",
                             viewConfig: {
                             	label: 'Match',
                                 class: "col-xs-12",
-                                path: "match",
-                                dataBindValue: "match",
+                                path: "match_tags",
+                                dataBindValue: "match_tags",
                                 elementConfig:{
                                     dataTextField: "text",
                                     placeholder:"Select Match",

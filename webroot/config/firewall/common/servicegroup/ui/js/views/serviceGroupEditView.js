@@ -145,12 +145,10 @@ define([
                                         elementId: 'protocol',
                                         name: 'Protocol',
                                         view: "FormComboboxView",
-                                        class: "",
-                                        width: 230,
+                                        class: "col-xs-6",
                                         viewConfig: {
                                             templateId: cowc.TMPL_EDITABLE_GRID_COMBOBOX_VIEW,
                                             path: "protocol",
-                                            width: 230,
                                             dataBindValue: "protocol()",
                                             elementConfig:{
                                                 dataTextField: 'text',
@@ -167,19 +165,17 @@ define([
                                        },
                                        {
                                            elementId: 'dst_port',
-                                           name: 'Destination Ports',
+                                           name: 'Port',
                                            view: "FormInputView",
-                                           class: "",
-                                           width: 200,
+                                           class: "col-xs-6",
                                            viewConfig: {
                                               templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                                               placeholder: '0 - 65535',
-                                              width: 180,
                                               path: 'dst_port',
                                               dataBindValue: 'dst_port()'
                                            }
-                                       },
-                                       {
+                                       }
+                                       /*{
                                           elementId: 'src_port',
                                           name: 'Source Ports',
                                           view: "FormInputView",
@@ -192,7 +188,7 @@ define([
                                              path: 'src_port',
                                              dataBindValue: 'src_port()'
                                           }
-                                       } 
+                                       }*/
                                   ]
                                 }],
                                 gridActions: [

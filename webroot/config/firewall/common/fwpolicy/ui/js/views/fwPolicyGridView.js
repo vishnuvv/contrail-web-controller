@@ -88,7 +88,7 @@ define([
                     }
                 }
             },
-            columnHeader: { columns: fwPolicyColumns}
+            columnHeader: { columns: getfwPolicyColumns(viewConfig)}
         };
         return gridElementConfig;
     };
@@ -147,59 +147,62 @@ define([
 
         return headerActionConfig;
     };
-    var fwPolicyColumns = [{
-                              id: 'name',
-                              field: 'name',
-                              name: 'Policy Name',
-                              cssClass :'cell-hyperlink-blue',
-                              events : {
-                                  onClick : function(e, dc) {
-                                      var hashParams = null,
-                                          hashObj = {
-                                              view: "config_firewall_rules",
-                                              focusedElement: {
-                                                  policy: dc.name,
-                                                  uuid: dc.uuid,
-                                                  tab: 'config_firewall_rules'
-                                              }
-                                          };
-                                      if (contrail.checkIfKeyExistInObject(true,
-                                              hashParams,
-                                              'clickedElement')) {
-                                          hashObj.clickedElement =
-                                              hashParams.clickedElement;
-                                      }
+    function getfwPolicyColumns(viewConfig){
+    	var fwPolicyColumns = [{
+            id: 'name',
+            field: 'name',
+            name: 'Policy Name',
+            cssClass :'cell-hyperlink-blue',
+            events : {
+                onClick : function(e, dc) {
+                    var hashParams = null,
+                        hashObj = {
+                            view: "config_firewall_rules",
+                            focusedElement: {
+                                policy: dc.name,
+                                uuid: dc.uuid,
+                                tab: 'config_firewall_rules',
+                                isGlobal: viewConfig.isGlobal
+                            }
+                        };
+                    if (contrail.checkIfKeyExistInObject(true,
+                            hashParams,
+                            'clickedElement')) {
+                        hashObj.clickedElement =
+                            hashParams.clickedElement;
+                    }
 
-                                      layoutHandler.setURLHashParams(hashObj, {
-                                          p: "config_firewall_policies",
-                                          merge: false,
-                                          triggerHashChange: true
-                                      });
-                                  }
-                              }
-                           }, {
-                               id: 'id_perms.description',
-                               field: 'id_perms.description',
-                               name: 'Description',
-                               formatter: fwPolicyFormatter.policyDescriptionFormatter
-                            }, {
-                                id: 'application_policy_set_back_refs',
-                                field: 'application_policy_set_back_refs',
-                                name: 'Member Of',
-                                formatter: fwPolicyFormatter.policySetFormatter
-                             }, {
-                               id: 'firewall_rule_refs',
-                               field: 'firewall_rule_refs',
-                               name: 'Number of Rules',
-                               formatter:
-                                   fwPolicyFormatter.fwRuleFormatter
-                           }, {
-                               id: 'id_perms.last_modified',
-                               field: 'id_perms.last_modified',
-                               name: 'Last Updated',
-                               formatter: fwPolicyFormatter.lastUpdateFormatter
-                           }];
-
+                    layoutHandler.setURLHashParams(hashObj, {
+                        p: "config_firewall_policies",
+                        merge: false,
+                        triggerHashChange: true
+                    });
+                }
+            }
+         }, {
+             id: 'id_perms.description',
+             field: 'id_perms.description',
+             name: 'Description',
+             formatter: fwPolicyFormatter.policyDescriptionFormatter
+          }, {
+              id: 'application_policy_set_back_refs',
+              field: 'application_policy_set_back_refs',
+              name: 'Member Of',
+              formatter: fwPolicyFormatter.policySetFormatter
+           }, {
+             id: 'firewall_rule_refs',
+             field: 'firewall_rule_refs',
+             name: 'Number of Rules',
+             formatter:
+                 fwPolicyFormatter.fwRuleFormatter
+         }, {
+             id: 'id_perms.last_modified',
+             field: 'id_perms.last_modified',
+             name: 'Last Updated',
+             formatter: fwPolicyFormatter.lastUpdateFormatter
+         }];
+    	return fwPolicyColumns;
+    };
     function getFWPolicyExpDetailsTemplateConfig() {
         return {
             templateGenerator: 'RowSectionTemplateGenerator',
