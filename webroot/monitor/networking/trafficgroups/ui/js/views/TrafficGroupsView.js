@@ -98,19 +98,29 @@ define(
 						});
                     }
 
-                    function updateChart() {
+                    /**
+                     * @levels  #Indicates no of levels to be drawn
+                     */
+                    this.updateChart = function(cfg) {
                         /*var selTags = ['HR', 'Finance']
                         var levels = [];
                         selTags.forEach(function(val,idx) {
                             levels.push({level:idx,label:val});
                         });*/
+                        var extendConfig = {}
+                        if(_.isEmpty(cfg)) {
+                            cfg = {};
+                        }
+                        if(cfg['levels'] == 2) {
+                            extendConfig['drillDownLevel'] = 2;
+                        }
                         var config = {
 			                id: 'chartBox',
 			                //levels : levels,
 			                components: [{
 			                    id: 'dendrogram-chart-id',
 			                    type: 'RadialDendrogram',
-			                    config: {
+			                    config: $.extend({},{
 			                        arcWidth: 12,
 			                        showArcLabels: true,
 			                        parentSeparationShrinkFactor: 0.02,
@@ -131,16 +141,23 @@ define(
 		                            },
 		                            showLinkTooltip:false,
                                     showLinkInfo:false,
+                                    updateChart: this.updateChart,
 			                        // levels: levels,
 									hierarchyConfig: {
                                         parse: function (d) {
                                             var srcHierarchy = [d['app'], d['tier']],
                                                 dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
-                                                // srcHierarchy = [d['app']];
-                                                // dstHierarchy = [d['eps.traffic.remote_app_id']];
+                                                // console.info(srcHierarchy,dstHierarchy);
+                                            if(cfg['levels'] == 1) {
+                                                srcHierarchy = [d['app']];
+                                                dstHierarchy = [d['eps.traffic.remote_app_id']];
+                                            } else if(cfg['levels'] == 2) {
+                                                srcHierarchy = [d['app'], d['tier']],
+                                                dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];                                            
+                                            }
                                             var src = {
                                                 names: srcHierarchy,
-                                                labelAppend: d['deployment'],
+                                                // labelAppend: 'Production',   //d['deployment'],
                                                 id: srcHierarchy.join('-'),
                                                 value: d['SUM(eps.traffic.in_bytes)'],
                                                 inBytes: d['SUM(eps.traffic.in_bytes)'],
@@ -148,7 +165,7 @@ define(
                                             };
                                             var dst = {
                                                 names: dstHierarchy,
-                                                labelAppend: d['eps.traffic.remote_deployment_id'],
+                                                // labelAppend: 'Deployment',   //d['eps.traffic.remote_deployment_id'],
                                                 id: dstHierarchy.join('-'),
                                                 value: d['SUM(eps.traffic.out_bytes)'],
                                                 inBytes: d['SUM(eps.traffic.in_bytes)'],
@@ -157,7 +174,7 @@ define(
                                             return [src, dst];
                                         }
                                     }
-			                    }
+			                    },extendConfig)
 			                }]
 			            }
                         viewInst.updateConfig(config);
@@ -176,21 +193,46 @@ define(
                                  " SUM(eps.traffic.out_bytes), SUM(eps.traffic.in_pkts), SUM(eps.traffic.out_pkts)",
                             "table_type": "STAT",
                             "table_name": "StatTable.EndpointSecurityStats.eps.traffic",
-                            //"where": "(eps.__key = default-domain:admin:*)"
+                            // "where": "(name = default-domain:admin:*)"
+                            "where": "(name Starts with " + contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' + contrail.getCookie(cowc.COOKIE_PROJECT) + ")",
+                            "where_json": []
                         }
                     }
                     var listModelConfig = {
                         remote : {
                             ajaxConfig : {
                                 url: monitorInfraConstants.monitorInfraUrls['QUERY'],
-                                url: 'fakeData/sessionStats.json',
+                                // url: 'fakeData/sessionStats.json',
                                 // url: 'fakeData/First5Sessions.json',
+                                // url: 'fakeData/sessionStats1.json',
                                 type: 'POST',
                                 type: 'GET',
                                 data: JSON.stringify(postData)
                             },
                             dataParser : function (response) {
-                                return response['data'];
+                                if(false || response['data'].length == 0) {
+                                    return [{
+                                            "app": "__UNKOWN__",
+                                            "deployment": "",
+                                            "eps.traffic.remote_app_id": "__UNKOWN__",
+                                            "eps.traffic.remote_deployment_id": "",
+                                            "eps.traffic.remote_prefix": "",
+                                            "eps.traffic.remote_site_id": "",
+                                            "eps.traffic.remote_tier_id": "",
+                                            "eps.traffic.remote_vn": "",
+                                            "name": "",
+                                            "site": "",
+                                            "tier": "",
+                                            "vn": "",
+                                            "SUM(eps.traffic.hits)": 2,
+                                            "SUM(eps.traffic.in_bytes)": 2842,
+                                            "SUM(eps.traffic.in_pkts)": 29,
+                                            "SUM(eps.traffic.out_bytes)": 0,
+                                            "SUM(eps.traffic.out_pkts)": 0
+                                        }];
+                                } else {
+                                    return response['data'];
+                                }
                             }
                         },
                         vlRemoteConfig: {
@@ -198,7 +240,8 @@ define(
                                 getAjaxConfig: function() {
                                     return {
                                         url: 'api/tenants/config/get-config-details',
-                                        url: 'fakeData/tagMap.json',
+                                        // url: 'fakeData/tagMap.json',
+                                        url: 'fakeData/tags1.json',
                                         type:'POST',
                                         type:'GET',
                                         data:JSON.stringify({data:[{type: 'tags'}]})
@@ -206,18 +249,40 @@ define(
                                 },
                                 successCallback: function(response, contrailListModel) {
                                     TrafficGroupsView.tagMap = _.groupBy(_.map(_.result(response, '0.tags', []), 'tag'), 'tag_id');
+                                    var tagMap = {}; 
+                                    var tagRecords = _.result(response,'0.tags',[]);
+                                    tagRecords.forEach(function(val,idx) {
+                                        var currTag = val['tag'];
+                                        tagMap[currTag.tag_id] = currTag.name;
+                                    });
                                     var data = contrailListModel.getItems();
                                     var chartData = [];
                                     $.each(data, function (idx, value) {
+                                        
                                         $.each(['eps.traffic.remote_app_id', 'eps.traffic.remote_deployment_id',
                                             'eps.traffic.remote_prefix', 'eps.traffic.remote_site_id',
                                             'eps.traffic.remote_tier_id'], function (jdx, val) {
                                                 // value[val] == '0' ?  value[val] = '' : value[val] = _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.tag_type', '')
                                                 //  +'-'+ _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.tag_value', '');
-                                                value[val] == '0' ?  value[val] = '' : value[val] = _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.name', '')
+                                                if(value[val] == '0') 
+                                                    value[val] = ''; 
+                                                if(!_.isEmpty(tagMap[parseInt(value[val])])) {
+                                                    value[val] = tagMap[parseInt(value[val])]; 
+                                                }
                                         });
+                                        //If app is empty, put vn name in app
+                                        if(value['app'] == '' || value['app'] == '0' || value['app'] == null) {
+                                            value['app'] = value['vn'];
+                                        }
+                                        if(value['eps.traffic.remote_app_id'] == '' || value['eps.traffic_remote_app_id'] == '0') {
+                                            // if(value['eps.traffic.remote_vn'] != '') {
+                                                value['eps.traffic.remote_app_id'] = value['eps.traffic.remote_vn'];
+                                            // } else {
+                                            //     value['eps.traffic.remote_app_id'] = value['vn'];
+                                            // }
+                                        }
                                     });
-                                    cowu.populateTrafficGroupsData(data);
+                                    // cowu.populateTrafficGroupsData(data);
                                     return data;
                                 }
                             }]
@@ -231,7 +296,9 @@ define(
                         el: this.$el.find('#traffic-groups-radial-chart'),
                         model: new ContrailListModel(listModelConfig)
                     });
-                    updateChart();
+                    this.updateChart({
+                        levels:1
+                    });
                 }
             });
             return TrafficGroupsView;
