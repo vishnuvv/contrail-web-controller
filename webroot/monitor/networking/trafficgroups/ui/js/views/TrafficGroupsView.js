@@ -12,7 +12,7 @@ define(
 						pushBreadcrumb([ctwc.TRAFFIC_GROUPS_ALL_APPS]);
                     }
                     var trafficGroupsTmpl = contrail.getTemplate4Id('traffic-groups-template'),
-                        trafficLinkInfoTmpl = contrail.getTemplate4Id('traffic-link-widget-template'),
+                        trafficLinkInfoTmpl = contrail.getTemplate4Id('traffic-link-info-template'),
                         collapsableWidgetTmpl = contrail.getTemplate4Id('collapsable-widget-template');
                     self = this;
                     self.$el.html(trafficGroupsTmpl());
@@ -26,49 +26,25 @@ define(
                     TrafficGroupsView.colorMap = {};
                     TrafficGroupsView.tagMap = {};
                     function showLinkInfo(d,el,e,chartScope){
-						//static data... need to remove
-						var srcDest = d.id.match(/[^-]+(\-[^-]+)?/g);
 						var data = {
-							'src': srcDest[0],
-							'dest':srcDest[1],
-							'policyRules': [{
-								 'rule_name':'Policy1:Rule1',
-								 'pol_name':'log, permit',
-								 'src': {
-									'name' : 'src ip',
-									'value' : '10.84.5.0/24'
-								  },
-								 'dest': {
-									'name' : 'dst ip',
-									'value' : '10.84.5.0/24'
-								 }
-								},
-								{
-								 'rule_name':'Policy1:Rule2',
-								 'pol_name':'mirror protocol TCP, permit',
-								 'src': {
-									'name' : 'src tags',
-									'value' : 'application=HR'
-								 },
-								'dest': {
-									'name' : 'dst tags',
-									'value' : 'application=Finance'
-								 }
-								},
-								{
-								 'rule_name':'Policy1:Rule3',
-								 'pol_name':'permit',
-								 'src': {
-									'name' : 'src ip',
-									'value' : '10.0.5.0/24'
-								 },
-								 'dest': {
-									'name' : 'dst ip',
-									'value' : 'any'
-								 }
-								}
-							]
-						};
+								'src': d.link[0].data.id,
+								'dest':d.link[1].data.id,
+								'linkData':[]
+							};
+						_.each(d.link, function(link) {
+							var appObj = {
+							  app_name: link.data.id,
+							  trafficIn: _.sumBy(link.data.dataChildren,
+                                  function(bytes) {
+                                     return bytes['SUM(eps.traffic.in_bytes)'];
+                                  }),
+                              trafficOut: _.sumBy(link.data.dataChildren,
+                                  function(bytes) {
+                                     return bytes['SUM(eps.traffic.out_bytes)'];
+                                 })
+                            };
+                            data.linkData.push(appObj);
+                        });
 						_.each(chartScope.ribbons, function (ribbon) {
 					       ribbon.selected = false;
 					       ribbon.active = false;
@@ -111,8 +87,8 @@ define(
                         if(_.isEmpty(cfg)) {
                             cfg = {};
                         }
-                        if(cfg['levels'] == 2) {
-                            extendConfig['drillDownLevel'] = 2;
+                        if(cfg['levels']) {
+                            extendConfig['drillDownLevel'] = cfg['levels'];
                         }
                         var config = {
 			                id: 'chartBox',
@@ -140,20 +116,28 @@ define(
 		                                return TrafficGroupsView.colorMap[item.level][item.name];
 		                            },
 		                            showLinkTooltip:false,
-                                    showLinkInfo:false,
+                                    showLinkInfo:showLinkInfo,
                                     updateChart: this.updateChart,
 			                        // levels: levels,
 									hierarchyConfig: {
                                         parse: function (d) {
                                             var srcHierarchy = [d['app'], d['tier']],
-                                                dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
+                                                dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']],
+                                                currentProject = contrail.getCookie(cowc.COOKIE_PROJECT),
+                                                externalProject = '';
                                                 // console.info(srcHierarchy,dstHierarchy);
                                             if(cfg['levels'] == 1) {
                                                 srcHierarchy = [d['app']];
                                                 dstHierarchy = [d['eps.traffic.remote_app_id']];
                                             } else if(cfg['levels'] == 2) {
                                                 srcHierarchy = [d['app'], d['tier']],
-                                                dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];                                            
+                                                dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
+                                            }
+                                            if(dstHierarchy.length > 0 && dstHierarchy[0].indexOf(':') > 0){
+                                                var remoteProject = dstHierarchy[0].split(':')[1];
+                                                if(currentProject != remoteProject) {
+	                                                externalProject = 'external';
+                                                }
                                             }
                                             var src = {
                                                 names: srcHierarchy,
@@ -167,6 +151,7 @@ define(
                                                 names: dstHierarchy,
                                                 // labelAppend: 'Deployment',   //d['eps.traffic.remote_deployment_id'],
                                                 id: dstHierarchy.join('-'),
+                                                type: externalProject,
                                                 value: d['SUM(eps.traffic.out_bytes)'],
                                                 inBytes: d['SUM(eps.traffic.in_bytes)'],
                                                 outBytes: d['SUM(eps.traffic.out_bytes)']
