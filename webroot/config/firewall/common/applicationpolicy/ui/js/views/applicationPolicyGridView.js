@@ -84,7 +84,7 @@ define([
                 columns: [
                         {
                              field: 'name',
-                             name: 'Policy Set Name',
+                             name: 'Name',
                              id: 'name'
                         },
                         {
@@ -99,21 +99,21 @@ define([
                         {
                             id: "noofpolicies",
                             field: "noofpolicies",
-                            name: "No. of Policies",
+                            name: "FW Policies",
                             formatter: noOfPoliciesFormatter,
                             sortable: {
                                 sortBy: 'formattedValue'
                             }
                         },
-                        {
-                            id: "aps_is_global",
-                            field: "aps_is_global",
-                            name: "Global Apply",
-                            formatter: isGlobalFormatter,
+                        /*{
+                            id: "shared",
+                            field: "shared",
+                            name: "Shared",
+                            formatter: isSharedFormatter,
                             sortable: {
                                 sortBy: 'formattedValue'
                             }
-                        },
+                        },*/
                         {
                             id: "lastupdated",
                             field: "lastupdated",
@@ -218,13 +218,13 @@ define([
                                             templateGenerator: 'BlockListTemplateGenerator',
                                             templateGeneratorConfig: [
                                                 {
-                                                    label: 'Set Name',
+                                                    label: 'Name',
                                                     key: 'name',
                                                     keyClass:'col-xs-3',
                                                     templateGenerator: 'TextGenerator'
                                                 },
                                                 {
-                                                    label: 'Set Display Name',
+                                                    label: 'Display Name',
                                                     key: 'display_name',
                                                     keyClass:'col-xs-3',
                                                     templateGenerator: 'TextGenerator'
@@ -254,21 +254,21 @@ define([
                                                     }
                                                 },
                                                 {
-                                                    key: 'aps_is_global',
-                                                    templateGenerator: 'TextGenerator',
-                                                    label: 'Gloabl Apply',
-                                                    keyClass:'col-xs-3',
-                                                    templateGeneratorConfig: {
-                                                        formatter: 'setIsGlobalFormatter'
-                                                    }
-                                                },
-                                                {
                                                     key: 'id_perms',
                                                     templateGenerator: 'TextGenerator',
                                                     label: 'Last Updated',
                                                     keyClass:'col-xs-3',
                                                     templateGeneratorConfig: {
                                                         formatter: 'setLastUpdateFormatter'
+                                                    }
+                                                },
+                                                {
+                                                    key: 'aps_is_global',
+                                                    templateGenerator: 'TextGenerator',
+                                                    label: 'Gloabl Apply',
+                                                    keyClass:'col-xs-3',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'isGlobalFormatter'
                                                     }
                                                 }
                                                 
@@ -283,9 +283,7 @@ define([
             }
         };
     };
-    this.setDescriptionFormatter = function(value, dc) {
-        return descriptionFormatter(null, null, null, value, dc, true);
-    };
+    
     this.setNoOfPoliciesFormatter = function(value, dc) {
         return noOfPoliciesFormatter(null, null, null, value, dc, true);
     };
@@ -295,7 +293,7 @@ define([
     this.setIsGlobalFormatter = function(value, dc){
     	return isGlobalFormatter(null, null, null, value, dc, true);
     };
-    function isGlobalFormatter(r, c, v, cd, dc, showAll){
+    this.isGlobalFormatter = function(value, dc){
     	var apsGlobal = getValueByJsonPath(dc, 'aps_is_global', false), isGlobal;
     	if(apsGlobal){
     		isGlobal = 'Enabled';
@@ -304,7 +302,11 @@ define([
     		isGlobal = 'Disabled';
     		return isGlobal;
     	}
-    }
+    };
+   /* function isSharedFormatter(r, c, v, cd, dc, showAll){
+    	var description = getValueByJsonPath(dc, 'id_perms;description','-');
+        return  description;
+    }*/
     function descriptionFormatter(r, c, v, cd, dc, showAll){
     	var description = getValueByJsonPath(dc, 'id_perms;description','-');
         return  description;

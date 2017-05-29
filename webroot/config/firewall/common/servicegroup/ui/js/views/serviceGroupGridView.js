@@ -214,14 +214,14 @@ define([
                                                     templateGenerator: 'TextGenerator'
                                                 },
                                                 {
-                                                    label: 'UUID',
-                                                    key: 'uuid',
+                                                    label: 'Display Name',
+                                                    key: 'display_name',
                                                     keyClass:'col-xs-4',
                                                     templateGenerator: 'TextGenerator'
                                                 },
                                                 {
-                                                    label: 'Display Name',
-                                                    key: 'display_name',
+                                                    label: 'UUID',
+                                                    key: 'uuid',
                                                     keyClass:'col-xs-4',
                                                     templateGenerator: 'TextGenerator'
                                                 },

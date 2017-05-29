@@ -99,9 +99,26 @@ define([
                         {
                             id: "ref_obj",
                             field: "ref_obj",
-                            width:250,
+                            name: "Associated Virtual Networks",
+                            formatter: virtualNetworkFormatter,
+                            sortable: {
+                                sortBy: 'formattedValue'
+                            }
+                        },
+                        {
+                            id: "ref_obj",
+                            field: "ref_obj",
+                            name: "Associated Ports",
+                            formatter: portsFormatter,
+                            sortable: {
+                                sortBy: 'formattedValue'
+                            }
+                        },
+                        {
+                            id: "ref_obj",
+                            field: "ref_obj",
                             name: "Associated Objects",
-                            formatter: refObjectFormatter,
+                            formatter: othersFormatter,
                             sortable: {
                                 sortBy: 'formattedValue'
                             }
@@ -112,16 +129,6 @@ define([
         return gridElementConfig;
     };
     var rowActionConfig = [
-        /*ctwgc.getEditConfig('Edit', function(rowIndex) {
-            dataView = $('#' + ctwc.SECURITY_POLICY_TAG_GRID_ID).data("contrailGrid")._dataView;
-            tagEditView.model = new TagModel(dataView.getItem(rowIndex));
-            tagEditView.renderAddEditTag({
-                                  "title": 'Edit Tag',
-                                  'mode':'edit',
-                                   callback: function () {
-                                      dataView.refreshData();
-            }});
-        }),*/
         ctwgc.getDeleteConfig('Delete', function(rowIndex) {
            var dataItem = $('#' + ctwc.SECURITY_POLICY_TAG_GRID_ID).data('contrailGrid')._dataView.getItem(rowIndex);
            tagEditView.model = new TagModel(dataItem);
@@ -203,14 +210,14 @@ define([
                                                     templateGenerator: 'TextGenerator'
                                                 },
                                                 {
-                                                    label: 'UUID',
-                                                    key: 'uuid',
+                                                    label: 'Display Name',
+                                                    key: 'display_name',
                                                     keyClass:'col-xs-4',
                                                     templateGenerator: 'TextGenerator'
                                                 },
                                                 {
-                                                    label: 'Display Name',
-                                                    key: 'display_name',
+                                                    label: 'UUID',
+                                                    key: 'uuid',
                                                     keyClass:'col-xs-4',
                                                     templateGenerator: 'TextGenerator'
                                                 },
@@ -250,10 +257,27 @@ define([
                                                 {
                                                     key: 'tag_id',
                                                     templateGenerator: 'TextGenerator',
+                                                    label: 'Associated Virtual Networks',
+                                                    keyClass:'col-xs-4',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'detailsVirtualNetworkFormatter'
+                                                    }
+                                                },
+                                                {
+                                                    key: 'tag_id',
+                                                    templateGenerator: 'TextGenerator',
+                                                    label: 'Associated Ports',
+                                                    keyClass:'col-xs-4',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'detailsPortsFormatter'
+                                                    }
+                                                },{
+                                                    key: 'tag_id',
+                                                    templateGenerator: 'TextGenerator',
                                                     label: 'Associated Objects',
                                                     keyClass:'col-xs-4',
                                                     templateGeneratorConfig: {
-                                                        formatter: 'detailTagObjFormatter'
+                                                        formatter: 'detailsOthersFormatter'
                                                     }
                                                 }
                                             ]
@@ -272,54 +296,34 @@ define([
     	var hexId = getId.toString(16);
     	return hexId;
     };
-    this.detailTagObjFormatter = function(value, dc){
-    	var returnString = '',refList = [];
-        var rowObj = dc;
-        for(var j in rowObj){
-            if(j.substring(j.length-5,j.length) === '_refs'){
-               var nameList = [];
-               for(var k = 0; k < rowObj[j].length; k++){
-            	   var to = rowObj[j][k].to;
-            	   var name = to[to.length-1];
-            	   nameList.push(name);
-               }
-               var text = j.split('_');
-               text.pop();
-               text.pop();
-               refText = '<span class="rule-format">'+ text.join('_') +'</span>&nbsp:&nbsp<span>'+ nameList.join(',') +'</span>';
-               refList.push(refText);
-            }
-        }
-        if(refList.length > 0){
-            for(var l = 0; l< refList.length; l++){
-                if(refList[l]) {
-                    returnString += refList[l] + "<br>";
-                }
-            }
-        }else{
-        	returnString = '-';
-        }
-        return  returnString;
+    this.detailsVirtualNetworkFormatter = function(value, dc) {
+        return virtualNetworkFormatter(null, null, null, value, dc, true);
     };
-    function refObjectFormatter(r, c, v, cd, dc, showAll){
-        var returnString = '',refList = [];
-        var rowObj = dc;
-        for(var j in rowObj){
-            if(j.substring(j.length-5,j.length) === '_refs'){
-               var nameList = [];
-               for(var k = 0; k < rowObj[j].length; k++){
-            	   var to = rowObj[j][k].to;
-            	   var name = to[to.length-1];
-            	   nameList.push(name);
-               }
-               var text = j.split('_');
-               text.pop();
-               text.pop();
-               refText = '<span class="rule-format">'+ text.join('_') +'</span>&nbsp:&nbsp<span>'+ nameList.join(',') +'</span>';
-               refList.push(refText);
-            }
-        }
+    this.detailsPortsFormatter = function(value, dc) {
+        return portsFormatter(null, null, null, value, dc, true);
+    };
+    this.detailsOthersFormatter = function(value, dc) {
+        return othersFormatter(null, null, null, value, dc, true);
+    }
+    function virtualNetworkFormatter(r, c, v, cd, dc, showAll){
+    	var returnString = '',refList = [];
+    	var vn = getValueByJsonPath(dc, 'virtual_network_back_refs', []);
+    	for(var j = 0; j < vn.length; j++){
+    		var to = vn[j].to;
+    		var name = to[to.length-1];
+    		var refText = '<span>'+ name +'</span>';
+    		refList.push(refText);
+    	}
+        
         if(refList.length > 0){
+        	if ((null != showAll) && (true == showAll)) {
+                for (var q = 0; q < refList.length; q++) {
+                    if (typeof refList[q] !== "undefined") {
+                        returnString += refList[q] + "<br>";
+                    }
+                }
+                return returnString;
+            }
             for(var l = 0; l< refList.length,l < 2; l++){
                 if(refList[l]) {
                     returnString += refList[l] + "<br>";
@@ -334,7 +338,82 @@ define([
         	returnString = '-';
         }
         return  returnString;
-    }
+    };
+    function portsFormatter(r, c, v, cd, dc, showAll){
+    	var returnString = '',refList = [];
+    	var vmi = getValueByJsonPath(dc, 'virtual_machine_interface_back_refs', []);
+    	for(var j = 0; j < vmi.length; j++){
+    		var to = vmi[j].to;
+    		var name = to[to.length-1];
+    		var refText = '<span>'+ name +'</span>';
+    		refList.push(refText);
+    	}
+        
+        if(refList.length > 0){
+        	if ((null != showAll) && (true == showAll)) {
+                for (var q = 0; q < refList.length; q++) {
+                    if (typeof refList[q] !== "undefined") {
+                        returnString += refList[q] + "<br>";
+                    }
+                }
+                return returnString;
+            }
+            for(var l = 0; l< refList.length,l < 2; l++){
+                if(refList[l]) {
+                    returnString += refList[l] + "<br>";
+                }
+            }
+            if (refList.length > 2) {
+                returnString += '<span class="moredataText">(' +
+                    (refList.length-2) + ' more)</span> \
+                    <span class="moredata" style="display:none;" ></span>';
+            }
+        }else{
+        	returnString = '-';
+        }
+        return  returnString;
+    };
+    function othersFormatter(r, c, v, cd, dc, showAll){
+        var returnString = '',refList = [];
+        var rowObj = dc;
+        for(var j in rowObj){
+        	if(j !== 'virtual_machine_interface_back_refs' && j !== 'virtual_network_back_refs'){
+        		if(j.substring(j.length-5,j.length) === '_refs'){
+ 	               var nameList = [];
+ 	               for(var k = 0; k < rowObj[j].length; k++){
+ 	            	   var to = rowObj[j][k].to;
+ 	            	   var name = to[to.length-1];
+ 	            	   nameList.push(name);
+ 	               }
+ 	               refText = '<span>'+ nameList.join(',') +'</span>';
+ 	               refList.push(refText);
+ 	            }
+        	}
+	    }
+        if(refList.length > 0){
+        	if ((null != showAll) && (true == showAll)) {
+                for (var q = 0; q < refList.length; q++) {
+                    if (typeof refList[q] !== "undefined") {
+                        returnString += refList[q] + "<br>";
+                    }
+                }
+                return returnString;
+            }
+            for(var l = 0; l< refList.length,l < 2; l++){
+                if(refList[l]) {
+                    returnString += refList[l] + "<br>";
+                }
+            }
+            if (refList.length > 2) {
+                returnString += '<span class="moredataText">(' +
+                    (refList.length-2) + ' more)</span> \
+                    <span class="moredata" style="display:none;" ></span>';
+            }
+        }else{
+        	returnString = '-';
+        }
+        return  returnString;
+    };
    return tagGridView;
 });
 
