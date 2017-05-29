@@ -57,6 +57,42 @@ define([
             });
         },
 
+        renderDeleteFWPolicies: function(options) {
+            var delTemplate =
+                contrail.getTemplate4Id('core-generic-delete-form-template');
+            var self = this;
+
+            var delLayout = delTemplate({prefixId: prefixId});
+            cowu.createModal({'modalId': modalId, 'className': 'modal-480',
+                             'title': options['title'], 'btnName': 'Confirm',
+                             'body': delLayout,
+               'onSave': function () {
+                self.model.deleteFWPolicies(options['checkedRows'], {
+                    init: function () {
+                        cowu.enableModalLoading(modalId);
+                    },
+                    success: function () {
+                        options['callback']();
+                        $("#" + modalId).modal('hide');
+                    },
+                    error: function (error) {
+                        cowu.disableModalLoading(modalId, function () {
+                            self.model.showErrorAttr(prefixId +
+                                                     cowc.FORM_SUFFIX_ID,
+                                                     error.responseText);
+                        });
+                    }
+                });
+            }, 'onCancel': function () {
+                Knockback.release(self.model, document.getElementById(modalId));
+                kbValidation.unbind(self);
+                $("#" + modalId).modal('hide');
+            }});
+            self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
+            Knockback.applyBindings(self.model, document.getElementById(modalId));
+            kbValidation.bind(self);
+        },
+
         fetchAllData : function(self, callback) {
             var getAjaxs = [];
             var selectedDomain = contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME);
@@ -377,7 +413,7 @@ define([
                                  class: "",
                                  width: 180,
                                  viewConfig: {
-                                     placeholder: 'Protocol:Dest:Src',
+                                     placeholder: 'Protocol:Port',
                                      templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
                                      path: "user_created_service",
                                      dataBindValue: "user_created_service()",
@@ -407,7 +443,7 @@ define([
                                                 name : 'Application',
                                                 value : 'Application',
                                                 iconClass:
-                                                'fa fa-object-group'
+                                                'fa fa-list-alt'
                                             },
                                             {
                                                 name : 'Deployment',
@@ -480,7 +516,7 @@ define([
                                                 name : 'Application',
                                                 value : 'Application',
                                                 iconClass:
-                                                'fa fa-object-group'
+                                                'fa fa-list-alt'
                                             },
                                             {
                                                 name : 'Deployment',
@@ -516,7 +552,7 @@ define([
                                     }
                                 }, {
                                     elementId: 'match_tags',
-                                    name: 'Match',
+                                    name: 'Match Tags',
                                     view: "FormMultiselectView",
                                     viewConfig:
                                       {

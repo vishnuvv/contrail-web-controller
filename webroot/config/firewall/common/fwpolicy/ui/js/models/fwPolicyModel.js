@@ -265,13 +265,13 @@ define([
                     newFWRuleData['endpoint_1'] = self.populateEndpointData(attr['endpoint_1']);
                     newFWRuleData['endpoint_2'] = self.populateEndpointData(attr['endpoint_2']);
                     var service = attr['user_created_service'].split(':');
-                    if(service.length === 3) {
+                    if(service.length === 2) {
                         newFWRuleData['service'] = {};
                         newFWRuleData['service']['protocol'] = service[0];
                         newFWRuleData['service']['dst_ports'] =
                             policyFormatters.formatPort(service[1])[0];
                         newFWRuleData['service']['src_ports'] =
-                            policyFormatters.formatPort(service[2])[0];
+                            policyFormatters.formatPort('0-0')[0];
                     }
                     newFWRuleData['action_list'] = {};
                     newFWRuleData['action_list']['simple_action'] = attr['simple_action'];
@@ -314,7 +314,7 @@ define([
             return returnFlag;
         },
 
-        deleteFWPolicys : function(checkedRows, callbackObj) {
+        deleteFWPolicies : function(checkedRows, callbackObj) {
             var ajaxConfig = {}, that = this;
             var uuidList = [];
 

@@ -22,9 +22,9 @@
                    "application_policy_set_back_refs", [], false);
                _.each(policySets, function(polSet, i) {
                    if(i === 0){
-                       formattedPolSet = polSet.to.join(":");
+                       formattedPolSet = polSet.to[polSet.to.length - 1];
                    } else {
-                       formattedPolSet += ', ' + polSet.to.join(":");
+                       formattedPolSet += ', ' + polSet.to[polSet.to.length - 1];
                    }
                });
                return formattedPolSet ? formattedPolSet : '-';

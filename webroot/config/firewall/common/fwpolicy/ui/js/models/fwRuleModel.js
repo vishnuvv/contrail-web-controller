@@ -5,13 +5,15 @@
 define([
     'underscore',
     'contrail-model',
-    'config/networking/policy/ui/js/views/policyFormatters'
-], function (_, ContrailModel, PolicyFormatters) {
+    'config/networking/policy/ui/js/views/policyFormatters',
+    'config/firewall/common/fwpolicy/ui/js/fwRuleFormatter'
+], function (_, ContrailModel, PolicyFormatters, FWRuleFormatters) {
 	var policyFormatters = new PolicyFormatters();
+	var fwRuleFormatters = new FWRuleFormatters();
     var fwRuleModel = ContrailModel.extend({
         defaultConfig: {
         	'name': '',
-            'enable': false,
+            'enable': true,
             'sequence':'',
             'simple_action':'pass',
             'protocol': '',
@@ -83,6 +85,8 @@ define([
         	}else{
         		modelConfig['endpoint_2'] = self.getEndpointVal(endpoint2, modelConfig);
         	}
+        	modelConfig['sequence'] = fwRuleFormatters.sequenceFormatter(null,
+        	        null, null, null, modelConfig);
         	return modelConfig;
         },
         getEndpointVal : function(endpoint, modelConfig){
@@ -273,7 +277,7 @@ define([
                         ajaxConfig.url = ctwc.URL_UPDATE_CONFIG_OBJECT;
                         ajaxConfig.data  = JSON.stringify(postData);
 	                }
-	                
+	
 	                contrail.ajaxHandler(ajaxConfig, function () {
 	                    if (contrail.checkIfFunction(callbackObj.init)) {
 	                        callbackObj.init();

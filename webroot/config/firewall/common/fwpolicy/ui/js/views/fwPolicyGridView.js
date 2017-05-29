@@ -49,6 +49,29 @@ define([
             }
         }
     };
+    
+    function getRowActionConfig() {
+        var rowActionConfig = [
+          ctwgc.getDeleteAction(function (rowIndex) {
+              var dataItem = $(gridElId).data("contrailGrid").
+                  _dataView.getItem(rowIndex),
+                  fwPolicyModel = new FWPolicyModel(dataItem),
+                  checkedRow = [dataItem];
+
+              fwPolicyEditView.model = fwPolicyModel;
+              fwPolicyEditView.renderDeleteFWPolicies(
+                  {"title": ctwl.TITLE_FW_POLICY_DELETE,
+                      checkedRows: checkedRow,
+                      callback: function () {
+                          var dataView =
+                              $(gridElId).data("contrailGrid")._dataView;
+                          dataView.refreshData();
+                      }
+                  }
+              );
+        })];
+        return rowActionConfig;
+    };
 
     function getConfiguration (viewConfig) {
         var gridElementConfig = {
@@ -69,7 +92,7 @@ define([
                                 removeClass('disabled-link');
                         }
                     },
-                    actionCell: [],//getRowActionConfig(viewConfig),
+                    actionCell: getRowActionConfig(viewConfig),
                     detail: {
                         template:
                             cowu.generateDetailTemplateHTML(
@@ -108,7 +131,7 @@ define([
                             getCheckedRows();
                         if(checkedRows && checkedRows.length > 0) {
                             fwPolicyEditView.model = fwPolicyModel;
-                            fwPolicyEditView.renderDeleteFWPolicy(
+                            fwPolicyEditView.renderDeleteFWPolicies(
                                 {"title": ctwl.TITLE_FW_POLICY_MULTI_DELETE,
                                     checkedRows: checkedRows,
                                     callback: function () {

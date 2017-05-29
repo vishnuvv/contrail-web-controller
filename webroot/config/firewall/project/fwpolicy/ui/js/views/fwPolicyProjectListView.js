@@ -20,6 +20,7 @@ define([
                         type: "POST",
                         data: JSON.stringify(
                             {data: [{type: 'firewall-policys',
+                                fields: ['application_policy_set_back_refs'],
                                 parent_id: currentProject.value}]})
                     },
                     dataParser: self.parseFWPolicyData,

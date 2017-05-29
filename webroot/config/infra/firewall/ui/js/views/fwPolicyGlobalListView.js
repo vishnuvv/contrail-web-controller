@@ -22,6 +22,7 @@ define([
                         url: ctwc.URL_GET_CONFIG_DETAILS,
                         type: "POST",
                         data: JSON.stringify({data: [{type: "firewall-policys",
+                            fields: ['application_policy_set_back_refs'],
                             parent_fq_name_str: "default-policy-management",
                             parent_type: "policy-management"}]})
                     },

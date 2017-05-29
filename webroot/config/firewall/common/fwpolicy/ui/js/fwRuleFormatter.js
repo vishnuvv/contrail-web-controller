@@ -15,6 +15,34 @@
           };
 
           /*
+           * squenceFormatter
+           */
+           this.sequenceFormatter = function(r, c, v, cd, dc) {
+               var sequence = '', policies = getValueByJsonPath(dc,
+                   "firewall_policy_back_refs", [], false),
+                   currentHashParams = layoutHandler.getURLHashParams(),
+                   policyId = currentHashParams.focusedElement.uuid;
+
+               for(var i = 0; i < policies.length; i++) {
+                   if(policies[i].uuid === policyId) {
+                       sequence = getValueByJsonPath(policies[i],
+                               'attr;sequence', '', false);
+                       break;
+                   }
+               }
+               return sequence ? sequence : (cd ? '-' : '');
+           };
+
+           /*
+            * enabledFormatter
+            */
+            this.enabledFormatter = function(r, c, v, cd, dc) {
+                var enabled = getValueByJsonPath(dc,
+                        'id_perms;enabled', true, false);
+                return enabled ? 'Enabled' : 'Disabled';
+            };
+
+          /*
            * serviceFormatter
            */
            this.serviceFormatter = function(r, c, v, cd, dc) {
@@ -23,8 +51,7 @@
                serviceStr = service && service.protocol ?
                        service.protocol + " : " +
                        service.dst_ports.start_port + '-' +
-                       service.dst_ports.end_port + ":" +
-                       service.src_ports.start_port + '-' + service.src_ports.end_port: '-';
+                       service.dst_ports.end_port : '-';
                return serviceStr;
            };
 
@@ -33,10 +60,11 @@
            */
            this.endPoint1Formatter = function(r, c, v, cd, dc) {
                return formatEndPoints(dc, 'endpoint_1');
-                   
+
            };
-           
+
            var formatEndPoints =  function(dc, endpointTarget) {
+               var rule_display = '';
                var endpoint = getValueByJsonPath(dc, endpointTarget, {});
                if(endpoint.subnet) {
                    return endpoint.subnet;
@@ -53,14 +81,14 @@
                } else {
                    return '-';
                }
-           } 
-           
+           }
+
            /*
             * endPoint2Formatter
             */
             this.endPoint2Formatter = function(r, c, v, cd, dc) {
                 return formatEndPoints(dc, 'endpoint_2');
-            };         
+            };
 
             /*
              * matchFormatter
@@ -69,13 +97,13 @@
                 var match = getValueByJsonPath(dc,
                     "match_tags;tag_list", [], false);
                 if(match.length > 0) {
-                    match  = match.join(',');
+                    match  = match.join(' && ');
                 } else {
                     match = '-';
                 }
                 return match;
             };
-            
+
             /*
              * dirFormatter
              */
@@ -88,8 +116,8 @@
                     dir = '-';
                 }
                 return dir;
-            };            
-            
+            };
+
             /*
              * simpleActionFormatter
              */
@@ -98,7 +126,7 @@
                 simpleAction = getValueByJsonPath(dc,
                     "action_list;apply_service", [], false);
                 return simpleAction.length > 0 ? simpleAction.join(',') : '-';
-            };            
+            };
      };
      return fwRuleFormatter
  });

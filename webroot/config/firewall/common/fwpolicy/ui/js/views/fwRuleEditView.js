@@ -269,6 +269,7 @@ define([
                                 viewConfig: {
                                     label: 'Order',
                                     placeholder: 'Enter Order',
+                                    disabled: isDisable,
                                     path: 'sequence',
                                     class:'col-xs-6',
                                     dataBindValue: 'sequence'
@@ -334,7 +335,7 @@ define([
                         	{
                                 elementId: 'endpoint_1',
                                 view:"FormHierarchicalDropdownView",
-                                name: 'EndpointOne',
+                                name: 'End Point 1',
                                 viewConfig: {
                                     //templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
                                     class:'col-xs-6',
@@ -348,7 +349,7 @@ define([
                                         dataValueField: "value",
                                         data: allData.addrFields,
                                         queryMap: [
-                                            { name : 'Application',  value : 'application', iconClass:'fa fa-object-group' },
+                                            { name : 'Application',  value : 'application', iconClass:'fa fa-list-alt' },
                                             { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-database' },
                                             { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
                                             { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' },
@@ -356,28 +357,27 @@ define([
                                             { name : 'Virtual Networks',  value : 'virtual_network', iconClass:'icon-contrail-virtual-network' }]
                                     }
                                 }
-                            },
-                            {
-                                elementId: 'direction',
-                                name: 'Direction',
-                                view: "FormDropdownView",
-                                viewConfig: {
-                                    label: 'Direction',
-                                    class: "col-xs-6",
-                                    path: "direction",
-                                    dataBindValue: "direction",
-                                    elementConfig:{
-                                        data:['<>', '>']
-                                    }}
-                             }
+                            }
                         ]
-                    },
+                    }, { columns:[{
+                        elementId: 'direction',
+                        name: 'Direction',
+                        view: "FormDropdownView",
+                        viewConfig: {
+                            label: 'Direction',
+                            class: "col-xs-6",
+                            path: "direction",
+                            dataBindValue: "direction",
+                            elementConfig:{
+                                data:['<>', '>']
+                            }}
+                     }]},
                     {
                         columns: [
                         	{
                                 elementId: 'endpoint_2',
                                 view:"FormHierarchicalDropdownView",
-                                name: 'EndpointTwo',
+                                name: 'End Point 2',
                                 viewConfig: {
                                     //templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
                                     class:'col-xs-6',
@@ -391,7 +391,7 @@ define([
                                         dataValueField: "value",
                                         data: allData.addrFields,
                                         queryMap: [
-                                        	{ name : 'Application',  value : 'application', iconClass:'fa fa-object-group' },
+                                        	{ name : 'Application',  value : 'application', iconClass:'fa fa-list-alt' },
                                             { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-database' },
                                             { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
                                             { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' },
@@ -407,7 +407,7 @@ define([
                             elementId: 'match_tags',
                             view: "FormMultiselectView",
                             viewConfig: {
-                            	label: 'Match',
+                            	label: 'Match Tags',
                                 class: "col-xs-12",
                                 path: "match_tags",
                                 dataBindValue: "match_tags",

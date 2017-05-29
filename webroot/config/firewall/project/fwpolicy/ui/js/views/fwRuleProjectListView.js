@@ -23,15 +23,54 @@ define([
                         type: "POST",
                         data: JSON.stringify(
                             {data: [{type: 'firewall-policys', obj_uuids:[policyId]},
-                                    {type: 'firewall-rules'}]})
+                                    {type: 'firewall-rules',
+                                fields: ['firewall_policy_back_refs']}]})
                     },
                     dataParser: self.parseFWRuleData,
-                }
+                }/*,
+                vlRemoteConfig : {
+                    vlRemoteList : self.getDataLazyRemoteConfig()
+                } */               
             };
             var contrailListModel = new ContrailListModel(listModelConfig);
             this.renderView4Config(this.$el,
                     contrailListModel, getfwRuleGridViewConfig());
         },
+
+        getDataLazyRemoteConfig : function () {
+            return [                  
+                {
+                    getAjaxConfig: function (responseJSON) {
+                        var lazyAjaxConfig = {
+                            url: "/api/tenants/config/get-config-details",
+                            type: 'POST',
+                            data: JSON.stringify(
+                                    {data: [{type: 'tags'}]})
+                        }
+                        return lazyAjaxConfig;
+                    },
+                    successCallback: function (response, contrailListModel,
+                        parentModelList) {
+                        
+                    }
+                },
+                {
+                    getAjaxConfig: function (responseJSON) {
+                        var lazyAjaxConfig = {
+                            url: "/api/tenants/config/get-config-details",
+                            type: 'POST',
+                            data: JSON.stringify(
+                                    {data: [{type: 'address-groups'}]})
+                        }
+                        return lazyAjaxConfig;
+                    },
+                    successCallback: function (response, contrailListModel,
+                        parentModelList) {
+                    }
+                }                
+            ];
+        },
+
         parseFWRuleData : function(response) {
             var currentPolicyRuleIds = getFWRuleIds(getValueByJsonPath(response,
                           "0;firewall-policys;0;firewall-policy", {}, false)),

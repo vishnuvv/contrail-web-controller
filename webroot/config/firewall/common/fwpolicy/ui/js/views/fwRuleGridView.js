@@ -166,38 +166,57 @@ define([
         return headerActionConfig;
     }
     var fwRuleColumns = [{
+                               id: 'sequence',
+                               field: 'sequence',
+                               width: 50,
+                               name: 'Order',
+                               formatter: fwRuleFormatter.sequenceFormatter
+                           }, {
+                               id: 'enabled',
+                               field: 'enabled',
+                               width: 70,
+                               name: 'Status',
+                               formatter: fwRuleFormatter.enabledFormatter
+                           }, {
                               id: 'action_list.simple_action',
                               field: 'action_list.simple_action',
+                              width: 70,
                               name: 'Action',
                               formatter: fwRuleFormatter.actionFormatter
                            }, {
                                id: 'service',
                                field: 'service',
+                               width: 140,
                                name: 'Service (Portocol:Port)',
                                formatter: fwRuleFormatter.serviceFormatter
                            }, {
                                id: 'endpoint_1',
                                field: 'endpoint_1',
+                               width: 240,
                                name: 'End Point 1',
                                formatter: fwRuleFormatter.endPoint1Formatter
                            }, {
                                id: 'direction',
                                field: 'direction',
+                               width: 60,
                                name: 'Dir',
                                formatter: fwRuleFormatter.dirFormatter
                            }, {
                                id: 'endpoint_2',
                                field: 'endpoint_2',
+                               width: 240,
                                name: 'End Point 2',
                                formatter: fwRuleFormatter.endPoint2Formatter
                            }, {
                                id: 'match_tags',
                                field: 'match_tags',
-                               name: 'Match',
+                               width: 100,
+                               name: 'Match Tags',
                                formatter: fwRuleFormatter.matchFormatter
                            }, {
                                id: 'action_list.apply_service',
                                field: 'action_list.apply_service',
+                               width: 90,
                                name: 'Simple Actions',
                                formatter: fwRuleFormatter.simpleActionFormatter
                            }];
@@ -233,6 +252,24 @@ define([
                                     key: "uuid",
                                     templateGenerator: "TextGenerator",
                                     label: "UUID"
+                                },{
+                                    keyClass:'col-xs-3',
+                                    valueClass:'col-xs-9',
+                                    key: "uuid",
+                                    templateGenerator: "TextGenerator",
+                                    label: "Order",
+                                    templateGeneratorConfig: {
+                                        formatter: "sequenceFormatter"
+                                    }
+                                },{
+                                    keyClass:'col-xs-3',
+                                    valueClass:'col-xs-9',
+                                    key: "uuid",
+                                    templateGenerator: "TextGenerator",
+                                    label: "Status",
+                                    templateGeneratorConfig: {
+                                        formatter: "enabledFormatter"
+                                    }
                                 },{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
@@ -299,6 +336,14 @@ define([
     this.actionFormatter = function(v, dc) {
         return fwRuleFormatter.actionFormatter("", "", v, "", dc);
     };
+    
+    this.sequenceFormatter = function(v, dc) {
+        return fwRuleFormatter.sequenceFormatter("", "", v, "", dc);
+    };
+    
+    this.enabledFormatter = function(v, dc) {
+        return fwRuleFormatter.enabledFormatter("", "", v, "", dc);
+    };    
 
     this.serviceFormatter = function(v, dc) {
         return fwRuleFormatter.serviceFormatter("", "", v, "", dc);

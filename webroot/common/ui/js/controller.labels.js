@@ -827,6 +827,7 @@ define([
         this.TITLE_SAVE_NEXT = "Save &amp; Next";
         this.TITLE_SAVE = "Save";
         this.TITLE_FW_POLICY_MULTI_DELETE = 'Delete Firewall Policy (s)';
+        this.TITLE_FW_POLICY_DELETE = 'Delete Firewall Policy';
 
         /* RBAC labels */
         this.TITLE_RBAC = 'API Access';
