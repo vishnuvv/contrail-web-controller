@@ -97,9 +97,14 @@ define([
                             id: 'tag_value'
                         },
                         {
-                            field: 'tag_id',
-                            name: 'ID',
-                            id: 'tag_id'
+                            id: "ref_obj",
+                            field: "ref_obj",
+                            width:250,
+                            name: "Associated Objects",
+                            formatter: refObjectFormatter,
+                            sortable: {
+                                sortBy: 'formattedValue'
+                            }
                         }
                 ]
             },
@@ -234,10 +239,22 @@ define([
                                                     templateGenerator: 'TextGenerator'
                                                 },
                                                 {
-                                                    label: 'ID',
                                                     key: 'tag_id',
+                                                    templateGenerator: 'TextGenerator',
+                                                    label: 'ID',
                                                     keyClass:'col-xs-4',
-                                                    templateGenerator: 'TextGenerator'
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'tagIdFormatter'
+                                                    }
+                                                },
+                                                {
+                                                    key: 'tag_id',
+                                                    templateGenerator: 'TextGenerator',
+                                                    label: 'Associated Objects',
+                                                    keyClass:'col-xs-4',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'detailTagObjFormatter'
+                                                    }
                                                 }
                                             ]
                                         }
@@ -250,7 +267,74 @@ define([
             }
         };
     };
-
+    this.tagIdFormatter = function(value, dc) {
+    	var getId = getValueByJsonPath(dc, 'tag_id', 0);
+    	var hexId = getId.toString(16);
+    	return hexId;
+    };
+    this.detailTagObjFormatter = function(value, dc){
+    	var returnString = '',refList = [];
+        var rowObj = dc;
+        for(var j in rowObj){
+            if(j.substring(j.length-5,j.length) === '_refs'){
+               var nameList = [];
+               for(var k = 0; k < rowObj[j].length; k++){
+            	   var to = rowObj[j][k].to;
+            	   var name = to[to.length-1];
+            	   nameList.push(name);
+               }
+               var text = j.split('_');
+               text.pop();
+               text.pop();
+               refText = '<span class="rule-format">'+ text.join('_') +'</span>&nbsp:&nbsp<span>'+ nameList.join(',') +'</span>';
+               refList.push(refText);
+            }
+        }
+        if(refList.length > 0){
+            for(var l = 0; l< refList.length; l++){
+                if(refList[l]) {
+                    returnString += refList[l] + "<br>";
+                }
+            }
+        }else{
+        	returnString = '-';
+        }
+        return  returnString;
+    };
+    function refObjectFormatter(r, c, v, cd, dc, showAll){
+        var returnString = '',refList = [];
+        var rowObj = dc;
+        for(var j in rowObj){
+            if(j.substring(j.length-5,j.length) === '_refs'){
+               var nameList = [];
+               for(var k = 0; k < rowObj[j].length; k++){
+            	   var to = rowObj[j][k].to;
+            	   var name = to[to.length-1];
+            	   nameList.push(name);
+               }
+               var text = j.split('_');
+               text.pop();
+               text.pop();
+               refText = '<span class="rule-format">'+ text.join('_') +'</span>&nbsp:&nbsp<span>'+ nameList.join(',') +'</span>';
+               refList.push(refText);
+            }
+        }
+        if(refList.length > 0){
+            for(var l = 0; l< refList.length,l < 2; l++){
+                if(refList[l]) {
+                    returnString += refList[l] + "<br>";
+                }
+            }
+            if (refList.length > 2) {
+                returnString += '<span class="moredataText">(' +
+                    (refList.length-2) + ' more)</span> \
+                    <span class="moredata" style="display:none;" ></span>';
+            }
+        }else{
+        	returnString = '-';
+        }
+        return  returnString;
+    }
    return tagGridView;
 });
 

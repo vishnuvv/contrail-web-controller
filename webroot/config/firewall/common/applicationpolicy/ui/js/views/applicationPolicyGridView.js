@@ -106,6 +106,15 @@ define([
                             }
                         },
                         {
+                            id: "aps_is_global",
+                            field: "aps_is_global",
+                            name: "Global Apply",
+                            formatter: isGlobalFormatter,
+                            sortable: {
+                                sortBy: 'formattedValue'
+                            }
+                        },
+                        {
                             id: "lastupdated",
                             field: "lastupdated",
                             name: "Last Updated",
@@ -245,6 +254,15 @@ define([
                                                     }
                                                 },
                                                 {
+                                                    key: 'aps_is_global',
+                                                    templateGenerator: 'TextGenerator',
+                                                    label: 'Gloabl Apply',
+                                                    keyClass:'col-xs-3',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'setIsGlobalFormatter'
+                                                    }
+                                                },
+                                                {
                                                     key: 'id_perms',
                                                     templateGenerator: 'TextGenerator',
                                                     label: 'Last Updated',
@@ -274,6 +292,19 @@ define([
     this.setLastUpdateFormatter = function(value, dc) {
         return lastUpdateFormatter(null, null, null, value, dc, true);
     };
+    this.setIsGlobalFormatter = function(value, dc){
+    	return isGlobalFormatter(null, null, null, value, dc, true);
+    };
+    function isGlobalFormatter(r, c, v, cd, dc, showAll){
+    	var apsGlobal = getValueByJsonPath(dc, 'aps_is_global', false), isGlobal;
+    	if(apsGlobal){
+    		isGlobal = 'Enabled';
+    		return isGlobal;
+    	}else{
+    		isGlobal = 'Disabled';
+    		return isGlobal;
+    	}
+    }
     function descriptionFormatter(r, c, v, cd, dc, showAll){
     	var description = getValueByJsonPath(dc, 'id_perms;description','-');
         return  description;

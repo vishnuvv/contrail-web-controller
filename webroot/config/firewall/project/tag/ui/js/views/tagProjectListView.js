@@ -20,7 +20,11 @@ define([
                         type: "POST",
                         data: JSON.stringify(
                             {data: [{type: 'tags',
-                                parent_id: currentProject.value}]})
+                                parent_id: currentProject.value,
+                                fields: ['application_policy_set_back_refs','virtual_DNS_back_refs','service_instance_back_refs',
+                                	'logical_router_back_refs','virtual_machine_interface_back_refs','virtual_network_back_refs',
+                                	'network_policy_back_refs','route_table_back_refs',
+                                	'bgp_as_a_service_back_refs','security_group_back_refs','bgp_router_back_refs','service_template_back_refs']}]})
                     },
                     dataParser: self.parseTagData,
                 }
