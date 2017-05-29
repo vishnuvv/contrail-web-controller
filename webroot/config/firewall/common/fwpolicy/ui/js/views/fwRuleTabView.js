@@ -9,15 +9,20 @@ define([
     var fwRuleTabView = ContrailView.extend({
         el: $(contentContainer),
         render: function (viewConfig) {
-            var self = this;
-            self.renderView4Config(self.$el, null, getfwRulePolicy(viewConfig));
+            var self = this,
+            viewConfig = this.attributes.viewConfig,
+            currentHashParams = layoutHandler.getURLHashParams(),
+            policyName = currentHashParams.focusedElement.policy;
+            console.log(policyName);
+            self.renderView4Config(self.$el, null, getfwRulePolicy(viewConfig,policyName));
         }
     });
-    function getfwRulePolicy(viewConfig){
+    function getfwRulePolicy(viewConfig, policyName){
         return {
             elementId: cowu.formatElementId(["fwrule-policy-page-id"]),
             view: "SectionView",
             viewConfig: {
+                title: policyName,
                 rows: [{
                     columns: [{
                         elementId: "fwrule-policy-tab-id",
