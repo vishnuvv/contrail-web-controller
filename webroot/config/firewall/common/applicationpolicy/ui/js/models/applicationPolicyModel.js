@@ -4,9 +4,9 @@
 
 define([
     'underscore',
-    'contrail-model'
-], function (_, ContrailModel) {
-    var serviceGroupModel = ContrailModel.extend({
+    'contrail-config-model'
+], function (_, ContrailConfigModel) {
+    var serviceGroupModel = ContrailConfigModel.extend({
         defaultConfig: {
             'name': '',
             'firewall_policy': ''
@@ -22,6 +22,7 @@ define([
 		     } else {
 		         modelConfig["firewall_policy"] = null;
 		     }
+		     this.formatRBACPermsModelConfig(modelConfig);
         	return modelConfig;
         },
         deleteApplicationPolicy: function (checkedRows, callbackObj) {

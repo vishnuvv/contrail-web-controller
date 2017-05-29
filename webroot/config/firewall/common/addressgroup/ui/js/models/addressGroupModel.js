@@ -4,10 +4,10 @@
 
 define([
     'underscore',
-    'contrail-model',
+    'contrail-config-model',
     'config/firewall/common/addressgroup/ui/js/models/addressPrefixModel'
-], function (_, ContrailModel, AddressRoleModel) {
-    var serviceGroupModel = ContrailModel.extend({
+], function (_, ContrailConfigModel, AddressRoleModel) {
+    var serviceGroupModel = ContrailConfigModel.extend({
         defaultConfig: {
             'uuid': '',
             'name': '',
@@ -35,6 +35,7 @@ define([
             var subnetCollectionModel = new Backbone.Collection(roleModels);
             modelConfig['subnetCollection'] = subnetCollectionModel;
             modelConfig["role_entries"]["roles"] = subnetCollectionModel;
+            this.formatRBACPermsModelConfig(modelConfig);
             return modelConfig;
         },
         addSubnet: function(){

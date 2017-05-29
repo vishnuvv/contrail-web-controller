@@ -67,7 +67,8 @@ define([
            }, {
                elementId: 'permissions',
                title: 'Permissions',
-               //view: "RBACPermissionsView",
+               view: "fwPermissionView",
+               viewPathPrefix: "config/firewall/common/fwpolicy/ui/js/views/",
                viewConfig: viewConfig,
                tabConfig: {
                    activate: function(event, ui) {

@@ -180,7 +180,7 @@ define([
                 "onClick": function () {
                 	applicationPolicyEditView.model = new ApplicationPolicyModel();
                 	applicationPolicyEditView.renderAddEditApplicationPolicy({
-                                              "title": 'Create Application Policy Set',
+                                              "title": 'Create',
                                               'mode': 'add',
                                               'isGlobal': viewConfig.isGlobal,
                                               callback: function () {

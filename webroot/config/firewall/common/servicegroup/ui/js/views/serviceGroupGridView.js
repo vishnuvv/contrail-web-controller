@@ -179,7 +179,7 @@ define([
                 "onClick": function () {
                 	serviceGroupEditView.model = new ServiceGroupModel();
                 	serviceGroupEditView.renderAddEditServiceGroup({
-                                              "title": 'Create Service Group',
+                                              "title": 'Create',
                                               'mode': 'add',
                                               'isGlobal': viewConfig.isGlobal,
                                               callback: function () {

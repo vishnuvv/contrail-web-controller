@@ -5,10 +5,10 @@
 define([
     'underscore',
     'contrail-view',
-    'config/firewall/common/fwpolicy/ui/js/models/fwPolicyInfoModel',
+    'config/firewall/common/fwpolicy/ui/js/models/fwPermissionModel',
     'knockback'
-], function (_, ContrailView, FWPolicyInfoModel,Knockback) {
-    var fwPolicyInfoView = ContrailView.extend({
+], function (_, ContrailView, FWPermissionModel,Knockback) {
+    var fwPermissionView = ContrailView.extend({
         el: $(contentContainer),
         render: function () {
             var self = this,
@@ -23,26 +23,25 @@ define([
                   {data: [{type: 'firewall-policys', obj_uuids:[policyId]}]});
            // ajaxConfig.parser = self.parseFWPolicyData;
             var editTmpl = contrail.getTemplate4Id(cowc.TMPL_EDIT_FORM);
-            var parent = (self.$el.append("<div id=fwPolicyContainer></div>"));
-            $("#fwPolicyContainer").append(editTmpl({prefixId:"fwPolicy"}));
-            var formId = "#fwPolicy-form";
+            var parent = (self.$el.append("<div id=fwPermissionContainer></div>"));
+            $("#fwPermissionContainer").append(editTmpl({prefixId:"fwPermission"}));
+            var formId = "#fwPermission-form";
             contrail.ajaxHandler(ajaxConfig, function () {
             }, function (response) {
-                var currentPolicyInfoIds = getValueByJsonPath(response,
+                var currentPermissionIds = getValueByJsonPath(response,
                         "0;firewall-policys;0;firewall-policy", {}, false);
-                currentPolicyInfoIds['description'] = getValueByJsonPath(response,
-                        "0;firewall-policys;0;firewall-policy;id_perms;description", '-', false);
-                currentPolicyInfoIds['tags_refs'] = getValueByJsonPath(response,
-                        "0;firewall-policys;0;firewall-policy;tags_refs", '-', false);
-                self.model = new FWPolicyInfoModel(currentPolicyInfoIds);
+                currentPermissionIds['perms2']['global_access'] = getValueByJsonPath(response,
+                        "0;firewall-policys;0;firewall-policy;perms2;global_access", '-', false);
+                console.log(currentPermissionIds);
+                self.model = new FWPermissionModel(currentPermissionIds);
                 self.renderView4Config($(self.$el).find(formId),
                         self.model, getFWPolicyInfoGridViewConfig(),
                         null,null,null,
                         function(){
-                    self.model.showErrorAttr("fwPolicy-form",
+                    self.model.showErrorAttr("fwPermission-form",
                             false);
                     Knockback.applyBindings(self.model,
-                            document.getElementById('fwPolicyContainer'));
+                            document.getElementById('fwPermissionContainer'));
                     kbValidation.bind(self);
                 });
             }, function (error) {
@@ -58,58 +57,39 @@ define([
      function getFWPolicyInfoGridViewConfig(viewConfig) {
         return {
             elementId:
-                "policy-info-grid-view",
+                "policy-permission-section-id",
             view: "SectionView",
             viewConfig: {
+                title: "Local Permission",
                 rows: [
                     {
                         columns: [
                             {
-                                elementId: "display_name",
-                                view: "FormInputView",
+                                elementId: 'owner',
+                                view: 'FormInputView',
                                 viewConfig: {
                                     disabled: true,
-                                    path: "display_name",
-                                    dataBindValue: "display_name",
-                                    label: "Policy Name",
-                                    class: "col-xs-2"
+                                    label: "Owner",
+                                    path: 'perms2.owner',
+                                    dataBindValue: 'perms2().owner',
+                                    class: 'col-xs-4'
                                 }
-                            }
-                        ]
-                    },
-                    {
-                        columns: [
+                            },
                             {
-                                elementId: "description",
-                                view: "FormTextAreaView",
+                                elementId: 'owner_access',
+                                view: 'FormMultiselectView',
                                 viewConfig: {
+                                    label: "Owner Permissions",
+                                    path: 'perms2.owner_access',
+                                    dataBindValue: 'perms2().owner_access',
                                     disabled: true,
-                                    path: "description",
-                                    dataBindValue: "description",
-                                    label: "Description",
-                                    rows:"5",
-                                    cols:"100%",
-                                    class: "col-xs-6"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        columns: [
-                            {
-                                elementId: "tags",
-                                view: "FormMultiselectView",
-                                viewConfig: {
-                                    disabled: true,
-                                    path: "tag_refs",
-                                    dataBindValue: "tag_refs",
-                                    label: "Tags",
-                                    class: "col-xs-6",
+                                    class: 'col-xs-4',
                                     elementConfig: {
                                         dataTextField: "text",
                                         dataValueField: "value",
                                         placeholder:
-                                            "-"
+                                            "Select Permissions",
+                                        data: cowc.RBAC_ACCESS_TYPE_LIST
                                     }
                                 }
                             }
@@ -119,6 +99,6 @@ define([
             }
         }
     };
-    return fwPolicyInfoView;
+    return fwPermissionView;
 });
 

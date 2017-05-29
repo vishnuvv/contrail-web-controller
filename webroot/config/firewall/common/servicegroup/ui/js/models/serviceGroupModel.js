@@ -4,10 +4,10 @@
 
 define([
     'underscore',
-    'contrail-model',
+    'contrail-config-model',
     'config/firewall/common/servicegroup/ui/js/models/serviceTypeModel'
-], function (_, ContrailModel, ServiceTypeModel) {
-    var serviceGroupModel = ContrailModel.extend({
+], function (_, ContrailConfigModel, ServiceTypeModel) {
+    var serviceGroupModel = ContrailConfigModel.extend({
         defaultConfig: {
         	'uuid': '',
             'name': '',
@@ -39,6 +39,7 @@ define([
             var svcTypeCollectionModel = new Backbone.Collection(ruleModels);
             modelConfig['serviceTypeCollection'] = svcTypeCollectionModel;
             modelConfig["type_entries"]["types"] = svcTypeCollectionModel;
+            this.formatRBACPermsModelConfig(modelConfig);
             return modelConfig;
         },
         addSvcType: function(){

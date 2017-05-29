@@ -161,7 +161,7 @@ define([
                 "onClick": function () {
                 	addressGroupEditView.model = new AddressGroupModel();
                 	addressGroupEditView.renderAddEditAddressGroup({
-                                              "title": 'Create Address Group',
+                                              "title": 'Create',
                                               'mode': 'add',
                                               'isGlobal': viewConfig.isGlobal,
                                               callback: function () {

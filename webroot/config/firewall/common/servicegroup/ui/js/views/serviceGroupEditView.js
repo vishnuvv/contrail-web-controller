@@ -58,7 +58,7 @@ define([
                                         document.getElementById(modalId));
                 kbValidation.bind(self, {collection:
                                   self.model.model().attributes.serviceTypeCollection});
-            },null,false);
+            },null,true);
         },
         renderDeleteServiceGrp: function(options) {
             var delTemplate =
