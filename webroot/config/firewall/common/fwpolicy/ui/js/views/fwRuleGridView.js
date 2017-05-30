@@ -236,7 +236,7 @@ define([
                                 valueClass:'col-xs-9',
                                 title: 'Details',
                                 templateGenerator: 'BlockListTemplateGenerator',
-                                templateGeneratorConfig: [{
+                                templateGeneratorConfig: [/*{
                                     key: 'name',
                                     templateGenerator: 'TextGenerator',
                                     label: 'Rule Name'
@@ -246,7 +246,7 @@ define([
                                     key: 'display_name',
                                     templateGenerator: 'TextGenerator',
                                     label: 'Rule Display Name'
-                                },{
+                                },*/{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
                                     key: "uuid",

@@ -20,7 +20,7 @@ define([
                         data: JSON.stringify(
                             {data: [{type: 'address-groups',
                                 parent_type: "policy-management",
-                                parent_fq_name_str:"default-policy-management"}]})
+                                parent_fq_name_str:"policy_management"}]})
                     },
                     dataParser: self.parseAddressData,
                 }

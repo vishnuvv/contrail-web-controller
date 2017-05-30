@@ -30,7 +30,7 @@ define([
                 }/*,
                 vlRemoteConfig : {
                     vlRemoteList : self.getDataLazyRemoteConfig()
-                } */               
+                }  */
             };
             var contrailListModel = new ContrailListModel(listModelConfig);
             this.renderView4Config(this.$el,
@@ -38,36 +38,25 @@ define([
         },
 
         getDataLazyRemoteConfig : function () {
-            return [                  
+            return [
                 {
                     getAjaxConfig: function (responseJSON) {
                         var lazyAjaxConfig = {
                             url: "/api/tenants/config/get-config-details",
                             type: 'POST',
                             data: JSON.stringify(
-                                    {data: [{type: 'tags'}]})
+                                    {data: [{type: 'tags'}, {type: 'address-groups'}]})
                         }
                         return lazyAjaxConfig;
                     },
                     successCallback: function (response, contrailListModel,
                         parentModelList) {
-                        
+                        ctwu.setGlobalVariable(ctwc.RULE_DATA_TAGS,
+                                getValueByJsonPath(response, '0;tags', [], false));
+                        ctwu.setGlobalVariable(ctwc.RULE_DATA_ADDRESS_GROUPS,
+                                getValueByJsonPath(response, '1;address-groups', [], false));
                     }
-                },
-                {
-                    getAjaxConfig: function (responseJSON) {
-                        var lazyAjaxConfig = {
-                            url: "/api/tenants/config/get-config-details",
-                            type: 'POST',
-                            data: JSON.stringify(
-                                    {data: [{type: 'address-groups'}]})
-                        }
-                        return lazyAjaxConfig;
-                    },
-                    successCallback: function (response, contrailListModel,
-                        parentModelList) {
-                    }
-                }                
+                }
             ];
         },
 
@@ -84,7 +73,7 @@ define([
                                 currentPolicyRuleIds) !== -1) {
                             dataItems.push(rule['firewall-rule']);
                         }
-                }); 
+                });
             return dataItems;
         }
     });
@@ -118,7 +107,7 @@ define([
                                             pageSizeSelect: [10, 50, 100]
                                         }
                                     },
-                                    isGlobal: false                            
+                                    isGlobal: false
                                 }
                             }
                         ]

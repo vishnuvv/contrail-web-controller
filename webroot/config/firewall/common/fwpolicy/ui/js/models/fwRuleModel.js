@@ -24,7 +24,7 @@ define([
             'direction':'<>',
             'match_tags':'',
             'service': {
-                  'protocol': 'TCP',
+                  'protocol': 'tcp',
                   'dst_ports': {
                     'start_port': 0,
                     'end_port': 0

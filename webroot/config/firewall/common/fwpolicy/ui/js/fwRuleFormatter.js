@@ -50,8 +50,8 @@
                    "service", null, false);
                serviceStr = service && service.protocol ?
                        service.protocol + " : " +
-                       service.dst_ports.start_port + '-' +
-                       service.dst_ports.end_port : '-';
+                       getValueByJsonPath(service, 'dst_ports;start_port', '') + '-' +
+                       getValueByJsonPath(service, 'dst_ports;end_port', '') : '-';
                return serviceStr;
            };
 
@@ -65,6 +65,8 @@
 
            var formatEndPoints =  function(dc, endpointTarget) {
                var rule_display = '';
+               var tags = ctwu.getGlobalVariable(ctwc.RULE_DATA_TAGS);
+               var addressGrps = ctwu.getGlobalVariable(ctwc.RULE_DATA_ADDRESS_GROUPS);
                var endpoint = getValueByJsonPath(dc, endpointTarget, {});
                if(endpoint.subnet) {
                    return endpoint.subnet;

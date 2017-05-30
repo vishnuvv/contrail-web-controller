@@ -52,6 +52,21 @@
                 }
                 return lastUpdated;
             };
+
+            /*
+             * lastUpdateExpFormatter
+             */
+             this.lastUpdateExpFormatter = function(r, c, v, cd, dc) {
+                 var lastUpdated = getValueByJsonPath(dc,
+                     "id_perms;last_modified", '', false);
+                 if(lastUpdated) {
+                     lastUpdated =
+                         moment(lastUpdated, '').format('DD MMM YYYY HH:mm:ss');
+                 } else {
+                     lastUpdated = '-';
+                 }
+                 return lastUpdated;
+             };
      };
      return fwPolicyFormatter
  });

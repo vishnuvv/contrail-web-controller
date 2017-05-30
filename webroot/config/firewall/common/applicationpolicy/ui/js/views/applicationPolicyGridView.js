@@ -271,7 +271,7 @@ define([
                                                         formatter: 'isGlobalFormatter'
                                                     }
                                                 }
-                                                
+
                                             ]
                                         }
                                     ]
@@ -288,7 +288,7 @@ define([
         return noOfPoliciesFormatter(null, null, null, value, dc, true);
     };
     this.setLastUpdateFormatter = function(value, dc) {
-        return lastUpdateFormatter(null, null, null, value, dc, true);
+        return lastUpdateExpFormatter(null, null, null, value, dc, true);
     };
     this.setIsGlobalFormatter = function(value, dc){
     	return isGlobalFormatter(null, null, null, value, dc, true);
@@ -320,6 +320,15 @@ define([
         var lastUpdated = getValueByJsonPath(dc, "id_perms;last_modified", '', false);
         if(lastUpdated) {
             lastUpdated = moment(lastUpdated, '').format('DD MMM YYYY');
+        } else {
+            lastUpdated = '-';
+        }
+        return lastUpdated;
+    }
+    function lastUpdateExpFormatter(r, c, v, cd, dc, showAll){
+        var lastUpdated = getValueByJsonPath(dc, "id_perms;last_modified", '', false);
+        if(lastUpdated) {
+            lastUpdated = moment(lastUpdated, '').format('DD MMM YYYY HH:mm:ss');
         } else {
             lastUpdated = '-';
         }

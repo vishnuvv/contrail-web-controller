@@ -925,10 +925,12 @@ define([
         this.URL_CREATE_FW_POLICY = "/firewall-policys";
         this.URL_UPDATE_FW_POLICY = "/firewall-policy/";
         this.URL_CREATE_POLICY_RULES = '/api/tenants/config/firewall-rules'
-        this.RULE_MATCH_TAGS = [{text: "Application", value: "Application"},
-                                {text: 'Tier', value: 'Tier'},
-                                {text:'Deployment', value: 'Deployment'},
-                                {text: 'Site', value: 'Site'}];
+        this.RULE_MATCH_TAGS = [{text: "Application", value: "application"},
+                                {text: 'Tier', value: 'tier'},
+                                {text:'Deployment', value: 'deployment'},
+                                {text: 'Site', value: 'site'}];
+        this.RULE_DATA_TAGS = 'rule-data-tags';
+        this.RULE_DATA_ADDRESS_GROUPS = 'rule-data-address-groups';
 
 
         /* RBAC constants */

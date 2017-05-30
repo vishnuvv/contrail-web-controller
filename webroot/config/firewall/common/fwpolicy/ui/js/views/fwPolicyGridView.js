@@ -49,7 +49,7 @@ define([
             }
         }
     };
-    
+
     function getRowActionConfig() {
         var rowActionConfig = [
           ctwgc.getDeleteAction(function (rowIndex) {
@@ -174,7 +174,7 @@ define([
     	var fwPolicyColumns = [{
             id: 'name',
             field: 'name',
-            name: 'Policy Name',
+            name: 'Name',
             cssClass :'cell-hyperlink-blue',
             events : {
                 onClick : function(e, dc) {
@@ -210,12 +210,12 @@ define([
           }, {
               id: 'application_policy_set_back_refs',
               field: 'application_policy_set_back_refs',
-              name: 'Member Of',
+              name: 'Member of',
               formatter: fwPolicyFormatter.policySetFormatter
            }, {
              id: 'firewall_rule_refs',
              field: 'firewall_rule_refs',
-             name: 'Number of Rules',
+             name: 'Rules',
              formatter:
                  fwPolicyFormatter.fwRuleFormatter
          }, {
@@ -243,13 +243,13 @@ define([
                                 templateGeneratorConfig: [{
                                     key: 'name',
                                     templateGenerator: 'TextGenerator',
-                                    label: 'Policy Name'
+                                    label: 'Name'
                                 },{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
                                     key: 'display_name',
                                     templateGenerator: 'TextGenerator',
-                                    label: 'Policy Display Name'
+                                    label: 'Display Name'
                                 },{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
@@ -270,7 +270,7 @@ define([
                                     valueClass:'col-xs-9',
                                     key: "application_policy_set_back_refs",
                                     templateGenerator: "TextGenerator",
-                                    label: "Meber Of",
+                                    label: "Member of",
                                     templateGeneratorConfig: {
                                         formatter: "policySetFormatter"
                                     }
@@ -288,7 +288,7 @@ define([
                                     templateGenerator: "TextGenerator",
                                     label: "Last Updated",
                                     templateGeneratorConfig: {
-                                        formatter: "lastUpdateFormatter"
+                                        formatter: "lastUpdateExpFormatter"
                                     }
                                 }]
                            }]
@@ -313,6 +313,10 @@ define([
 
     this.lastUpdateFormatter = function(v, dc) {
         return fwPolicyFormatter.lastUpdateFormatter("", "", v, "", dc);
+    };
+
+    this.lastUpdateExpFormatter = function(v, dc) {
+        return fwPolicyFormatter.lastUpdateExpFormatter("", "", v, "", dc);
     };
 
     return fwPolicyGridView;

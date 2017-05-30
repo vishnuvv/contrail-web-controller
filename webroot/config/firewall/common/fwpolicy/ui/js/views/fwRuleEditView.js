@@ -62,7 +62,7 @@ define([
 		              return;
                    }
                );
-            
+
         },
         renderDeleteFirewallRule: function(options) {
             var delTemplate =
@@ -213,10 +213,9 @@ define([
                                   id : virtualNet[a].uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                                   parent : "virtual_network" });
                     	  }
-                    	 addrFields.push({text : 'Virtual Networks', value : 'virtual_network', children : virtualNetworkList}); 
-                    	
+                          addrFields.push({text : 'Virtual Networks', value : 'virtual_network', children : virtualNetworkList});
                     }
-                    
+
                     returnArr["addrFields"] = addrFields;
                     callback(returnArr);
                 }
@@ -224,10 +223,10 @@ define([
         }
     });
     function tagDropDownFormatter(response){
-    	var matchList = [{text:'Application', id:'Application' },
-            {text:'Tier', id:'Tier' },
-            {text:'Deployment', id:'Deployment' },
-            {text:'Site', id:'Site' }];
+        var matchList = [{text:'Application', id:'application' },
+            {text:'Tier', id:'tier' },
+            {text:'Deployment', id:'deployment' },
+            {text:'Site', id:'site' }];
     	
         return matchList;
     };
@@ -307,10 +306,10 @@ define([
                                         dataValueField: 'value',
                                         dataSource: {
                                             type: 'local',
-                                            data:[{text:'TCP', value:'TCP' },
-                                                  {text:'UDP', value:'UDP' },
-                                                  {text:'ICMP', value:'ICMP' },
-                                                  {text:'ICMP6', value:'ICMP6' }
+                                            data:[{text:'tcp', value:'tcp' },
+                                                  {text:'udp', value:'udp' },
+                                                  {text:'icmp', value:'icmp' },
+                                                  {text:'icmp6', value:'icmp6' }
                                                  ]
                                            }
                                        }

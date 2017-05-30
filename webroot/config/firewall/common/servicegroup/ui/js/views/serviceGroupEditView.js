@@ -155,10 +155,11 @@ define([
                                                 dataValueField: 'value',
                                                 dataSource: {
                                                     type: 'local',
-                                                    data:[{text:'TCP', value:'tcp' },
-                                                          {text:'UDP', value:'udp' },
-                                                          {text:'ICMP', value:'icmp' },
-                                                          {text:'SMTP', value:'smtp' }]
+                                                    data:[{text:'tcp', value:'tcp' },
+                                                          {text:'udp', value:'udp' },
+                                                          {text:'icmp', value:'icmp' },
+                                                          {text:'icmp6', value:'icmp6' },
+                                                          {text:'smtp', value:'smtp' }]
                                                    }
                                                }
                                            }
