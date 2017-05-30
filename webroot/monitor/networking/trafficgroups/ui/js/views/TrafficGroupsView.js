@@ -153,18 +153,21 @@ define(
                                             }
                                             var src = {
                                                 names: srcHierarchy,
-                                                // labelAppend: 'Production',   //d['deployment'],
+                                                labelAppend: d['deployment'],
                                                 id: srcHierarchy.join('-'),
-                                                value: d['SUM(eps.traffic.in_bytes)'],
+                                                value: d['SUM(eps.traffic.in_bytes)'] + d['SUM(eps.traffic.out_bytes)'],
                                                 inBytes: d['SUM(eps.traffic.in_bytes)'],
                                                 outBytes: d['SUM(eps.traffic.out_bytes)']
                                             };
+                                            //If remote_vn project doesn't match with current project
+                                            //set type = external
+                                            //append '_external' to names [only for 1st-level app field]
                                             var dst = {
                                                 names: dstHierarchy,
-                                                // labelAppend: 'Deployment',   //d['eps.traffic.remote_deployment_id'],
+                                                labelAppend: d['eps.traffic.remote_deployment_id'],
                                                 id: dstHierarchy.join('-'),
                                                 type: externalProject,
-                                                value: d['SUM(eps.traffic.out_bytes)'],
+                                                value: d['SUM(eps.traffic.out_bytes)'] + d['SUM(eps.traffic.in_bytes)'],
                                                 inBytes: d['SUM(eps.traffic.in_bytes)'],
                                                 outBytes: d['SUM(eps.traffic.out_bytes)']
                                             };
@@ -190,7 +193,6 @@ define(
                                  " SUM(eps.traffic.out_bytes), SUM(eps.traffic.in_pkts), SUM(eps.traffic.out_pkts)",
                             "table_type": "STAT",
                             "table_name": "StatTable.EndpointSecurityStats.eps.traffic",
-                            // "where": "(name = default-domain:admin:*)"
                             "where": "(name Starts with " + contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' + contrail.getCookie(cowc.COOKIE_PROJECT) + ")",
                             "where_json": []
                         }
@@ -199,11 +201,7 @@ define(
                         remote : {
                             ajaxConfig : {
                                 url: monitorInfraConstants.monitorInfraUrls['QUERY'],
-                                // url: 'fakeData/sessionStats.json',
-                                // url: 'fakeData/First5Sessions.json',
-                                // url: 'fakeData/sessionStats1.json',
                                 type: 'POST',
-                                //type: 'GET',
                                 data: JSON.stringify(postData)
                             },
                             dataParser : function (response) {
@@ -237,10 +235,7 @@ define(
                                 getAjaxConfig: function() {
                                     return {
                                         url: 'api/tenants/config/get-config-details',
-                                        // url: 'fakeData/tagMap.json',
-                                        //url: 'fakeData/tags1.json',
                                         type:'POST',
-                                        //type:'GET',
                                         data:JSON.stringify({data:[{type: 'tags'}]})
                                     }
                                 },
@@ -258,22 +253,24 @@ define(
                                         
                                         $.each(['eps.traffic.remote_app_id', 'eps.traffic.remote_deployment_id',
                                             'eps.traffic.remote_prefix', 'eps.traffic.remote_site_id',
-                                            'eps.traffic.remote_tier_id'], function (jdx, val) {
-                                                // value[val] == '0' ?  value[val] = '' : value[val] = _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.tag_type', '')
-                                                //  +'-'+ _.result(TrafficGroupsView.tagMap, parseInt(value[val])+'.0.tag_value', '');
+                                            'eps.traffic.remote_tier_id'], function (idx, val) {
                                                 if(value[val] == '0') 
                                                     value[val] = ''; 
                                                 if(!_.isEmpty(tagMap[parseInt(value[val])])) {
                                                     value[val] = tagMap[parseInt(value[val])]; 
                                                 }
                                         });
+                                        function formatVN(vnName) {
+                                            return vnName.replace(/([^:]*):([^:]*):([^:]*)/,'$3 ($2)');
+                                        }
                                         //If app is empty, put vn name in app
-                                        if(value['app'] == '' || value['app'] == '0' || value['app'] == null) {
-                                            value['app'] = value['vn'];
+                                        // if(value['app'] == '' || value['app'] == '0' || value['app'] == null) {
+                                        if(_.isEmpty(value['app']) || value['app'] == '0') {
+                                            value['app'] = formatVN(value['vn']);
                                         }
                                         if(value['eps.traffic.remote_app_id'] == '' || value['eps.traffic_remote_app_id'] == '0') {
                                             // if(value['eps.traffic.remote_vn'] != '') {
-                                                value['eps.traffic.remote_app_id'] = value['eps.traffic.remote_vn'];
+                                                value['eps.traffic.remote_app_id'] = formatVN(value['eps.traffic.remote_vn']);
                                             // } else {
                                             //     value['eps.traffic.remote_app_id'] = value['vn'];
                                             // }
