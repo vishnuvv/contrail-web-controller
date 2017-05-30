@@ -51,13 +51,12 @@ define([
             self.renderView4Config($("#" + modalId).find(formId),
                                    this.model,
                                    getApplicationPolicyViewConfig(disable),
-                                   "",
+                                   "applicationPolicyValidation",
                                    null, null, function() {
                 self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
                 Knockback.applyBindings(self.model,
                                         document.getElementById(modalId));
-                //kbValidation.bind(self, {collection:
-                                  //self.model.model().attributes.subnetCollection});
+                kbValidation.bind(self);
             },null,true);
         },
         renderDeleteApplicationPolicy: function(options) {
@@ -122,7 +121,6 @@ define([
                                 view: 'FormInputView',
                                 viewConfig: {
                                     label: 'Name',
-                                    placeholder: 'Enter Application Policy Set Name',
                                     path: 'name',
                                     class: 'col-xs-6',
                                     dataBindValue: 'name',
@@ -130,15 +128,15 @@ define([
                                 }
                             },
                             {
-                                elementId: 'aps_is_global',
+                                elementId: 'is_global',
                                 name:'Global Apply',
                                 view: "FormCheckboxView",
                                 viewConfig:
                                   {
                                        class: 'col-xs-6 no-label-input',
                                        label: 'Global Apply',
-                                       path: "aps_is_global",
-                                       dataBindValue: 'aps_is_global',
+                                       path: "is_global",
+                                       dataBindValue: 'is_global',
                                        templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
                                        elementConfig : {
                                             label:'Is Global',

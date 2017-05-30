@@ -208,19 +208,7 @@ define([
                                                     templateGenerator: 'TextGenerator'
                                                 },
                                                 {
-                                                    label: 'Parent Type',
-                                                    key: 'parent_type',
-                                                    keyClass:'col-xs-4',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    label: 'Parent UUID',
-                                                    key: 'parent_uuid',
-                                                    keyClass:'col-xs-4',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    key: 'address_group_prefix',
+                                                    key: 'uuid',
                                                     templateGenerator: 'TextGenerator',
                                                     label: 'Prefix',
                                                     keyClass:'col-xs-4',
@@ -252,12 +240,16 @@ define([
             prefixlList.push(prefixText);
         }
         if ((null != showAll) && (true == showAll)) {
-            for (var k = 0; k < prefixlList.length; k++) {
-                if (typeof prefixlList[k] !== "undefined") {
-                    returnString += prefixlList[k] + "<br>";
+        	if(prefixlList.length > 0){
+        		for (var k = 0; k < prefixlList.length; k++) {
+                    if (typeof prefixlList[k] !== "undefined") {
+                        returnString += prefixlList[k] + "<br>";
+                    }
                 }
-            }
-            return returnString;
+                return returnString;
+        	}else{
+        		return '-';
+        	}
         }
         if(prefixlList.length > 0){
             for(var j = 0; j< prefixlList.length,j < 2; j++){
@@ -270,6 +262,8 @@ define([
                     (prefixlList.length-2) + ' more)</span> \
                     <span class="moredata" style="display:none;" ></span>';
             }
+        }else{
+        	returnString = '-';
         }
         return  returnString;
     }

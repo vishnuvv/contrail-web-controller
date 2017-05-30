@@ -113,7 +113,6 @@ define([
                                 view: 'FormInputView',
                                 viewConfig: {
                                     label: 'Name',
-                                    placeholder: 'Enter Service Group Name',
                                     path: 'name',
                                     class: 'col-xs-6',
                                     dataBindValue: 'name',
@@ -158,8 +157,7 @@ define([
                                                     data:[{text:'tcp', value:'tcp' },
                                                           {text:'udp', value:'udp' },
                                                           {text:'icmp', value:'icmp' },
-                                                          {text:'icmp6', value:'icmp6' },
-                                                          {text:'smtp', value:'smtp' }]
+                                                          {text:'icmp6', value:'icmp6' }]
                                                    }
                                                }
                                            }

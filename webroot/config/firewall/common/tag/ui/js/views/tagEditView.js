@@ -113,15 +113,10 @@ define([
                                     elementConfig : {
                                         dataTextField: 'text',
                                         placeholder: 'Select Tag Type',
-                                        dataValueField: 'id',
+                                        dataValueField: 'value',
                                         dataSource : {
                                             type: 'local',
-                                            data:[{text:'Application', id:'Application' },
-                                                {text:'Tier', id:'Tier' },
-                                                {text:'Deployment', id:'Deployment' },
-                                                {text:'Site', id:'Site' },
-                                                {text:'Label', id:'Label' }
-                                               ]
+                                            data:ctwc.RULE_MATCH_TAGS
                                         }
                                     }
                                 }
@@ -131,7 +126,6 @@ define([
                                 view: 'FormInputView',
                                 viewConfig: {
                                     label: 'Name',
-                                    placeholder: 'Enter Name',
                                     path: 'tag_value',
                                     class: 'col-xs-6',
                                     dataBindValue: 'tag_value',

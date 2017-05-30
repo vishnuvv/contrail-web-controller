@@ -238,7 +238,7 @@ define([
                                                     templateGenerator: 'TextGenerator'
                                                 },*/
                                                 {
-                                                    key: 'service_group_firewall_service_list',
+                                                    key: 'uuid',
                                                     templateGenerator: 'TextGenerator',
                                                     label: '',
                                                     keyClass:'col-xs-4',
@@ -278,35 +278,11 @@ define([
                     (list.length-2) + ' more)</span> \
                     <span class="moredata" style="display:none;" ></span>';
             }
+        }else{
+        	returnString = '-';
         }
         return  returnString;
     }
-    /*function srcPortFormatter(r, c, v, cd, dc, showAll){
-        var portList = [], returnString = '', port;
-        var  firewalService = getValueByJsonPath(dc, 'service_group_firewall_service_list;firewall_service',[]);
-        for(var i = 0; i < firewalService.length; i++){
-            if(firewalService[i].src_ports.start_port === firewalService[i].src_ports.end_port){
-                port = firewalService[i].src_ports.start_port;
-            }else{
-                port = firewalService[i].src_ports.start_port + '-' + firewalService[i].src_ports.end_port;
-            }
-            var portText = '<span>'+ port +'</span>';
-            portList.push(portText);
-        }
-        if(portList.length > 0){
-            for(var j = 0; j< portList.length,j < 2; j++){
-                if(portList[j]) {
-                    returnString += portList[j] + "<br>";
-                }
-            }
-            if (portList.length > 2) {
-                returnString += '<span class="moredataText">(' +
-                    (portList.length-2) + ' more)</span> \
-                    <span class="moredata" style="display:none;" ></span>';
-            }
-        }
-        return  returnString;
-    }*/
     function dstPortFormatter(r, c, v, cd, dc, showAll){
         var portList = [], returnString = '', port;
         var  firewalService = getValueByJsonPath(dc, 'service_group_firewall_service_list;firewall_service',[]);
@@ -330,6 +306,8 @@ define([
                     (portList.length-2) + ' more)</span> \
                     <span class="moredata" style="display:none;" ></span>';
             }
+        }else{
+        	returnString = '-';
         }
         return  returnString;
     }
@@ -338,11 +316,6 @@ define([
         var  firewalService = getValueByJsonPath(dc, 'service_group_firewall_service_list;firewall_service',[]);
         serviceList.push('<span class="rule-format" style="width: 180px !important;display:inline-block;">Protocol</span><span class="rule-format">Port</span>');
         for(var i = 0; i < firewalService.length; i++){
-            /*if(firewalService[i].src_ports.start_port === firewalService[i].src_ports.end_port){
-            	srcPort = firewalService[i].src_ports.start_port;
-            }else{
-            	srcPort = firewalService[i].src_ports.start_port + '-' + firewalService[i].src_ports.end_port;
-            }*/
             if(firewalService[i].dst_ports.start_port === firewalService[i].dst_ports.end_port){
             	dstPort = firewalService[i].dst_ports.start_port;
             }else{
@@ -351,9 +324,14 @@ define([
             var portText = '<span style="width: 180px !important;display:inline-block;">'+ firewalService[i].protocol.toUpperCase() +'</span><span>'+ dstPort +'</span>';
             serviceList.push(portText);
         }
-        if(serviceList.length > 0){
+        if(serviceList.length > 1){
             for(var j = 0; j< serviceList.length; j++){
                 returnString += serviceList[j] + "<br>";
+            }
+        }else{
+        	serviceList.push('<span style="width: 180px !important;display:inline-block;">-</span><span>-</span>');
+        	for(var k = 0; k< serviceList.length; k++){
+                returnString += serviceList[k] + "<br>";
             }
         }
         return  returnString;

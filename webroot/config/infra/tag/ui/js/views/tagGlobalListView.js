@@ -36,7 +36,6 @@ define([
                         dataItems.push(val.tag);
                     }
                 }); 
-            console.log(dataItems);
             return dataItems;
         }
     });

@@ -81,12 +81,12 @@ define([
             },
             columnHeader: {
                 columns: [
-                        /*{
+                        {
                              field: 'name',
                              name: 'Name',
                              id: 'name'
-                        },*/
-                        {
+                        },
+                        /*{
                             field: 'tag_type',
                             name: 'Type',
                             id: 'tag_type'
@@ -95,7 +95,7 @@ define([
                             field: 'tag_value',
                             name: 'Value',
                             id: 'tag_value'
-                        },
+                        },*/
                         {
                             id: "ref_obj",
                             field: "ref_obj",
@@ -293,8 +293,8 @@ define([
     };
     this.tagIdFormatter = function(value, dc) {
     	var getId = getValueByJsonPath(dc, 'tag_id', 0);
-    	var hexId = getId.toString(16);
-    	return hexId;
+    	//var hexId = getId.toString(16);
+    	return getId;
     };
     this.detailsVirtualNetworkFormatter = function(value, dc) {
         return virtualNetworkFormatter(null, null, null, value, dc, true);
@@ -373,8 +373,17 @@ define([
         }
         return  returnString;
     };
+    
+    function capitalizeSentence(sentence) {
+        var word = sentence.split(" ");
+        for ( var i = 0; i < word.length; i++ ) {
+            word[i] = word[i].charAt(0).toUpperCase() + word[i].slice(1);
+        }
+        return word.join(" ");
+    };
+    
     function othersFormatter(r, c, v, cd, dc, showAll){
-        var returnString = '',refList = [];
+        var returnString = '',refList = [],refText;
         var rowObj = dc;
         for(var j in rowObj){
         	if(j !== 'virtual_machine_interface_back_refs' && j !== 'virtual_network_back_refs'){
@@ -385,8 +394,17 @@ define([
  	            	   var name = to[to.length-1];
  	            	   nameList.push(name);
  	               }
- 	               refText = '<span>'+ nameList.join(',') +'</span>';
- 	               refList.push(refText);
+ 	               var ref = j.split('_');
+ 	               ref.pop();
+ 	               ref.pop();
+ 	               var keyRef = ref.join('_');
+ 	               var key = capitalizeSentence(cowu.replaceAll("_", " ",keyRef));
+ 	              if ((null != showAll) && (true == showAll)) {
+ 	            	 refText = '<span class="rule-format">'+ key +'</span>&nbsp:&nbsp<span>'+ nameList.join(',') +'</span>';
+ 	              }else{
+ 	            	 refText = '<span>'+ nameList.join(',') +'</span>';
+ 	              }
+ 	              refList.push(refText);
  	            }
         	}
 	    }

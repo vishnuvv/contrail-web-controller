@@ -576,3 +576,6 @@ table td[class*="col-xs-"], table th[class*="col-xs-"], .row-fluid table td[clas
     }
 #configure-dns_record-form #record_name input[type="text"], #configure-dns_record-form #record_data input[type="text"]{
 width:100%;}
+
+#is_global input.ace-input[type=checkbox] + .ace-lbl::before, input.ace-input[type=radio] + .ace-lbl::before 
+{ margin-right:10px;}

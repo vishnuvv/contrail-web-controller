@@ -51,7 +51,7 @@ define([
             self.renderView4Config($("#" + modalId).find(formId),
                                    this.model,
                                    getAddressGroupViewConfig(disable),
-                                   "",
+                                   "addressGroupValidation",
                                    null, null, function() {
                 self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
                 Knockback.applyBindings(self.model,
@@ -113,32 +113,18 @@ define([
                                 view: 'FormInputView',
                                 viewConfig: {
                                     label: 'Name',
-                                    placeholder: 'Enter Address Group Name',
                                     path: 'name',
                                     class: 'col-xs-6',
                                     dataBindValue: 'name',
                                     disabled : isDisable
                                 }
                             }
-                            /*{
-                                elementId: 'label',
-                                view: 'FormInputView',
-                                viewConfig: {
-                                    label: 'Label',
-                                    placeholder: 'Enter Address Group Label',
-                                    path: 'label',
-                                    class: 'col-xs-6',
-                                    dataBindValue: 'label'
-                                    //disabled : isDisable
-                                }
-                            }*/
                         ]
                     },
                     {
                         columns: [{
                             elementId: 'subnetCollection',
                             view: "FormCollectionView",
-                            //view: "FormEditableGridView",
                             viewConfig: {
                                 path: "subnetCollection",
                                 class: 'col-xs-12',

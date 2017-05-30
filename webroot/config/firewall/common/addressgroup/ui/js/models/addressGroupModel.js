@@ -76,67 +76,93 @@ define([
                 }
             });
         },
+        validations: {
+        	addressGroupValidation: {
+                'name': {
+                    required: true,
+                    msg: 'Enter a valid Address Group Name.'
+                }
+            }
+        },
         addEditAddressGroup: function (callbackObj, options) {
             var ajaxConfig = {}, returnFlag = true,updatedVal = {};
+            var self = this;
             var updatedModel = {},subnetList = [];
-            var model = $.extend(true,{},this.model().attributes);
-            var role = $.extend(true,{},model.role_entries.roles);
-            var collection = role.toJSON();
-                for(var j = 0; j < collection.length;j++){
-                	var role = collection[j].prefix().split('/');
-                	var ipPrefix = role[0].trim();
-                	var ipPrefixLen = role[role.length-1].trim();
-                	var subnetObj = {};
-                	subnetObj.ip_prefix = ipPrefix;
-                	subnetObj.ip_prefix_len = ipPrefixLen;
-                	subnetList.push(subnetObj);
+            var validations = [
+                {
+                    key : null,
+                    type : cowc.OBJECT_TYPE_MODEL,
+                    getValidation : "addressGroupValidation"
+                }];
+            if (self.isDeepValid(validations)) {
+		            var model = $.extend(true,{},this.model().attributes);
+		            var role = $.extend(true,{},model.role_entries.roles);
+		            var collection = role.toJSON();
+		                for(var j = 0; j < collection.length;j++){
+		                	if(collection[j].prefix() !== ''){
+		                		var role = collection[j].prefix().split('/');
+			                	if(role.length < 2){
+			                		role.push('32');
+			                	}
+			                	var ipPrefix = role[0].trim();
+			                	var ipPrefixLen = role[role.length-1].trim();
+			                	var subnetObj = {};
+			                	subnetObj.ip_prefix = ipPrefix;
+			                	subnetObj.ip_prefix_len = ipPrefixLen;
+			                	subnetList.push(subnetObj);
+		                	}
+		                }
+		                updatedModel.fq_name = [];
+		                if(options.isGlobal) {
+		                    updatedModel.fq_name.push('default-policy-management');
+		                    updatedModel.fq_name.push(model.name);
+		                    updatedModel.parent_type = 'policy-management';
+		                } else {
+		                    updatedModel.fq_name.push(
+		                            contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME));
+		                    updatedModel.fq_name.push(
+		                            contrail.getCookie(cowc.COOKIE_PROJECT_DISPLAY_NAME));
+		                    updatedModel.fq_name.push(model.name);
+		                    updatedModel.parent_type = 'project';
+		
+		                }
+		                updatedModel.name = model.name;
+		                updatedModel.address_group_prefix = {};
+		                updatedModel.address_group_prefix.subnet = subnetList;
+		                if (options.mode == 'add') {
+		                	var postData = {"data":[{"data":{"address-group": updatedModel},
+		                                "reqUrl": "/address-groups"}]};
+		                    ajaxConfig.url = ctwc.URL_CREATE_CONFIG_OBJECT;
+		                } else {
+		                	delete(updatedModel.name);
+		                	var postData = {"data":[{"data":{"address-group": updatedModel},
+		                                "reqUrl": "/address-group/" +
+		                                model.uuid}]};
+		                    ajaxConfig.url = ctwc.URL_UPDATE_CONFIG_OBJECT;
+		                }
+		                ajaxConfig.type  = 'POST';
+		                ajaxConfig.data  = JSON.stringify(postData);
+		                contrail.ajaxHandler(ajaxConfig, function () {
+		                    if (contrail.checkIfFunction(callbackObj.init)) {
+		                        callbackObj.init();
+		                    }
+		                }, function (response) {
+		                    if (contrail.checkIfFunction(callbackObj.success)) {
+		                        callbackObj.success();
+		                    }
+		                    returnFlag = true;
+		                }, function (error) {
+		                    if (contrail.checkIfFunction(callbackObj.error)) {
+		                        callbackObj.error(error);
+		                    }
+		                    returnFlag = false;
+		                });
+		            return returnFlag;
+            }else{
+            	if (contrail.checkIfFunction(callbackObj.error)) {
+                    callbackObj.error(this.getFormErrorText(ctwc.SEC_POLICY_ADDRESS_GRP_PREFIX_ID));
                 }
-                updatedModel.fq_name = [];
-                if(options.isGlobal) {
-                    updatedModel.fq_name.push('default-policy-management');
-                    updatedModel.fq_name.push(model.name);
-                    updatedModel.parent_type = 'policy-management';
-                } else {
-                    updatedModel.fq_name.push(
-                            contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME));
-                    updatedModel.fq_name.push(
-                            contrail.getCookie(cowc.COOKIE_PROJECT_DISPLAY_NAME));
-                    updatedModel.fq_name.push(model.name);
-                    updatedModel.parent_type = 'project';
-
-                }
-                updatedModel.name = model.name;
-                updatedModel.address_group_prefix = {};
-                updatedModel.address_group_prefix.subnet = subnetList;
-                if (options.mode == 'add') {
-                	var postData = {"data":[{"data":{"address-group": updatedModel},
-                                "reqUrl": "/address-groups"}]};
-                    ajaxConfig.url = ctwc.URL_CREATE_CONFIG_OBJECT;
-                } else {
-                	delete(updatedModel.name);
-                	var postData = {"data":[{"data":{"address-group": updatedModel},
-                                "reqUrl": "/address-group/" +
-                                model.uuid}]};
-                    ajaxConfig.url = ctwc.URL_UPDATE_CONFIG_OBJECT;
-                }
-                ajaxConfig.type  = 'POST';
-                ajaxConfig.data  = JSON.stringify(postData);
-                contrail.ajaxHandler(ajaxConfig, function () {
-                    if (contrail.checkIfFunction(callbackObj.init)) {
-                        callbackObj.init();
-                    }
-                }, function (response) {
-                    if (contrail.checkIfFunction(callbackObj.success)) {
-                        callbackObj.success();
-                    }
-                    returnFlag = true;
-                }, function (error) {
-                    if (contrail.checkIfFunction(callbackObj.error)) {
-                        callbackObj.error(error);
-                    }
-                    returnFlag = false;
-                });
-            return returnFlag;
+            }
         }
     });
     return serviceGroupModel;

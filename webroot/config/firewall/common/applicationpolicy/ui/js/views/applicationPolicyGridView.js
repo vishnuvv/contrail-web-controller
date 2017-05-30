@@ -105,7 +105,7 @@ define([
                                 sortBy: 'formattedValue'
                             }
                         },
-                        /*{
+                        {
                             id: "shared",
                             field: "shared",
                             name: "Shared",
@@ -113,7 +113,7 @@ define([
                             sortable: {
                                 sortBy: 'formattedValue'
                             }
-                        },*/
+                        },
                         {
                             id: "lastupdated",
                             field: "lastupdated",
@@ -235,7 +235,7 @@ define([
                                                     keyClass:'col-xs-3',
                                                     templateGenerator: 'TextGenerator'
                                                 },
-                                                /*{
+                                                {
                                                     key: 'id_perms',
                                                     templateGenerator: 'TextGenerator',
                                                     label: 'Description',
@@ -243,14 +243,23 @@ define([
                                                     templateGeneratorConfig: {
                                                         formatter: 'setDescriptionFormatter'
                                                     }
-                                                },*/
+                                                },/*
                                                 {
                                                     key: 'firewall_policy_refs',
                                                     templateGenerator: 'TextGenerator',
-                                                    label: 'No. of Policies',
+                                                    label: 'FW Policies',
                                                     keyClass:'col-xs-3',
                                                     templateGeneratorConfig: {
                                                         formatter: 'setNoOfPoliciesFormatter'
+                                                    }
+                                                },*/
+                                                {
+                                                    key: 'id_perms',
+                                                    templateGenerator: 'TextGenerator',
+                                                    label: 'Shared',
+                                                    keyClass:'col-xs-3',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'setIsSharedFormatter'
                                                     }
                                                 },
                                                 {
@@ -263,9 +272,18 @@ define([
                                                     }
                                                 },
                                                 {
-                                                    key: 'aps_is_global',
+                                                    key: 'uuid',
                                                     templateGenerator: 'TextGenerator',
-                                                    label: 'Gloabl Apply',
+                                                    label: 'FW Policies',
+                                                    keyClass:'col-xs-3',
+                                                    templateGeneratorConfig: {
+                                                        formatter: 'setFirewallPolicyFormatter'
+                                                    }
+                                                },
+                                                {
+                                                    key: 'is_global',
+                                                    templateGenerator: 'TextGenerator',
+                                                    label: 'Global Apply',
                                                     keyClass:'col-xs-3',
                                                     templateGeneratorConfig: {
                                                         formatter: 'isGlobalFormatter'
@@ -294,7 +312,7 @@ define([
     	return isGlobalFormatter(null, null, null, value, dc, true);
     };
     this.isGlobalFormatter = function(value, dc){
-    	var apsGlobal = getValueByJsonPath(dc, 'aps_is_global', false), isGlobal;
+    	var apsGlobal = getValueByJsonPath(dc, 'is_global', false), isGlobal;
     	if(apsGlobal){
     		isGlobal = 'Enabled';
     		return isGlobal;
@@ -303,10 +321,41 @@ define([
     		return isGlobal;
     	}
     };
-   /* function isSharedFormatter(r, c, v, cd, dc, showAll){
-    	var description = getValueByJsonPath(dc, 'id_perms;description','-');
-        return  description;
-    }*/
+    this.setIsSharedFormatter = function(value, dc){
+    	return isSharedFormatter(null, null, null, value, dc, true);
+    };
+    this.setDescriptionFormatter = function(value, dc){
+    	return descriptionFormatter(null, null, null, value, dc, true);
+    };
+    this.setFirewallPolicyFormatter = function(value, dc){
+    	var policy = getValueByJsonPath(dc, 'firewall_policy_refs',[]),policyList = [];
+    	var returnString = '';
+    	for(var i = 0; i < policy.length; i++){
+    		var to = policy[i].to;
+    		var name = to[to.length - 1];
+    		var text = '<span>'+ name +'</span>';
+    		policyList.push(text);
+    	}
+    	if(policyList.length > 0){
+            for(var j = 0; j< policyList.length; j++){
+                if(policyList[j]) {
+                    returnString += policyList[j] + "<br>";
+                }
+            }
+        }else{
+        	returnString = '-';
+        }
+    	return returnString;
+    };
+    function isSharedFormatter(r, c, v, cd, dc, showAll){
+    	var enable = getValueByJsonPath(dc, 'id_perms;enable'), shared;
+    	if(enable){
+    		shared = 'Enabled';
+    	}else{
+    		shared = 'Disabled';
+    	}
+        return  shared;
+    }
     function descriptionFormatter(r, c, v, cd, dc, showAll){
     	var description = getValueByJsonPath(dc, 'id_perms;description','-');
         return  description;

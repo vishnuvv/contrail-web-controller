@@ -10,8 +10,8 @@ define([
     var serviceTypeModel = ContrailModel.extend({
         defaultConfig: {
             "protocol": "tcp",
-            "dst_start_port": "",
-            "dst_end_port": "",
+            "dst_start_port": "0",
+            "dst_end_port": "0",
             "src_end_port": "",
             "src_start_port":"",
             "src_port":"",
