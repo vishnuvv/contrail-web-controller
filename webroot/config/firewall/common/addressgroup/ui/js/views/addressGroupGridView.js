@@ -210,7 +210,7 @@ define([
                                                 {
                                                     key: 'uuid',
                                                     templateGenerator: 'TextGenerator',
-                                                    label: 'Prefix',
+                                                    label: 'Prefixes',
                                                     keyClass:'col-xs-4',
                                                     templateGeneratorConfig: {
                                                         formatter: 'addressGroupFormatter'

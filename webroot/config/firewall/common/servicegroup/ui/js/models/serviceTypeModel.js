@@ -10,8 +10,8 @@ define([
     var serviceTypeModel = ContrailModel.extend({
         defaultConfig: {
             "protocol": "tcp",
-            "dst_start_port": "0",
-            "dst_end_port": "0",
+            "dst_start_port": "",
+            "dst_end_port": "",
             "src_end_port": "",
             "src_start_port":"",
             "src_port":"",
@@ -75,12 +75,13 @@ define([
                         }
                     }
                 },
-                'dst_port' : function(val, attr, data) {
-                    var result = self.validatePort(val);
-                    if (result != "") {
-                        return result;
+                'dst_port': function(value, attr, finalObj) {
+                    if(!value || (isNaN(value) ||
+                        Number(value) < 0 || Number(value) > 65535)) {
+                        return "Enter a valid port between 0 - 65535";
                     }
-                }
+               },
+
             }
         },
         validatePort: function(port) {

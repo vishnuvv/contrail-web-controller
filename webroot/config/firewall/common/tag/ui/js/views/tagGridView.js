@@ -222,18 +222,6 @@ define([
                                                     templateGenerator: 'TextGenerator'
                                                 },
                                                 {
-                                                    label: 'Parent Type',
-                                                    key: 'parent_type',
-                                                    keyClass:'col-xs-4',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
-                                                    label: 'Parent UUID',
-                                                    key: 'parent_uuid',
-                                                    keyClass:'col-xs-4',
-                                                    templateGenerator: 'TextGenerator'
-                                                },
-                                                {
                                                     label: 'Type',
                                                     key: 'tag_type',
                                                     keyClass:'col-xs-4',

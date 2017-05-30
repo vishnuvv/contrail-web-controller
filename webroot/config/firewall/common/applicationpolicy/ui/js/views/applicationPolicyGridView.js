@@ -105,7 +105,7 @@ define([
                                 sortBy: 'formattedValue'
                             }
                         },
-                        {
+                        /*{
                             id: "shared",
                             field: "shared",
                             name: "Shared",
@@ -113,7 +113,7 @@ define([
                             sortable: {
                                 sortBy: 'formattedValue'
                             }
-                        },
+                        },*/
                         {
                             id: "lastupdated",
                             field: "lastupdated",
@@ -252,7 +252,7 @@ define([
                                                     templateGeneratorConfig: {
                                                         formatter: 'setNoOfPoliciesFormatter'
                                                     }
-                                                },*/
+                                                },
                                                 {
                                                     key: 'id_perms',
                                                     templateGenerator: 'TextGenerator',
@@ -261,7 +261,7 @@ define([
                                                     templateGeneratorConfig: {
                                                         formatter: 'setIsSharedFormatter'
                                                     }
-                                                },
+                                                },*/
                                                 {
                                                     key: 'id_perms',
                                                     templateGenerator: 'TextGenerator',

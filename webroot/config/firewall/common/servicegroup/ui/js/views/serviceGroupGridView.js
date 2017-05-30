@@ -240,7 +240,7 @@ define([
                                                 {
                                                     key: 'uuid',
                                                     templateGenerator: 'TextGenerator',
-                                                    label: '',
+                                                    label: 'Services',
                                                     keyClass:'col-xs-4',
                                                     templateGeneratorConfig: {
                                                         formatter: 'serviceGroupFormatter'
