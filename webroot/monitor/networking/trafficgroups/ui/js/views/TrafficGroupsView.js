@@ -125,8 +125,8 @@ define(
                                         }
                                         return TrafficGroupsView.colorMap[item.level][item.name];
                                     },
-                                    showLinkTooltip:false,
-                                    showLinkInfo:showLinkInfo,
+                                    showLinkTooltip:true,
+                                    showLinkInfo:false,
                                     updateChart: this.updateChart,
                                     // levels: levels,
                                     hierarchyConfig: {
@@ -227,7 +227,40 @@ define(
                                                 }))
                                             });
                                         } else {
-                                            var content = { title: data.id, items: [] };
+                                            d = data;
+                                            var srcApp = d.link[0].data.id,
+                                                dstApp = d.link[1].data.id.slice(0);
+                                            dstApp = formatAppLabel(dstApp,d.link[1].data.arcType);
+                                            var content = { title: (
+                                                    srcApp
+                                                    + '<img src="/img/double_arrow_white.svg"/>'
+                                                    + dstApp), items: [] };
+                                            _.each(d.link.slice(0,1), function(link) {
+                                                var data = {
+                                                    trafficIn: formatBytes(_.sumBy(_.filter(link.data.dataChildren,
+                                                        function(val,idx) {
+                                                            return val.app == link.data.id;
+                                                        }),
+                                                    function(bytes) {
+                                                        return bytes['SUM(eps.traffic.in_bytes)'];
+                                                    })),
+                                                    trafficOut: formatBytes(_.sumBy(_.filter(link.data.dataChildren,
+                                                        function(val,idx) {
+                                                            return val.app == link.data.id;
+                                                        }),
+                                                    function(bytes) {
+                                                        return bytes['SUM(eps.traffic.in_bytes)'];
+                                                    }))
+                                                };
+                                                content.items.push({
+                                                    label: 'Traffic In',
+                                                    value: data.trafficIn
+                                                }, {
+                                                    label: 'Traffic Out',
+                                                    value: data.trafficOut
+                                                });
+                                             });
+
                                         }
                                         return content;
                                     }
@@ -266,7 +299,8 @@ define(
                                     self.updateChart({
                                         'expandLevels': 'disable',
                                         'showArcInfo': 'disable',
-                                        'showLinkInfo': false
+                                        'showLinkInfo': false,
+                                        'showLinkTooltip': false
                                     });
                                 }
                             },
