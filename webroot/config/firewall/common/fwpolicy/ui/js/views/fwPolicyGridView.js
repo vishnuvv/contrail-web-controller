@@ -178,13 +178,16 @@ define([
             cssClass :'cell-hyperlink-blue',
             events : {
                 onClick : function(e, dc) {
+                    var isGlobal = viewConfig.isGlobal;
+                    var viewTab = isGlobal ? 'config_infra_rules': 'config_firewall_rules';
+                    var hashP = isGlobal ?  'config_infra_firewall' : 'config_firewall_policies';
                     var hashParams = null,
                         hashObj = {
-                            view: "config_firewall_rules",
+                            view: viewTab,
                             focusedElement: {
                                 policy: dc.name,
                                 uuid: dc.uuid,
-                                tab: 'config_firewall_rules',
+                                tab: viewTab,
                                 isGlobal: viewConfig.isGlobal
                             }
                         };
@@ -196,7 +199,7 @@ define([
                     }
 
                     layoutHandler.setURLHashParams(hashObj, {
-                        p: "config_firewall_policies",
+                        p: hashP,
                         merge: false,
                         triggerHashChange: true
                     });

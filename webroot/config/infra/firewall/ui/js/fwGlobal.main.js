@@ -27,10 +27,14 @@ function FWGlobalPageLoader ()
     }
     this.renderView = function (renderFn, hashParams) {
         $(contentContainer).html("");
-        switch (renderFn) {
-            case 'renderFirewall':
-                this.securityPolicyView[renderFn]({hashParams: hashParams});
-                break;
+        if (hashParams.view == "config_infra_rules") {
+            this.securityPolicyView.renderInfraPolicyDetails({
+                hashParams: hashParams
+            });
+        } else {
+            this.securityPolicyView.renderFirewall({
+                hashParams: hashParams
+            });
         }
     };
 

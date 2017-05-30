@@ -11,8 +11,33 @@ define([
         renderFirewall: function (viewConfig) {
             var self = this;
             self.renderView4Config(self.$el, null, getSecurityPolicy(viewConfig));
+        },
+        renderInfraPolicyDetails: function(viewConfig) {
+            var self = this,
+            currentHashParams = layoutHandler.getURLHashParams(),
+            policyName = currentHashParams.focusedElement.policy;
+            console.log(policyName);
+            self.renderView4Config(self.$el, null, getInfraPolicyDetails(viewConfig,policyName));            
         }
     });
+    
+    function getInfraPolicyDetails(viewConfig,policyName){
+        return {
+            elementId: "fwrule-global-policy-page-id",
+            view: "SectionView",
+            viewConfig: {
+                title: policyName,
+                elementId: "fwrule-global-policy-page-tabs",
+                rows: [{
+                    columns: [{
+                        elementId: "fwrule-global-policy-tab-id",
+                        view: 'TabsView',
+                        viewConfig: getfwRulePolicyTabs(viewConfig)
+                    }]
+                }]
+            }
+        };
+    };    
 
     function getSecurityPolicy(viewConfig){
         return {
@@ -30,6 +55,60 @@ define([
         };
     };
 
+    function getfwRulePolicyTabs(viewConfig){
+        return {
+            theme: 'default',
+            active: 1,
+            tabs: [{
+               elementId: 'global_policy_info_tab',
+               title: 'Policy Info',
+               view: "fwPolicyInfoView",
+               viewPathPrefix: "config/firewall/common/fwpolicy/ui/js/views/",
+               app: cowc.APP_CONTRAIL_CONTROLLER,
+               viewConfig: viewConfig,
+               tabConfig: {
+                   activate: function(event, ui) {
+                       var gridId = $('#' + 'fw-policy-global-info');
+                       if (gridId.data('contrailGrid')) {
+                           gridId.data('contrailGrid').refreshView();
+                       }
+                   },
+                   renderOnActivate: false
+               }
+           }, {
+               elementId: 'global_policy_rules',
+               title: 'Rules',
+               view: "fwRuleProjectListView",
+               viewPathPrefix: "config/firewall/project/fwpolicy/ui/js/views/",
+               app: cowc.APP_CONTRAIL_CONTROLLER,
+               viewConfig: viewConfig,
+               tabConfig: {
+                   activate: function(event, ui) {
+                       var gridId = $('#' + 'global_policy_rules_grid_id');
+                       if (gridId.data('contrailGrid')) {
+                           gridId.data('contrailGrid').refreshView();
+                       }
+                   },
+                   renderOnActivate: true
+               }
+           }, {
+               elementId: 'global_permissions',
+               title: 'Permissions',
+               view: "fwPermissionView",
+               viewPathPrefix: "config/firewall/common/fwpolicy/ui/js/views/",
+               viewConfig: viewConfig,
+               tabConfig: {
+                   activate: function(event, ui) {
+                       var gridId = $('#' + 'global_permissions_grid_id');
+                       if (gridId.data('contrailGrid')) {
+                           gridId.data('contrailGrid').refreshView();
+                       }
+                   },
+                   renderOnActivate: false
+               }
+           }]
+        };
+    };
     function getSecurityPolicyTabs(viewConfig) {
         return {
             theme: 'default',

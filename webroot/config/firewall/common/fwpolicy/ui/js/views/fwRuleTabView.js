@@ -13,16 +13,17 @@ define([
             viewConfig = this.attributes.viewConfig,
             currentHashParams = layoutHandler.getURLHashParams(),
             policyName = currentHashParams.focusedElement.policy;
-            console.log(policyName);
             self.renderView4Config(self.$el, null, getfwRulePolicy(viewConfig,policyName));
         }
     });
     function getfwRulePolicy(viewConfig, policyName){
         return {
-            elementId: cowu.formatElementId(["fwrule-policy-page-id"]),
+            elementId: "fwrule-policy-page-id",
             view: "SectionView",
+            class:"page-header-text",
             viewConfig: {
                 title: policyName,
+                elementId: "fwrule-policy-page-tabs",
                 rows: [{
                     columns: [{
                         elementId: "fwrule-policy-tab-id",
@@ -36,7 +37,7 @@ define([
     function getfwRulePolicyTabs(viewConfig) {
         return {
             theme: 'default',
-            active: 0,
+            active: 1,
             tabs: [{
                elementId: 'policy_info_tab',
                title: 'Policy Info',
@@ -51,7 +52,7 @@ define([
                            gridId.data('contrailGrid').refreshView();
                        }
                    },
-                   renderOnActivate: true
+                   renderOnActivate: false
                }
            }, {
                elementId: 'policy_rules',
@@ -82,7 +83,7 @@ define([
                            gridId.data('contrailGrid').refreshView();
                        }
                    },
-                   renderOnActivate: true
+                   renderOnActivate: false
                }
            }]
         };
