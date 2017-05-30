@@ -91,11 +91,6 @@ define(
                      * @levels  #Indicates no of levels to be drawn
                      */
                     this.updateChart = function(cfg) {
-                        /*var selTags = ['HR', 'Finance']
-                        var levels = [];
-                        selTags.forEach(function(val,idx) {
-                            levels.push({level:idx,label:val});
-                        });*/
                         var extendConfig = {}
                         if(_.isEmpty(cfg)) {
                             cfg = {};
@@ -202,12 +197,21 @@ define(
                                             });
                                             var content = { title: arcTitle.join('-'), items: [] };
 
-                                            var dataChildren = _.result(data,'children.0.dataChildren',[]);;
+                                            var children = data.children;
+                                            if(_.result(data,'children.0.children') != null) {
+                                                children = _.map(data.children,function(val,idx) {
+                                                    return val['children'];
+                                                });
+                                                children = _.flatten(children);
+                                            }
+
+                                            var dataChildren = _.result(children,'0.dataChildren',[]);;
 
                                             content.items.push({
                                                 label: 'Traffic In',
                                                 value:  formatBytes(_.sumBy(dataChildren,function(currSession) {
-                                                    if(currSession.app == data.name)
+                                                    if((data.namePath.length == 1 && currSession.app == data.namePath[0]) ||
+                                                        (data.namePath.length == 2 && currSession.app == data.namePath[0] && currSession.tier == data.namePath[1]))
                                                         return _.result(currSession,'SUM(eps.traffic.in_bytes)',0);
                                                     else
                                                         return 0;
@@ -215,7 +219,8 @@ define(
                                             }, {
                                                 label: 'Traffic Out',
                                                 value: formatBytes(_.sumBy(dataChildren,function(currSession) {
-                                                    if(currSession.type == data.name)
+                                                    if((data.namePath.length == 1 && currSession.app == data.namePath[0]) ||
+                                                        (data.namePath.length == 2 && currSession.app == data.namePath[0] && currSession.tier == data.namePath[1]))
                                                         return _.result(currSession,'SUM(eps.traffic.out_bytes)',0);
                                                     else
                                                         return 0;

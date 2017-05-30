@@ -121,6 +121,12 @@ define([
             inTpkts: "Total In Packets",
             throughput: "Total Throughput",
 
+            /* Tags */
+            app: "Application",
+            tier: "Tier",
+            deployment: "Deployment",
+            site: "Site",
+
             /* PortDistribution */
             sport: 'Source Port',
             dport: 'Destination Port',
@@ -316,6 +322,8 @@ define([
         this.TITLE_TRAFFIC_STATISTICS_OUT = "Traffic Statistics Out";
         this.TITLE_PORT_DISTRIBUTION = "Port Distribution";
         this.TITLE_PORT_MAP = "Port Map";
+
+        this.TITLE_TAGS = "Tags";
 
         this.TITLE_CPU = "CPU Share (%)";
         this.TITLE_CPU_LOAD = "CPU Load";
