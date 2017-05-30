@@ -9,7 +9,7 @@ define(
             var TrafficGroupsView = ContrailView.extend({
                 render : function() {
                     if(!($('#breadcrumb li:last a').text() == ctwc.TRAFFIC_GROUPS_ALL_APPS)){
-						pushBreadcrumb([ctwc.TRAFFIC_GROUPS_ALL_APPS]);
+                        pushBreadcrumb([ctwc.TRAFFIC_GROUPS_ALL_APPS]);
                     }
                     var trafficGroupsTmpl = contrail.getTemplate4Id('traffic-groups-template'),
                         trafficLinkInfoTmpl = contrail.getTemplate4Id('traffic-link-info-template'),
@@ -25,53 +25,66 @@ define(
 
                     TrafficGroupsView.colorMap = {};
                     TrafficGroupsView.tagMap = {};
+                    function formatAppLabel(label,type) {
+                        if(type) {
+                            label = label.replace(new RegExp('_'+ type, 'g'), '');
+                        }
+                        return label;
+                    }
                     function showLinkInfo(d,el,e,chartScope){
-						var data = {
-								'src': d.link[0].data.id,
-								'dest':d.link[1].data.id,
-								'linkData':[]
-							};
-						_.each(d.link, function(link) {
-							var appObj = {
-							  app_name: link.data.id,
-							  trafficIn: _.sumBy(link.data.dataChildren,
-                                  function(bytes) {
-                                     return bytes['SUM(eps.traffic.in_bytes)'];
-                                  }),
-                              trafficOut: _.sumBy(link.data.dataChildren,
-                                  function(bytes) {
-                                     return bytes['SUM(eps.traffic.out_bytes)'];
-                                 })
+                        var data = {
+                                'src': d.link[0].data.id,
+                                'dest':d.link[1].data.id,
+                                'linkData':[]
+                            };
+                        data.dest = formatAppLabel(data.dest,d.link[1].data.arcType);
+                        _.each(d.link, function(link) {
+                            var appObj = {
+                                app_name: formatAppLabel(link.data.id,link.data.arcType),
+                                trafficIn: formatBytes(_.sumBy(_.filter(link.data.dataChildren,
+                                    function(val,idx) {
+                                        return val.app == link.data.id;
+                                    }),
+                                function(bytes) {
+                                    return bytes['SUM(eps.traffic.in_bytes)'];
+                                })),
+                                trafficOut: formatBytes(_.sumBy(_.filter(link.data.dataChildren,
+                                    function(val,idx) {
+                                        return val.app == link.data.id;
+                                    }),
+                                function(bytes) {
+                                    return bytes['SUM(eps.traffic.in_bytes)'];
+                                }))
                             };
                             data.linkData.push(appObj);
                         });
-						_.each(chartScope.ribbons, function (ribbon) {
-					       ribbon.selected = false;
-					       ribbon.active = false;
-					    });
-					    d.selected = true;
-					    d.active = true;
-					    chartScope._render();
-						$('#traffic-groups-radial-chart')
-							.addClass('showLinkInfo');
-						$('#traffic-groups-link-info')
-							.html(trafficLinkInfoTmpl(data));
-						$('#traffic-groups-radial-chart')
-						 .on('click',{ thisChart:chartScope,thisRibbon:d },
-						  function(ev){
-							if(ev.data.thisChart && $(ev.target)
-							  .parents('#'+ev.data.thisChart.id).length == 0){
-								_.each(ev.data.thisChart.ribbons,
-								 function (ribbon) {
-							       ribbon.selected = false;
-							       ribbon.active = false;
-							    });
-							    ev.data.thisChart._render();
-							    $('#traffic-groups-radial-chart')
-								.removeClass('showLinkInfo');
-								$('#traffic-groups-link-info').html('');
-							}
-						});
+                        _.each(chartScope.ribbons, function (ribbon) {
+                           ribbon.selected = false;
+                           ribbon.active = false;
+                        });
+                        d.selected = true;
+                        d.active = true;
+                        chartScope._render();
+                        $('#traffic-groups-radial-chart')
+                            .addClass('showLinkInfo');
+                        $('#traffic-groups-link-info')
+                            .html(trafficLinkInfoTmpl(data));
+                        $('#traffic-groups-radial-chart')
+                         .on('click','',{ thisChart:chartScope,thisRibbon:d },
+                          function(ev){
+                            if(ev.data.thisChart && $(ev.target)
+                              .parents('#'+ev.data.thisChart.id).length == 0){
+                                _.each(ev.data.thisChart.ribbons,
+                                 function (ribbon) {
+                                   ribbon.selected = false;
+                                   ribbon.active = false;
+                                });
+                                ev.data.thisChart._render();
+                                $('#traffic-groups-radial-chart')
+                                .removeClass('showLinkInfo');
+                                $('#traffic-groups-link-info').html('');
+                            }
+                        });
                     }
 
                     /**
@@ -89,37 +102,39 @@ define(
                         }
                         if(cfg['levels']) {
                             extendConfig['drillDownLevel'] = cfg['levels'];
+                        } else if(cfg) {
+                            extendConfig = cfg;
                         }
                         var config = {
-			                id: 'chartBox',
-			                //levels : levels,
-			                components: [{
-			                    id: 'dendrogram-chart-id',
-			                    type: 'RadialDendrogram',
-			                    config: $.extend({},{
-			                        arcWidth: 12,
-			                        showArcLabels: true,
-			                        parentSeparationShrinkFactor: 0.02,
-			                        labelFlow: 'along-arc',
-			                        arcLabelXOffset: 0,
-			                        arcLabelYOffset: -7,
-		                            colorScale: function (item) {
-										var levelKey = 'TRAFFIC_GROUP_COLOR_LEVEL'+item.level,
-											unassignedColors = _.difference(cowc[levelKey], _.values(TrafficGroupsView.colorMap[item.level]));
-		                                if ( TrafficGroupsView.colorMap[item.level] == null) {
-		                                    TrafficGroupsView.colorMap[item.level] = {};
-		                                    TrafficGroupsView.colorMap[item.level][item.name] = unassignedColors.pop();
-		                                } else if (TrafficGroupsView.colorMap[item.level] != null &&
-		                                    TrafficGroupsView.colorMap[item.level][item.name] == null) {
-		                                    TrafficGroupsView.colorMap[item.level][item.name] = unassignedColors.pop();
-		                                }
-		                                return TrafficGroupsView.colorMap[item.level][item.name];
-		                            },
-		                            showLinkTooltip:false,
+                            id: 'chartBox',
+                            //levels : levels,
+                            components: [{
+                                id: 'dendrogram-chart-id',
+                                type: 'RadialDendrogram',
+                                config: $.extend({},{
+                                    arcWidth: 12,
+                                    showArcLabels: true,
+                                    parentSeparationShrinkFactor: 0.02,
+                                    labelFlow: 'along-arc',
+                                    arcLabelXOffset: 0,
+                                    arcLabelYOffset: -7,
+                                    colorScale: function (item) {
+                                        var levelKey = 'TRAFFIC_GROUP_COLOR_LEVEL'+item.level,
+                                            unassignedColors = _.difference(cowc[levelKey], _.values(TrafficGroupsView.colorMap[item.level]));
+                                        if ( TrafficGroupsView.colorMap[item.level] == null) {
+                                            TrafficGroupsView.colorMap[item.level] = {};
+                                            TrafficGroupsView.colorMap[item.level][item.name] = unassignedColors.pop();
+                                        } else if (TrafficGroupsView.colorMap[item.level] != null &&
+                                            TrafficGroupsView.colorMap[item.level][item.name] == null) {
+                                            TrafficGroupsView.colorMap[item.level][item.name] = unassignedColors.pop();
+                                        }
+                                        return TrafficGroupsView.colorMap[item.level][item.name];
+                                    },
+                                    showLinkTooltip:false,
                                     showLinkInfo:showLinkInfo,
                                     updateChart: this.updateChart,
-			                        // levels: levels,
-									hierarchyConfig: {
+                                    // levels: levels,
+                                    hierarchyConfig: {
                                         parse: function (d) {
                                             var srcHierarchy = [d['app'], d['tier']],
                                                 dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']],
@@ -137,7 +152,7 @@ define(
                                             if(remoteVN && remoteVN.indexOf(':') > 0){
                                                 var remoteProject = remoteVN.split(':')[1];
                                                 if(currentProject != remoteProject) {
-	                                                externalProject = 'externalProject';
+                                                    externalProject = 'externalProject';
                                                 }
                                             } else {
                                                 externalProject = 'external';
@@ -149,7 +164,7 @@ define(
                                                     } else {
                                                         dstHierarchy[i] += '_'+externalProject;
                                                     }
-	                                            });
+                                                });
                                             }
                                             var src = {
                                                 names: srcHierarchy,
@@ -174,9 +189,46 @@ define(
                                             return [src, dst];
                                         }
                                     }
-			                    },extendConfig)
-			                }]
-			            }
+                                },extendConfig)
+                            },{
+                                id: 'tooltip-id',
+                                type: 'Tooltip',
+                                config: {
+                                    formatter: function formatter(data) {
+                                        if(data.level) {
+                                            var arcTitle = data.namePath.slice(0);
+                                            $.each(arcTitle, function(i) {
+                                                arcTitle[i] = formatAppLabel(data.namePath[i],data.arcType);
+                                            });
+                                            var content = { title: arcTitle.join('-'), items: [] };
+
+                                            var dataChildren = _.result(data,'children.0.dataChildren',[]);;
+
+                                            content.items.push({
+                                                label: 'Traffic In',
+                                                value:  formatBytes(_.sumBy(dataChildren,function(currSession) {
+                                                    if(currSession.app == data.name)
+                                                        return _.result(currSession,'SUM(eps.traffic.in_bytes)',0);
+                                                    else
+                                                        return 0;
+                                                }))
+                                            }, {
+                                                label: 'Traffic Out',
+                                                value: formatBytes(_.sumBy(dataChildren,function(currSession) {
+                                                    if(currSession.type == data.name)
+                                                        return _.result(currSession,'SUM(eps.traffic.out_bytes)',0);
+                                                    else
+                                                        return 0;
+                                                }))
+                                            });
+                                        } else {
+                                            var content = { title: data.id, items: [] };
+                                        }
+                                        return content;
+                                    }
+                                }
+                            }]
+                        }
                         viewInst.updateConfig(config);
                         viewInst.render();
                     }
@@ -204,26 +256,26 @@ define(
                                 type: 'POST',
                                 data: JSON.stringify(postData)
                             },
+                            successCallback: function(data){
+                                if(data[0].nodata) {
+                                    self.updateChart({
+                                        'expandLevels': 'disable',
+                                        'showArcInfo': 'disable',
+                                        'showLinkInfo': false
+                                    });
+                                }
+                            },
                             dataParser : function (response) {
                                 if(false || response['data'].length == 0) {
+                                    var curDomain = contrail.getCookie(cowc.COOKIE_DOMAIN)
+                                        + ':' + contrail.getCookie(cowc.COOKIE_PROJECT);
                                     return [{
-                                            "app": "__UNKOWN__",
-                                            "deployment": "",
-                                            "eps.traffic.remote_app_id": "__UNKOWN__",
-                                            "eps.traffic.remote_deployment_id": "",
-                                            "eps.traffic.remote_prefix": "",
-                                            "eps.traffic.remote_site_id": "",
-                                            "eps.traffic.remote_tier_id": "",
-                                            "eps.traffic.remote_vn": "",
-                                            "name": "",
-                                            "site": "",
-                                            "tier": "",
-                                            "vn": "",
-                                            "SUM(eps.traffic.hits)": 2,
-                                            "SUM(eps.traffic.in_bytes)": 2842,
-                                            "SUM(eps.traffic.in_pkts)": 29,
-                                            "SUM(eps.traffic.out_bytes)": 0,
-                                            "SUM(eps.traffic.out_pkts)": 0
+                                            "app": curDomain,
+                                            "eps.traffic.remote_app_id": "",
+                                            "eps.traffic.remote_vn": curDomain,
+                                            "SUM(eps.traffic.in_bytes)": 1,
+                                            "SUM(eps.traffic.out_bytes)": 1,
+                                            'nodata': true
                                         }];
                                 } else {
                                     return response['data'];
