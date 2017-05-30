@@ -184,9 +184,9 @@ define(
                         "async": false,
                         "formModelAttrs": {
                             "time_granularity_unit": "secs",
-                            "from_time_utc": "now-20h",
+                            "from_time_utc": "now-2h",
                             "to_time_utc": "now",
-                            "time_granularity": 60,
+                            "time_granularity": 600*2,
                             "select": "T=, eps.traffic.remote_app_id, eps.traffic.remote_tier_id, eps.traffic.remote_site_id,"+
                                  "eps.traffic.remote_deployment_id, eps.traffic.remote_prefix, eps.traffic.remote_vn, eps.__key,"+
                                  " app, tier, site, deployment, vn, name, SUM(eps.traffic.hits), SUM(eps.traffic.in_bytes),"+
@@ -264,7 +264,6 @@ define(
                                             return vnName.replace(/([^:]*):([^:]*):([^:]*)/,'$3 ($2)');
                                         }
                                         //If app is empty, put vn name in app
-                                        // if(value['app'] == '' || value['app'] == '0' || value['app'] == null) {
                                         if(_.isEmpty(value['app']) || value['app'] == '0') {
                                             value['app'] = formatVN(value['vn']);
                                         }
