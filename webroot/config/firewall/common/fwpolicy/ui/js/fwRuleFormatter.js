@@ -96,14 +96,31 @@
              * matchFormatter
              */
             this.matchFormatter = function(r, c, v, cd, dc) {
-                var match = getValueByJsonPath(dc,
+                var  formattedMatch ='', matches = getValueByJsonPath(dc,
                     "match_tags;tag_list", [], false);
-                if(match.length > 0) {
-                    match  = match.join(' && ');
+                if(matches.length > 0) {
+                    _.each(matches, function(match, i){
+                        var matchStr  = getFormattedMatchTags(match)
+                        if(i === 0) {
+                            formattedMatch += matchStr;
+                        } else {
+                            formattedMatch += '<br>' + matchStr;
+                        }
+                    });
                 } else {
-                    match = '-';
+                    formattedMatch = '-';
                 }
-                return match;
+                return formattedMatch;
+            };
+
+            var getFormattedMatchTags = function (key) {
+                if(!key){
+                    return '';
+                }
+                key = key.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+                    return letter.toUpperCase();
+                });
+                return key;
             };
 
             /*
