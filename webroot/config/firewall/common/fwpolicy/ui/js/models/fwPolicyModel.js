@@ -118,7 +118,7 @@ define([
                 vnSubnetObj, subnet, endpoint;
             endpoint  = {};
             endpoint["virtual_network"] = null;
-            endpoint["security_group"] = null;
+            //endpoint["security_group"] = null;
             endpoint["address_group"] = null;
             endpoint["tags"] = [];
             endpoint["any"] = null;
@@ -276,8 +276,10 @@ define([
                     newFWRuleData['action_list'] = {};
                     newFWRuleData['action_list']['simple_action'] = attr['simple_action'];
                     newFWRuleData['direction'] = attr['direction'];
-                    newFWRuleData['sequence'] = attr['sequence'];
+                    //newFWRuleData['sequence'] = attr['sequence'];
                     newFWRuleData['match_tags'] = {};
+                    newFWRuleData['id_perms'] = {};
+                    newFWRuleData['id_perms']["enable"] = attr["status"];
                     newFWRuleData['match_tags']['tag_list'] = attr.match_tags.split(',');
                     postFWRules.push({'firewall-rule': $.extend(true, {}, newFWRuleData)});
                 });

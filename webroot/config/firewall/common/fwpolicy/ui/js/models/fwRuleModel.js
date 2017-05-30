@@ -26,8 +26,8 @@ define([
             'service': {
                   'protocol': 'tcp',
                   'dst_ports': {
-                    'start_port': 0,
-                    'end_port': 0
+                    'start_port': '',
+                    'end_port': ''
                   },
                   'src_ports': {
                     'start_port': 0,
@@ -56,7 +56,12 @@ define([
         	modelConfig["simple_action"] = simpleAction;
         	var dstStartPort = getValueByJsonPath(modelConfig, "service;dst_ports;start_port", '');
         	var dstEndtPort = getValueByJsonPath(modelConfig, "service;dst_ports;end_port", '');
-        	var port = dstStartPort+'-'+dstEndtPort;
+        	var port
+        	if(dstStartPort === dstEndtPort){
+                port = dstStartPort;
+            }else{
+                port = dstStartPort + '-' + dstEndtPort;
+            }
         	modelConfig["port"] = port;
         	var dir = getValueByJsonPath(modelConfig, "direction", '');
         	if(dir === '<>' || dir === '>'){
@@ -91,18 +96,30 @@ define([
         },
         getEndpointVal : function(endpoint, modelConfig){
         	var endpointArr = [];
-    		for(var j in endpoint){
+        	
+        	if(endpoint.tags && endpoint.tags.length > 0){
+                _.each(endpoint.tags, function(tag){
+                    var grpName = tag ? tag.split('-')[0]: '';
+                    grpName = grpName.indexOf('global:') != -1 ? grpName.split(':')[1] : grpName;
+                    var val = tag + cowc.DROPDOWN_VALUE_SEPARATOR + grpName.toLowerCase();
+                    endpointArr.push(val);
+                });
+        	} else if(endpoint.virtual_network) {
+                var vn = endpoint.virtual_network +
+                     cowc.DROPDOWN_VALUE_SEPARATOR + 'virtual_network';
+                endpointArr.push(vn);        	    
+        	} else if(endpoint.address_group) {
+                var addressGrp = endpoint.address_group +
+                cowc.DROPDOWN_VALUE_SEPARATOR + 'address_group';
+                endpointArr.push(addressGrp);                       	    
+        	}
+    		/*for(var j in endpoint){
     			if(endpoint[j].constructor === Array){
     				if(endpoint[j].length > 0){
-    					var uuid = endpoint[j][0];
-    					var tagRefs = getValueByJsonPath(modelConfig, "tag_refs");
-    					for(var k = 0; k < tagRefs.length; k++){
-    						var to = tagRefs[k].to.reverse()[0].split('-');
-    						if(uuid === tagRefs[k].uuid){
-    							var val = tagRefs[k].uuid + ';' + to[0].toLowerCase();
-            					endpointArr.push(val);
-    						}
-        				}
+    				    _.each(endpoint[j], function(tag){
+    				        var grpName = tag ? tag.split('-')[0]: '';
+    				        var val = tag + cowc.DROPDOWN_VALUE_SEPARATOR + grpName.toLowerCase();
+    				    });
     				}
     			}else if(endpoint[j] !== null){
     				if(j === 'virtual_network'){
@@ -115,7 +132,7 @@ define([
     				}
     				
     			}
-    		}
+    		}*/
     		if(endpointArr.length > 0){
     			return endpointArr[0];
     		}else{
@@ -148,7 +165,7 @@ define([
                 vnSubnetObj, subnet, endpoint;
             endpoint  = {};
             endpoint["virtual_network"] = null;
-            endpoint["security_group"] = null;
+            //endpoint["security_group"] = null;
             endpoint["address_group"] = null;
             endpoint["tags"] = [];
             endpoint["any"] = null;
@@ -159,9 +176,11 @@ define([
                 endpoint["tags"].push(srcArr[0]);
             } else if(srcArr.length == 2 && srcArr[1] === 'address_group'){
                 endpoint[srcArr[1]] = srcArr[0];
-            }  else {
+            } else if(srcArr.length == 2 && srcArr[1] === 'virtual_network'){
                 endpoint[srcArr[1]] = self.getPostAddressFormat(srcArr[0], selectedDomain,
                         selectedProject)
+            } else {
+                //endpoint["any"] = true;
             }
 
             return endpoint;
@@ -252,7 +271,7 @@ define([
 	                newFWRuleData['endpoint_2'] = self.populateEndpointData(attr['endpoint_2']);
 	                newFWRuleData['service'] = {};
 	                newFWRuleData['service']['protocol'] = attr.protocol;
-	                newFWRuleData['service']['dst_ports'] = policyFormatters.formatPort(attr.port)[0];
+	                newFWRuleData['service']['dst_ports'] = policyFormatters.formatPort(attr.port.toString())[0];
 	                newFWRuleData['service']['src_ports'] = {};
 	                newFWRuleData['service']['src_ports']['start_port'] = 0;
 	                newFWRuleData['service']['src_ports']['end_port'] = 0;
@@ -260,6 +279,8 @@ define([
 	                newFWRuleData['action_list']['simple_action'] = attr['simple_action'];
 	                newFWRuleData['direction'] = attr['direction'];
 	                newFWRuleData['sequence'] = attr['sequence'];
+                    //newFWRuleData['id_perms'] = {};
+                    //newFWRuleData['id_perms']["enable"] = attr["enable"];	                
 	                newFWRuleData['match_tags'] = {};
 	                newFWRuleData['match_tags']['tag_list'] = attr.match_tags.split(';');
 	                postFWRules.push({'firewall-rule': $.extend(true, {}, newFWRuleData)});

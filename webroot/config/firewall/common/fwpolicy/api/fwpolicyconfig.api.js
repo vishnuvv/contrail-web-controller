@@ -67,6 +67,8 @@ function updateFirewallRuleRefs (fwPolicyId, fwRules, appData, rulesSequenceMap,
     var dataObjArr = [];
     _.each(fwRules, function(rule, i) {
         var ruleDetails = commonUtils.getValueByJsonPath(rule, 'firewall-rule', {}, false);
+        var order = rulesSequenceMap[ruleDetails['fq_name'].join(":")] ?
+                rulesSequenceMap[ruleDetails['fq_name'].join(":")].toString() : i.toString();
         var putData = {
                 'type': 'firewall-policy',
                 'uuid': fwPolicyId,
@@ -74,8 +76,7 @@ function updateFirewallRuleRefs (fwPolicyId, fwRules, appData, rulesSequenceMap,
                 'ref-uuid': ruleDetails['uuid'],
                 'ref-fq-name': ruleDetails['fq_name'],
                 'operation': 'ADD',
-                'attr': {'sequence' :
-                    rulesSequenceMap[ruleDetails['fq_name'].join(":")].toString()}
+                'attr': {'sequence' : order}
             };
             var reqUrl = '/ref-update';
             commonUtils.createReqObj(dataObjArr, reqUrl,

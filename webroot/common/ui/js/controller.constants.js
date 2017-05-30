@@ -931,6 +931,10 @@ define([
                                 {text: 'Site', value: 'site'}];
         this.RULE_DATA_TAGS = 'rule-data-tags';
         this.RULE_DATA_ADDRESS_GROUPS = 'rule-data-address-groups';
+        this.APPLICATION_TAG_TYPE = 'application';
+        this.DEPLOYMENT_TAG_TYPE = 'deployment';
+        this.SITE_TAG_TYPE = 'site';
+        this.TIER_TAG_TYPE = 'tier';
 
 
         /* RBAC constants */

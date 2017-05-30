@@ -120,21 +120,21 @@ define([
             });
             $.when.apply($, getAjaxs).then(
                 function () {
-                    var returnArr = [], results = arguments, applicationChild = [{text:'Enter or Select a Application',
+                    var returnArr = [], results = arguments, applicationChild = [{text:'Select a Application',
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "application",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "application",
                         disabled : true }];
-                    var tierChild = [{text:'Enter or Select a Tier',
+                    var tierChild = [{text:'Select a Tier',
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "tier",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "tier",
-                        disabled : true }], deploymentChild = [{text:'Enter or Select a Deployment',
+                        disabled : true }], deploymentChild = [{text:'Select a Deployment',
                             value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "deployment",
                             id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "deployment",
-                            disabled : true }], siteChild = [{text:'Enter or Select a Site',
+                            disabled : true }], siteChild = [{text:'Select a Site',
                                 value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                 id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                 disabled : true }], addrFields = [];
-                    var addressGrpChild = [{text:'Enter or Select a Address Group',
+                    var addressGrpChild = [{text:'Select Address Group',
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         disabled : true }];
@@ -142,29 +142,33 @@ define([
                     var tags = results[0][0][0]['tags'];
                     var addressGrp = results[1][0][0]['address-groups'];
                     var virtualNet = results[2][0]['virtual-networks'];
+                    var domain = contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME);
+                    var project = contrail.getCookie(cowc.COOKIE_PROJECT_DISPLAY_NAME);
                     if(tags.length > 0){
                     	for(var i = 0; i < tags.length; i++){
                     		var fqName = tags[i]['tag']['fq_name'].reverse()[0].split('-');
                     		var tagType = fqName[0];
-                    		if(tagType === 'Application'){
+                    		var val = tags[i]['tag'].fq_name.length === 1 ?
+                                    'global:' + tags[i]['tag']['name'] : tags[i]['tag']['name'];                    		
+                    		if(tagType === ctwc.APPLICATION_TAG_TYPE){
                     			applicationChild.push({text : tags[i]['tag']['tag_value'],
-                                     value : tags[i]['tag']['uuid'] + cowc.DROPDOWN_VALUE_SEPARATOR + "application",
-                                     id : tags[i]['tag']['uuid'] + cowc.DROPDOWN_VALUE_SEPARATOR + "application",
+                                     value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "application",
+                                     id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "application",
                                      parent : "application" })
-                    		}else if(tagType === 'Tier'){
+                    		}else if(tagType === ctwc.TIER_TAG_TYPE){
                     			tierChild.push({text : tags[i]['tag']['tag_value'],
-                                    value : tags[i]['tag']['uuid'] + cowc.DROPDOWN_VALUE_SEPARATOR + "tier",
-                                    id : tags[i]['tag']['uuid'] + cowc.DROPDOWN_VALUE_SEPARATOR + "tier",
+                                    value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "tier",
+                                    id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "tier",
                                     parent : "tier" });
-                    		}else if(tagType === 'Deployment'){
+                    		}else if(tagType === ctwc.DEPLOYMENT_TAG_TYPE){
                     			deploymentChild.push({text : tags[i]['tag']['tag_value'],
-                                    value : tags[i]['tag']['uuid'] + cowc.DROPDOWN_VALUE_SEPARATOR + "deployment",
-                                    id : tags[i]['tag']['uuid']+ cowc.DROPDOWN_VALUE_SEPARATOR + "deployment",
+                                    value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "deployment",
+                                    id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "deployment",
                                     parent : "deployment" });
-                    		}else if(tagType === 'Site'){
+                    		}else if(tagType === ctwc.SITE_TAG_TYPE){
                     			siteChild.push({text : tags[i]['tag']['tag_value'],
-                                    value : tags[i]['tag']['uuid'] + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
-                                    id : tags[i]['tag']['uuid'] + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
+                                    value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
+                                    id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                     parent : "site" });
                     		}
                     		
@@ -188,30 +192,40 @@ define([
                     	}
                     }
                     if(addressGrp.length > 0){
-                    	for(var k = 0; k < addressGrp.length; k++){
-                    		var address = addressGrp[k]['address-group'];
-                    		addressGrpChild.push({text : address.name,
-                                value : address.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
-                                id : address.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
-                                parent : "site" });
-                    	}
+                        for(var a = 0; a< addressGrp.length; a++){
+                            var address = addressGrp[a]['address-group'];
+                            var fqNameTxt = address["fq_name"][address["fq_name"].length - 1];
+                            var fqNameValue = address["fq_name"].join(":");
+                            addressGrpChild.push({text : fqNameTxt,
+                                 value : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
+                                 id : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
+                                 parent : "address_group" });
+                        }                    	
                     	addrFields.push({text : 'Address Group', value : 'address_group', children : addressGrpChild});
                     }
                     if(virtualNet.length > 0){
                     	var virtualNetworkList = [{text:'Enter or Select a Virtual Network',
                             value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                             id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
-                            disabled : true },
+                            disabled : true }/*,
                           {text:"ANY (All Networks in Current Project)",
                             value:"any" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                             id:"any" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
-                            "parent": "virtual_network"}];
-                    	  for(var a = 0; a< virtualNet.length; a++){
-                    		  var fqName = virtualNet[a].fq_name.reverse();
-                    		  virtualNetworkList.push({text : fqName[0],
-                                  value : virtualNet[a].uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
-                                  id : virtualNet[a].uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
-                                  parent : "virtual_network" });
+                            "parent": "virtual_network"}*/];
+                    	  for(var i = 0; i< virtualNet.length; i++){
+                    	      var vn = getValueByJsonPath(virtualNet[i],
+                    	              'fq_name', [], false);
+                              /*if(vn[2].toLowerCase() === "any" ||
+                                      vn[2].toLowerCase() === "local"){*/
+                                       var fqNameTxt = vn[2]; /*+' (' +
+                                                       domain + ':' +
+                                                       project +')';*/
+                                       var fqNameValue = vn.join(":");
+                                       virtualNetworkList.push({text : fqNameTxt,
+                                            value : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
+                                            id : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
+                                            parent : "virtual_network" });
+                              //}
                     	  }
                           addrFields.push({text : 'Virtual Networks', value : 'virtual_network', children : virtualNetworkList});
                     }
@@ -412,7 +426,7 @@ define([
                                 dataBindValue: "match_tags",
                                 elementConfig:{
                                     dataTextField: "text",
-                                    placeholder:"Select Match",
+                                    placeholder:"Select Tag Type",
                                     dataValueField: "id",
                                     separator: cowc.DROPDOWN_VALUE_SEPARATOR,
                                     dataSource: {

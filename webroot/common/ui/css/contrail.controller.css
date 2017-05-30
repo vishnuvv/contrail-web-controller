@@ -579,3 +579,22 @@ width:100%;}
 
 #is_global input.ace-input[type=checkbox] + .ace-lbl::before, input.ace-input[type=radio] + .ace-lbl::before 
 { margin-right:10px;}
+#fwrule-policy-tab-id ul.ui-tabs-nav, #fwrule-global-policy-tab-id ul.ui-tabs-nav {
+    margin: 10px;
+}
+#content-container h5{
+    padding: 5px 0px 0px 15px!important;
+    margin: 0px !important;
+    font-size: 15px;
+    color: #478fca;
+    text-transform: capitalize;
+}
+form#fwPolicy-form {
+    padding: 10px;
+}
+div#config-fw-rule {
+    padding: 0px 20px;
+}
+form h5.margin-0-0-10~.section-content {
+    padding-top: 15px;
+}

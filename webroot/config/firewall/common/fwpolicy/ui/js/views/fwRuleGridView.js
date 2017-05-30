@@ -213,13 +213,13 @@ define([
                                width: 100,
                                name: 'Match Tags',
                                formatter: fwRuleFormatter.matchFormatter
-                           }, {
+                           }/*, {
                                id: 'action_list.apply_service',
                                field: 'action_list.apply_service',
                                width: 90,
                                name: 'Simple Actions',
                                formatter: fwRuleFormatter.simpleActionFormatter
-                           }];
+                           }*/];
 
 
     function getFWRuleExpDetailsTemplateConfig() {
@@ -317,14 +317,14 @@ define([
                                     templateGeneratorConfig: {
                                         formatter: "matchFormatter"
                                     }
-                                },{
+                                }/*,{
                                     key: "action_list.apply_service",
                                     templateGenerator: "TextGenerator",
                                     label: "Simple Actions",
                                     templateGeneratorConfig: {
                                         formatter: "simpleActionFormatter"
                                     }
-                                }]
+                                }*/]
                            }]
                       }]
                     }

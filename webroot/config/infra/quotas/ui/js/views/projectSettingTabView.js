@@ -43,7 +43,7 @@ define([
                viewConfig: viewConfig,
                tabConfig: {
                    activate: function(event, ui) {
-                       var gridId = $('#' + 'project-quotas');
+                       var gridId = $('#' + 'quotas-grid');
                        if (gridId.data('contrailGrid')) {
                            gridId.data('contrailGrid').refreshView();
                        }

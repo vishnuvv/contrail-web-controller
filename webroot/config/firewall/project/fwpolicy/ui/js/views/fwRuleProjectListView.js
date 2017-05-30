@@ -30,7 +30,7 @@ define([
                 }/*,
                 vlRemoteConfig : {
                     vlRemoteList : self.getDataLazyRemoteConfig()
-                }  */
+                }*/
             };
             var contrailListModel = new ContrailListModel(listModelConfig);
             this.renderView4Config(this.$el,

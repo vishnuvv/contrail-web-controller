@@ -271,7 +271,7 @@ define([
                                 },{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
-                                    key: "application_policy_set_back_refs",
+                                    key: "uuid",
                                     templateGenerator: "TextGenerator",
                                     label: "Member of",
                                     templateGeneratorConfig: {

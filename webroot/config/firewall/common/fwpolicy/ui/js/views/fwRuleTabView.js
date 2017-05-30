@@ -47,7 +47,7 @@ define([
                viewConfig: viewConfig,
                tabConfig: {
                    activate: function(event, ui) {
-                       var gridId = $('#' + 'fw-policy-info');
+                       var gridId = $('#' + 'fw-rule-grid');
                        if (gridId.data('contrailGrid')) {
                            gridId.data('contrailGrid').refreshView();
                        }

@@ -133,7 +133,7 @@ define([
                                    id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                                    //value:"dummy",
                                    //id:"dummy",
-                                   disabled : true },
+                                   disabled : true }/*,
                                  {text:"ANY (All Networks in Current Project)",
                                    value:"any" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                                    id:"any" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
@@ -145,7 +145,7 @@ define([
                                  id:"local" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                                  //"value":"local",
                                  //"id":"local",
-                                 "parent": "virtual_network"}];
+                                 "parent": "virtual_network"}*/];
 
                     if (null !== vns && typeof vns === "object" &&
                                      vns.length > 0) {
@@ -158,9 +158,9 @@ define([
                                project === selectedProject) {
                                 if(vn["fq_name"][2].toLowerCase() === "any" ||
                                    vn["fq_name"][2].toLowerCase() === "local"){
-                                    var fqNameTxt = vn["fq_name"][2] +' (' +
+                                    var fqNameTxt = vn["fq_name"][2]; /*+' (' +
                                                     domain + ':' +
-                                                    project +')';
+                                                    project +')';*/
                                     var fqNameValue = vn["fq_name"].join(":");
                                     allVns.push({text : fqNameTxt,
                                          value : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
@@ -215,17 +215,19 @@ define([
                     addrFields.push({text: 'Tier', value: 'Tier',
                         children: tagGroupData.tierMap['Tier']
                     });
-                    var addressGrpChild = [{text:'Enter or Select a Address Group',
+                    var addressGrpChild = [{text:'Select a Address Group',
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         disabled : true }];
-                    var addressGroups = getValueByJsonPath(results, '2;0;0;address-groups', [], false);
+                    var addressGroups = getValueByJsonPath(results, '2;0;0;address-groups', [], false); 
                     if(addressGroups.length > 0){
                         for(var k = 0; k < addressGroups.length; k++){
                             var address = addressGroups[k]['address-group'];
+                            var fqNameTxt = address["fq_name"][address["fq_name"].length - 1];
+                            var fqNameValue = address["fq_name"].join(":");                            
                             addressGrpChild.push({text : address.name,
-                                value : address.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
-                                id : address.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
+                                value : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
+                                id : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                                 parent : "address_group" });
                         }
                         addrFields.push({text : 'Address Group', value : 'address_group', children : addressGrpChild});
@@ -233,6 +235,14 @@ define([
 
                     addrFields.push({text : 'Network', value : 'virtual_network',
                                    children : allVns});
+                    /*var anyArray = [{text:'Select a ANY',
+                        value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any",
+                        id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any",
+                        disabled : true },
+                        {text:'ANY',
+                            value:"true" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
+                            id:"true" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
+                            disabled : true }] */                 
                     returnArr["addrFields"] = addrFields;
                     callback(returnArr);
                 }
@@ -243,20 +253,20 @@ define([
 
     function parseTags(tags) {
         var tagGroupData = {},
-            applicationMap = { Application: [{ text: "Enter or Select Application",
+            applicationMap = { Application: [{ text: "Select Application",
                 value: "dummy" +
                 cowc.DROPDOWN_VALUE_SEPARATOR +
                 "Application",
-             disabled: true}]}, siteMap = {Site: [{ text: "Enter or Select Site",
+             disabled: true}]}, siteMap = {Site: [{ text: "Select Site",
                  value: "dummy" +
                  cowc.DROPDOWN_VALUE_SEPARATOR +
                  "Site",
               disabled: true}]},
-            deploymentMap = {Deployment: [{ text: "Enter or Select Deployment",
+            deploymentMap = {Deployment: [{ text: "Select Deployment",
                 value: "dummy" +
                 cowc.DROPDOWN_VALUE_SEPARATOR +
                 "Deployment",
-             disabled: true}]}, tierMap = {Tier:[{ text: "Enter or Select Tier",
+             disabled: true}]}, tierMap = {Tier:[{ text: "Select Tier",
                  value: "dummy" +
                  cowc.DROPDOWN_VALUE_SEPARATOR +
                  "Tier",
@@ -264,31 +274,33 @@ define([
          _.each(tags, function(tagData){
              if('tag' in tagData) {
                  var data = tagData['tag'];
-                 if(data.tag_type === 'Application') {
+                 var val = data.fq_name.length === 1 ?
+                         'global:' + data.name : data.name;
+                 if(data.tag_type === ctwc.APPLICATION_TAG_TYPE) {
                      applicationMap['Application'].push({
                          text: data.tag_value,
-                         value: data.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "Application",
-                         id: data.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "Application",
+                         value: val + cowc.DROPDOWN_VALUE_SEPARATOR + "Application",
+                         id: val + cowc.DROPDOWN_VALUE_SEPARATOR + "Application",
                          parent: 'Application'});
-                 } else if(data.tag_type === 'Tier') {
+                 } else if(data.tag_type === ctwc.TIER_TAG_TYPE) {
                      tierMap['Tier'].push({
                          text: data.tag_value,
-                         value: data.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "Tier",
-                         id: data.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "Tier",
+                         value: val + cowc.DROPDOWN_VALUE_SEPARATOR + "Tier",
+                         id: val + cowc.DROPDOWN_VALUE_SEPARATOR + "Tier",
                          parent: 'Tier'});
 
-                 } else if(data.tag_type === 'Deployment') {
+                 } else if(data.tag_type === ctwc.DEPLOYMENT_TAG_TYPE) {
                      deploymentMap['Deployment'].push({
                          text: data.tag_value,
-                         value: data.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "Deployment",
-                         id: data.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "Deployment",
+                         value: val + cowc.DROPDOWN_VALUE_SEPARATOR + "Deployment",
+                         id: val + cowc.DROPDOWN_VALUE_SEPARATOR + "Deployment",
                          parent: 'Deployment'});
 
-                 } else if(data.tag_type === 'Site') {
+                 } else if(data.tag_type === ctwc.SITE_TAG_TYPE) {
                      siteMap['Site'].push({
                          text: data.tag_value,
-                         value: data.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "Site",
-                         id: data.uuid + cowc.DROPDOWN_VALUE_SEPARATOR + "Site",
+                         value: val + cowc.DROPDOWN_VALUE_SEPARATOR + "Site",
+                         id: val + cowc.DROPDOWN_VALUE_SEPARATOR + "Site",
                          parent: 'Site'});
                  }
              }
@@ -367,7 +379,7 @@ define([
                                     iconClass: 'fa fa-minus'}
                                ],
                             columns: [
-                                {
+                               /* {
                                     elementId: 'sequence',
                                     name: 'Order',
                                     view: "FormInputView",
@@ -378,7 +390,7 @@ define([
                                        path: 'sequence',
                                        dataBindValue: 'sequence()'
                                        }
-                                },
+                                },*/
                                 {
                                     elementId: 'status',
                                     name: 'Status',
@@ -564,7 +576,7 @@ define([
                                        dataBindValue:
                                            'match_tags()',
                                        elementConfig: {
-                                           placeholder: "Select Tags",
+                                           placeholder: "Select Tag Type",
                                            dataValueField: "value",
                                            dataTextField: "text",
                                            data: ctwc.RULE_MATCH_TAGS

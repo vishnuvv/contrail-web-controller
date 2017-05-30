@@ -45,15 +45,20 @@
           /*
            * serviceFormatter
            */
-           this.serviceFormatter = function(r, c, v, cd, dc) {
-               var serviceStr = "", service = getValueByJsonPath(dc,
-                   "service", null, false);
-               serviceStr = service && service.protocol ?
-                       service.protocol + " : " +
-                       getValueByJsonPath(service, 'dst_ports;start_port', '') + '-' +
-                       getValueByJsonPath(service, 'dst_ports;end_port', '') : '-';
-               return serviceStr;
-           };
+            this.serviceFormatter = function(r, c, v, cd, dc) {
+                var serviceStr = "", service = getValueByJsonPath(dc,
+                    "service", null, false);
+                serviceStr += service.protocol ? service.protocol : '';
+                if(getValueByJsonPath(service, 'dst_ports;start_port', '')
+                        === getValueByJsonPath(service, 'dst_ports;end_port', '')){
+                    serviceStr += ':'  + getValueByJsonPath(service, 'dst_ports;end_port', '');
+                } else{
+                    serviceStr += ':' + (service && service.dst_ports ?
+                            getValueByJsonPath(service, 'dst_ports;start_port', '') + '-' +
+                            getValueByJsonPath(service, 'dst_ports;end_port', '') : '-');
+                }
+                return serviceStr ? serviceStr : '-';
+            };
 
           /*
            * endPoint1Formatter
@@ -67,17 +72,17 @@
                var rule_display = '';
                var tags = ctwu.getGlobalVariable(ctwc.RULE_DATA_TAGS);
                var addressGrps = ctwu.getGlobalVariable(ctwc.RULE_DATA_ADDRESS_GROUPS);
-               var endpoint = getValueByJsonPath(dc, endpointTarget, {});
+               var endpoint = getValueByJsonPath(dc, endpointTarget, {}, false);
                if(endpoint.subnet) {
                    return endpoint.subnet;
                } else if(endpoint.address_group) {
-                   return endpoint.address_group;
+                   return endpoint.address_group.split(":")[endpoint.address_group.length - 1];
                } else if(endpoint.tags.length > 0) {
                    return endpoint.tags[0];
                } else if(endpoint.security_group) {
                    return endpoint.security_group;
                } else if(endpoint.virtual_network) {
-                   return endpoint.virtual_network;
+                   return endpoint.virtual_network.split(":")[2];
                } else if(endpoint.any) {
                    return endpoint.any;
                } else {
