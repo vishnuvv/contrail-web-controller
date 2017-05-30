@@ -133,11 +133,23 @@ define(
                                                 srcHierarchy = [d['app'], d['tier']],
                                                 dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
                                             }
-                                            if(dstHierarchy.length > 0 && dstHierarchy[0].indexOf(':') > 0){
-                                                var remoteProject = dstHierarchy[0].split(':')[1];
+                                            var remoteVN = d['eps.traffic.remote_vn'];
+                                            if(remoteVN && remoteVN.indexOf(':') > 0){
+                                                var remoteProject = remoteVN.split(':')[1];
                                                 if(currentProject != remoteProject) {
-	                                                externalProject = 'external';
+	                                                externalProject = 'externalProject';
                                                 }
+                                            } else {
+                                                externalProject = 'external';
+                                            }
+                                            if(externalProject) {
+                                                $.each(dstHierarchy, function(i) {
+                                                    if(externalProject == 'external'){
+                                                        dstHierarchy[i] = 'External_external';
+                                                    } else {
+                                                        dstHierarchy[i] += '_'+externalProject;
+                                                    }
+	                                            });
                                             }
                                             var src = {
                                                 names: srcHierarchy,
@@ -191,7 +203,7 @@ define(
                                 // url: 'fakeData/First5Sessions.json',
                                 // url: 'fakeData/sessionStats1.json',
                                 type: 'POST',
-                                type: 'GET',
+                                //type: 'GET',
                                 data: JSON.stringify(postData)
                             },
                             dataParser : function (response) {
@@ -226,9 +238,9 @@ define(
                                     return {
                                         url: 'api/tenants/config/get-config-details',
                                         // url: 'fakeData/tagMap.json',
-                                        url: 'fakeData/tags1.json',
+                                        //url: 'fakeData/tags1.json',
                                         type:'POST',
-                                        type:'GET',
+                                        //type:'GET',
                                         data:JSON.stringify({data:[{type: 'tags'}]})
                                     }
                                 },
