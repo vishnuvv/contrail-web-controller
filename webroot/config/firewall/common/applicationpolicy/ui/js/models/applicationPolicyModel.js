@@ -9,8 +9,7 @@ define([
     var serviceGroupModel = ContrailConfigModel.extend({
         defaultConfig: {
             'name': '',
-            'firewall_policy': '',
-            'is_global': false
+            'firewall_policy': ''
         },
         formatModelConfig: function(modelConfig) {
         	var policyRef = getValueByJsonPath(modelConfig, "firewall_policy_refs", []);
@@ -99,7 +98,6 @@ define([
 	
 	                }
 	                updatedModel.name = model.name;
-	                updatedModel.is_global = model.is_global;
 	                updatedModel.firewall_policy_refs = policyList;
 	                if (options.mode == 'add') {
 	                	var postData = {"data":[{"data":{"application-policy-set": updatedModel},

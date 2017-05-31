@@ -47,15 +47,18 @@
            */
             this.serviceFormatter = function(r, c, v, cd, dc) {
                 var serviceStr = "", service = getValueByJsonPath(dc,
-                    "service", null, false);
+                    "service", {}, false);
                 serviceStr += service.protocol ? service.protocol : '';
-                if(getValueByJsonPath(service, 'dst_ports;start_port', '')
-                        === getValueByJsonPath(service, 'dst_ports;end_port', '')){
-                    serviceStr += ':'  + getValueByJsonPath(service, 'dst_ports;end_port', '');
-                } else{
-                    serviceStr += ':' + (service && service.dst_ports ?
-                            getValueByJsonPath(service, 'dst_ports;start_port', '') + '-' +
-                            getValueByJsonPath(service, 'dst_ports;end_port', '') : '-');
+                var startPort = getValueByJsonPath(service, 'dst_ports;start_port', '');
+                var endPort = getValueByJsonPath(service, 'dst_ports;end_port', '');
+                if(startPort !== '' && endPort !== ''){
+                	if(startPort === endPort){
+                        serviceStr += ':'  + endPort;
+                    } else{
+                        serviceStr += ':' + (service && service.dst_ports ?
+                        		startPort + '-' +
+                        		endPort : '-');
+                    }
                 }
                 return serviceStr ? serviceStr : '-';
             };
@@ -84,7 +87,7 @@
                } else if(endpoint.virtual_network) {
                    return endpoint.virtual_network.split(":")[2];
                } else if(endpoint.any) {
-                   return endpoint.any;
+                   return 'any';
                } else {
                    return '-';
                }

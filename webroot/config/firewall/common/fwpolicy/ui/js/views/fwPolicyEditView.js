@@ -120,7 +120,16 @@ define([
                 data: JSON.stringify(
                         {data: [{type: 'address-groups'}]})
             });
-
+            
+           //get service groups
+            getAjaxs[3] = $.ajax({
+                url:"/api/tenants/config/get-config-details",
+                type:"POST",
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(
+                        {data: [{type: 'service-groups'}]})
+            });
             $.when.apply($, getAjaxs).then(
                 function () {
                     //all success
@@ -235,14 +244,15 @@ define([
 
                     addrFields.push({text : 'Network', value : 'virtual_network',
                                    children : allVns});
-                    /*var anyArray = [{text:'Select a ANY',
-                        value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any",
-                        id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any",
-                        disabled : true },
-                        {text:'ANY',
-                            value:"true" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
-                            id:"true" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
-                            disabled : true }] */                 
+                    var anyList = [{text:'Select a Any',
+                        value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
+                        id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
+                        disabled : true }];
+                        anyList.push({text : 'ANY',
+                        value : 'any' + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
+                        id : 'any' + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
+                        parent : "any_workload" });
+                    addrFields.push({text : 'Any Workload', value : 'any_workload', children : anyList});
                     returnArr["addrFields"] = addrFields;
                     callback(returnArr);
                 }
@@ -419,18 +429,18 @@ define([
                                     }}
                                 },
                                 {
-                                 elementId: 'user_created_service',
-                                 name: 'Service (Portocol:Port)',
-                                 view: "FormInputView",
-                                 class: "",
-                                 width: 180,
-                                 viewConfig: {
-                                     placeholder: 'Protocol:Port',
-                                     templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
-                                     path: "user_created_service",
-                                     dataBindValue: "user_created_service()",
-                                     disabled: "mirror_to_check()",
-                                    }
+                                    elementId: 'user_created_service',
+                                    name: 'Service (Portocol:Port)',
+                                    view: "FormInputView",
+                                    class: "",
+                                    width: 180,
+                                    viewConfig: {
+                                        placeholder: 'Protocol:Port',
+                                        templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
+                                        path: "user_created_service",
+                                        dataBindValue: "user_created_service()"
+                                        //disabled: "mirror_to_check()",
+                                       }
                                 },
                                 {
                                     elementId: 'endpoint_1',
@@ -486,7 +496,13 @@ define([
                                                 value : 'address_group',
                                                 iconClass:
                                                 'icon-contrail-network-ipam'
-                                            }]
+                                            },
+                                            { 
+                                            	name : 'Any Workload',  
+                                            	value : 'any_workload', 
+                                            	iconClass:'fa fa-globe'
+                                            }
+                                           ]
                                         }
                                     }
                                 },
@@ -559,6 +575,11 @@ define([
                                                 value : 'address_group',
                                                 iconClass:
                                                 'icon-contrail-network-ipam'
+                                            },
+                                            { 
+                                            	name : 'Any Workload',  
+                                            	value : 'any_workload', 
+                                            	iconClass:'fa fa-globe'
                                             }]
                                         }
                                     }

@@ -126,24 +126,7 @@ define([
                                     dataBindValue: 'name',
                                     disabled : isDisable
                                 }
-                            },
-                            {
-                                elementId: 'is_global',
-                                name:'Global Apply',
-                                view: "FormCheckboxView",
-                                viewConfig:
-                                  {
-                                       class: 'col-xs-6 no-label-input',
-                                       label: 'Global Apply',
-                                       path: "is_global",
-                                       dataBindValue: 'is_global',
-                                       templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
-                                       elementConfig : {
-                                            label:'Is Global',
-                                            isChecked:false
-                                        }
-                                  }
-                              }
+                            }
                         ]
                     },
                     {

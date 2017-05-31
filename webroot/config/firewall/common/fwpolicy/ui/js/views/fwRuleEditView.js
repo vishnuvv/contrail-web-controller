@@ -229,7 +229,15 @@ define([
                     	  }
                           addrFields.push({text : 'Virtual Networks', value : 'virtual_network', children : virtualNetworkList});
                     }
-
+                    var anyList = [{text:'Select a Any',
+                        value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
+                        id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
+                        disabled : true }];
+                        anyList.push({text : 'ANY',
+                        value : 'any' + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
+                        id : 'any' + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
+                        parent : "any_workload" });
+                    addrFields.push({text : 'Any Workload', value : 'any_workload', children : anyList});
                     returnArr["addrFields"] = addrFields;
                     callback(returnArr);
                 }
@@ -367,7 +375,8 @@ define([
                                             { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
                                             { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' },
                                             { name : 'Address Group',  value : 'address_group', iconClass:'icon-contrail-network-ipam' },
-                                            { name : 'Virtual Networks',  value : 'virtual_network', iconClass:'icon-contrail-virtual-network' }]
+                                            { name : 'Virtual Networks',  value : 'virtual_network', iconClass:'icon-contrail-virtual-network' },
+                                            { name : 'Any Workload',  value : 'any_workload', iconClass:'fa fa-globe'}]
                                     }
                                 }
                             }
@@ -409,7 +418,8 @@ define([
                                             { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
                                             { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' },
                                             { name : 'Address Group',  value : 'address_group', iconClass:'icon-contrail-network-ipam' },
-                                            { name : 'Virtual Networks',  value : 'virtual_network', iconClass:'icon-contrail-virtual-network' }]
+                                            { name : 'Virtual Networks',  value : 'virtual_network', iconClass:'icon-contrail-virtual-network' },
+                                            { name : 'Any Workload',  value : 'any_workload', iconClass:'fa fa-globe' }]
                                     }
                                 }
                             }

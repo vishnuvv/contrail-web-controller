@@ -281,7 +281,7 @@ define([
                                                     }
                                                 },
                                                 {
-                                                    key: 'is_global',
+                                                    key: 'uuid',
                                                     templateGenerator: 'TextGenerator',
                                                     label: 'Global Apply',
                                                     keyClass:'col-xs-3',
@@ -312,13 +312,17 @@ define([
     	return isGlobalFormatter(null, null, null, value, dc, true);
     };
     this.isGlobalFormatter = function(value, dc){
-    	var apsGlobal = getValueByJsonPath(dc, 'is_global', false), isGlobal;
-    	if(apsGlobal){
-    		isGlobal = 'Enabled';
-    		return isGlobal;
+    	var apsGlobal = getValueByJsonPath(dc, 'is_global'), isGlobal;
+    	if(apsGlobal !== undefined){
+    		if(apsGlobal){
+        		isGlobal = 'Enabled';
+        		return isGlobal;
+        	}else{
+        		isGlobal = 'Disabled';
+        		return isGlobal;
+        	}
     	}else{
-    		isGlobal = 'Disabled';
-    		return isGlobal;
+    		return '-';
     	}
     };
     this.setIsSharedFormatter = function(value, dc){

@@ -112,27 +112,11 @@ define([
                 var addressGrp = endpoint.address_group +
                 cowc.DROPDOWN_VALUE_SEPARATOR + 'address_group';
                 endpointArr.push(addressGrp);                       	    
+        	}else if(endpoint.any){
+        		var any = 'any'+
+                cowc.DROPDOWN_VALUE_SEPARATOR + 'any_workload';
+                endpointArr.push(any);  
         	}
-    		/*for(var j in endpoint){
-    			if(endpoint[j].constructor === Array){
-    				if(endpoint[j].length > 0){
-    				    _.each(endpoint[j], function(tag){
-    				        var grpName = tag ? tag.split('-')[0]: '';
-    				        var val = tag + cowc.DROPDOWN_VALUE_SEPARATOR + grpName.toLowerCase();
-    				    });
-    				}
-    			}else if(endpoint[j] !== null){
-    				if(j === 'virtual_network'){
-    					var uuid = endpoint[j].split(':').reverse()[0];
-    					var val = uuid + ';' + j;
-        				endpointArr.push(val);
-    				}else{
-    					var val = endpoint[j] + ';' + j;
-        				endpointArr.push(val);
-    				}
-    				
-    			}
-    		}*/
     		if(endpointArr.length > 0){
     			return endpointArr[0];
     		}else{
@@ -179,8 +163,8 @@ define([
             } else if(srcArr.length == 2 && srcArr[1] === 'virtual_network'){
                 endpoint[srcArr[1]] = self.getPostAddressFormat(srcArr[0], selectedDomain,
                         selectedProject)
-            } else {
-                //endpoint["any"] = true;
+            } else if(srcArr.length == 2 && srcArr[1] === 'any_workload') {
+                endpoint["any"] = true;
             }
 
             return endpoint;

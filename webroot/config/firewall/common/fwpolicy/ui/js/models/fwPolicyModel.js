@@ -129,9 +129,11 @@ define([
                 endpoint["tags"].push(srcArr[0]);
             } else if(srcArr.length == 2 && srcArr[1] === 'address_group'){
                 endpoint[srcArr[1]] = srcArr[0];
-            }  else {
+            }  else if(srcArr.length == 2 && srcArr[1] === 'virtual_network'){
                 endpoint[srcArr[1]] = self.getPostAddressFormat(srcArr[0], selectedDomain,
                         selectedProject)
+            }else if(srcArr.length == 2 && srcArr[1] === 'any_workload') {
+                endpoint["any"] = true;
             }
 
             return endpoint;
