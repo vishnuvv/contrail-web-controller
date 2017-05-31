@@ -336,7 +336,7 @@ define([
                                 view:"FormHierarchicalDropdownView",
                                 name: 'End Point 1',
                                 viewConfig: {
-                                    //templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
+                                    templateId: cowc.TMPL_EDITABLE_GRID_MULTISELECT_VIEW,
                                     class:'col-xs-6',
                                     placeholder: 'Select Endpoint',
                                     path: 'endpoint_1',
