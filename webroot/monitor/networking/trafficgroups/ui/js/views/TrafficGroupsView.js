@@ -13,6 +13,7 @@ define(
                     }
                     var trafficGroupsTmpl = contrail.getTemplate4Id('traffic-groups-template'),
                         trafficLinkInfoTmpl = contrail.getTemplate4Id('traffic-link-info-template'),
+                        trafficLinkTooltipTmpl = contrail.getTemplate4Id('traffic-link-tooltip-template'),
                         collapsableWidgetTmpl = contrail.getTemplate4Id('collapsable-widget-template');
                     self = this;
                     self.$el.html(trafficGroupsTmpl());
@@ -31,6 +32,10 @@ define(
                             label = label.replace(new RegExp('_'+ type, 'g'), '');
                         }
                         return label;
+                    }
+                    function removeEmptyTags(names) {
+                        return ((names && names.length > 1 && names[1])
+                                ? names.join('-') : names[0]);
                     }
                     function showLinkInfo(d,el,e,chartScope){
                         var data = {
@@ -275,8 +280,8 @@ define(
                                             $.each(arcTitle, function(i) {
                                                 arcTitle[i] = formatAppLabel(data.namePath[i],data.arcType);
                                             });
-                                            var content = { title: ((arcTitle.length > 1 && arcTitle[1])
-                                                ? arcTitle.join('-') : arcTitle[0]), items: [] };
+                                            var content = { title: removeEmptyTags(arcTitle), items: [] };
+                                            content.title += '<hr/>'
 
                                             var children = data.children;
                                             if(_.result(data,'children.0.children') != null) {
@@ -310,18 +315,25 @@ define(
                                         } else {
                                             var d = data,
                                                 links = d.link,
-                                                srcApp = d.link[0].data.id,
-                                                dstNames = d.link[1].data.currentNode.names.slice(0),
-                                                dstApp = ((dstNames.length > 1 && dstNames[1])
-                                                         ? dstNames.join('-') : dstNames[0]);
+                                                srcNames = d.link[0].data.currentNode.names.slice(0),
+                                                dstNames = d.link[1].data.currentNode.names.slice(0);
+                                            $.each(srcNames, function(i) {
+                                                srcNames[i] = formatAppLabel(srcNames[i],d.link[0].data.arcType);
+                                            });
+                                            $.each(dstNames, function(i) {
+                                                dstNames[i] = formatAppLabel(dstNames[i],d.link[1].data.arcType);
+                                            });
+                                            var srcApp = removeEmptyTags(srcNames),
+                                                dstApp = removeEmptyTags(dstNames);
                                             if((srcApp == dstApp) || (d.link[1].data.arcType)) {
                                                 links = d.link.slice(0,1);
                                             }
-                                            dstApp = formatAppLabel(dstApp,d.link[1].data.arcType);
-                                            var content = { title: (
-                                                    srcApp
-                                                    + '<img src="/img/double_arrow_white.svg"/>'
-                                                    + dstApp), items: [] };
+                                            var content = { title : '', items: [] };
+                                            var linkData = {
+                                                    src: srcApp,
+                                                    dst: dstApp
+                                                };
+                                            linkData.items = [];
                                             _.each(links, function(link) {
                                                 var data = {
                                                     trafficIn: formatBytes(_.sumBy(link.data.dataChildren,
@@ -344,15 +356,17 @@ define(
                                                                 return 0
                                                         }))
                                                 };
-                                                content.items.push({
-                                                    label: formatAppLabel(link.data.id,link.data.arcType)
-                                                },{
-                                                    label: 'Traffic In',
-                                                    value: data.trafficIn
-                                                }, {
-                                                    label: 'Traffic Out',
-                                                    value: data.trafficOut
+                                                var curLinkNames = link.data.currentNode.names.slice(0);
+                                                $.each(curLinkNames, function(i) {
+                                                    curLinkNames[i] = formatAppLabel(curLinkNames[i],link.data.arcType);
                                                 });
+                                                linkData.items.push({
+                                                    name: removeEmptyTags(curLinkNames),
+                                                    trafficIn: data.trafficIn,
+                                                    trafficOut: data.trafficOut
+                                                });
+                                                var linkTooltipHtml = trafficLinkTooltipTmpl(linkData);
+                                                content.title = linkTooltipHtml;
                                             });
                                         }
                                         return content;
@@ -409,10 +423,7 @@ define(
                                 getAjaxConfig: function() {
                                     return {
                                         url: 'api/tenants/config/get-config-details',
-                                        // url: 'fakeData/tagMap.json',
-                                        //url: 'fakeData/tags1.json',
                                         type:'POST',
-                                        //type:'GET',
                                         data:JSON.stringify({data:[{type: 'tags'}]})
                                     }
                                 },
