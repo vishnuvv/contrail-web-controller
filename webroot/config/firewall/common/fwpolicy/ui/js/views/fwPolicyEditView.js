@@ -587,10 +587,11 @@ define([
                                     elementId: 'match_tags',
                                     name: 'Match Tags',
                                     view: "FormMultiselectView",
+                                    width: 130,
                                     viewConfig:
                                       {
                                        class: "",
-                                       width: 100,
+                                       width: 130,
                                        path: "match_tags",
                                        templateId:
                                            cowc.TMPL_EDITABLE_GRID_MULTISELECT_VIEW,

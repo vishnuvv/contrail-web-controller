@@ -266,7 +266,7 @@ define([
                     //newFWRuleData['id_perms'] = {};
                     //newFWRuleData['id_perms']["enable"] = attr["enable"];	                
 	                newFWRuleData['match_tags'] = {};
-	                newFWRuleData['match_tags']['tag_list'] = attr.match_tags.split(';');
+	                newFWRuleData['match_tags']['tag_list'] = attr.match_tags ? attr.match_tags.split(';') : [];
 	                postFWRules.push({'firewall-rule': $.extend(true, {}, newFWRuleData)});
 	                postFWRuleData['firewall-rules'] = postFWRules;
 	                ajaxConfig.type  = "POST";

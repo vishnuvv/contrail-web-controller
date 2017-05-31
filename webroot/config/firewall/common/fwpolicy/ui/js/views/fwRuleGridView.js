@@ -165,13 +165,13 @@ define([
         ];
         return headerActionConfig;
     }
-    var fwRuleColumns = [{
+    var fwRuleColumns = [/*{
                                id: 'sequence',
                                field: 'sequence',
                                width: 50,
                                name: 'Order',
                                formatter: fwRuleFormatter.sequenceFormatter
-                           }, {
+                           },*/ {
                                id: 'enabled',
                                field: 'enabled',
                                width: 70,
@@ -252,7 +252,7 @@ define([
                                     key: "uuid",
                                     templateGenerator: "TextGenerator",
                                     label: "UUID"
-                                },{
+                                }/*,{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
                                     key: "uuid",
@@ -261,7 +261,7 @@ define([
                                     templateGeneratorConfig: {
                                         formatter: "sequenceFormatter"
                                     }
-                                },{
+                                }*/,{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
                                     key: "uuid",

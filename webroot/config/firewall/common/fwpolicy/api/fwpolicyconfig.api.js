@@ -55,20 +55,51 @@ function createFirewallRules (request, response, appData)
                 commonUtils.handleJSONResponse(error, response, null);
                 return;
             }
-            updateFirewallRuleRefs(fwPolicyId, fwRules, appData,  rulesSequenceMap,
-                function(fwError, fwRulesRes) {
-                commonUtils.handleJSONResponse(fwError, response, fwRulesRes);
-            });
+            configApiServer.apiGet('/firewall-policy/' + fwPolicyId, appData,
+                function(errorPolicy, policyDetails) {
+                    if(errorPolicy) {
+                        commonUtils.handleJSONResponse(error, response, null);
+                        return;
+                    }
+                    var fwRuleRefs = commonUtils.getValueByJsonPath(policyDetails,
+                            'firewall-policy;firewall_rule_refs', [])
+                    var highestSeq = getHighestSequence(fwRuleRefs);
+                    updateFirewallRuleRefs(fwPolicyId, fwRules, appData, rulesSequenceMap, highestSeq,
+                            function(fwError, fwRulesRes) {
+                            commonUtils.handleJSONResponse(fwError, response, fwRulesRes);
+                    });
+                }
+            );
         });
 }
 
-function updateFirewallRuleRefs (fwPolicyId, fwRules, appData, rulesSequenceMap, callback)
+function getHighestSequence(fwRuleRefs)
+{
+    var sequenceStr = '', squenceArry = [];
+    _.each(fwRuleRefs, function(rule) {
+        var sequence = commonUtils.getValueByJsonPath(rule,
+                'attr;sequence', '', false);
+        if(sequence){
+            squenceArry.push(sequence);
+        }
+    });
+    if(squenceArry) {
+        squenceArry = squenceArry.sort(function(a,b) {return (a > b) ? 1 : ((b > a) ? -1 : 0);} );
+        sequenceStr = squenceArry[squenceArry.length -1];
+    } else {
+        sequenceStr = '';
+    }
+    return sequenceStr;
+}
+
+function updateFirewallRuleRefs (fwPolicyId, fwRules, appData, rulesSequenceMap, highestSeq, callback)
 {
     var dataObjArr = [];
     _.each(fwRules, function(rule, i) {
         var ruleDetails = commonUtils.getValueByJsonPath(rule, 'firewall-rule', {}, false);
         var order = rulesSequenceMap[ruleDetails['fq_name'].join(":")] ?
-                rulesSequenceMap[ruleDetails['fq_name'].join(":")].toString() : i.toString();
+                rulesSequenceMap[ruleDetails['fq_name'].join(":")].toString() :
+                    (highestSeq ? (highestSeq.toString() + 'aa1000') : i.toString());
         var putData = {
                 'type': 'firewall-policy',
                 'uuid': fwPolicyId,
@@ -85,13 +116,120 @@ function updateFirewallRuleRefs (fwPolicyId, fwRules, appData, rulesSequenceMap,
                                      null, appData);
     });
     if(dataObjArr.length === 0) {
-        callback(null. null);
+        callback(null, null);
+        return;
     }
     async.map(dataObjArr,
             commonUtils.getServerResponseByRestApi(configApiServer, false),
             function (error, fwRulesRes){
             callback(error, fwRulesRes);
-    })
+    });
+}
+
+function deleteFirewallRulesAsync(dataObject, callback) {
+    var appData =  dataObject.appData;
+    var ruleId = dataObject.uuid;
+    var request = dataObject.request;
+    deleteFirewalPolicyRefs(ruleId, appData,
+        function(err, ruleData) {
+            if(err) {
+                callback(null, {'error': err, 'data': ruleData});
+                return;
+            }
+            configApiServer.apiDelete('/firewall-rule/' + ruleId, appData,
+                    function (error, deleteRuleSuccess) {
+                        callback(null, {'error': error, 'data': deleteRuleSuccess});
+                    }
+            );
+        }
+    );
+}
+
+function deleteFirewalPolicyRefs (ruleId, appData, callback)
+{
+    configApiServer.apiGet(/firewall-rule/ + ruleId, appData,
+        function (error, ruleDetails) {
+            if(error) {
+                callback(error, null);
+                return;
+            }
+            var policyBackRefs = commonUtils.getValueByJsonPath(ruleDetails,
+                    'firewall-rule;firewall_policy_back_refs', []),
+                    dataObjArr = [];
+
+            _.each(policyBackRefs, function(policy) {
+                var deleteRefUpDateObj = {
+                        'type': 'firewall-policy',
+                        'uuid': policy.uuid,
+                        'ref-type': 'firewall-rule',
+                        'ref-uuid': ruleId,
+                        'operation': 'DELETE',
+                    };
+                 var reqUrl = '/ref-update';
+                 commonUtils.createReqObj(dataObjArr, reqUrl,
+                         global.HTTP_REQUEST_POST,
+                         commonUtils.cloneObj(deleteRefUpDateObj), null,
+                         null, appData);
+            });
+            if(policyBackRefs.length === 0) {
+                callback(null, null);
+                return;
+            }
+            async.map(dataObjArr,
+                    commonUtils.getServerResponseByRestApi(configApiServer, false),
+                    function (error, policyUpdatedData){
+                    callback(error, policyUpdatedData);
+            });
+        }
+    );
+}
+
+function deleteFirewallPoliciesAsync(dataObject, callback) {
+    var appData =  dataObject.appData;
+    var policyId = dataObject.uuid;
+    var request = dataObject.request;
+    configApiServer.apiGet('/firewall-policy/' + policyId, appData,
+        function (errPolicy, policyDetails) {
+            if(errPolicy) {
+                callback(null, {'error': errPolicy, 'data': null});
+                return;
+            }
+            var ruleDataObjArry = [], ruleIds = [],
+                ruleRefs = commonUtils.getValueByJsonPath(policyDetails,
+                        'firewall-policy;firewall_rule_refs', []);
+            _.each(ruleRefs, function(rule) {
+                var deleteRuleUrl = '/firewall-rule/' + rule.uuid;
+                commonUtils.createReqObj(ruleDataObjArry, deleteRuleUrl,
+                        global.HTTP_REQUEST_DEL, null, configApiServer, null, appData);
+            });
+            configApiServer.apiDelete('/firewall-policy/' + policyId, appData,
+                function (error, data) {
+                    if(error) {
+                        callback(null, {'error': error, 'data': data});
+                        return;
+                    }
+                    deleteAssociatedFirewallRules(ruleDataObjArry, appData,
+                        function(rulesErr, rulesData) {
+                            callback(null, {'error': rulesErr, 'data': rulesData});
+                        }
+                    );
+                }
+            );
+        }
+    );
+}
+
+function deleteAssociatedFirewallRules(ruleDataObjArry, appData, callback)
+{
+    console.log("deleteAssociatedFirewallRules", ruleDataObjArry);
+    async.map(ruleDataObjArry,
+            commonUtils.getAPIServerResponse(configApiServer.apiDelete, false),
+            function (error, deleteRulesSuccess){
+                callback(error, deleteRulesSuccess);
+            }
+    );
 }
 
 exports.createFirewallRules = createFirewallRules;
+exports.deleteFirewallRulesAsync = deleteFirewallRulesAsync;
+exports.deleteFirewallPoliciesAsync = deleteFirewallPoliciesAsync;

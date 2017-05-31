@@ -282,7 +282,8 @@ define([
                     newFWRuleData['match_tags'] = {};
                     newFWRuleData['id_perms'] = {};
                     newFWRuleData['id_perms']["enable"] = attr["status"];
-                    newFWRuleData['match_tags']['tag_list'] = attr.match_tags.split(',');
+                    newFWRuleData['match_tags']['tag_list'] =
+                        attr.match_tags ? attr.match_tags.split(',') : [];
                     postFWRules.push({'firewall-rule': $.extend(true, {}, newFWRuleData)});
                 });
 

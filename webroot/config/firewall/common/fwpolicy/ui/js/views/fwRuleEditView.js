@@ -379,21 +379,21 @@ define([
                                             { name : 'Any Workload',  value : 'any_workload', iconClass:'fa fa-globe'}]
                                     }
                                 }
-                            }
+                            }, {
+                                elementId: 'direction',
+                                name: 'Direction',
+                                view: "FormDropdownView",
+                                viewConfig: {
+                                    label: 'Direction',
+                                    class: "col-xs-6",
+                                    path: "direction",
+                                    dataBindValue: "direction",
+                                    elementConfig:{
+                                        data:['<>', '>']
+                                    }}
+                             }
                         ]
-                    }, { columns:[{
-                        elementId: 'direction',
-                        name: 'Direction',
-                        view: "FormDropdownView",
-                        viewConfig: {
-                            label: 'Direction',
-                            class: "col-xs-6",
-                            path: "direction",
-                            dataBindValue: "direction",
-                            elementConfig:{
-                                data:['<>', '>']
-                            }}
-                     }]},
+                    },
                     {
                         columns: [
                         	{
@@ -422,9 +422,32 @@ define([
                                             { name : 'Any Workload',  value : 'any_workload', iconClass:'fa fa-globe' }]
                                     }
                                 }
-                            }
+                            },
+                            {
+                                elementId: 'match_tags',
+                                view: "FormMultiselectView",
+                                viewConfig: {
+                                    label: 'Match Tags',
+                                    class: "col-xs-6",
+                                    path: "match_tags",
+                                    dataBindValue: "match_tags",
+                                    elementConfig:{
+                                        dataTextField: "text",
+                                        placeholder:"Select Tag Type",
+                                        dataValueField: "id",
+                                        separator: cowc.DROPDOWN_VALUE_SEPARATOR,
+                                        dataSource: {
+                                            type: "remote",
+                                            requestType: "POST",
+                                            url: "/api/tenants/config/get-config-details",
+                                            postData: JSON.stringify(tagParam),
+                                            parse : tagDropDownFormatter
+                                        }
+                                     }
+                                }
+                           }                            
                         ]
-                    },
+                    }/*,
                     {
                         columns: [{
                             elementId: 'match_tags',
@@ -449,7 +472,7 @@ define([
                                  }
                             }
                        }]
-                     }
+                     }*/
                 ]
             }
         }
