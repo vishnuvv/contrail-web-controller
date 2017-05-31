@@ -333,6 +333,12 @@ define([
     };
     this.setFirewallPolicyFormatter = function(value, dc){
     	var policy = getValueByJsonPath(dc, 'firewall_policy_refs',[]),policyList = [];
+    	 var policy = 
+             _.sortBy(policy, function (pol) {
+                 var sequence =
+                    Number(getValueByJsonPath(pol, 'attr;sequence', 0));
+                 return ((1 + sequence) * 100000 ) - sequence;
+            });
     	var returnString = '';
     	for(var i = 0; i < policy.length; i++){
     		var to = policy[i].to;
@@ -350,6 +356,7 @@ define([
         	returnString = '-';
         }
     	return returnString;
+    	
     };
     function isSharedFormatter(r, c, v, cd, dc, showAll){
     	var enable = getValueByJsonPath(dc, 'id_perms;enable'), shared;

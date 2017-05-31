@@ -5,8 +5,10 @@
 define([
     'underscore',
     'contrail-view',
-    'contrail-list-model'
-], function (_, ContrailView, ContrailListModel) {
+    'contrail-list-model',
+    'config/firewall/common/fwpolicy/ui/js/fwRuleFormatter'
+], function (_, ContrailView, ContrailListModel, FWRuleFormatter) {
+    var fwRuleFormatter = new FWRuleFormatter();
     var fwRuleProjectListView = ContrailView.extend({
         el: $(contentContainer),
         render: function () {
@@ -74,10 +76,19 @@ define([
                             dataItems.push(rule['firewall-rule']);
                         }
                 });
-            return dataItems;
+            return dataItems.sort(ruleComparator);
         }
     });
 
+    function ruleComparator (a,b) {
+        // get the sequence for each and compare
+        if(fwRuleFormatter.sequenceFormatter(null,null,null,null,a) >
+                fwRuleFormatter.sequenceFormatter(null,null,null,null,b)) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
     function getFWRuleIds(dc) {
         var ruleIds = [],
              rules = getValueByJsonPath(dc, 'firewall_rule_refs', [], false);

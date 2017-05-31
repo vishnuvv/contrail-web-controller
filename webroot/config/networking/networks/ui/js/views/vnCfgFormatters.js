@@ -214,7 +214,7 @@ define([
         this.polRefFormatter = function(d, c, v, cd, dc) {
             var polArr = [];
             var pols   =
-                getValueByJsonPath(dc, 'network_policy_refs', []);
+                getValueByJsonPath(dc, 'firewall_policy_refs', []);
 
             if (!pols.length) {
                 return '-';
