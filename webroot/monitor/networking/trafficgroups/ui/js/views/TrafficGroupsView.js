@@ -25,6 +25,7 @@ define(
 
                     TrafficGroupsView.colorMap = {};
                     TrafficGroupsView.tagMap = {};
+                    TrafficGroupsView.ruleMap = {};
                     function formatAppLabel(label,type) {
                         if(type) {
                             label = label.replace(new RegExp('_'+ type, 'g'), '');
@@ -36,7 +37,7 @@ define(
                                 'src': d.link[0].data.id,
                                 'dest':d.link[1].data.id,
                                 'linkData':[]
-                            };
+                            }, ruleUUIDs = [], ruleKeys = [];
                         data.dest = formatAppLabel(data.dest,d.link[1].data.arcType);
                         _.each(d.link, function(link) {
                             var appObj = {
@@ -56,6 +57,14 @@ define(
                                     return bytes['SUM(eps.traffic.in_bytes)'];
                                 }))
                             };
+                            ruleKeys = _.uniq(_.map(link['data']['dataChildren'], 'eps.__key'));
+                            $.each(ruleKeys, function (idx, key) {
+                                if (key != null && key.split(':')[3] != null) {
+                                    ruleUUIDs.push(key.split(':')[3]);
+                                } else if (key != null) {
+                                    ruleUUIDs.push(key);
+                                }
+                            });
                             data.linkData.push(appObj);
                         });
                         _.each(chartScope.ribbons, function (ribbon) {
@@ -85,6 +94,77 @@ define(
                                 $('#traffic-groups-link-info').html('');
                             }
                         });
+                        if (ruleUUIDs.length > 0) {
+                            var listModelConfig = {
+                                remote: {
+                                    ajaxConfig: {
+                                        url: "/api/tenants/config/get-config-details",
+                                        type: "POST",
+                                        data: JSON.stringify(
+                                            {data: [{type: 'firewall-rules',obj_uuids: ruleUUIDs, fields: ['firewall_policy_back_refs']}]})
+                                    },
+                                    dataParser: function (data) {
+                                        var ruleDetails = _.result(data, '0.firewall-rules', []),
+                                            ruleMap = {}, formattedRuleDetails = [];
+                                        $.each(ruleDetails, function (idx, detailsObj) {
+                                            if (detailsObj['firewall-rule'] != null) {
+                                                var ruleDetailsObj = detailsObj['firewall-rule'];
+                                                ruleMap[detailsObj['firewall-rule']['uuid']] = ruleDetailsObj; 
+                                                var src = _.result(ruleDetailsObj, 'endpoint_1.tags', []);
+                                                    srcType = 'tags';
+                                                if (src.length == 0) {
+                                                    src = _.result(ruleDetailsObj, 'endpoint_1.address_group', '-');
+                                                    srcType = 'address_group';
+                                                }
+                                                if (src == '-') {
+                                                    src = _.result(ruleDetailsObj, 'endpoint_1.any', '-');
+                                                }
+                                                if (src == '-') {
+                                                    src = _.result(ruleDetailsObj, 'endpoint_1.virtual_network', '-');
+                                                    srcType = 'virtual_network';
+                                                }
+                                                var dst = _.result(ruleDetailsObj, 'endpoint_2.tags', []),
+                                                    dstType = 'tags';
+                                                if (dst.length == 0) {
+                                                    dst = _.result(ruleDetailsObj, 'endpoint_2.address_group', '-');
+                                                    dstType = 'address_group';
+                                                }
+                                                if (dst == '-') {
+                                                    dst = _.result(ruleDetailsObj, 'endpoint_2.any', '-');
+                                                }
+                                                if (dst == '-') {
+                                                    dst = _.result(ruleDetailsObj, 'endpoint_2.virtual_network', '-');
+                                                    dstType = 'virtual_network';
+                                                }
+                                                var policy_name = _.result(ruleDetailsObj, 'firewall_policy_back_refs.0.to.2', '-'),
+                                                    rule_name = _.result(ruleDetailsObj, 'display_name'); 
+                                                formattedRuleDetails.push({
+                                                    //policy_name: _.result(ruleDetailsObj, 'firewall_policy_back_refs.0.to.3', '-') +':'+
+                                                      //          _.result(ruleDetailsObj, 'display_name'),
+                                                    policy_name: policy_name,
+                                                    rule_name: rule_name,
+                                                    simple_action: _.result(ruleDetailsObj, 'action_list.simple_action', '-') == 'pass' ? 'permit': '-',
+                                                    srcType: srcType,
+                                                    dstType: dstType,
+                                                    src: src,
+                                                    dst: dst,
+                                                    //rule_name: 
+                                                    //json_formatted: contrail.formatJSON2HTML(ruleDetailsObj)
+                                                });
+                                            }
+                                        });
+                                        TrafficGroupsView.ruleMap = ruleMap;
+                                        data.policyRules = formattedRuleDetails;
+                                        if (formattedRuleDetails.length) {
+                                            var ruleDetailsTemplate = contrail.getTemplate4Id('traffic-rule-template');
+                                            $('.traffic-rules').html(ruleDetailsTemplate(data));
+                                        }
+                                        return ruleDetails;
+                                    }
+                                }
+                            }
+                            var ruleDetailsModel = new ContrailListModel(listModelConfig);    
+                        }
                     }
 
                     /**
@@ -126,7 +206,7 @@ define(
                                         return TrafficGroupsView.colorMap[item.level][item.name];
                                     },
                                     showLinkTooltip:true,
-                                    showLinkInfo:false,
+                                    showLinkInfo: showLinkInfo,
                                     updateChart: this.updateChart,
                                     // levels: levels,
                                     hierarchyConfig: {
@@ -329,7 +409,10 @@ define(
                                 getAjaxConfig: function() {
                                     return {
                                         url: 'api/tenants/config/get-config-details',
+                                        // url: 'fakeData/tagMap.json',
+                                        //url: 'fakeData/tags1.json',
                                         type:'POST',
+                                        //type:'GET',
                                         data:JSON.stringify({data:[{type: 'tags'}]})
                                     }
                                 },
@@ -383,6 +466,10 @@ define(
                                             //     value['eps.traffic.remote_app_id'] = value['vn'];
                                             // }
                                         }
+                                        //Strip-off the domain and project form FQN
+                                        $.each(['app','site','tier','deployment'],function(idx,tagName) {
+                                            value[tagName] = value[tagName].split(':').pop();
+                                        });
                                     });
                                     // cowu.populateTrafficGroupsData(data);
                                     return data;
