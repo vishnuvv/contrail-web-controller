@@ -52,7 +52,7 @@ define([
                        self.renderView4Config($("#" + modalId).find(formId),
 		                        self.model,
 		                        getFwRuleViewConfig(disable, allData),
-		                        "",
+		                        "fwRuleValidation",
 		                        null, null, function() {
 							     self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
 							     Knockback.applyBindings(self.model,
@@ -358,12 +358,12 @@ define([
                                 view:"FormHierarchicalDropdownView",
                                 name: 'End Point 1',
                                 viewConfig: {
-                                    //templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
+                                    templateId: cowc.TMPL_MULTISELECT_VIEW,
                                     class:'col-xs-6',
-                                    placeholder: 'Select Endpoint',
                                     path: 'endpoint_1',
                                     dataBindValue: 'endpoint_1',
                                     elementConfig: {
+                                        placeholder: 'Select Endpoint',
                                         //defaultValueId : 1,
                                         minimumResultsForSearch : 1,
                                         dataTextField: "text",
@@ -401,12 +401,12 @@ define([
                                 view:"FormHierarchicalDropdownView",
                                 name: 'End Point 2',
                                 viewConfig: {
-                                    //templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
+                                    templateId: cowc.TMPL_MULTISELECT_VIEW,
                                     class:'col-xs-6',
-                                    placeholder: 'Select Endpoint',
-                                    path: 'endpoint_1',
+                                    path: 'endpoint_2',
                                     dataBindValue: 'endpoint_2',
                                     elementConfig: {
+                                        placeholder: 'Select Endpoint',
                                         //defaultValueId : 1,
                                         minimumResultsForSearch : 1,
                                         dataTextField: "text",

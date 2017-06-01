@@ -79,13 +79,14 @@
                if(endpoint.subnet) {
                    return endpoint.subnet;
                } else if(endpoint.address_group) {
-                   return endpoint.address_group.split(":")[endpoint.address_group.length - 1];
+                   var addGrp = endpoint.address_group.split(":");
+                   return "Address Group: " + addGrp[addGrp.length - 1];
                } else if(endpoint.tags.length > 0) {
-                   return endpoint.tags[0];
+                   return endpoint.tags.join(' &&</br>');
                } else if(endpoint.security_group) {
                    return endpoint.security_group;
                } else if(endpoint.virtual_network) {
-                   return endpoint.virtual_network.split(":")[2];
+                   return "Network: " + endpoint.virtual_network.split(":")[2];
                } else if(endpoint.any) {
                    return 'any';
                } else {
