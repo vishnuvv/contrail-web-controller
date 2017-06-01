@@ -34,7 +34,7 @@ define(
                         return label;
                     }
                     function removeEmptyTags(names) {
-                        return ((names && names.length > 1 && names[1])
+                        return ((names && names.length > 1 && names[1] &&  names[1] != 'External')
                                 ? names.join('-') : names[0]);
                     }
                     function showLinkInfo(d,el,e,chartScope){
@@ -323,15 +323,15 @@ define(
                                             $.each(dstNames, function(i) {
                                                 dstNames[i] = formatAppLabel(dstNames[i],d.link[1].data.arcType);
                                             });
-                                            var srcApp = removeEmptyTags(srcNames),
-                                                dstApp = removeEmptyTags(dstNames);
-                                            if((srcApp == dstApp) || (d.link[1].data.arcType)) {
+                                            var srcTags = removeEmptyTags(srcNames),
+                                                dstTags = removeEmptyTags(dstNames);
+                                            if((srcTags == dstTags) || (d.link[1].data.arcType)) {
                                                 links = d.link.slice(0,1);
                                             }
                                             var content = { title : '', items: [] };
                                             var linkData = {
-                                                    src: srcApp,
-                                                    dst: dstApp
+                                                    src: srcTags,
+                                                    dst: dstTags
                                                 };
                                             linkData.items = [];
                                             _.each(links, function(link) {
@@ -466,10 +466,7 @@ define(
                                         if(_.isEmpty(value['app']) || value['app'] == '0') {
                                             value['app'] = formatVN(value['vn']);
                                         }
-                                        //Strip-off the domain and project form FQN
-                                        $.each(['app','site','tier','deployment'],function(idx,tagName) {
-                                            value[tagName] = value[tagName].split(':').pop();
-                                        });
+
                                         if(value['eps.traffic.remote_app_id'] == '' || value['eps.traffic_remote_app_id'] == '0') {
                                             // if(value['eps.traffic.remote_vn'] != '') {
                                                 value['eps.traffic.remote_app_id'] = formatVN(value['eps.traffic.remote_vn']);
@@ -479,6 +476,7 @@ define(
                                         }
                                         //Strip-off the domain and project form FQN
                                         $.each(['app','site','tier','deployment'],function(idx,tagName) {
+                                            if(typeof(value[tagName]) == 'string')
                                             value[tagName] = value[tagName].split(':').pop();
                                         });
                                     });
