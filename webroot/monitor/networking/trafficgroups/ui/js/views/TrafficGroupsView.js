@@ -284,14 +284,17 @@ define(
                                             content.title += '<hr/>'
 
                                             var children = data.children;
-                                            if(_.result(data,'children.0.children') != null) {
+                                            if(_.result(data,'children.0') != null) {
                                                 children = _.map(data.children,function(val,idx) {
-                                                    return val['children'];
+                                                    if(val.type == 'src')
+                                                        return val['dataChildren'];
+                                                    else
+                                                        return [];
                                                 });
                                                 children = _.flatten(children);
                                             }
 
-                                            var dataChildren = _.result(children,'0.dataChildren',[]);;
+                                            var dataChildren = children;    
 
                                             content.items.push({
                                                 label: 'Traffic In',
@@ -466,8 +469,12 @@ define(
                                         if(_.isEmpty(value['app']) || value['app'] == '0') {
                                             value['app'] = formatVN(value['vn']);
                                         }
-
-                                        if(value['eps.traffic.remote_app_id'] == '' || value['eps.traffic_remote_app_id'] == '0') {
+                                        //Strip-off the domain and project form FQN
+                                        $.each(['app','site','tier','deployment'],function(idx,tagName) {
+                                            if(typeof(value[tagName]) == 'string')
+                                                value[tagName] = value[tagName].split(':').pop();
+                                        });
+                                        if(value['eps.traffic.remote_app_id'] == '' || value['eps.traffic.remote_app_id'] == '0') {
                                             // if(value['eps.traffic.remote_vn'] != '') {
                                                 value['eps.traffic.remote_app_id'] = formatVN(value['eps.traffic.remote_vn']);
                                             // } else {
