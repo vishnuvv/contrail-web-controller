@@ -5,10 +5,12 @@
 define([
     'underscore',
     'contrail-model',
-    'config/networking/policy/ui/js/views/policyFormatters'
-], function (_, ContrailModel, PolicyFormatters) {
+    'config/networking/policy/ui/js/views/policyFormatters',
+    'config/firewall/common/fwpolicy/ui/js/fwPolicy.utils'
+], function (_, ContrailModel, PolicyFormatters, FWPolicyUtils) {
     var policyFormatters = new PolicyFormatters(),
         self;
+    var fwPolicyUtils = new FWPolicyUtils();
     var fwRuleModel = ContrailModel.extend({
         defaultConfig: {
             'action_list':{
@@ -439,6 +441,12 @@ define([
                             return "Enter VLAN between 1 to 4094";
                         }
                     }
+                },
+                'endpoint_2' : function(value, attr, finalObj){
+                    return fwPolicyUtils.validateEndPoint('endpoint_2',finalObj);
+                },
+                'endpoint_1' : function(value, attr, finalObj){
+                    return fwPolicyUtils.validateEndPoint('endpoint_1',finalObj);
                 }
             }
         },

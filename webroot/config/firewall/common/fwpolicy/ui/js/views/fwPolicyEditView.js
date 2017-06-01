@@ -465,7 +465,7 @@ define([
                                     class: "",
                                     width: 180,
                                     viewConfig: {
-                                        templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
+                                        templateId: cowc.TMPL_EDITABLE_GRID_MULTISELECT_VIEW,
                                         width: 180,
                                         path: 'endpoint_1',
                                         dataBindValue: 'endpoint_1()',
@@ -544,7 +544,7 @@ define([
                                     class: "col-xs-2",
                                     width: 180,
                                     viewConfig: {
-                                        templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
+                                        templateId: cowc.TMPL_EDITABLE_GRID_MULTISELECT_VIEW,
                                         width: 180,
                                         path: 'endpoint_2',
                                         dataBindValue: 'endpoint_2()',
