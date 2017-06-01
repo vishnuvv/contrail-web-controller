@@ -295,18 +295,11 @@ define(
                                             var content = { title: removeEmptyTags(arcTitle), items: [] };
                                             content.title += '<hr/>'
 
-                                            var children = data.children;
-                                            if(_.result(data,'children.0') != null) {
-                                                children = _.map(data.children,function(val,idx) {
-                                                    if(val.type == 'src')
-                                                        return val['dataChildren'];
-                                                    else
-                                                        return [];
-                                                });
-                                                children = _.flatten(children);
-                                            }
-
-                                            var dataChildren = children;    
+                                            //data is nested on hovering 1st-level arc while showing 2-level arcs
+                                            var dataChildren = jsonPath(data,'$.children[*].dataChildren');
+                                            if(dataChildren == false)
+                                                dataChildren = jsonPath(data,'$.children[*].children[*].dataChildren');
+                                            dataChildren = _.flatten(dataChildren);
 
                                             content.items.push({
                                                 label: 'Traffic In',
