@@ -73,7 +73,7 @@ define([
                 }];
             if (self.isDeepValid(validations)) {
 	            var model = $.extend(true,{},this.model().attributes);
-		            if(model.firewall_policy !== null){
+		            if(model.firewall_policy !== null && model.firewall_policy !== ''){
 		            	var firewallPolicy = model.firewall_policy.split(';');
 		                for(var j = 0; j < firewallPolicy.length;j++){
 		                	var obj = {};
