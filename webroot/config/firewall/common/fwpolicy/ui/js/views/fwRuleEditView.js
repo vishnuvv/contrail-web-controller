@@ -5,14 +5,15 @@
 define([
     'underscore',
     'contrail-view',
-    'knockback'
-], function (_, ContrailView, Knockback) {
+    'knockback',
+    'config/firewall/common/fwpolicy/ui/js/fwPolicyFormatter'
+], function (_, ContrailView, Knockback, FWPolicyFormatter) {
     var gridElId = '#' + ctwc.FW_RULE_GRID_ID,
         prefixId = ctwc.FW_RULE_PREFIX_ID,
         modalId = 'configure-' + prefixId,
         formId = '#' + modalId + '-form',
         serviceGroupList = [];
-
+    var fwPolicyFormatter = new FWPolicyFormatter();
     var fwRuleEditView = ContrailView.extend({
         renderAddEditFwRule: function(options) {
             var editTemplate =
@@ -140,8 +141,8 @@ define([
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         disabled : true }];
                     var tagList = ['Application','Deployment','Site','Tier'];
-                    var tags = results[0][0][0]['tags'];
-                    var addressGrp = results[1][0][0]['address-groups'];
+                    var tags = fwPolicyFormatter.filterTagsByProjects(results[0][0][0]['tags']);
+                    var addressGrp = fwPolicyFormatter.filterAddressGroupByProjects(results[1][0][0]['address-groups']);
                     var virtualNet = results[2][0]['virtual-networks'];
                     var domain = contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME);
                     var project = contrail.getCookie(cowc.COOKIE_PROJECT_DISPLAY_NAME);
@@ -244,6 +245,7 @@ define([
                 }
             )
         }
+        
     });
     function tagDropDownFormatter(response){
         var matchList = [{text:'Application', id:'application' },

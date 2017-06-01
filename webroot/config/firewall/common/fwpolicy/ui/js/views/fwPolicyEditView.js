@@ -6,11 +6,13 @@ define([
     'underscore',
     'contrail-view',
     'knockback',
-    'config/networking/policy/ui/js/views/policyFormatters'
-], function (_, ContrailView, Knockback, PolicyFormatters) {
+    'config/networking/policy/ui/js/views/policyFormatters',
+    'config/firewall/common/fwpolicy/ui/js/fwPolicyFormatter'
+], function (_, ContrailView, Knockback, PolicyFormatters, FwPolicyFormatter) {
     var prefixId = ctwc.FW_POLICY_PREFIX_ID,serviceGroupList = [];
     var modalId = 'configure-' + prefixId;
     var self;
+    var fwPolicyFormatter = new FwPolicyFormatter();
     var fwPolicyEditEditView = ContrailView.extend({
         renderAddEditFWPolicy: function (options) {
             var editTemplate =
@@ -38,7 +40,7 @@ define([
                 $("#" + modalId).modal("hide");
             }});
 
-            self.fetchAllData(self, function(allData){
+            self.fetchAllData(self, options, function(allData){
                 self.renderView4Config($("#" + modalId).find("#" + prefixId + "-form"),
                         self.model, getAddPolicyViewConfig(self.model, options, allData),
                         'addValidation', null, null,
@@ -93,7 +95,7 @@ define([
             kbValidation.bind(self);
         },
 
-        fetchAllData : function(self, callback) {
+        fetchAllData : function(self, options, callback) {
             var getAjaxs = [];
             var selectedDomain = contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME);
             var selectedProject = contrail.getCookie(cowc.COOKIE_PROJECT_DISPLAY_NAME);
@@ -193,7 +195,7 @@ define([
                         }
                     }
                     //tags
-                    var tags = getValueByJsonPath(results, '1;0;0;tags', [], false);
+                    var tags = fwPolicyFormatter.filterTagsByProjects(getValueByJsonPath(results, '1;0;0;tags', [], false), options.isGlobal);
                     var addrFields = [];
                     //application
                     var tagGroupData = parseTags(tags);
@@ -219,7 +221,7 @@ define([
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         disabled : true }];
-                    var addressGroups = getValueByJsonPath(results, '2;0;0;address-groups', [], false);    
+                    var addressGroups = fwPolicyFormatter.filterAddressGroupByProjects(getValueByJsonPath(results, '2;0;0;address-groups', [], false), options.isGlobal);    
                     if(addressGroups.length > 0){
                         for(var k = 0; k < addressGroups.length; k++){
                             var address = addressGroups[k]['address-group'];
