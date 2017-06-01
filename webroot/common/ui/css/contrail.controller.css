@@ -598,3 +598,6 @@ div#config-fw-rule {
 form h5.margin-0-0-10~.section-content {
     padding-top: 15px;
 }
+.modal-open{
+  overflow:auto;
+}

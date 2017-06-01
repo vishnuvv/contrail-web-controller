@@ -235,11 +235,11 @@ define([
 
                     addrFields.push({text : 'Network', value : 'virtual_network',
                                    children : allVns});
-                    var anyList = [{text:'Select a Any',
+                    var anyList = [{text:'',
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
                         disabled : true }];
-                        anyList.push({text : 'ANY',
+                        anyList.push({text : 'Any Workloads',
                         value : 'any' + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
                         id : 'any' + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
                         parent : "any_workload" });
@@ -405,7 +405,7 @@ define([
                                        dataBindValue: 'sequence()'
                                        }
                                 },*/
-                                {
+                                /*{
                                     elementId: 'status',
                                     name: 'Status',
                                     view: "FormCheckboxView",
@@ -416,7 +416,7 @@ define([
                                        path: 'status',
                                        dataBindValue: 'status()'
                                        }
-                                },
+                                },*/
                                 {
                                  elementId: 'simple_action',
                                  name: 'Action',
@@ -436,17 +436,16 @@ define([
                                     elementId: 'user_created_service',
                                     name: 'Services',
                                     view: "FormComboboxView",
-                                    width: 250,
+                                    width: 210,
                                     viewConfig: {
                                         templateId: cowc.TMPL_EDITABLE_GRID_COMBOBOX_VIEW,
-                                        width: 250,
+                                        width: 210,
                                         path: 'user_created_service',
-                                        placeholder: "Enter Protocol:Port or Select",
                                         dataBindValue: 'user_created_service()',
                                         elementConfig: {
                                             dataTextField: "text",
                                             dataValueField: "value",
-                                            placeholder: "Enter Protocol:Port or Select",
+                                            placeholder: "Select or Enter Protocol:Port",
                                             dataSource: {
                                                 type: "remote",
                                                 requestType: "POST",
@@ -463,14 +462,14 @@ define([
                                         "FormHierarchicalDropdownView",
                                     name: 'End Point 1',
                                     class: "",
-                                    width: 180,
+                                    width: 220,
                                     viewConfig: {
                                         templateId: cowc.TMPL_EDITABLE_GRID_MULTISELECT_VIEW,
-                                        width: 180,
+                                        width: 220,
                                         path: 'endpoint_1',
                                         dataBindValue: 'endpoint_1()',
                                         elementConfig: {
-                                            //defaultValueId : 1,
+                                            placeholder: 'Select Endpoint',
                                             minimumResultsForSearch : 1,
                                             dataTextField: "text",
                                             dataValueField: "value",
@@ -542,14 +541,14 @@ define([
                                         "FormHierarchicalDropdownView",
                                     name: 'End Point 2',
                                     class: "col-xs-2",
-                                    width: 180,
+                                    width: 220,
                                     viewConfig: {
                                         templateId: cowc.TMPL_EDITABLE_GRID_MULTISELECT_VIEW,
-                                        width: 180,
+                                        width: 220,
                                         path: 'endpoint_2',
                                         dataBindValue: 'endpoint_2()',
                                         elementConfig: {
-                                            //defaultValueId : 1,
+                                            placeholder: 'Select Endpoint',
                                             minimumResultsForSearch : 1,
                                             dataTextField: "text",
                                             dataValueField: "value",
@@ -613,7 +612,7 @@ define([
                                        dataBindValue:
                                            'match_tags()',
                                        elementConfig: {
-                                           placeholder: "Select Tag Type",
+                                           placeholder: "Select Tag Types",
                                            dataValueField: "value",
                                            dataTextField: "text",
                                            data: ctwc.RULE_MATCH_TAGS

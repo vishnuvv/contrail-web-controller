@@ -230,11 +230,11 @@ define([
                           }
                           addrFields.push({text : 'Virtual Networks', value : 'virtual_network', children : virtualNetworkList});
                     }
-                    var anyList = [{text:'Select a Any',
+                    var anyList = [{text:'',
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
                         disabled : true }];
-                        anyList.push({text : 'ANY',
+                        anyList.push({text : 'Any Workloads',
                         value : 'any' + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
                         id : 'any' + cowc.DROPDOWN_VALUE_SEPARATOR + "any_workload",
                         parent : "any_workload" });
@@ -276,40 +276,6 @@ define([
                     {
                         columns: [
                             {
-                                elementId: 'enable',
-                                name:'Enable',
-                                view: "FormCheckboxView",
-                                viewConfig:
-                                  {
-                                       class: 'col-xs-6 no-label-input',
-                                       label: 'Enable',
-                                       path: "enable",
-                                       dataBindValue: 'enable',
-                                       templateId: cowc.TMPL_CHECKBOX_LABEL_RIGHT_VIEW,
-                                       elementConfig : {
-                                            label:'Enable',
-                                            isChecked:false
-                                        }
-                                  }
-                              }
-                        ]
-                    },
-                    {
-                        columns: [
-                            {
-                                elementId: 'sequence',
-                                name:'Order',
-                                view: 'FormInputView',
-                                viewConfig: {
-                                    label: 'Order',
-                                    placeholder: 'Enter Order',
-                                    disabled: isDisable,
-                                    path: 'sequence',
-                                    class:'col-xs-6',
-                                    dataBindValue: 'sequence'
-                                }
-                            },
-                            {
                                 elementId: 'simple_action',
                                 name:'Action',
                                 view: "FormDropdownView",
@@ -321,36 +287,31 @@ define([
                                     elementConfig:{
                                         data:['pass','deny']
                                  }}
+                             },
+                             {
+                                 elementId: 'user_created_service',
+                                 name: 'Services',
+                                 view: "FormComboboxView",
+                                 viewConfig: {
+                                     label: 'Services',
+                                     class:'col-xs-6',
+                                     path: 'user_created_service',
+                                     placeholder: "Enter Protocol:Port or Select",
+                                     dataBindValue: 'user_created_service',
+                                     elementConfig: {
+                                         dataTextField: "text",
+                                         dataValueField: "value",
+                                         placeholder: "Select or Enter Protocol:Port",
+                                         dataSource: {
+                                             type: "remote",
+                                             requestType: "POST",
+                                             url: "/api/tenants/config/get-config-details",
+                                             postData: JSON.stringify(serviceGrp),
+                                             parse : serviceGroupDataFormatter
+                                         }
+                                     }
+                                 }
                              }
-                        ]
-                    },
-                    {
-                        columns: [
-                            {
-                                elementId: 'user_created_service',
-                                name: 'Services',
-                                view: "FormComboboxView",
-                                class:'col-xs-6',
-                                viewConfig: {
-                                    label: 'Services',
-                                    class:'col-xs-6',
-                                    path: 'user_created_service',
-                                    placeholder: "Enter Protocol:Port or Select",
-                                    dataBindValue: 'user_created_service',
-                                    elementConfig: {
-                                        dataTextField: "text",
-                                        dataValueField: "value",
-                                        placeholder: "Enter Protocol:Port or Select",
-                                        dataSource: {
-                                            type: "remote",
-                                            requestType: "POST",
-                                            url: "/api/tenants/config/get-config-details",
-                                            postData: JSON.stringify(serviceGrp),
-                                            parse : serviceGroupDataFormatter
-                                        }
-                                    }
-                                }
-                            }
                         ]
                     },
                     {
@@ -361,7 +322,7 @@ define([
                                 name: 'End Point 1',
                                 viewConfig: {
                                     templateId: cowc.TMPL_MULTISELECT_VIEW,
-                                    class:'col-xs-6',
+                                    class:'col-xs-12',
                                     path: 'endpoint_1',
                                     dataBindValue: 'endpoint_1',
                                     elementConfig: {
@@ -381,20 +342,22 @@ define([
                                             { name : 'Any Workload',  value : 'any_workload', iconClass:'fa fa-globe'}]
                                     }
                                 }
-                            }, {
-                                elementId: 'direction',
-                                name: 'Direction',
-                                view: "FormDropdownView",
-                                viewConfig: {
-                                    label: 'Direction',
-                                    class: "col-xs-6",
-                                    path: "direction",
-                                    dataBindValue: "direction",
-                                    elementConfig:{
-                                        data:['<>', '>']
-                                    }}
-                             }
+                            } 
                         ]
+                    }, {
+                        columns:[{
+                            elementId: 'direction',
+                            name: 'Direction',
+                            view: "FormDropdownView",
+                            viewConfig: {
+                                label: 'Direction',
+                                class: "col-xs-6",
+                                path: "direction",
+                                dataBindValue: "direction",
+                                elementConfig:{
+                                    data:['<>', '>']
+                                }}
+                         }]
                     },
                     {
                         columns: [
@@ -404,7 +367,7 @@ define([
                                 name: 'End Point 2',
                                 viewConfig: {
                                     templateId: cowc.TMPL_MULTISELECT_VIEW,
-                                    class:'col-xs-6',
+                                    class:'col-xs-12',
                                     path: 'endpoint_2',
                                     dataBindValue: 'endpoint_2',
                                     elementConfig: {
@@ -424,32 +387,9 @@ define([
                                             { name : 'Any Workload',  value : 'any_workload', iconClass:'fa fa-globe' }]
                                     }
                                 }
-                            },
-                            {
-                                elementId: 'match_tags',
-                                view: "FormMultiselectView",
-                                viewConfig: {
-                                    label: 'Match Tags',
-                                    class: "col-xs-6",
-                                    path: "match_tags",
-                                    dataBindValue: "match_tags",
-                                    elementConfig:{
-                                        dataTextField: "text",
-                                        placeholder:"Select Tag Type",
-                                        dataValueField: "id",
-                                        separator: cowc.DROPDOWN_VALUE_SEPARATOR,
-                                        dataSource: {
-                                            type: "remote",
-                                            requestType: "POST",
-                                            url: "/api/tenants/config/get-config-details",
-                                            postData: JSON.stringify(tagParam),
-                                            parse : tagDropDownFormatter
-                                        }
-                                     }
-                                }
-                           }    
+                            }    
                         ]
-                    }/*,
+                    },
                     {
                         columns: [{
                             elementId: 'match_tags',
@@ -461,7 +401,7 @@ define([
                                 dataBindValue: "match_tags",
                                 elementConfig:{
                                     dataTextField: "text",
-                                    placeholder:"Select Tag Type",
+                                    placeholder:"Select Tag Types",
                                     dataValueField: "id",
                                     separator: cowc.DROPDOWN_VALUE_SEPARATOR,
                                     dataSource: {
@@ -474,7 +414,7 @@ define([
                                  }
                             }
                        }]
-                     }*/
+                     }
                 ]
             }
         }

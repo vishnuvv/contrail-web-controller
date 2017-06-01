@@ -171,13 +171,13 @@ define([
                                width: 50,
                                name: 'Order',
                                formatter: fwRuleFormatter.sequenceFormatter
-                           },*/ {
+                           }, {
                                id: 'enabled',
                                field: 'enabled',
                                width: 70,
                                name: 'Status',
                                formatter: fwRuleFormatter.enabledFormatter
-                           }, {
+                           },*/ {
                               id: 'action_list.simple_action',
                               field: 'action_list.simple_action',
                               width: 70,
@@ -252,7 +252,7 @@ define([
                                     key: "uuid",
                                     templateGenerator: "TextGenerator",
                                     label: "UUID"
-                                }/*,{
+                                },{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
                                     key: "uuid",
@@ -261,7 +261,7 @@ define([
                                     templateGeneratorConfig: {
                                         formatter: "sequenceFormatter"
                                     }
-                                }*/,{
+                                }/*,{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
                                     key: "uuid",
@@ -270,7 +270,7 @@ define([
                                     templateGeneratorConfig: {
                                         formatter: "enabledFormatter"
                                     }
-                                },{
+                                }*/,{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
                                     key: "action_list.simple_action",

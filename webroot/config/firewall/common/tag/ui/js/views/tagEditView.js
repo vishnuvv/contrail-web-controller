@@ -125,8 +125,9 @@ define([
                                 elementId: 'tag_value',
                                 view: 'FormInputView',
                                 viewConfig: {
-                                    label: 'Name',
+                                    label: 'Value',
                                     path: 'tag_value',
+                                    placeholder: 'Select Tag Value',
                                     class: 'col-xs-6',
                                     dataBindValue: 'tag_value',
                                 }
