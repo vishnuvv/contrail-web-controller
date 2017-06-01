@@ -469,11 +469,6 @@ define(
                                         if(_.isEmpty(value['app']) || value['app'] == '0') {
                                             value['app'] = formatVN(value['vn']);
                                         }
-                                        //Strip-off the domain and project form FQN
-                                        $.each(['app','site','tier','deployment'],function(idx,tagName) {
-                                            if(typeof(value[tagName]) == 'string')
-                                                value[tagName] = value[tagName].split(':').pop();
-                                        });
                                         if(value['eps.traffic.remote_app_id'] == '' || value['eps.traffic.remote_app_id'] == '0') {
                                             // if(value['eps.traffic.remote_vn'] != '') {
                                                 value['eps.traffic.remote_app_id'] = formatVN(value['eps.traffic.remote_vn']);
@@ -483,8 +478,8 @@ define(
                                         }
                                         //Strip-off the domain and project form FQN
                                         $.each(['app','site','tier','deployment'],function(idx,tagName) {
-                                            if(typeof(value[tagName]) == 'string')
-                                            value[tagName] = value[tagName].split(':').pop();
+                                            if(typeof(value[tagName]) == 'string' && value[tagName].split(':').length == 3)
+                                                value[tagName] = value[tagName].split(':').pop();
                                         });
                                     });
                                     // cowu.populateTrafficGroupsData(data);
