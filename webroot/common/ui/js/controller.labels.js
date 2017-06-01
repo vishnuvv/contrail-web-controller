@@ -836,6 +836,10 @@ define([
         this.TITLE_SAVE = "Save";
         this.TITLE_FW_POLICY_MULTI_DELETE = 'Delete Firewall Policy (s)';
         this.TITLE_FW_POLICY_DELETE = 'Delete Firewall Policy';
+        this.TITLE_FW_INSERT_RULE_ABOVE = 'Insert rule above';
+        this.TITLE_FW_INSERT_RULE_BELOW = 'Insert rule below';
+        this.TITLE_FW_INSERT_RULE_AT_TOP = 'Insert rule at top';
+        this.TITLE_FW_INSERT_RULE_AT_END = 'Insert rule at end';
 
         /* RBAC labels */
         this.TITLE_RBAC = 'API Access';

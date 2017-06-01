@@ -92,10 +92,126 @@ define([
         };
         return gridElementConfig;
     };
+
+    function getPrevNextCurrentRows(mode, rowIndex) {
+        var prev, current, next, prevRowData, currentRowData, nextRowData;
+        var ruleData = $('#' + ctwc.FW_RULE_GRID_ID).
+             data("contrailGrid")._dataView.getItem(rowIndex);
+        if(mode === ctwc.INSERT_ABOVE) {
+            if(rowIndex === 0) {
+                prev = '0';
+            } else {
+               prevRowData = $('#' + ctwc.FW_RULE_GRID_ID).
+               data("contrailGrid")._dataView.getItem(rowIndex - 1);
+               prev = getValueByJsonPath(prevRowData,
+                       'firewall_policy_back_refs;0;attr;sequence', '0');
+            }
+        } else if(mode === ctwc.INSERT_BELOW) {
+            var topIndex = $('#' + ctwc.FW_RULE_GRID_ID).
+            data("contrailGrid")._dataView.getItems();
+            if(rowIndex === (topIndex - 1)) {
+                next = '1.1';
+            } else {
+               nextRowData = $('#' + ctwc.FW_RULE_GRID_ID).
+                   data("contrailGrid")._dataView.getItem(rowIndex + 1);
+               next = getValueByJsonPath(nextRowData,
+                       'firewall_policy_back_refs;0;attr;sequence', '1.1');
+            }
+        }
+        currentRowData = $('#' + ctwc.FW_RULE_GRID_ID).
+             data("contrailGrid")._dataView.getItem(rowIndex);
+        current = getValueByJsonPath(currentRowData,
+             'firewall_policy_back_refs;0;attr;sequence', '0');
+
+        return { prev: prev, current: current, next: next };
+
+    }
     function getRowActionConfig (viewConfig) {
         var rowActionConfig = [
+            {
+                "type" : "link",
+                "title" : ctwl.TITLE_FW_INSERT_RULE_ABOVE,
+                //"iconClass" : "fa fa-plus",
+                "onClick" : function(rowIndex) {
+                    var sequenceData = getPrevNextCurrentRows(ctwc.INSERT_ABOVE, rowIndex);
+                    fwRuleEditView.model = new FWRuleModel();
+                    fwRuleEditView.renderAddEditFwRule(
+                        {"title": ctwl.TITLE_FW_INSERT_RULE_ABOVE,
+                            callback: function () {
+                                $('#' + ctwc.FW_RULE_GRID_ID).
+                                    data("contrailGrid")._dataView.refreshData();
+                            },
+                            mode : ctwc.INSERT_ABOVE,
+                            sequenceData: sequenceData,
+                            isGlobal: viewConfig.isGlobal
+                        }
+                    );
+                }
+            },
+            {
+                "type" : "link",
+                "title" : ctwl.TITLE_FW_INSERT_RULE_BELOW,
+                //"iconClass" : "fa fa-plus",
+                "onClick" : function(rowIndex) {
+                    var sequenceData = getPrevNextCurrentRows(ctwc.INSERT_BELOW, rowIndex);
+                    fwRuleEditView.model = new FWRuleModel();
+                    fwRuleEditView.renderAddEditFwRule(
+                        {"title": ctwl.TITLE_FW_INSERT_RULE_ABOVE,
+                            callback: function () {
+                                $('#' + ctwc.FW_RULE_GRID_ID).
+                                    data("contrailGrid")._dataView.refreshData();
+                            },
+                            mode : ctwc.INSERT_BELOW,
+                            sequenceData: sequenceData,
+                            isGlobal: viewConfig.isGlobal
+                        }
+                    );
+                }
+            },
+            {
+                "type" : "link",
+                "title" : ctwl.TITLE_FW_INSERT_RULE_AT_TOP,
+                //"iconClass" : "fa fa-plus",
+                "onClick" : function(rowIndex) {
+                    var ruleData = $('#' + ctwc.FW_RULE_GRID_ID).
+                                        data("contrailGrid")._dataView.getItem(rowIndex);
+                    fwRuleEditView.model = new FWRuleModel();
+                    fwRuleEditView.renderAddEditFwRule(
+                        {"title": ctwl.TITLE_FW_INSERT_RULE_ABOVE,
+                            callback: function () {
+                                $('#' + ctwc.FW_RULE_GRID_ID).
+                                    data("contrailGrid")._dataView.refreshData();
+                            },
+                            mode : ctwc.INSERT_AT_TOP,
+                            ruleData: ruleData,
+                            isGlobal: viewConfig.isGlobal
+                        }
+                    );
+                }
+            },
+            {
+                "type" : "link",
+                "title" : ctwl.TITLE_FW_INSERT_RULE_AT_END,
+                //"iconClass" : "fa fa-plus",
+                "onClick" : function(rowIndex) {
+                    var ruleData = $('#' + ctwc.FW_RULE_GRID_ID).
+                                        data("contrailGrid")._dataView.getItem(rowIndex);
+                    fwRuleEditView.model = new FWRuleModel();
+                    fwRuleEditView.renderAddEditFwRule(
+                        {"title": ctwl.TITLE_FW_INSERT_RULE_AT_END,
+                            callback: function () {
+                                $('#' + ctwc.FW_RULE_GRID_ID).
+                                    data("contrailGrid")._dataView.refreshData();
+                            },
+                            mode : ctwc.INSERT_AT_END,
+                            ruleData: ruleData,
+                            isGlobal: viewConfig.isGlobal
+                        }
+                    );
+                }
+            },
             ctwgc.getEditConfig('Edit', function(rowIndex) {
-                dataView = $('#' + ctwc.FW_RULE_GRID_ID).data("contrailGrid")._dataView;
+                var dataView = $('#' + ctwc.FW_RULE_GRID_ID).data("contrailGrid")._dataView;
                 fwRuleEditView.model = new FWRuleModel(dataView.getItem(rowIndex));
                 fwRuleEditView.renderAddEditFwRule({
                                       "title": 'Edit Firewall Rule',

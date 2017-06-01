@@ -605,3 +605,7 @@ form h5.margin-0-0-10~.section-content {
 #endpoint_2 .select2-choices i[class^="icon-contrail-"], #endpoint_1 .select2-choices i[class^="icon-contrail-"] {
     font-size: 13px;
 }
+[id^="fw-rule-grid-action-menu-"] li>a[data-original-title="Edit"] {
+    border-top: #dcdcdc solid 1px;
+    padding-top: 8px;
+}
