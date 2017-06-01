@@ -120,8 +120,8 @@ define([
         return rowActionConfig;
     };
     function getHeaderActionConfig(viewConfig) {
-    	var headerActionConfig = [
-    		{
+        var headerActionConfig = [
+            {
                 "type" : "link",
                 "title" : ctwl.TITLE_TAG_MULTI_DELETE,
                 "iconClass": 'fa fa-trash',
@@ -130,10 +130,10 @@ define([
                     var fwRuleModel = new FWRuleModel();
                     var checkedRows = $('#' + ctwc.FW_RULE_GRID_ID).data("contrailGrid").getCheckedRows();
                     if(checkedRows && checkedRows.length > 0) {
-                    	fwRuleEditView.model = fwRuleModel;
-                    	fwRuleEditView.renderDeleteFirewallRule(
+                        fwRuleEditView.model = fwRuleModel;
+                        fwRuleEditView.renderDeleteFirewallRule(
                             {"title": 'Delete Firewall Rule',
-                            	selectedGridData: checkedRows,
+                                selectedGridData: checkedRows,
                                 callback: function () {
                                     var dataView =
                                         $('#' + ctwc.FW_RULE_GRID_ID).
@@ -151,8 +151,8 @@ define([
                 "title": ctwc.SEC_POL_SEC_GRP_TITLE_CREATE,
                 "iconClass": "fa fa-plus",
                 "onClick": function () {
-                	fwRuleEditView.model = new FWRuleModel();
-                	fwRuleEditView.renderAddEditFwRule({
+                    fwRuleEditView.model = new FWRuleModel();
+                    fwRuleEditView.renderAddEditFwRule({
                                               "title": 'Create Firewall Rule',
                                               'mode': 'add',
                                               'isGlobal': viewConfig.isGlobal,
@@ -187,7 +187,7 @@ define([
                                id: 'service',
                                field: 'service',
                                width: 140,
-                               name: 'Service (Portocol:Port)',
+                               name: 'Services',
                                formatter: fwRuleFormatter.serviceFormatter
                            }, {
                                id: 'endpoint_1',
@@ -282,9 +282,9 @@ define([
                                 },{
                                     keyClass:'col-xs-3',
                                     valueClass:'col-xs-9',
-                                    key: "service",
+                                    key: "uuid",
                                     templateGenerator: "TextGenerator",
-                                    label: "Service (Portocol:Port)",
+                                    label: "Services",
                                     templateGeneratorConfig: {
                                         formatter: "serviceFormatter"
                                     }
@@ -313,7 +313,7 @@ define([
                                 },{
                                     key: "match_tags",
                                     templateGenerator: "TextGenerator",
-                                    label: "Match",
+                                    label: "Match Tags",
                                     templateGeneratorConfig: {
                                         formatter: "matchFormatter"
                                     }
@@ -336,22 +336,22 @@ define([
     this.actionFormatter = function(v, dc) {
         return fwRuleFormatter.actionFormatter("", "", v, "", dc);
     };
-    
+
     this.sequenceFormatter = function(v, dc) {
         return fwRuleFormatter.sequenceFormatter("", "", v, "", dc);
     };
-    
+
     this.enabledFormatter = function(v, dc) {
         return fwRuleFormatter.enabledFormatter("", "", v, "", dc);
-    };    
+    };
 
     this.serviceFormatter = function(v, dc) {
         return fwRuleFormatter.serviceFormatter("", "", v, "", dc);
     };
-    
+
     this.dirFormatter = function(v, dc) {
         return fwRuleFormatter.dirFormatter("", "", v, "", dc);
-    };    
+    };
 
     this.endPoint1Formatter = function(v, dc) {
         return fwRuleFormatter.endPoint1Formatter("", "", v, "", dc);
@@ -364,7 +364,7 @@ define([
     this.matchFormatter = function(v, dc) {
         return fwRuleFormatter.matchFormatter("", "", v, "", dc);
     };
-    
+
     this.simpleActionFormatter = function(v, dc) {
         return fwRuleFormatter.simpleActionFormatter("", "", v, "", dc);
     };

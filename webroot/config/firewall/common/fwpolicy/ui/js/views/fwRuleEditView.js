@@ -10,17 +10,18 @@ define([
     var gridElId = '#' + ctwc.FW_RULE_GRID_ID,
         prefixId = ctwc.FW_RULE_PREFIX_ID,
         modalId = 'configure-' + prefixId,
-        formId = '#' + modalId + '-form';
+        formId = '#' + modalId + '-form',
+        serviceGroupList = [];
 
     var fwRuleEditView = ContrailView.extend({
-    	renderAddEditFwRule: function(options) {
+        renderAddEditFwRule: function(options) {
             var editTemplate =
                 contrail.getTemplate4Id(ctwl.TMPL_CORE_GENERIC_EDIT),
                 editLayout = editTemplate({prefixId: prefixId, modalId: modalId}),
                 self = this,disable = false;
             var mode = options.mode;
             if(mode === 'edit'){
-            	disable = true;
+                disable = true;
             }
             cowu.createModal({'modalId': modalId, 'className': 'modal-610',
                              'title': options['title'], 'body': editLayout,
@@ -40,7 +41,7 @@ define([
                                                      error.responseText);
                         });
                     }
-                }, options);
+                }, options, serviceGroupList);
                 // TODO: Release binding on successful configure
             }, 'onCancel': function () {
                 Knockback.release(self.model, document.getElementById(modalId));
@@ -50,16 +51,16 @@ define([
             this.fetchAllData(this ,
                     function(allData) {
                        self.renderView4Config($("#" + modalId).find(formId),
-		                        self.model,
-		                        getFwRuleViewConfig(disable, allData),
-		                        "fwRuleValidation",
-		                        null, null, function() {
-							     self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
-							     Knockback.applyBindings(self.model,
-							                             document.getElementById(modalId));
-							     kbValidation.bind(self);
-					    },null,false);
-		              return;
+                                self.model,
+                                getFwRuleViewConfig(disable, allData),
+                                "fwRuleValidation",
+                                null, null, function() {
+                                 self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
+                                 Knockback.applyBindings(self.model,
+                                                         document.getElementById(modalId));
+                                 kbValidation.bind(self);
+                        },null,false);
+                      return;
                    }
                );
 
@@ -145,51 +146,51 @@ define([
                     var domain = contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME);
                     var project = contrail.getCookie(cowc.COOKIE_PROJECT_DISPLAY_NAME);
                     if(tags.length > 0){
-                    	for(var i = 0; i < tags.length; i++){
-                    		var fqName = tags[i]['tag']['fq_name'].reverse()[0].split('-');
-                    		var tagType = fqName[0];
-                    		var val = tags[i]['tag'].fq_name.length === 1 ?
-                                    'global:' + tags[i]['tag']['name'] : tags[i]['tag']['name'];                    		
-                    		if(tagType === ctwc.APPLICATION_TAG_TYPE){
-                    			applicationChild.push({text : tags[i]['tag']['tag_value'],
+                        for(var i = 0; i < tags.length; i++){
+                            var fqName = tags[i]['tag']['fq_name'].reverse()[0].split('-');
+                            var tagType = fqName[0];
+                            var val = tags[i]['tag'].fq_name.length === 1 ?
+                                    'global:' + tags[i]['tag']['name'] : tags[i]['tag']['name'];    
+                            if(tagType === ctwc.APPLICATION_TAG_TYPE){
+                                applicationChild.push({text : tags[i]['tag']['tag_value'],
                                      value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "application",
                                      id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "application",
                                      parent : "application" })
-                    		}else if(tagType === ctwc.TIER_TAG_TYPE){
-                    			tierChild.push({text : tags[i]['tag']['tag_value'],
+                            }else if(tagType === ctwc.TIER_TAG_TYPE){
+                                tierChild.push({text : tags[i]['tag']['tag_value'],
                                     value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "tier",
                                     id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "tier",
                                     parent : "tier" });
-                    		}else if(tagType === ctwc.DEPLOYMENT_TAG_TYPE){
-                    			deploymentChild.push({text : tags[i]['tag']['tag_value'],
+                            }else if(tagType === ctwc.DEPLOYMENT_TAG_TYPE){
+                                deploymentChild.push({text : tags[i]['tag']['tag_value'],
                                     value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "deployment",
                                     id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "deployment",
                                     parent : "deployment" });
-                    		}else if(tagType === ctwc.SITE_TAG_TYPE){
-                    			siteChild.push({text : tags[i]['tag']['tag_value'],
+                            }else if(tagType === ctwc.SITE_TAG_TYPE){
+                                siteChild.push({text : tags[i]['tag']['tag_value'],
                                     value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                     id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                     parent : "site" });
-                    		}
-                    		
-                    	}
-                    	for(var j = 0; j < tagList.length; j++){
-                    		var tagVal, tagData;
-                    		if(tagList[j] === 'Application'){
-                    			tagVal = 'application';
-                    			tagData = applicationChild;
-                    		}else if(tagList[j] === 'Tier'){
-                    			tagVal = 'tier';
-                    			tagData = tierChild;
-                    		}else if(tagList[j] === 'Deployment'){
-                    			tagVal = 'deployment';
-                    			tagData = deploymentChild;
-                    		}else if(tagList[j] === 'Site'){
-                    			tagVal = 'site';
-                    			tagData = siteChild;
-                    		}
-                    		addrFields.push({text : tagList[j], value : tagVal, children : tagData});
-                    	}
+                            }
+    
+                        }
+                        for(var j = 0; j < tagList.length; j++){
+                            var tagVal, tagData;
+                            if(tagList[j] === 'Application'){
+                                tagVal = 'application';
+                                tagData = applicationChild;
+                            }else if(tagList[j] === 'Tier'){
+                                tagVal = 'tier';
+                                tagData = tierChild;
+                            }else if(tagList[j] === 'Deployment'){
+                                tagVal = 'deployment';
+                                tagData = deploymentChild;
+                            }else if(tagList[j] === 'Site'){
+                                tagVal = 'site';
+                                tagData = siteChild;
+                            }
+                            addrFields.push({text : tagList[j], value : tagVal, children : tagData});
+                        }
                     }
                     if(addressGrp.length > 0){
                         for(var a = 0; a< addressGrp.length; a++){
@@ -200,11 +201,11 @@ define([
                                  value : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                                  id : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                                  parent : "address_group" });
-                        }                    	
-                    	addrFields.push({text : 'Address Group', value : 'address_group', children : addressGrpChild});
+                        }    
+                        addrFields.push({text : 'Address Group', value : 'address_group', children : addressGrpChild});
                     }
                     if(virtualNet.length > 0){
-                    	var virtualNetworkList = [{text:'Enter or Select a Virtual Network',
+                        var virtualNetworkList = [{text:'Enter or Select a Virtual Network',
                             value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                             id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                             disabled : true }/*,
@@ -212,9 +213,9 @@ define([
                             value:"any" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                             id:"any" + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                             "parent": "virtual_network"}*/];
-                    	  for(var i = 0; i< virtualNet.length; i++){
-                    	      var vn = getValueByJsonPath(virtualNet[i],
-                    	              'fq_name', [], false);
+                          for(var i = 0; i< virtualNet.length; i++){
+                              var vn = getValueByJsonPath(virtualNet[i],
+                                      'fq_name', [], false);
                               /*if(vn[2].toLowerCase() === "any" ||
                                       vn[2].toLowerCase() === "local"){*/
                                        var fqNameTxt = vn[2]; /*+' (' +
@@ -226,7 +227,7 @@ define([
                                             id : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "virtual_network",
                                             parent : "virtual_network" });
                               //}
-                    	  }
+                          }
                           addrFields.push({text : 'Virtual Networks', value : 'virtual_network', children : virtualNetworkList});
                     }
                     var anyList = [{text:'Select a Any',
@@ -249,12 +250,24 @@ define([
             {text:'Tier', id:'tier' },
             {text:'Deployment', id:'deployment' },
             {text:'Site', id:'site' }];
-    	
+    
         return matchList;
     };
+    function serviceGroupDataFormatter(response){
+        var serviceGrpList = [];
+        serviceGroupList =[];
+        var secGrpList = getValueByJsonPath(response, "0;service-groups", []);
+        $.each(secGrpList, function (i, obj) {
+            var obj = obj['service-group'];
+            serviceGrpList.push({value: obj.uuid, text: obj.name});
+            serviceGroupList.push({fq_name : obj.fq_name, text: obj.name});
+         });
+        return serviceGrpList;
+    };
     var getFwRuleViewConfig = function (isDisable, allData) {
-    	var tagParam = {data: [{type: 'tags'}]};
-    	return {
+        var tagParam = {data: [{type: 'tags'}]};
+        var serviceGrp = {data: [{type: 'service-groups'}]};
+        return {
             elementId: ctwc.SEC_POLICY_SERVICE_GRP_PREFIX_ID,
             view: 'SectionView',
             title: "Firewall Rule",
@@ -262,7 +275,7 @@ define([
                 rows: [
                     {
                         columns: [
-                        	{
+                            {
                                 elementId: 'enable',
                                 name:'Enable',
                                 view: "FormCheckboxView",
@@ -283,7 +296,7 @@ define([
                     },
                     {
                         columns: [
-                        	{
+                            {
                                 elementId: 'sequence',
                                 name:'Order',
                                 view: 'FormInputView',
@@ -313,47 +326,36 @@ define([
                     },
                     {
                         columns: [
-                        	  {
-                                elementId: 'protocol',
-                                name: 'Protocol',
+                            {
+                                elementId: 'user_created_service',
+                                name: 'Services',
                                 view: "FormComboboxView",
-                                class: "col-xs-6",
+                                class:'col-xs-6',
                                 viewConfig: {
-                                    label: 'Service',
-                                    path: "protocol",
-                                    class: "col-xs-6",
-                                    dataBindValue: "protocol",
-                                    elementConfig:{
-                                        dataTextField: 'text',
-                                        dataValueField: 'value',
+                                    label: 'Services',
+                                    class:'col-xs-6',
+                                    path: 'user_created_service',
+                                    placeholder: "Enter Protocol:Port or Select",
+                                    dataBindValue: 'user_created_service',
+                                    elementConfig: {
+                                        dataTextField: "text",
+                                        dataValueField: "value",
+                                        placeholder: "Enter Protocol:Port or Select",
                                         dataSource: {
-                                            type: 'local',
-                                            data:[{text:'tcp', value:'tcp' },
-                                                  {text:'udp', value:'udp' },
-                                                  {text:'icmp', value:'icmp' },
-                                                  {text:'icmp6', value:'icmp6' }
-                                                 ]
-                                           }
-                                       }
-                                   }
-                                },
-                                {
-                                    elementId: 'port',
-                                    name:'Port',
-                                    view: 'FormInputView',
-                                    viewConfig: {
-                                        label: 'Port',
-                                        placeholder: '0-65535',
-                                        path: 'port',
-                                        class:'col-xs-6',
-                                        dataBindValue: 'port'
+                                            type: "remote",
+                                            requestType: "POST",
+                                            url: "/api/tenants/config/get-config-details",
+                                            postData: JSON.stringify(serviceGrp),
+                                            parse : serviceGroupDataFormatter
+                                        }
                                     }
                                 }
+                            }
                         ]
                     },
                     {
                         columns: [
-                        	{
+                            {
                                 elementId: 'endpoint_1',
                                 view:"FormHierarchicalDropdownView",
                                 name: 'End Point 1',
@@ -396,7 +398,7 @@ define([
                     },
                     {
                         columns: [
-                        	{
+                            {
                                 elementId: 'endpoint_2',
                                 view:"FormHierarchicalDropdownView",
                                 name: 'End Point 2',
@@ -413,7 +415,7 @@ define([
                                         dataValueField: "value",
                                         data: allData.addrFields,
                                         queryMap: [
-                                        	{ name : 'Application',  value : 'application', iconClass:'fa fa-list-alt' },
+                                            { name : 'Application',  value : 'application', iconClass:'fa fa-list-alt' },
                                             { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-database' },
                                             { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
                                             { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' },
@@ -445,7 +447,7 @@ define([
                                         }
                                      }
                                 }
-                           }                            
+                           }    
                         ]
                     }/*,
                     {
@@ -453,7 +455,7 @@ define([
                             elementId: 'match_tags',
                             view: "FormMultiselectView",
                             viewConfig: {
-                            	label: 'Match Tags',
+                                label: 'Match Tags',
                                 class: "col-xs-12",
                                 path: "match_tags",
                                 dataBindValue: "match_tags",

@@ -8,7 +8,7 @@ define([
     'knockback',
     'config/networking/policy/ui/js/views/policyFormatters'
 ], function (_, ContrailView, Knockback, PolicyFormatters) {
-    var prefixId = ctwc.FW_POLICY_PREFIX_ID;
+    var prefixId = ctwc.FW_POLICY_PREFIX_ID,serviceGroupList = [];
     var modalId = 'configure-' + prefixId;
     var self;
     var fwPolicyEditEditView = ContrailView.extend({
@@ -120,16 +120,7 @@ define([
                 data: JSON.stringify(
                         {data: [{type: 'address-groups'}]})
             });
-            
-           //get service groups
-            getAjaxs[3] = $.ajax({
-                url:"/api/tenants/config/get-config-details",
-                type:"POST",
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(
-                        {data: [{type: 'service-groups'}]})
-            });
+
             $.when.apply($, getAjaxs).then(
                 function () {
                     //all success
@@ -228,12 +219,12 @@ define([
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         disabled : true }];
-                    var addressGroups = getValueByJsonPath(results, '2;0;0;address-groups', [], false); 
+                    var addressGroups = getValueByJsonPath(results, '2;0;0;address-groups', [], false);    
                     if(addressGroups.length > 0){
                         for(var k = 0; k < addressGroups.length; k++){
                             var address = addressGroups[k]['address-group'];
                             var fqNameTxt = address["fq_name"][address["fq_name"].length - 1];
-                            var fqNameValue = address["fq_name"].join(":");                            
+                            var fqNameValue = address["fq_name"].join(":");    
                             addressGrpChild.push({text : address.name,
                                 value : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                                 id : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
@@ -366,7 +357,20 @@ define([
         }
     }];
 
+    function serviceGroupDataFormatter(response){
+        var serviceGrpList = [];
+        serviceGroupList =[];
+        var secGrpList = getValueByJsonPath(response, "0;service-groups", []);
+        $.each(secGrpList, function (i, obj) {
+            var obj = obj['service-group'];
+            serviceGrpList.push({value: obj.uuid, text: obj.name});
+            serviceGroupList.push({fq_name : obj.fq_name, text: obj.name});
+         });
+        return serviceGrpList;
+    };
+
     var getRulesViewConfig = function(allData) {
+        var serviceGrp = {data: [{type: 'service-groups'}]};
         return {
             rows: [{
                     columns: [{
@@ -430,17 +434,28 @@ define([
                                 },
                                 {
                                     elementId: 'user_created_service',
-                                    name: 'Service (Portocol:Port)',
-                                    view: "FormInputView",
-                                    class: "",
-                                    width: 180,
+                                    name: 'Services',
+                                    view: "FormComboboxView",
+                                    width: 250,
                                     viewConfig: {
-                                        placeholder: 'Protocol:Port',
-                                        templateId: cowc.TMPL_EDITABLE_GRID_INPUT_VIEW,
-                                        path: "user_created_service",
-                                        dataBindValue: "user_created_service()"
-                                        //disabled: "mirror_to_check()",
-                                       }
+                                        templateId: cowc.TMPL_EDITABLE_GRID_COMBOBOX_VIEW,
+                                        width: 250,
+                                        path: 'user_created_service',
+                                        placeholder: "Enter Protocol:Port or Select",
+                                        dataBindValue: 'user_created_service()',
+                                        elementConfig: {
+                                            dataTextField: "text",
+                                            dataValueField: "value",
+                                            placeholder: "Enter Protocol:Port or Select",
+                                            dataSource: {
+                                                type: "remote",
+                                                requestType: "POST",
+                                                url: "/api/tenants/config/get-config-details",
+                                                postData: JSON.stringify(serviceGrp),
+                                                parse : serviceGroupDataFormatter
+                                            }
+                                        }
+                                    }
                                 },
                                 {
                                     elementId: 'endpoint_1',
@@ -448,10 +463,10 @@ define([
                                         "FormHierarchicalDropdownView",
                                     name: 'End Point 1',
                                     class: "",
-                                    width: 200,
+                                    width: 180,
                                     viewConfig: {
                                         templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
-                                        width: 200,
+                                        width: 180,
                                         path: 'endpoint_1',
                                         dataBindValue: 'endpoint_1()',
                                         elementConfig: {
@@ -497,10 +512,10 @@ define([
                                                 iconClass:
                                                 'icon-contrail-network-ipam'
                                             },
-                                            { 
-                                            	name : 'Any Workload',  
-                                            	value : 'any_workload', 
-                                            	iconClass:'fa fa-globe'
+                                            {    
+                                                name : 'Any Workload',    
+                                                value : 'any_workload',    
+                                                iconClass:'fa fa-globe'
                                             }
                                            ]
                                         }
@@ -527,10 +542,10 @@ define([
                                         "FormHierarchicalDropdownView",
                                     name: 'End Point 2',
                                     class: "col-xs-2",
-                                    width: 200,
+                                    width: 180,
                                     viewConfig: {
                                         templateId: cowc.TMPL_EDITABLE_GRID_DROPDOWN_VIEW,
-                                        width: 200,
+                                        width: 180,
                                         path: 'endpoint_2',
                                         dataBindValue: 'endpoint_2()',
                                         elementConfig: {
@@ -576,10 +591,10 @@ define([
                                                 iconClass:
                                                 'icon-contrail-network-ipam'
                                             },
-                                            { 
-                                            	name : 'Any Workload',  
-                                            	value : 'any_workload', 
-                                            	iconClass:'fa fa-globe'
+                                            {    
+                                                name : 'Any Workload',    
+                                                value : 'any_workload',    
+                                                iconClass:'fa fa-globe'
                                             }]
                                         }
                                     }
@@ -1008,7 +1023,7 @@ define([
                                     });
                                 }
                             };
-                            return params.model.configFWRule(callbackObj, options);
+                            return params.model.configFWRule(callbackObj, options, serviceGroupList);
                         }
                     }
                 ]

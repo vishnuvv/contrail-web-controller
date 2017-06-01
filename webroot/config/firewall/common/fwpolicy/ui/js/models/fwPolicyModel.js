@@ -138,7 +138,33 @@ define([
 
             return endpoint;
         },
-
+        getFormatedService : function(selectedData, list){
+            var svcListRef = [], service = {};
+            for(var i = 0; i < list.length; i++){
+                if(list[i].text === selectedData){
+                    svcListRef.push(list[i].fq_name);
+                    break;
+                }
+            }
+            if(svcListRef.length > 0){
+                service['service_group_refs'] = [{to:svcListRef[svcListRef.length - 1]}];
+                service['isServiceGroup'] = true;
+            }else{
+                var ports = selectedData.split(':');
+                if(ports.length === 2) {
+                    service['service'] = {};
+                    service['service']['protocol'] = ports[0];
+                    service['service']['dst_ports'] =
+                        policyFormatters.formatPort(ports[1])[0];
+                    service['service']['src_ports'] =
+                        policyFormatters.formatPort('0-0')[0];
+                    service['isServiceGroup'] = false;
+                }else{
+                    service['isServiceGroup'] = false;
+                }
+            }
+        return service;
+        },
         configFWPolicy: function (callbackObj, options) {
             var ajaxConfig = {}, returnFlag = false,
                 postFWPolicyData = {},
@@ -220,7 +246,7 @@ define([
             return returnFlag;
         },
 
-        configFWRule: function (callbackObj, options) {
+        configFWRule: function (callbackObj, options, serviceGroupList) {
             var ajaxConfig = {}, returnFlag = false,
                 postFWRuleData = {},
                 self  = this,
@@ -266,14 +292,15 @@ define([
                     newFWRuleData['uuid'] = attr.name;
                     newFWRuleData['endpoint_1'] = self.populateEndpointData(attr['endpoint_1']);
                     newFWRuleData['endpoint_2'] = self.populateEndpointData(attr['endpoint_2']);
-                    var service = attr['user_created_service'].split(':');
-                    if(service.length === 2) {
-                        newFWRuleData['service'] = {};
-                        newFWRuleData['service']['protocol'] = service[0];
-                        newFWRuleData['service']['dst_ports'] =
-                            policyFormatters.formatPort(service[1])[0];
-                        newFWRuleData['service']['src_ports'] =
-                            policyFormatters.formatPort('0-0')[0];
+                    if(attr['user_created_service'] !== ''){
+                        var getSelectedService = self.getFormatedService(attr['user_created_service'], serviceGroupList);
+                        if(getSelectedService.isServiceGroup){
+                            newFWRuleData['service_group_refs'] = getSelectedService['service_group_refs'];
+                        }else{
+                            if(getSelectedService['service'] !== undefined){
+                                newFWRuleData['service'] = getSelectedService['service'];
+                            }
+                        }
                     }
                     newFWRuleData['action_list'] = {};
                     newFWRuleData['action_list']['simple_action'] = attr['simple_action'];

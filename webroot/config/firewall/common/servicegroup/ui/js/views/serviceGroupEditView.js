@@ -13,14 +13,14 @@ define([
         formId = '#' + modalId + '-form';
 
     var serviceGroupEditView = ContrailView.extend({
-    	renderAddEditServiceGroup: function(options) {
+        renderAddEditServiceGroup: function(options) {
             var editTemplate =
                 contrail.getTemplate4Id(ctwl.TMPL_CORE_GENERIC_EDIT),
                 editLayout = editTemplate({prefixId: prefixId, modalId: modalId}),
                 self = this,disable = false;
             var mode = options.mode;
             if(mode === 'edit'){
-            	disable = true;
+                disable = true;
             }
             cowu.createModal({'modalId': modalId, 'className': 'modal-700',
                              'title': options['title'], 'body': editLayout,
@@ -108,7 +108,7 @@ define([
                 rows: [
                     {
                         columns: [
-                        	{
+                            {
                                 elementId: 'name',
                                 view: 'FormInputView',
                                 viewConfig: {
@@ -156,8 +156,7 @@ define([
                                                     type: 'local',
                                                     data:[{text:'tcp', value:'tcp' },
                                                           {text:'udp', value:'udp' },
-                                                          {text:'icmp', value:'icmp' },
-                                                          {text:'icmp6', value:'icmp6' }]
+                                                          {text:'icmp', value:'icmp' }]
                                                    }
                                                }
                                            }

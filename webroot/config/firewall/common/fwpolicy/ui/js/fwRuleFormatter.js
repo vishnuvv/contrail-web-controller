@@ -46,21 +46,40 @@
            * serviceFormatter
            */
             this.serviceFormatter = function(r, c, v, cd, dc) {
-                var serviceStr = "", service = getValueByJsonPath(dc,
-                    "service", {}, false);
-                serviceStr += service.protocol ? service.protocol : '';
-                var startPort = getValueByJsonPath(service, 'dst_ports;start_port', '');
-                var endPort = getValueByJsonPath(service, 'dst_ports;end_port', '');
-                if(startPort !== '' && endPort !== ''){
-                	if(startPort === endPort){
-                        serviceStr += ':'  + endPort;
-                    } else{
-                        serviceStr += ':' + (service && service.dst_ports ?
-                        		startPort + '-' +
-                        		endPort : '-');
+                var serviceStr = "";
+                if(dc['service'] !== undefined){
+                    var service = getValueByJsonPath(dc,
+                            "service", {}, false);
+                        serviceStr += service.protocol ? service.protocol : '';
+                        var startPort = getValueByJsonPath(service, 'dst_ports;start_port', '');
+                        var endPort = getValueByJsonPath(service, 'dst_ports;end_port', '');
+                        if(startPort !== '' && endPort !== ''){
+                            if(startPort === endPort){
+                                serviceStr += ':'  + endPort;
+                            } else{
+                                serviceStr += ':' + (service && service.dst_ports ?
+                                        startPort + '-' +
+                                        endPort : '-');
+                            }
+                        }
+                        return serviceStr ? serviceStr : '-';
+                }else if(dc['service_group_refs'] !== undefined){
+                    var serviceGrpRef = getValueByJsonPath(dc,
+                            "service_group_refs",[]);
+                    if(serviceGrpRef.length > 0){
+                        for(var i = 0; i < serviceGrpRef.length; i++){
+                            var to = serviceGrpRef[i].to;
+                            serviceStr = to[to.length - 1];
+                        }
+                        return serviceStr;
+                    }else{
+                        return '-';
                     }
+
+                }else{
+                    return '-';
                 }
-                return serviceStr ? serviceStr : '-';
+
             };
 
           /*

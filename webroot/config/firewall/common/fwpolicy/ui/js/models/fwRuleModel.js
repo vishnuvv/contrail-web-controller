@@ -16,25 +16,13 @@ define([
             'enable': true,
             'sequence':'',
             'simple_action':'pass',
-            'protocol': '',
-            'port': '',
+            'user_created_service':'',
             'uuid':'',
             'endpoint_1':'',
             'endpoint_2':'',
             'direction':'<>',
             'match_tags':'',
-            'service': {
-                  'protocol': 'tcp',
-                  'dst_ports': {
-                    'start_port': '',
-                    'end_port': ''
-                  },
-                  'src_ports': {
-                    'start_port': 0,
-                    'end_port': 0
-                  }
-              },
-             'action_list': {
+            'action_list': {
                   'simple_action': 'pass'
               },
               'match_tags': {
@@ -43,8 +31,6 @@ define([
         },
         formatModelConfig: function(modelConfig) {
             var self = this;
-            var protocol = getValueByJsonPath(modelConfig, "service;protocol", "");
-            modelConfig["protocol"] = protocol;
             var tag = getValueByJsonPath(modelConfig, "match_tags;tag_list", []);
             if(tag.length > 0){
                 var taglist = tag.join(cowc.DROPDOWN_VALUE_SEPARATOR);
@@ -54,15 +40,30 @@ define([
             }
             var simpleAction = getValueByJsonPath(modelConfig, "action_list;simple_action", '');
             modelConfig["simple_action"] = simpleAction;
-            var dstStartPort = getValueByJsonPath(modelConfig, "service;dst_ports;start_port", '');
-            var dstEndtPort = getValueByJsonPath(modelConfig, "service;dst_ports;end_port", '');
-            var port
-            if(dstStartPort === dstEndtPort){
-                port = dstStartPort;
+            if(modelConfig['service'] !== undefined){
+                var serviceList = [],port;
+                var protocol = getValueByJsonPath(modelConfig, "service;protocol", "");
+                var dstStartPort = getValueByJsonPath(modelConfig, "service;dst_ports;start_port", '');
+                var dstEndtPort = getValueByJsonPath(modelConfig, "service;dst_ports;end_port", '');
+                serviceList.push(protocol);
+                if(dstStartPort === dstEndtPort){
+                    port = dstStartPort;
+                }else{
+                   port = dstStartPort + '-' + dstEndtPort;
+                }
+                serviceList.push(port);
+                modelConfig["user_created_service"] = serviceList.join(':');
+            }else if(modelConfig['service_group_refs'] !== undefined){
+                var serviceGrpRef = getValueByJsonPath(modelConfig,"service_group_refs",[]);
+                if(serviceGrpRef.length > 0){
+                    var to = serviceGrpRef[0].to;
+                    modelConfig["user_created_service"] = to[to.length - 1];
+                }else{
+                    modelConfig["user_created_service"] = '';
+                }
             }else{
-                port = dstStartPort + '-' + dstEndtPort;
+                modelConfig["user_created_service"] = '';
             }
-            modelConfig["port"] = port;
             var dir = getValueByJsonPath(modelConfig, "direction", '');
             if(dir === '<>' || dir === '>'){
                 modelConfig['direction'] = dir;
@@ -196,6 +197,33 @@ define([
             }
             return isGlobal;
         },
+        getFormatedService : function(selectedData, list){
+            var svcListRef = [], service = {};
+            for(var i = 0; i < list.length; i++){
+                if(list[i].text === selectedData){
+                    svcListRef.push(list[i].fq_name);
+                    break;
+                }
+            }
+            if(svcListRef.length > 0){
+                service['service_group_refs'] = [{to:svcListRef[svcListRef.length - 1]}];
+                service['isServiceGroup'] = true;
+            }else{
+                var ports = selectedData.split(':');
+                if(ports.length === 2) {
+                    service['service'] = {};
+                    service['service']['protocol'] = ports[0];
+                    service['service']['dst_ports'] =
+                        policyFormatters.formatPort(ports[1])[0];
+                    service['service']['src_ports'] =
+                        policyFormatters.formatPort('0-0')[0];
+                    service['isServiceGroup'] = false;
+                }else{
+                    service['isServiceGroup'] = false;
+                }
+            }
+        return service;
+        },
         deleteFirewallRule: function (checkedRows, callbackObj) {
             var ajaxConfig = {};
             var uuidList = [];
@@ -223,7 +251,7 @@ define([
                 }
             });
         },
-        addEditFirewallRule: function (callbackObj, options) {
+        addEditFirewallRule: function (callbackObj, options, serviceGroupList) {
             var validations = [
                 {
                     key : null,
@@ -262,12 +290,20 @@ define([
                         newFWRuleData['name'] = attr.name;
                         newFWRuleData['endpoint_1'] = self.populateEndpointData(attr['endpoint_1']);
                         newFWRuleData['endpoint_2'] = self.populateEndpointData(attr['endpoint_2']);
-                        newFWRuleData['service'] = {};
-                        newFWRuleData['service']['protocol'] = attr.protocol;
-                        newFWRuleData['service']['dst_ports'] = policyFormatters.formatPort(attr.port.toString())[0];
-                        newFWRuleData['service']['src_ports'] = {};
-                        newFWRuleData['service']['src_ports']['start_port'] = 0;
-                        newFWRuleData['service']['src_ports']['end_port'] = 0;
+                        if(attr['user_created_service'] !== ''){
+                            var getSelectedService = self.getFormatedService(attr['user_created_service'], serviceGroupList);
+                            if(getSelectedService.isServiceGroup){
+                                newFWRuleData['service_group_refs'] = getSelectedService['service_group_refs'];
+                                if(attr['service'] !== undefined){
+                                    newFWRuleData['service'] = null;
+                                }
+                            }else{
+                                if(getSelectedService['service'] !== undefined){
+                                    newFWRuleData['service'] = getSelectedService['service'];
+                                    newFWRuleData['service_group_refs'] = [];
+                                }
+                            }
+                        }
                         newFWRuleData['action_list'] = {};
                         newFWRuleData['action_list']['simple_action'] = attr['simple_action'];
                         newFWRuleData['direction'] = attr['direction'];
