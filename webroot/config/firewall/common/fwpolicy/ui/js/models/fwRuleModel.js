@@ -6,10 +6,12 @@ define([
     'underscore',
     'contrail-model',
     'config/networking/policy/ui/js/views/policyFormatters',
-    'config/firewall/common/fwpolicy/ui/js/fwRuleFormatter'
-], function (_, ContrailModel, PolicyFormatters, FWRuleFormatters) {
+    'config/firewall/common/fwpolicy/ui/js/fwRuleFormatter',
+    'config/firewall/common/fwpolicy/ui/js/fwPolicy.utils'
+], function (_, ContrailModel, PolicyFormatters, FWRuleFormatters, FWPolicyUtils) {
     var policyFormatters = new PolicyFormatters();
     var fwRuleFormatters = new FWRuleFormatters();
+    var fwPolicyUtils = new FWPolicyUtils();
     var fwRuleModel = ContrailModel.extend({
         defaultConfig: {
             'name': '',
@@ -354,47 +356,13 @@ define([
         validations: {
             fwRuleValidation: {
                 'endpoint_2' : function(value, attr, finalObj){
-                    return validateEndPoint('endpoint_2',finalObj);
+                    return fwPolicyUtils.validateEndPoint('endpoint_2',finalObj);
                 },
                 'endpoint_1' : function(value, attr, finalObj){
-                    return validateEndPoint('endpoint_1',finalObj);
+                    return fwPolicyUtils.validateEndPoint('endpoint_1',finalObj);
                 }
-
             }
         }
     });
-    function validateEndPoint(src,finalObj) {
-
-        var endPoints = finalObj[src].split(',');
-        var typesMap = {};
-        _.each(endPoints,function(ep){
-            var type = (ep.split(';').length > 1)? ep.split(';')[1]: null;
-            if(type != null) {
-                if(type.indexOf("global:") == 0) {
-//                    type = ;
-                }
-                if(!_.has(typesMap, type)) {
-                    typesMap[type] = 1
-                } else {
-                    typesMap[type] = typesMap[type] + 1;
-                }
-            }
-        });
-        if(typesMap['virtual_network'] > 0 && _.keys(typesMap).length > 1) {
-            return "Please select only Virtual Network";
-        }
-        if(typesMap['any_workload'] > 0 && _.keys(typesMap).length > 1) {
-            return "Please select only Any Workload";
-        }
-        if(typesMap['address_group'] > 0 && _.keys(typesMap).length > 1) {
-            return "Please select only Address Group";
-        }
-        for (type in typesMap) {
-            if(typesMap[type] > 1) {
-                return "Please select only one from each tag type";
-            }
-        }
-
-    }
     return fwRuleModel;
 });

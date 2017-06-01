@@ -112,30 +112,32 @@ define([
         },
 
         populateEndpointData : function(inputAddress) {
+            var self = this;
             var selectedDomain = contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME);
             var selectedProject = contrail.getCookie(cowc.COOKIE_PROJECT_DISPLAY_NAME);
-            var srcArr = inputAddress.split(cowc.DROPDOWN_VALUE_SEPARATOR),
-                vnSubnetObj, subnet, endpoint;
+            var srcArrs = inputAddress.split(',');//If multiple selected.
             endpoint  = {};
             endpoint["virtual_network"] = null;
             //endpoint["security_group"] = null;
             endpoint["address_group"] = null;
-            endpoint["tags"] = [];
             endpoint["any"] = null;
-
-            //tags
-            if(srcArr.length == 2 && (srcArr[1] === 'Application' ||
-                    srcArr[1] === 'Deployment' ||  srcArr[1] === 'Site' || srcArr[1] === 'Tier')) {
-                endpoint["tags"].push(srcArr[0]);
-            } else if(srcArr.length == 2 && srcArr[1] === 'address_group'){
-                endpoint[srcArr[1]] = srcArr[0];
-            }  else if(srcArr.length == 2 && srcArr[1] === 'virtual_network'){
-                endpoint[srcArr[1]] = self.getPostAddressFormat(srcArr[0], selectedDomain,
-                        selectedProject)
-            }else if(srcArr.length == 2 && srcArr[1] === 'any_workload') {
-                endpoint["any"] = true;
+            endpoint["tags"] = [];
+            for(var i = 0 ; i < srcArrs.length; i++) {
+                var srcArr = srcArrs[i].split(cowc.DROPDOWN_VALUE_SEPARATOR),
+                    vnSubnetObj, subnet, endpoint;
+                //tags
+                if(srcArr.length == 2 && (srcArr[1] === 'Application' ||
+                        srcArr[1] === 'Deployment' ||  srcArr[1] === 'Site' || srcArr[1] === 'Tier')) {
+                    endpoint["tags"].push(srcArr[0]);
+                } else if(srcArr.length == 2 && srcArr[1] === 'address_group'){
+                    endpoint[srcArr[1]] = srcArr[0];
+                } else if(srcArr.length == 2 && srcArr[1] === 'virtual_network'){
+                    endpoint[srcArr[1]] = self.getPostAddressFormat(srcArr[0], selectedDomain,
+                            selectedProject)
+                } else if(srcArr.length == 2 && srcArr[1] === 'any_workload') {
+                    endpoint["any"] = true;
+                }
             }
-
             return endpoint;
         },
         getFormatedService : function(selectedData, list){
