@@ -117,29 +117,41 @@ define(
                                                 ruleMap[detailsObj['firewall-rule']['uuid']] = ruleDetailsObj; 
                                                 var src = _.result(ruleDetailsObj, 'endpoint_1.tags', []);
                                                     srcType = 'tags';
+                                                    src = src.join(' && ')
                                                 if (src.length == 0) {
                                                     src = _.result(ruleDetailsObj, 'endpoint_1.address_group', '-');
                                                     srcType = 'address_group';
                                                 }
-                                                if (src == '-') {
+                                                if (!src || src == '-') {
                                                     src = _.result(ruleDetailsObj, 'endpoint_1.any', '-');
+                                                    srcType = ''
                                                 }
-                                                if (src == '-') {
+                                                if (!src || src == '-') {
                                                     src = _.result(ruleDetailsObj, 'endpoint_1.virtual_network', '-');
                                                     srcType = 'virtual_network';
                                                 }
                                                 var dst = _.result(ruleDetailsObj, 'endpoint_2.tags', []),
                                                     dstType = 'tags';
-                                                if (dst.length == 0) {
+                                                    dst = dst.join(' && ');
+                                                if (!dst || dst.length == 0) {
                                                     dst = _.result(ruleDetailsObj, 'endpoint_2.address_group', '-');
                                                     dstType = 'address_group';
                                                 }
-                                                if (dst == '-') {
+                                                if (!dst || dst == '-') {
                                                     dst = _.result(ruleDetailsObj, 'endpoint_2.any', '-');
+                                                    dstType = ''
                                                 }
-                                                if (dst == '-') {
+                                                if (!dst || dst == '-') {
                                                     dst = _.result(ruleDetailsObj, 'endpoint_2.virtual_network', '-');
                                                     dstType = 'virtual_network';
+                                                }
+                                                if(!src || src == '-' || src.length == 0) {
+                                                    srcType = '';
+                                                    src = '-';
+                                                }
+                                                if(!dst || dst == '-' || dst.length == 0) {
+                                                    dstType = '';
+                                                    dst = '-';
                                                 }
                                                 var policy_name = _.result(ruleDetailsObj, 'firewall_policy_back_refs.0.to.2', '-'),
                                                     rule_name = _.result(ruleDetailsObj, 'display_name'); 
