@@ -5,10 +5,11 @@
 define([
     'underscore',
     'moment',
+    'backbone',
     'contrail-view',
     'config/firewall/common/applicationpolicy/ui/js/models/applicationPolicyModel',
     'config/firewall/common/applicationpolicy/ui/js/views/applicationPolicyEditView'
-], function (_, moment, ContrailView, ApplicationPolicyModel, ApplicationPolicyEditView) {
+], function (_, moment, Backbone, ContrailView, ApplicationPolicyModel, ApplicationPolicyEditView) {
     var applicationPolicyEditView = new ApplicationPolicyEditView(),
         gridElId = "#" + ctwc.FIREWALL_APPLICATION_POLICY_GRID_ID;
 
@@ -95,6 +96,15 @@ define([
                             sortable: {
                                 sortBy: 'formattedValue'
                             }
+                        },
+                        {
+                            field:"tag_refs",
+                            name:"Application Tags",
+                            sortable: {
+                               sortBy: 'formattedValue'
+                            },
+                            minWidth : 180,
+                            formatter: ctwu.tagsPortGridFormatter
                         },
                         {
                             id: "noofpolicies",
@@ -289,8 +299,7 @@ define([
                                                         formatter: 'isGlobalFormatter'
                                                     }
                                                 }
-
-                                            ]
+                                            ].concat(ctwu.getTagsApplicationDetails())
                                         }
                                     ]
                                 }

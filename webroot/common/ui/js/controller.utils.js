@@ -146,6 +146,21 @@ define([
             }]
             return tagsList;
         };
+        self.getTagsApplicationDetails = function() {
+            var tagsList = [
+            {
+                keyClass:'col-xs-3',
+                valueClass:'col-xs-9',
+                key: 'tag_refs',
+                name:"tag_refs",
+                label:"Application Tags",
+                templateGenerator: 'TextGenerator',
+                templateGeneratorConfig:{
+                    formatter: "tagsFormatter"
+                }
+            }]
+            return tagsList;
+        };
         self.tagsPortGridFormatter = function(d, c, v, cd, dc) {
             var tags = "";
             var formattedtags = "";

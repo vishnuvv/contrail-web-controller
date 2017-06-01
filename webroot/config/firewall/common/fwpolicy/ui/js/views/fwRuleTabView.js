@@ -47,7 +47,7 @@ define([
                viewConfig: viewConfig,
                tabConfig: {
                    activate: function(event, ui) {
-                       var gridId = $('#' + 'fw-rule-grid');
+                       var gridId = $('#' + 'policy_info_tab-tab');
                        if (gridId.data('contrailGrid')) {
                            gridId.data('contrailGrid').refreshView();
                        }
@@ -63,7 +63,7 @@ define([
                viewConfig: viewConfig,
                tabConfig: {
                    activate: function(event, ui) {
-                       var gridId = $('#' + 'policy_rules_grid_id');
+                       var gridId = $('#' + 'fw-rule-grid');
                        if (gridId.data('contrailGrid')) {
                            gridId.data('contrailGrid').refreshView();
                        }

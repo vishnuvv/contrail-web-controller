@@ -99,6 +99,8 @@ define([
 	
 	                }
 	                updatedModel.name = model.name;
+	                this.updateRBACPermsAttrs(model);
+	                updatedModel.tag_refs = model.tag_refs;
 	                updatedModel.firewall_policy_refs = policyList;
 	                if (options.mode == 'add') {
 	                	var postData = {"data":[{"data":{"application-policy-set": updatedModel},

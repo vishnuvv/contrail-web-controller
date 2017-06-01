@@ -963,6 +963,7 @@ define([
         this.QUOTAS_GRID_ID = 'quotas-grid';
         this.QUOTAS_PREFIX_ID = 'quotas';
         this.TITLE_EDIT_QUOTAS = 'Edit Project Quotas';
+        this.TITLE_EDIT_PROJECT_TAGS = "Select Project Tags"
 
         /* Global Config */
         this.CONFIG_GLOBAL_CONFIG_PAGE_ID = 'config-global-config-page';

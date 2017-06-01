@@ -5,37 +5,44 @@
 define([
     'underscore',
     'contrail-view',
-    'config/firewall/common/tag/ui/js/models/tagModel',
-    'config/firewall/common/tag/ui/js/views/tagEditView'
-], function (_, ContrailView, TagModel, TagEditView) {
-    var tagEditView = new TagEditView(),
-        gridElId = "#" + ctwc.SECURITY_POLICY_TAG_GRID_ID;
-
-    var tagGridView = ContrailView.extend({
+    'config/infra/quotas/ui/js/models/projectTagsModel',
+    'config/infra/quotas/ui/js/views/projectTagEditView'
+], function (_, ContrailView,ProjectTagsModel, ProjectTagEditView) {
+    var selectedProject = null;
+    var projectTagEditView = new ProjectTagEditView(),
+    gridElId = "#" + "project-tag-grid-id";
+    
+    var projectTagGridView = ContrailView.extend({
         el: $(contentContainer),
         render: function () {
             var self = this,
                 viewConfig = this.attributes.viewConfig,
+                selectedProject = viewConfig.selectedProject,
                 pagerOptions = viewConfig['pagerOptions'];
+                console.log(selectedProject);
+
             self.renderView4Config(self.$el, self.model,
-                                   getTagGridViewConfig(viewConfig));
+                    getProjectTagGridViewConfig(selectedProject), null,
+                    null, null, function() {
+                   $(gridElId).data(self.model);
+            });
         }
     });
 
-    var getTagGridViewConfig = function (viewConfig) {
+    var getProjectTagGridViewConfig = function (selectedProject) {
         return {
-            elementId: cowu.formatElementId([ctwc.SECURITY_POLICY_TAG_LIST_VIEW_ID+"1"]),
+            elementId: cowu.formatElementId(["project-tag-listview-id"]),
             view: "SectionView",
             viewConfig: {
                 rows: [
                     {
                         columns: [
                             {
-                                elementId: ctwc.SECURITY_POLICY_TAG_GRID_ID+"1",
-                                title: ctwl.TITLE_SEC_GRP_TAG,
+                                elementId: "project-tag-grid-id",
+                                title: "",
                                 view: "GridView",
                                 viewConfig: {
-                                    elementConfig: getConfiguration(viewConfig)
+                                    elementConfig: getConfiguration(selectedProject)
                                 }
                             }
                         ]
@@ -44,13 +51,13 @@ define([
             }
         };
     };
-    var getConfiguration = function (viewConfig) {
+    var getConfiguration = function (selectedProject) {
         var gridElementConfig = {
             header: {
                 title: {
                     text: ctwl.TITLE_SEC_GRP_TAG
                 },
-                advanceControls: getHeaderActionConfig(viewConfig),
+                advanceControls: getHeaderActionConfig(selectedProject,this.model),
             },
             body: {
                 options: {
@@ -69,11 +76,6 @@ define([
             },
             columnHeader: {
                 columns: [
-                        /*{
-                             field: 'name',
-                             name: 'Name',
-                             id: 'name'
-                        },*/
                         {
                             field: 'type',
                             name: 'Type',
@@ -89,26 +91,112 @@ define([
         };
         return gridElementConfig;
     };
-    function getHeaderActionConfig(viewConfig) {
+    function getHeaderActionConfig(selectedProject,model) {
+        var applicationArray = [];
+        var tierArray = [];
+        var siteArray = [];
+        var deploymentArray = [];
+        var lablesArray = [];
+        var data;
+        var results = [];
+        var tagMap = {};
+        var actValue;
+        
+        deploymentArray.push({text:"None",value:"-"});
+        applicationArray.push({text:"None",value:"-"});
+        tierArray.push({text:"None",value:"-"});
+        siteArray.push({text:"None",value:"-"});
+        
+        var tagsList = [{key : "application", name : "Application"},
+            {key : "tier", name :"Tier"},
+            {key : "site", name :"Site"},
+            {key : "deployment", name : "Deployment"},
+            {key : "labels", name :"Labels"}
+        ];
         var headerActionConfig = [
             {
                 "type": "link",
-                "title": ctwl.TITLE_EDIT_FORWARDING_OPTIONS,
+                "title": "Select project Tags",
                 "iconClass": 'fa fa-pencil-square-o',
                 "onClick": function() {
                     var ajaxConfig = {
-                            url: "/api/tenants/config/get-config-details",
-                            type: "POST",
-                            data: JSON.stringify(
+                        url: "/api/tenants/config/get-config-details",
+                        type : 'POST',
+                        data: JSON.stringify(
                                 {data: [{type: 'tags'}]})
                     };
                     contrail.ajaxHandler(ajaxConfig, null, function(response) {
-                        var tagsData = getValueByJsonPath(response,
-                            "0;tags", {});
-                        tagsModel = new TagModel(tagsData);
-                        tagEditView.model = tagsModel;
-                        tagEditView.renderEditForwardingOptions({
-                                      "title": ctwl.TITLE_EDIT_FORWARDING_OPTIONS,
+                        console.log(response);
+                        for(var i=0; i<response.length; i++){
+                            tagsDetails = response[i].tags;
+                            for(var j= 0; j<tagsDetails.length; j++){
+                                if(tagsDetails[j].tag.fq_name &&
+                                        tagsDetails[j].tag.fq_name.length === 1) {
+                                    actValue = tagsDetails[j].tag.fq_name[0];
+                                }
+                                else{
+                                    actValue =  tagsDetails[j].tag.fq_name[0] +
+                                    ":" + tagsDetails[j].tag.fq_name[1] +
+                                    ":" + tagsDetails[j].tag.fq_name[2];
+                                }
+                                if(tagsDetails[j].tag.tag_type === "application") {
+                                    data = {
+                                            "text":tagsDetails[j].tag.tag_value,
+                                            "value":actValue
+                                       };
+                                    applicationArray.push(data);
+                                }
+                                else if(tagsDetails[j].tag.tag_type === "tier") {
+                                    data = {
+                                            "text":tagsDetails[j].tag.tag_value,
+                                            "value":actValue
+                                       };
+                                    tierArray.push(data);
+                                }
+                                else if(tagsDetails[j].tag.tag_type === "site") {
+                                    data = {
+                                            "text":tagsDetails[j].tag.tag_value,
+                                            "value":actValue
+                                       };
+                                    siteArray.push(data);
+                                }
+                                else if(tagsDetails[j].tag.tag_type === "deployment") {
+                                    data = {
+                                            "text":tagsDetails[j].tag.tag_value,
+                                            "value":actValue
+                                       };
+                                    deploymentArray.push(data);
+                                }
+                                else if(tagsDetails[j].tag.tag_type === "labels") {
+                                    data = {
+                                            "text":tagsDetails[j].tag.tag_value,
+                                            "value":actValue
+                                       };
+                                    lablesArray.push(data);
+                                }
+                            }
+                        }
+
+                        //applicationArray
+                        //tierArray
+                        //siteArray
+                        var tagsBindItems = {};
+                        var data = $(gridElId).data().getItems();
+                        for(var i=0; i<data.length; i++){
+                            var fqName = getValueByJsonPath(data[i],'fqName',[]);
+                            tagsBindItems[data[i]['type']] = (fqName != '-')?fqName.join(":"): '-';
+                        }
+                        console.log(tagsBindItems);
+                        projectTagModel = new ProjectTagsModel(tagsBindItems);
+                        projectTagEditView.model = projectTagModel;
+                        projectTagEditView.renderEditTags({
+                                      "title": "Select Project Tags",
+                                      "tags_options_application":applicationArray,
+                                      "tags_options_tierarry":tierArray,
+                                      "tags_option_sitearray":siteArray,
+                                      "tags_option_deploymentarray":deploymentArray,
+                                      "tags_option_lablesArray": lablesArray,
+                                      "projUUID": selectedProject['value'],
                                       callback: function() {
                             var dataView =
                                 $(gridElId).data("contrailGrid")._dataView;
@@ -121,130 +209,6 @@ define([
         ];
         return headerActionConfig;
     }
-
-    this.tagIdFormatter = function(value, dc) {
-        var getId = getValueByJsonPath(dc, 'tag_id', 0);
-        var hexId = getId.toString(16);
-        return hexId;
-    };
-    this.detailsVirtualNetworkFormatter = function(value, dc) {
-        return virtualNetworkFormatter(null, null, null, value, dc, true);
-    };
-    this.detailsPortsFormatter = function(value, dc) {
-        return portsFormatter(null, null, null, value, dc, true);
-    };
-    this.detailsOthersFormatter = function(value, dc) {
-        return othersFormatter(null, null, null, value, dc, true);
-    }
-    function virtualNetworkFormatter(r, c, v, cd, dc, showAll){
-        var returnString = '',refList = [];
-        var vn = getValueByJsonPath(dc, 'virtual_network_back_refs', []);
-        for(var j = 0; j < vn.length; j++){
-            var to = vn[j].to;
-            var name = to[to.length-1];
-            var refText = '<span>'+ name +'</span>';
-            refList.push(refText);
-        }
-        
-        if(refList.length > 0){
-            if ((null != showAll) && (true == showAll)) {
-                for (var q = 0; q < refList.length; q++) {
-                    if (typeof refList[q] !== "undefined") {
-                        returnString += refList[q] + "<br>";
-                    }
-                }
-                return returnString;
-            }
-            for(var l = 0; l< refList.length,l < 2; l++){
-                if(refList[l]) {
-                    returnString += refList[l] + "<br>";
-                }
-            }
-            if (refList.length > 2) {
-                returnString += '<span class="moredataText">(' +
-                    (refList.length-2) + ' more)</span> \
-                    <span class="moredata" style="display:none;" ></span>';
-            }
-        }else{
-            returnString = '-';
-        }
-        return  returnString;
-    };
-    function portsFormatter(r, c, v, cd, dc, showAll){
-        var returnString = '',refList = [];
-        var vmi = getValueByJsonPath(dc, 'virtual_machine_interface_back_refs', []);
-        for(var j = 0; j < vmi.length; j++){
-            var to = vmi[j].to;
-            var name = to[to.length-1];
-            var refText = '<span>'+ name +'</span>';
-            refList.push(refText);
-        }
-        
-        if(refList.length > 0){
-            if ((null != showAll) && (true == showAll)) {
-                for (var q = 0; q < refList.length; q++) {
-                    if (typeof refList[q] !== "undefined") {
-                        returnString += refList[q] + "<br>";
-                    }
-                }
-                return returnString;
-            }
-            for(var l = 0; l< refList.length,l < 2; l++){
-                if(refList[l]) {
-                    returnString += refList[l] + "<br>";
-                }
-            }
-            if (refList.length > 2) {
-                returnString += '<span class="moredataText">(' +
-                    (refList.length-2) + ' more)</span> \
-                    <span class="moredata" style="display:none;" ></span>';
-            }
-        }else{
-            returnString = '-';
-        }
-        return  returnString;
-    };
-    function othersFormatter(r, c, v, cd, dc, showAll){
-        var returnString = '',refList = [];
-        var rowObj = dc;
-        for(var j in rowObj){
-            if(j !== 'virtual_machine_interface_back_refs' && j !== 'virtual_network_back_refs'){
-                if(j.substring(j.length-5,j.length) === '_refs'){
-                   var nameList = [];
-                   for(var k = 0; k < rowObj[j].length; k++){
-                       var to = rowObj[j][k].to;
-                       var name = to[to.length-1];
-                       nameList.push(name);
-                   }
-                   refText = '<span>'+ nameList.join(',') +'</span>';
-                   refList.push(refText);
-                }
-            }
-        }
-        if(refList.length > 0){
-            if ((null != showAll) && (true == showAll)) {
-                for (var q = 0; q < refList.length; q++) {
-                    if (typeof refList[q] !== "undefined") {
-                        returnString += refList[q] + "<br>";
-                    }
-                }
-                return returnString;
-            }
-            for(var l = 0; l< refList.length,l < 2; l++){
-                if(refList[l]) {
-                    returnString += refList[l] + "<br>";
-                }
-            }
-            if (refList.length > 2) {
-                returnString += '<span class="moredataText">(' +
-                    (refList.length-2) + ' more)</span> \
-                    <span class="moredata" style="display:none;" ></span>';
-            }
-        }else{
-            returnString = '-';
-        }
-        return  returnString;
-    };
-   return tagGridView;
+   return projectTagGridView;
 });
 

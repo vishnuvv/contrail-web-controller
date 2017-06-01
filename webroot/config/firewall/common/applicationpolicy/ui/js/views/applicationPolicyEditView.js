@@ -57,7 +57,7 @@ define([
                 Knockback.applyBindings(self.model,
                                         document.getElementById(modalId));
                 kbValidation.bind(self);
-            },null,true);
+            },null,false);
         },
         renderDeleteApplicationPolicy: function(options) {
             var delTemplate =
@@ -107,6 +107,8 @@ define([
     };
     var getApplicationPolicyViewConfig = function (isDisable) {
         var policyParam = {data: [{type: 'firewall-policys'}]};
+        var tagsFiiteredArray = [];
+        var tagsArray = [];
     	return {
             elementId: ctwc.SEC_POLICY_ADDRESS_GRP_PREFIX_ID,
             view: 'SectionView',
@@ -116,7 +118,7 @@ define([
                 rows: [
                     {
                         columns: [
-                        	{
+                            {
                                 elementId: 'name',
                                 view: 'FormInputView',
                                 viewConfig: {
@@ -153,6 +155,61 @@ define([
                                  }
                             }
                        }]
+                       },
+                       {
+                           columns: [
+                               {
+                                   elementId: 'tags_refs',
+                                   view: 'FormMultiselectView',
+                                   viewConfig: {
+                                       label: "Application Tags",
+                                       path: 'tag_refs',
+                                       dataBindValue: 'tag_refs',
+                                       class: 'col-xs-10',
+                                       elementConfig: {
+                                           dataTextField: "text",
+                                           dataValueField: "value",
+                                           placeholder:
+                                               "Select Tags",
+                                               dataSource : {
+                                                   type: 'remote',
+                                                   requestType: 'post',
+                                                   postData: JSON.stringify(
+                                                         {data: [{type: 'tags'}]}),
+                                                   url:'/api/tenants/config/get-config-details',
+                                                   parse: function(result) {
+                                                       for(var i=0; i<result.length; i++){
+                                                         tagsDetails = result[i].tags;
+                                                         for(var j= 0; j<tagsDetails.length; j++){
+                                                             if(tagsDetails[j].tag.fq_name &&
+                                                                     tagsDetails[j].tag.fq_name.length === 1) {
+                                                                 actValue = tagsDetails[j].tag.fq_name[0];
+                                                             }
+                                                             else{
+                                                                 actValue =  tagsDetails[j].tag.fq_name[0] +
+                                                                 ":" + tagsDetails[j].tag.fq_name[1] +
+                                                                 ":" + tagsDetails[j].tag.fq_name[2];
+                                                             }
+                                                             data = {
+                                                                     "text":tagsDetails[j].tag.name,
+                                                                     "value":actValue
+                                                                };
+                                                            if (tagsDetails[j].tag.tag_type === 'application') {
+                                                                 tagsArray.push(data);
+                                                             }
+                                                         }
+                                                     }
+//                                                    
+                                                       console.log(tagsArray);
+                                                       return tagsArray;
+                                                   }
+                                               }
+                                       }
+                                   }
+                               
+                               }
+                           ]
+                       
                        }
                 ]
             }

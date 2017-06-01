@@ -128,7 +128,24 @@ define([
                     },
                     renderOnActivate: true
                 }
-            }, {
+            },
+            {
+                elementId: 'application_policy_tab',
+                title: 'Application Policy Sets',
+                view: "applicationPolicyGlobalListView",
+                viewPathPrefix: "config/infra/firewall/ui/js/views/",
+                viewConfig: viewConfig,
+                tabConfig: {
+                    activate: function(event, ui) {
+                        var gridId = $('#' + ctwc.FIREWALL_APPLICATION_POLICY_GRID_ID);
+                        if (gridId.data('contrailGrid')) {
+                            gridId.data('contrailGrid').refreshView();
+                        }
+                    },
+                    renderOnActivate: true
+                }
+            },
+            {
                elementId: 'service_group_tab',
                title: 'Service Groups',
                view: "serviceGroupGlobalListView",
@@ -152,21 +169,6 @@ define([
                tabConfig: {
                    activate: function(event, ui) {
                        var gridId = $('#' + ctwc.SECURITY_POLICY_ADDRESS_GRP_GRID_ID);
-                       if (gridId.data('contrailGrid')) {
-                           gridId.data('contrailGrid').refreshView();
-                       }
-                   },
-                   renderOnActivate: true
-               }
-           }, {
-               elementId: 'application_policy_tab',
-               title: 'Application Policy Sets',
-               view: "applicationPolicyGlobalListView",
-               viewPathPrefix: "config/infra/firewall/ui/js/views/",
-               viewConfig: viewConfig,
-               tabConfig: {
-                   activate: function(event, ui) {
-                       var gridId = $('#' + ctwc.FIREWALL_APPLICATION_POLICY_GRID_ID);
                        if (gridId.data('contrailGrid')) {
                            gridId.data('contrailGrid').refreshView();
                        }
