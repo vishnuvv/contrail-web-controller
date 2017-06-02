@@ -184,14 +184,18 @@ define([
                 }
                 var tags_length = (tags.match(/<br>/g) || []).length;
                 if(tags_length < 3){
-                    formattedtags = tags;
+                    tags = tags;
                 }
-                else{
-                    tags_length = tags_length-1
-                    formattedtags = tags.substring(0, tags.indexOf('<br>'))+"<br>"+"   ("+tags_length+" more)";
+                else {
+                    var set_tags_length = tags_length-2;
+                    var delimiter = '<br>';
+                    var start = tags_length - 2;
+                    tags = tags.split(delimiter).slice(start);
+                    var result = tags.join(delimiter);
+                    tags = result+"   ("+set_tags_length+" more)";
                 }
             }
-            return formattedtags;
+            return tags;
         };
         self.getPermissionsValidation = function() {
             return {
