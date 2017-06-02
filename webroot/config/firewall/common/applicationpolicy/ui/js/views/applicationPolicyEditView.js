@@ -159,12 +159,12 @@ define([
                        {
                            columns: [
                                {
-                                   elementId: 'tags_refs',
+                                   elementId: 'Application',
                                    view: 'FormMultiselectView',
                                    viewConfig: {
                                        label: "Application Tags",
-                                       path: 'tag_refs',
-                                       dataBindValue: 'tag_refs',
+                                       path: 'Applicaton',
+                                       dataBindValue: 'Application',
                                        class: 'col-xs-10',
                                        elementConfig: {
                                            dataTextField: "text",
