@@ -12,8 +12,8 @@ define([
             "protocol": "tcp",
             "dst_start_port": "",
             "dst_end_port": "",
-            "src_end_port": "",
-            "src_start_port":"",
+            "src_end_port": 65535,
+            "src_start_port":0,
             "src_port":"",
             "dst_port": ""
         },

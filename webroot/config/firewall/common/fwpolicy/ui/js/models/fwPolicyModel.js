@@ -160,7 +160,7 @@ define([
                     service['service']['dst_ports'] =
                         policyFormatters.formatPort(ports[1])[0];
                     service['service']['src_ports'] =
-                        policyFormatters.formatPort('0-0')[0];
+                        policyFormatters.formatPort('0-65535')[0];
                     service['isServiceGroup'] = false;
                 }else{
                     service['isServiceGroup'] = false;

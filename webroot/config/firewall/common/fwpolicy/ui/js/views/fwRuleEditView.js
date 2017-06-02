@@ -136,7 +136,7 @@ define([
                                 value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                 id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                 disabled : true }], addrFields = [],
-                        labelChild = [{text:'Select a Label',
+                        labelChild = [{text:'Select Labels',
                             value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "label",
                             id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "label",
                             disabled : true }];
