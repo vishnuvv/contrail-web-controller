@@ -646,7 +646,10 @@ define([
                                            placeholder: "Select Tag Types",
                                            dataValueField: "value",
                                            dataTextField: "text",
-                                           data: ctwc.RULE_MATCH_TAGS
+                                           data: [{text: "Application", value: "application"},
+                                                  {text: 'Tier', value: 'tier'},
+                                                  {text:'Deployment', value: 'deployment'},
+                                                  {text: 'Site', value: 'site'}]
                                        }
                                       }
                                 }/*,
