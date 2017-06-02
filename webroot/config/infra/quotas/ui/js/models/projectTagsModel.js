@@ -14,10 +14,6 @@ define([
             'Deployment': '',
             'Lables': ''
         },
-        formatModelConfig: function(modelConfig) {
-            modelConfig['site'] = modelConfig['site'];
-            return modelConfig;
-        },
         configureProjectTags: function (projUUID, callbackObj) {
             var ajaxConfig = {}, returnFlag = false, updatedVal = {};
                // var locks = this.model().attributes.locks.attributes;
@@ -41,17 +37,17 @@ define([
                 updatedVal.tag_refs = tagList;
                 updatedVal.uuid = projUUID;
                 updatedVal.parent_type = "domain";
-                
+
                 ajaxConfig.type = "POST";
-                
+
                 var postData = {"data":[{"data":{"project": updatedVal},
                     "reqUrl": "/project/"+
                     updatedVal.uuid}]};
-                
+
                 ajaxConfig.data = JSON.stringify(postData);
               //  console.log(postData);
                 ajaxConfig.url = ctwc.URL_UPDATE_CONFIG_OBJECT;
-            
+
                 contrail.ajaxHandler(ajaxConfig, function () {
                     if (contrail.checkIfFunction(callbackObj.init)) {
                         callbackObj.init();
@@ -69,7 +65,7 @@ define([
                     }
                     returnFlag = false;
                 });
-            //} 
+            //}
             return returnFlag;
         }
     });
