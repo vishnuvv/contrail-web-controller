@@ -13,15 +13,15 @@ define([
         formId = '#' + modalId + '-form';
 
     var applicationPolicyEditView = ContrailView.extend({
-    	renderAddEditApplicationPolicy: function(options) {
+        renderAddEditApplicationPolicy: function(options) {
             var editTemplate =
                 contrail.getTemplate4Id(ctwl.TMPL_CORE_GENERIC_EDIT),
                 editLayout = editTemplate({prefixId: prefixId, modalId: modalId}),
                 self = this,disable = false;
                 var mode = options.mode;
-	            if(mode === 'edit'){
-	            	disable = true;
-	            }
+                if(mode === 'edit'){
+                    disable = true;
+                }
             cowu.createModal({'modalId': modalId, 'className': 'modal-700',
                              'title': options['title'], 'body': editLayout,
                              'onSave': function () {
@@ -97,11 +97,11 @@ define([
         }
     });
     function firwallPolicyDropDownFormatter(response){
-    	var firewallList = [];
-    	var policyList = getValueByJsonPath(response, "0;firewall-policys", []);
-    	$.each(policyList, function (i, obj) {
-    		var fqName = obj['firewall-policy']['fq_name'].join(':');
-    		firewallList.push({id: fqName, text: fqName});
+        var firewallList = [];
+        var policyList = getValueByJsonPath(response, "0;firewall-policys", []);
+        $.each(policyList, function (i, obj) {
+            var fqName = obj['firewall-policy']['fq_name'].join(':');
+            firewallList.push({id: fqName, text: fqName});
          });
         return firewallList;
     };
@@ -109,7 +109,7 @@ define([
         var policyParam = {data: [{type: 'firewall-policys'}]};
         var tagsFiiteredArray = [];
         var tagsArray = [];
-    	return {
+        return {
             elementId: ctwc.SEC_POLICY_ADDRESS_GRP_PREFIX_ID,
             view: 'SectionView',
             title: "Application Policy",
@@ -156,6 +156,13 @@ define([
                                                        for(var i=0; i<result.length; i++){
                                                          tagsDetails = result[i].tags;
                                                          for(var j= 0; j<tagsDetails.length; j++){
+                                                             var domain = contrail.getCookie(cowc.COOKIE_DOMAIN_DISPLAY_NAME);
+                                                             var project = contrail.getCookie(cowc.COOKIE_PROJECT_DISPLAY_NAME);
+                                                             if (tagsDetails[j]['tag'].fq_name.length > 1 &&
+                                                                     (domain != tagsDetails[j]['tag'].fq_name[0] ||
+                                                                     project != tagsDetails[j]['tag'].fq_name[1])) {
+                                                                 continue;
+                                                             }
                                                              if(tagsDetails[j].tag.fq_name &&
                                                                      tagsDetails[j].tag.fq_name.length === 1) {
                                                                  actValue = tagsDetails[j].tag.fq_name[0];
@@ -166,16 +173,16 @@ define([
                                                                  ":" + tagsDetails[j].tag.fq_name[2];
                                                              }
                                                              data = {
-                                                                     "text":tagsDetails[j].tag.name,
+                                                                     "text":(tagsDetails[j]['tag'].fq_name.length == 1)?
+                                                                             "global:" + tagsDetails[j].tag.name :
+                                                                                 tagsDetails[j].tag.name,
                                                                      "value":actValue
                                                                 };
                                                             if (tagsDetails[j].tag.tag_type === 'application') {
                                                                  tagsArray.push(data);
                                                              }
                                                          }
-                                                     }
-//                                                    
-                                                       console.log(tagsArray);
+                                                       }
                                                        return tagsArray;
                                                    }
                                                }
@@ -183,7 +190,7 @@ define([
                                    }
                                }
                            ]
-                       
+
                        },
                        {
                            columns: [{
@@ -209,7 +216,7 @@ define([
                                     }
                                }
                           }]
-                          
+
                        }
                 ]
             }
