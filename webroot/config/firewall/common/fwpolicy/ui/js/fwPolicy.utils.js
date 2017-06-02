@@ -24,18 +24,14 @@ define([
                     }
                 }
             });
-            if(typesMap['virtual_network'] > 0 && _.keys(typesMap).length > 1) {
-                return "Please select only Virtual Network";
-            }
-            if(typesMap['any_workload'] > 0 && _.keys(typesMap).length > 1) {
-                return "Please select only Any Workload";
-            }
-            if(typesMap['address_group'] > 0 && _.keys(typesMap).length > 1) {
-                return "Please select only Address Group";
+            if((typesMap['virtual_network'] > 0 && _.keys(typesMap).length > 1) ||
+                    (typesMap['any_workload'] > 0 && _.keys(typesMap).length > 1) ||
+                    (typesMap['address_group'] > 0 && _.keys(typesMap).length > 1)) {
+                return "Please select only Tags or Address Group or Virtual Network or Any Workload";
             }
             for (type in typesMap) {
                 if(typesMap[type] > 1) {
-                    return "Please select only one from each tag type";
+                    return "Please select only one tag from each Tag type";
                 }
             }
 

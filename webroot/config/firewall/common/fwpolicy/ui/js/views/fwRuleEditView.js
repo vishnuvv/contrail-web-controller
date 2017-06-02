@@ -151,24 +151,27 @@ define([
                             var fqName = tags[i]['tag']['fq_name'].reverse()[0].split('-');
                             var tagType = fqName[0];
                             var val = tags[i]['tag'].fq_name.length === 1 ?
-                                    'global:' + tags[i]['tag']['name'] : tags[i]['tag']['name'];    
+                                    'global:' + tags[i]['tag']['name'] : tags[i]['tag']['name'];
+                            var txt = tags[i]['tag'].fq_name.length === 1 ?
+                                    'global:' + tags[i]['tag']['tag_value'] :
+                                        tags[i]['tag']['tag_value'];
                             if(tagType === ctwc.APPLICATION_TAG_TYPE){
-                                applicationChild.push({text : tags[i]['tag']['tag_value'],
+                                applicationChild.push({text : txt,
                                      value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "application",
                                      id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "application",
                                      parent : "application" })
                             }else if(tagType === ctwc.TIER_TAG_TYPE){
-                                tierChild.push({text : tags[i]['tag']['tag_value'],
+                                tierChild.push({text : txt,
                                     value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "tier",
                                     id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "tier",
                                     parent : "tier" });
                             }else if(tagType === ctwc.DEPLOYMENT_TAG_TYPE){
-                                deploymentChild.push({text : tags[i]['tag']['tag_value'],
+                                deploymentChild.push({text : txt,
                                     value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "deployment",
                                     id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "deployment",
                                     parent : "deployment" });
                             }else if(tagType === ctwc.SITE_TAG_TYPE){
-                                siteChild.push({text : tags[i]['tag']['tag_value'],
+                                siteChild.push({text : txt,
                                     value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                     id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                     parent : "site" });

@@ -18,9 +18,9 @@ define([
                         type: "POST",
                         data: JSON.stringify(
                             {data: [{type: 'tags',fields: ['application_policy_set_back_refs','virtual_DNS_back_refs','service_instance_back_refs',
-                            	'logical_router_back_refs','virtual_machine_interface_back_refs','virtual_network_back_refs',
-                            	'network_policy_back_refs','route_table_back_refs',
-                            	'bgp_as_a_service_back_refs','security_group_back_refs','bgp_router_back_refs','service_template_back_refs']}]})
+                                'logical_router_back_refs','virtual_machine_interface_back_refs','virtual_network_back_refs',
+                                'network_policy_back_refs','route_table_back_refs',
+                                'bgp_as_a_service_back_refs','security_group_back_refs','bgp_router_back_refs','service_template_back_refs']}]})
                     },
                     dataParser: self.parseTagData,
                 }
@@ -35,10 +35,14 @@ define([
                     if(val.tag.parent_uuid === undefined){
                         dataItems.push(val.tag);
                     }
-                }); 
-            return dataItems;
+                });
+            return dataItems.sort(tagsComparator);
         }
     });
+
+    function tagsComparator(a,b) {
+        return (a.name > b.name)? 1: -1;
+    }
 
     var getTagGridViewConfig = function () {
         return {
@@ -60,7 +64,7 @@ define([
                                             pageSizeSelect: [10, 50, 100]
                                         }
                                     },
-                                    isGlobal: true                            
+                                    isGlobal: true
                                 }
                             }
                         ]

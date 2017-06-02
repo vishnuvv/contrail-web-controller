@@ -34,10 +34,13 @@ define([
                         dataItems.push(val.tag);
                     }
                 }); 
-            console.log(dataItems);
-            return dataItems;
+            return dataItems.sort(tagsComparator);
         }
     });
+
+    function tagsComparator(a,b) {
+       return (a.name > b.name)? 1: -1;
+    }
 
     var getTagGridViewConfig = function () {
         return {
