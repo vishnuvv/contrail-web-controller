@@ -295,16 +295,21 @@ define(
                                             var content = { title: removeEmptyTags(arcTitle), items: [] };
                                             content.title += '<hr/>'
 
-                                            var children = data['children'];
+                                            var childrenArr = data['children'];
                                             //data is nested on hovering 1st-level arc while showing 2-level arcs
                                             //For intra-app traffic, there will be 2 children with same linkId
-                                            if(children[0].linkId != null) {
-                                                children = _.uniqWith(children,function(a,b) {
+                                            //Remove 2nd-level duplicate intra links
+                                            if(childrenArr[0].children != null) {
+                                                childrenArr = jsonPath(data,'$.children[*].children[*]');
+                                                childrenArr = _.flatten(childrenArr);
+                                            }
+                                            if(childrenArr[0].linkId != null) {
+                                                childrenArr = _.uniqWith(childrenArr,function(a,b) {
                                                     return a.linkId == b.linkId;
                                                 });
                                             }
 
-                                            dataChildren = jsonPath(children,'$.[*].dataChildren');
+                                            var dataChildren = jsonPath(childrenArr,'$.[*].dataChildren');
                                             if(dataChildren == false)
                                                 dataChildren = jsonPath(data,'$.children[*].children[*].dataChildren');
                                             dataChildren = _.flatten(dataChildren);
