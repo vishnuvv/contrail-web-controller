@@ -204,12 +204,12 @@ define(
                                 id: 'dendrogram-chart-id',
                                 type: 'RadialDendrogram',
                                 config: $.extend({},{
-                                    arcWidth: 12,
+                                    arcWidth: [11,12],
                                     showArcLabels: true,
                                     parentSeparationShrinkFactor: 0.02,
                                     labelFlow: 'along-arc',
                                     arcLabelXOffset: 0,
-                                    arcLabelYOffset: -7,
+                                    arcLabelYOffset: [-12,-6],
                                     colorScale: function (item) {
                                         var levelKey = 'TRAFFIC_GROUP_COLOR_LEVEL'+item.level,
                                             unassignedColors = _.difference(cowc[levelKey], _.values(TrafficGroupsView.colorMap[item.level]));
