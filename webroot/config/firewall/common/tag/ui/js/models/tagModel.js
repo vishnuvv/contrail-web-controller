@@ -28,7 +28,7 @@ define([
                 },
                 'tag_value': function(value, attr, finalObj) {
                     if(value === null || value.trim() === '') {
-                        return "Enter a Name";
+                        return "Enter a Value";
                     }
                 }
             }
