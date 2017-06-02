@@ -48,8 +48,7 @@ define([
                     if (!contrail.checkIfKnockoutBindingExist(modalId)) {
                         /*self.model.showErrorAttr(cowu.formatElementId([prefixId,
                             ctwl.TITLE_CREATE_FW_POLICY]) + cowc.FORM_SUFFIX_ID, false);*/
-                        self.model.showErrorAttr(cowu.formatElementId([prefixId,
-                                         ctwl.TITLE_CREATE_FW_RULES, ctwl.TITLE_CREATE_FW_POLICY]) + cowc.FORM_SUFFIX_ID, false);
+                        self.model.showErrorAttr(prefixId + cowc.FORM_SUFFIX_ID, false);
                         /*self.model.showErrorAttr(cowu.formatElementId([prefixId, smwl.TITLE_ASSIGN_ROLES, smwl.TITLE_SELECT_SERVERS]) + smwc.FORM_SUFFIX_ID, false);
                         self.model.showErrorAttr(cowu.formatElementId([prefixId, smwl.TITLE_EDIT_CONFIG]) + cowc.FORM_SUFFIX_ID, false);*/
                         Knockback.applyBindings(self.model, document.getElementById(modalId));
@@ -1037,7 +1036,8 @@ define([
                         onNext: function(params) {
                             var callbackObj = {
                                 init: function () {
-                                    policyModel.showErrorAttr(cowu.formatElementId([prefixId, ctwl.TITLE_CREATE_FW_RULES]) + cowc.FORM_SUFFIX_ID, false);
+                                    policyModel.showErrorAttr(cowu.formatElementId([prefixId])
+                                            + cowc.FORM_SUFFIX_ID, false);
                                     cowu.enableModalLoading(modalId);
                                 },
                                 success: function () {
@@ -1050,7 +1050,8 @@ define([
                                 },
                                 error: function (error) {
                                     cowu.disableModalLoading(modalId, function () {
-                                        policyModel.showErrorAttr(cowu.formatElementId([prefixId, ctwl.TITLE_CREATE_FW_RULES]) + cowc.FORM_SUFFIX_ID, error.responseText);
+                                        policyModel.showErrorAttr(cowu.formatElementId([prefixId])
+                                                + cowc.FORM_SUFFIX_ID, error.responseText);
                                     });
                                 }
                             };
@@ -1085,9 +1086,8 @@ define([
             onNext: function (params) {
                 return params.model.configFWPolicy({
                     init: function () {
-                        policyModel.showErrorAttr(
-                                cowu.formatElementId([prefixId,
-                                    ctwl.TITLE_CREATE_FW_RULES]) + cowc.FORM_SUFFIX_ID, false);
+                        policyModel.showErrorAttr(cowu.formatElementId([prefixId])
+                                + cowc.FORM_SUFFIX_ID, false);
                         cowu.enableModalLoading(modalId);
                     },
                     success: function () {
@@ -1097,7 +1097,8 @@ define([
                     },
                     error: function (error) {
                         cowu.disableModalLoading(modalId, function () {
-                            policyModel.showErrorAttr(cowu.formatElementId([prefixId, 'policy_step']) + cowc.FORM_SUFFIX_ID, error.responseText);
+                            policyModel.showErrorAttr(cowu.formatElementId([prefixId])
+                                    + cowc.FORM_SUFFIX_ID, error.responseText);
                         });
                     }
                 }, options);
