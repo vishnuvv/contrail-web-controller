@@ -305,18 +305,24 @@ define(
                                                 label: 'Traffic In',
                                                 value:  formatBytes(_.sumBy(dataChildren,function(currSession) {
                                                     if((data.namePath.length == 1 && currSession.app == data.namePath[0]) ||
-                                                        (data.namePath.length == 2 && currSession.app == data.namePath[0] && currSession.tier == data.namePath[1]))
+                                                        (data.namePath.length == 2 && currSession.app == data.namePath[0] && currSession.tier == data.namePath[1])) {
+                                                        if (currSession != null && currSession['nodata']) {
+                                                            return 0;
+                                                        }
                                                         return _.result(currSession,'SUM(eps.traffic.in_bytes)',0);
-                                                    else
+                                                    } else
                                                         return 0;
                                                 }))
                                             }, {
                                                 label: 'Traffic Out',
                                                 value: formatBytes(_.sumBy(dataChildren,function(currSession) {
                                                     if((data.namePath.length == 1 && currSession.app == data.namePath[0]) ||
-                                                        (data.namePath.length == 2 && currSession.app == data.namePath[0] && currSession.tier == data.namePath[1]))
+                                                        (data.namePath.length == 2 && currSession.app == data.namePath[0] && currSession.tier == data.namePath[1])) {
+                                                        if (currSession != null && currSession['nodata']) {
+                                                            return 0;
+                                                        }
                                                         return _.result(currSession,'SUM(eps.traffic.out_bytes)',0);
-                                                    else
+                                                    } else
                                                         return 0;
                                                 }))
                                             });
@@ -348,9 +354,12 @@ define(
                                                         function(bytes) {
                                                             var namePath = link.data.currentNode ? link.data.currentNode.names : '';
                                                             if((namePath.length == 1 && bytes.app ==  namePath[0])
-                                                                || namePath.length == 2 && bytes.app ==  namePath[0] && bytes.tier ==  namePath[1])
+                                                                || namePath.length == 2 && bytes.app ==  namePath[0] && bytes.tier ==  namePath[1]) {
+                                                                if (bytes != null && bytes['nodata']) {
+                                                                    return 0;
+                                                                }
                                                                 return _.result(bytes,'SUM(eps.traffic.in_bytes)',0);
-                                                            else
+                                                            } else
                                                                 return 0;
 
                                                         })),
@@ -358,9 +367,12 @@ define(
                                                         function(bytes) {
                                                             var namePath = link.data.currentNode ? link.data.currentNode.names : '';
                                                             if((namePath.length == 1 && bytes.app ==  namePath[0])
-                                                                || namePath.length == 2 && bytes.app ==  namePath[0] && bytes.tier ==  namePath[1])
+                                                                || namePath.length == 2 && bytes.app ==  namePath[0] && bytes.tier ==  namePath[1]) {
+                                                                if (bytes != null && bytes['nodata']) {
+                                                                    return 0;
+                                                                }
                                                                 return _.result(bytes,'SUM(eps.traffic.out_bytes)',0);
-                                                            else
+                                                            } else
                                                                 return 0
                                                         }))
                                                 };
@@ -449,9 +461,7 @@ define(
                                         if(data && data.length == 1 && data[0].nodata) {
                                             self.updateChart({
                                                 'expandLevels': 'disable',
-                                                'showArcInfo': 'disable',
-                                                'showLinkInfo': false,
-                                                'showLinkTooltip': false
+                                                'showLinkInfo': false
                                             });
                                         }
                                     });
