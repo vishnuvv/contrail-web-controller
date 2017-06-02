@@ -30,7 +30,7 @@ define([
                 return "Please select only Tags or Address Group or Virtual Network or Any Workload";
             }
             for (type in typesMap) {
-                if(typesMap[type] > 1) {
+                if(type !== ctwc.LABEL_TAG_TYPE && typesMap[type] > 1) {
                     return "Please select only one tag from each Tag type";
                 }
             }

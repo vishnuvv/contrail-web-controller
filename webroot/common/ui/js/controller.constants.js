@@ -937,6 +937,7 @@ define([
         this.DEPLOYMENT_TAG_TYPE = 'deployment';
         this.SITE_TAG_TYPE = 'site';
         this.TIER_TAG_TYPE = 'tier';
+        this.LABEL_TAG_TYPE = 'label';
 
 
         /* RBAC constants */

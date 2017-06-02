@@ -217,16 +217,21 @@ define([
                     addrFields.push({text: 'Tier', value: 'Tier',
                         children: tagGroupData.tierMap['Tier']
                     });
+
+                    //Labels
+                    addrFields.push({text: 'Label', value: 'label',
+                        children: tagGroupData.labelMap['Label']
+                    });
                     var addressGrpChild = [{text:'Select a Address Group',
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         disabled : true }];
-                    var addressGroups = fwPolicyFormatter.filterAddressGroupByProjects(getValueByJsonPath(results, '2;0;0;address-groups', [], false), options.isGlobal);    
+                    var addressGroups = fwPolicyFormatter.filterAddressGroupByProjects(getValueByJsonPath(results, '2;0;0;address-groups', [], false), options.isGlobal);
                     if(addressGroups.length > 0){
                         for(var k = 0; k < addressGroups.length; k++){
                             var address = addressGroups[k]['address-group'];
                             var fqNameTxt = address["fq_name"][address["fq_name"].length - 1];
-                            var fqNameValue = address["fq_name"].join(":");    
+                            var fqNameValue = address["fq_name"].join(":");
                             addressGrpChild.push({text : address.name,
                                 value : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                                 id : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
@@ -273,7 +278,11 @@ define([
                  value: "dummy" +
                  cowc.DROPDOWN_VALUE_SEPARATOR +
                  "Tier",
-              disabled: true}]};
+              disabled: true}]}, labelMap = {Label:[{ text: "Select Labels",
+                  value: "dummy" +
+                  cowc.DROPDOWN_VALUE_SEPARATOR +
+                  "label",
+               disabled: true}]};
          _.each(tags, function(tagData){
              if('tag' in tagData) {
                  var data = tagData['tag'];
@@ -307,6 +316,12 @@ define([
                          value: val + cowc.DROPDOWN_VALUE_SEPARATOR + "Site",
                          id: val + cowc.DROPDOWN_VALUE_SEPARATOR + "Site",
                          parent: 'Site'});
+                 } else if(data.tag_type === ctwc.LABEL_TAG_TYPE) {
+                     labelMap['Label'].push({
+                         text: txt,
+                         value: val + cowc.DROPDOWN_VALUE_SEPARATOR + "label",
+                         id: val + cowc.DROPDOWN_VALUE_SEPARATOR + "label",
+                         parent: 'label'});
                  }
              }
          });
@@ -314,6 +329,7 @@ define([
          tagGroupData.siteMap = siteMap;
          tagGroupData.deploymentMap = deploymentMap;
          tagGroupData.tierMap = tierMap;
+         tagGroupData.labelMap = labelMap;
          return tagGroupData;
     }
     var fqnameDisplayFormat = function(fqname, selectedDomain, selectedProject) {
@@ -504,6 +520,12 @@ define([
                                                 'fa fa-clone'
                                             },
                                             {
+                                                name : 'Label',
+                                                value : 'label',
+                                                iconClass:
+                                                'fa fa-tags'
+                                            },
+                                            {
                                                 name : 'Network',
                                                 value : 'virtual_network',
                                                 iconClass:
@@ -515,9 +537,9 @@ define([
                                                 iconClass:
                                                 'icon-contrail-network-ipam'
                                             },
-                                            {    
-                                                name : 'Any Workload',    
-                                                value : 'any_workload',    
+                                            {
+                                                name : 'Any Workload',
+                                                value : 'any_workload',
                                                 iconClass:'fa fa-globe'
                                             }
                                            ]
@@ -577,6 +599,12 @@ define([
                                                 'fa fa-life-ring'
                                             },
                                             {
+                                                name : 'Label',
+                                                value : 'label',
+                                                iconClass:
+                                                'fa fa-tags'
+                                            },
+                                            {
                                                 name : 'Tier',
                                                 value : 'Tier',
                                                 iconClass:
@@ -594,9 +622,9 @@ define([
                                                 iconClass:
                                                 'icon-contrail-network-ipam'
                                             },
-                                            {    
-                                                name : 'Any Workload',    
-                                                value : 'any_workload',    
+                                            {
+                                                name : 'Any Workload',
+                                                value : 'any_workload',
                                                 iconClass:'fa fa-globe'
                                             }]
                                         }

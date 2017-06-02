@@ -135,12 +135,17 @@ define([
                             disabled : true }], siteChild = [{text:'Select a Site',
                                 value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                 id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
-                                disabled : true }], addrFields = [];
+                                disabled : true }], addrFields = [],
+                        labelChild = [{text:'Select a Label',
+                            value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "label",
+                            id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "label",
+                            disabled : true }];
+
                     var addressGrpChild = [{text:'Select Address Group',
                         value:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         id:"dummy" + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                         disabled : true }];
-                    var tagList = ['Application','Deployment','Site','Tier'];
+                    var tagList = ['Application','Deployment','Site','Tier', 'Label'];
                     var tags = fwPolicyFormatter.filterTagsByProjects(results[0][0][0]['tags']);
                     var addressGrp = fwPolicyFormatter.filterAddressGroupByProjects(results[1][0][0]['address-groups']);
                     var virtualNet = results[2][0]['virtual-networks'];
@@ -175,8 +180,12 @@ define([
                                     value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                     id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "site",
                                     parent : "site" });
+                            }else if(tagType === ctwc.LABEL_TAG_TYPE){
+                                labelChild.push({text : txt,
+                                    value : val + cowc.DROPDOWN_VALUE_SEPARATOR + "label",
+                                    id : val + cowc.DROPDOWN_VALUE_SEPARATOR + "label",
+                                    parent : "label" });
                             }
-    
                         }
                         for(var j = 0; j < tagList.length; j++){
                             var tagVal, tagData;
@@ -192,6 +201,9 @@ define([
                             }else if(tagList[j] === 'Site'){
                                 tagVal = 'site';
                                 tagData = siteChild;
+                            }else if(tagList[j] === 'Label'){
+                                tagVal = 'label';
+                                tagData = labelChild;
                             }
                             addrFields.push({text : tagList[j], value : tagVal, children : tagData});
                         }
@@ -205,7 +217,7 @@ define([
                                  value : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                                  id : fqNameValue + cowc.DROPDOWN_VALUE_SEPARATOR + "address_group",
                                  parent : "address_group" });
-                        }    
+                        }
                         addrFields.push({text : 'Address Group', value : 'address_group', children : addressGrpChild});
                     }
                     if(virtualNet.length > 0){
@@ -248,14 +260,14 @@ define([
                 }
             )
         }
-        
+
     });
     function tagDropDownFormatter(response){
         var matchList = [{text:'Application', id:'application' },
             {text:'Tier', id:'tier' },
             {text:'Deployment', id:'deployment' },
             {text:'Site', id:'site' }];
-    
+
         return matchList;
     };
     function serviceGroupDataFormatter(response){
@@ -342,12 +354,13 @@ define([
                                             { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-database' },
                                             { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
                                             { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' },
+                                            { name : 'Label',  value : 'label', iconClass:'fa fa-tags' },
                                             { name : 'Address Group',  value : 'address_group', iconClass:'icon-contrail-network-ipam' },
                                             { name : 'Virtual Networks',  value : 'virtual_network', iconClass:'icon-contrail-virtual-network' },
                                             { name : 'Any Workload',  value : 'any_workload', iconClass:'fa fa-globe'}]
                                     }
                                 }
-                            } 
+                            }
                         ]
                     }, {
                         columns:[{
@@ -387,12 +400,13 @@ define([
                                             { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-database' },
                                             { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
                                             { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' },
+                                            { name : 'Label',  value : 'label', iconClass:'fa fa-tags' },
                                             { name : 'Address Group',  value : 'address_group', iconClass:'icon-contrail-network-ipam' },
                                             { name : 'Virtual Networks',  value : 'virtual_network', iconClass:'icon-contrail-virtual-network' },
                                             { name : 'Any Workload',  value : 'any_workload', iconClass:'fa fa-globe' }]
                                     }
                                 }
-                            }    
+                            }
                         ]
                     },
                     {
