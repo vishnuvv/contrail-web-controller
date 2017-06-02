@@ -217,7 +217,7 @@ define([
                                                     }
                                                 }
                                                 
-                                            ]
+                                            ].concat(ctwu.getTagsExpandDetails())
                                         }
                                     ]
                                 }

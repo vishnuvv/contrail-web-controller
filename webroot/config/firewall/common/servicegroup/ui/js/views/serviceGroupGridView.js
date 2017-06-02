@@ -246,7 +246,7 @@ define([
                                                         formatter: 'serviceGroupFormatter'
                                                     }
                                                 }
-                                            ]
+                                            ].concat(ctwu.getTagsExpandDetails())
                                         }
                                     ]
                                 }

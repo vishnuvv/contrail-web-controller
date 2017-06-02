@@ -928,7 +928,9 @@ define([
         this.RULE_MATCH_TAGS = [{text: "Application", value: "application"},
                                 {text: 'Tier', value: 'tier'},
                                 {text:'Deployment', value: 'deployment'},
-                                {text: 'Site', value: 'site'}];
+                                {text: 'Site', value: 'site'},
+                                {text: 'Label', value: 'label'}];
+        
         this.RULE_DATA_TAGS = 'rule-data-tags';
         this.RULE_DATA_ADDRESS_GROUPS = 'rule-data-address-groups';
         this.APPLICATION_TAG_TYPE = 'application';

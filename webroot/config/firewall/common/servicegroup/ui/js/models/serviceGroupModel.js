@@ -152,6 +152,8 @@ define([
 	                updatedModel.name = model.name;
 	                updatedModel.service_group_firewall_service_list = {};
 	                updatedModel.service_group_firewall_service_list.firewall_service = firewallService;
+	                this.updateRBACPermsAttrs(model);
+	                updatedModel.tag_refs = model.tag_refs;
 	                if (options.mode == 'add') {
 	                	var postData = {"data":[{"data":{"service-group": updatedModel},
 	                                "reqUrl": "/service-groups"}]};

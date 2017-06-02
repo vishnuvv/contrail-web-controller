@@ -34,7 +34,7 @@ define([
         {key : "site", name :"Site"},
         {key : "deployment", name :"Deployment"},
         {key : "tier", name : "Tier"},
-        {key : "labels", name :"Labels"}
+        {key : "Labels", name :"Labels"}
     ];
     var projectTagsDataParser = function (response) {
         var results = [];

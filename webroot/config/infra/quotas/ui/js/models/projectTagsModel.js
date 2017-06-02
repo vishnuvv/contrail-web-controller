@@ -18,7 +18,6 @@ define([
             var ajaxConfig = {}, returnFlag = false, updatedVal = {};
                // var locks = this.model().attributes.locks.attributes;
                 var newProjectTags = $.extend({}, true, this.model().attributes);
-                console.log(newProjectTags);
                 var tagList = [];
                 var to = [];
                 newProjectTags.fq_name = [];

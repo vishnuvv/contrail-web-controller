@@ -179,15 +179,15 @@ define([
                                 }
                             },
                             {
-                                elementId: 'lables',
-                                view: "FormDropdownView",
+                                elementId: 'Labels',
+                                view: "FormMultiselectView",
                                 viewConfig: {
-                                    label: 'Lables',
-                                    path : 'lables',
+                                    label: 'Labels',
+                                    path : 'Labels',
                                     class: 'col-xs-12',
-                                    dataBindValue : 'lables',
+                                    dataBindValue : 'Labels',
                                     elementConfig: {
-                                        placeholder: 'Select Lables',
+                                        placeholder: 'Select Labels',
                                         dataTextField : "text",
                                         dataValueField : "value",
 //                                        dataSource: {

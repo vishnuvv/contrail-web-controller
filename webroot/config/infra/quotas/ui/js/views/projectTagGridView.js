@@ -167,7 +167,7 @@ define([
                                        };
                                     deploymentArray.push(data);
                                 }
-                                else if(tagsDetails[j].tag.tag_type === "labels") {
+                                else if(tagsDetails[j].tag.tag_type === "label") {
                                     data = {
                                             "text":tagsDetails[j].tag.tag_value,
                                             "value":actValue

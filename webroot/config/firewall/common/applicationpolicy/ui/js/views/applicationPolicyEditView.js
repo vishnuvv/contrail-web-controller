@@ -131,31 +131,6 @@ define([
                             }
                         ]
                     },
-                    {
-                        columns: [{
-                            elementId: 'firewall_policy',
-                            view: "FormMultiselectView",
-                            viewConfig: {
-                            	label: 'Firewall Policy(s)',
-                                class: "col-xs-12",
-                                path: "firewall_policy",
-                                dataBindValue: "firewall_policy",
-                                elementConfig:{
-                                    dataTextField: "text",
-                                    placeholder:"Select Firewall Policies",
-                                    dataValueField: "id",
-                                    separator: cowc.DROPDOWN_VALUE_SEPARATOR,
-                                    dataSource: {
-                                        type: "remote",
-                                        requestType: "POST",
-                                        url: "/api/tenants/config/get-config-details",
-                                        postData: JSON.stringify(policyParam),
-                                        parse : firwallPolicyDropDownFormatter
-                                    }
-                                 }
-                            }
-                       }]
-                       },
                        {
                            columns: [
                                {
@@ -206,10 +181,35 @@ define([
                                                }
                                        }
                                    }
-                               
                                }
                            ]
                        
+                       },
+                       {
+                           columns: [{
+                               elementId: 'firewall_policy',
+                               view: "FormMultiselectView",
+                               viewConfig: {
+                                   label: 'Firewall Policy(s)',
+                                   class: "col-xs-10",
+                                   path: "firewall_policy",
+                                   dataBindValue: "firewall_policy",
+                                   elementConfig:{
+                                       dataTextField: "text",
+                                       placeholder:"Select Firewall Policies",
+                                       dataValueField: "id",
+                                       separator: cowc.DROPDOWN_VALUE_SEPARATOR,
+                                       dataSource: {
+                                           type: "remote",
+                                           requestType: "POST",
+                                           url: "/api/tenants/config/get-config-details",
+                                           postData: JSON.stringify(policyParam),
+                                           parse : firwallPolicyDropDownFormatter
+                                       }
+                                    }
+                               }
+                          }]
+                          
                        }
                 ]
             }
