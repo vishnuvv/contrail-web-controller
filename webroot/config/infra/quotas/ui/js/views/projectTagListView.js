@@ -45,10 +45,9 @@ define([
             var tagRef = tagRefs[i];
             var tagData = getValueByJsonPath(tagRef,"to",[]);
             var tagInfo = tagData[tagData.length -1 ];
-            var tagValue = tagInfo.substring(tagInfo.indexOf('-') + 1,tagInfo.length);
-            var tagKey = tagInfo.substring(0,tagInfo.indexOf('-'));
+            var tagValue = tagInfo.substring(tagInfo.indexOf(ctwc.TAG_SEPARATOR) + 1,tagInfo.length);
+            var tagKey = tagInfo.substring(0,tagInfo.indexOf(ctwc.TAG_SEPARATOR));
             tagMap[tagKey] = {value:tagValue,fqName:tagData};
-            console.log(tagMap)
         }
         var projectsTagListCnt = projectsTagsList.length;
         for (var i = 0; i < projectsTagListCnt; i++) {

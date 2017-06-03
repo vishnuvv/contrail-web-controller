@@ -102,7 +102,7 @@ define([
 
             if(endpoint.tags && endpoint.tags.length > 0){
                 _.each(endpoint.tags, function(tag){
-                    var grpName = tag ? tag.split('-')[0]: '';
+                    var grpName = tag ? tag.split(ctwc.TAG_SEPARATOR)[0]: '';
                     grpName = grpName.indexOf('global:') != -1 ? grpName.split(':')[1] : grpName;
                     var val = tag + cowc.DROPDOWN_VALUE_SEPARATOR + grpName.toLowerCase();
                     endpointArr.push(val);

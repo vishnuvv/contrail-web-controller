@@ -938,6 +938,7 @@ define([
         this.SITE_TAG_TYPE = 'site';
         this.TIER_TAG_TYPE = 'tier';
         this.LABEL_TAG_TYPE = 'label';
+        this.TAG_SEPARATOR = '=';
 
 
         /* RBAC constants */
