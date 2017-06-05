@@ -86,13 +86,15 @@ define([
                         {
                              field: 'name',
                              name: 'Name',
-                             id: 'name'
+                             id: 'name',
+                             minWidth : 150,
                         },
                         {
                             id: "description",
                             field: "description",
                             name: "Description",
                             formatter: descriptionFormatter,
+                            minWidth : 150,
                             sortable: {
                                 sortBy: 'formattedValue'
                             }
@@ -110,6 +112,7 @@ define([
                             id: "noofpolicies",
                             field: "noofpolicies",
                             name: "FW Policies",
+                            minWidth : 100,
                             formatter: noOfPoliciesFormatter,
                             sortable: {
                                 sortBy: 'formattedValue'
@@ -128,6 +131,7 @@ define([
                             id: "lastupdated",
                             field: "lastupdated",
                             name: "Last Updated",
+                            minWidth : 100,
                             formatter: lastUpdateFormatter,
                             sortable: {
                                 sortBy: 'formattedValue'

@@ -209,16 +209,19 @@ define([
              id: 'id_perms.description',
              field: 'id_perms.description',
              name: 'Description',
+             minWidth : 150,
              formatter: fwPolicyFormatter.policyDescriptionFormatter
           }, {
               id: 'application_policy_set_back_refs',
               field: 'application_policy_set_back_refs',
               name: 'Member of',
+              minWidth : 150,
               formatter: fwPolicyFormatter.policySetFormatter
            }, {
              id: 'firewall_rule_refs',
              field: 'firewall_rule_refs',
              name: 'Rules',
+             minWidth : 80,
              formatter:
                  fwPolicyFormatter.fwRuleFormatter
          }, {

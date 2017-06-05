@@ -31,8 +31,8 @@ define([
     });
 
     var projectsTagsList = [{key : "application", name : "Application"},
-        {key : "site", name :"Site"},
         {key : "deployment", name :"Deployment"},
+        {key : "site", name :"Site"},
         {key : "tier", name : "Tier"},
         {key : "Labels", name :"Labels"}
     ];

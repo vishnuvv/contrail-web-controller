@@ -609,3 +609,8 @@ form h5.margin-0-0-10~.section-content {
     border-top: #dcdcdc solid 1px;
     padding-top: 8px;
 }
+#fw-policy-grid .r3, #firewall-application-policy-grid .r3{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -186,7 +186,6 @@ define([
                             var fqName = getValueByJsonPath(data[i],'fqName',[]);
                             tagsBindItems[data[i]['type']] = (fqName != '-')?fqName.join(":"): '-';
                         }
-                        console.log(tagsBindItems);
                         projectTagModel = new ProjectTagsModel(tagsBindItems);
                         projectTagEditView.model = projectTagModel;
                         projectTagEditView.renderEditTags({
