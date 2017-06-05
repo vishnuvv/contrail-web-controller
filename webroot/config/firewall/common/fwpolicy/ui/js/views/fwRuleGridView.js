@@ -131,7 +131,7 @@ define([
             {
                 "type" : "link",
                 "title" : ctwl.TITLE_FW_INSERT_RULE_ABOVE,
-                //"iconClass" : "fa fa-plus",
+                "iconClass" : "hide",
                 "onClick" : function(rowIndex) {
                     var sequenceData = getPrevNextCurrentRows(ctwc.INSERT_ABOVE, rowIndex);
                     fwRuleEditView.model = new FWRuleModel();
@@ -151,7 +151,7 @@ define([
             {
                 "type" : "link",
                 "title" : ctwl.TITLE_FW_INSERT_RULE_BELOW,
-                //"iconClass" : "fa fa-plus",
+                "iconClass" : "hide",
                 "onClick" : function(rowIndex) {
                     var sequenceData = getPrevNextCurrentRows(ctwc.INSERT_BELOW, rowIndex);
                     fwRuleEditView.model = new FWRuleModel();
@@ -171,7 +171,7 @@ define([
             {
                 "type" : "link",
                 "title" : ctwl.TITLE_FW_INSERT_RULE_AT_TOP,
-                //"iconClass" : "fa fa-plus",
+                "iconClass" : "hide",
                 "onClick" : function(rowIndex) {
                     var ruleData = $('#' + ctwc.FW_RULE_GRID_ID).
                                         data("contrailGrid")._dataView.getItem(rowIndex);
@@ -192,7 +192,7 @@ define([
             {
                 "type" : "link",
                 "title" : ctwl.TITLE_FW_INSERT_RULE_AT_END,
-                //"iconClass" : "fa fa-plus",
+                "iconClass" : "hide",
                 "onClick" : function(rowIndex) {
                     var ruleData = $('#' + ctwc.FW_RULE_GRID_ID).
                                         data("contrailGrid")._dataView.getItem(rowIndex);
