@@ -840,6 +840,15 @@ define([
         this.TITLE_FW_INSERT_RULE_BELOW = 'Insert rule below';
         this.TITLE_FW_INSERT_RULE_AT_TOP = 'Insert rule at top';
         this.TITLE_FW_INSERT_RULE_AT_END = 'Insert rule at end';
+        this.TITLE_CREATE_FW_RULE = 'Create Firewall Rule';
+        this.TITLE_FW_RULE_MULTI_DELETE = 'Delete Firewall Rule (s)';
+        this.TITLE_FW_RULE_DELETE = 'Delete Firewall Rule';
+        this.TITLE_CREATE_APP_POLICY_SET = 'Create Application Policy Set';
+        this.TITLE_APP_POLICY_SET_MULTI_DELETE = 'Delete Application Policy Set (s)';
+        this.TITLE_APP_POLICY_SET_DELETE = 'Delete Application Policy Set';
+        this.TITLE_CREATE_ADDRESS_GROUP = 'Create Address Group';
+        this.TITLE_ADDRESS_GROUP_MULTI_DELETE = 'Delete Address Group (s)';
+        this.TITLE_ADDRESS_GROUP_DELETE = 'Delete Address Group';
 
         /* RBAC labels */
         this.TITLE_RBAC = 'API Access';

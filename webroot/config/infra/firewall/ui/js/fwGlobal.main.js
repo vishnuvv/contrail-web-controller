@@ -44,15 +44,11 @@ function FWGlobalPageLoader ()
     };
 
     this.destroy = function () {
-        /*ctwu.destroyDOMResources(ctwc.GLOBAL_FORWARDING_OPTIONS_PREFIX_ID);
-        ctwu.destroyDOMResources(ctwc.GLOBAL_BGP_OPTIONS_PREFIX_ID);
-        ctwu.destroyDOMResources(ctwc.GLOBAL_FLOW_AGING_PREFIX_ID);
-        ctwu.destroyDOMResources(ctwc.RBAC_PREFIX_ID);
-        ctwu.destroyDOMResources(ctwc.FORWARDING_CLASS_PREFIX_ID);
-        ctwu.destroyDOMResources(ctwc.QOS_PREFIX_ID);
-        ctwu.destroyDOMResources(ctwc.ALARM_PREFIX_ID);
-        ctwu.destroyDOMResources(ctwc.GLOBAL_COUNTERS_PREFIX_ID);
-        ctwu.destroyDOMResources(ctwc.GLOBAL_CONTROL_TRAFFIC_PREFIX_ID);*/
+        ctwu.destroyDOMResources(ctwc.SEC_POLICY_ADDRESS_GRP_PREFIX_ID);
+        ctwu.destroyDOMResources(ctwc.SECURITY_POLICY_SERVICE_GRP_GRID_ID);
+        ctwu.destroyDOMResources(ctwc.FIREWALL_APPLICATION_POLICY_GRID_ID);
+        ctwu.destroyDOMResources(ctwc.FW_POLICY_PREFIX_ID);
+        ctwu.destroyDOMResources(ctwc.FW_RULE_PREFIX_ID);
     };
 }
 
