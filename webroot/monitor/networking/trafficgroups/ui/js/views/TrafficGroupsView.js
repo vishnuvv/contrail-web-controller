@@ -64,14 +64,14 @@ define(
                             };
                             ruleKeys = _.uniq(_.map(link['data']['dataChildren'], 'eps.__key'));
                             $.each(ruleKeys, function (idx, key) {
-                                if (key != null && key.split(':')[3] != null) {
-                                    ruleUUIDs.push(key.split(':')[3]);
-                                } else if (key != null) {
-                                    ruleUUIDs.push(key);
+                                if (key != null) {
+                                    var uuid = key.split(':').pop();
+                                    ruleUUIDs.push(uuid);
                                 }
                             });
                             data.linkData.push(appObj);
                         });
+                        ruleUUIDs = _.uniq(ruleUUIDs);
                         _.each(chartScope.ribbons, function (ribbon) {
                            ribbon.selected = false;
                            ribbon.active = false;
@@ -154,13 +154,15 @@ define(
                                                     dst = '-';
                                                 }
                                                 var policy_name = _.result(ruleDetailsObj, 'firewall_policy_back_refs.0.to.2', '-'),
-                                                    rule_name = _.result(ruleDetailsObj, 'display_name'); 
+                                                    rule_name = _.result(ruleDetailsObj, 'display_name'),
+                                                    direction = cowu.deSanitize(_.result(ruleDetailsObj, 'direction'));
                                                 formattedRuleDetails.push({
                                                     //policy_name: _.result(ruleDetailsObj, 'firewall_policy_back_refs.0.to.3', '-') +':'+
                                                       //          _.result(ruleDetailsObj, 'display_name'),
                                                     policy_name: policy_name,
                                                     rule_name: rule_name,
                                                     simple_action: _.result(ruleDetailsObj, 'action_list.simple_action', '-') == 'pass' ? 'permit': '-',
+                                                    direction: direction == '>' ? 'uni': 'bi',
                                                     srcType: srcType,
                                                     dstType: dstType,
                                                     src: src,
