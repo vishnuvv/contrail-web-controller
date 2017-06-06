@@ -409,6 +409,9 @@ define(
                                 }
                             }]
                         }
+                        $('#traffic-groups-radial-chart')
+                        .removeClass('showLinkInfo');
+                        $('#traffic-groups-link-info').html('');
                         viewInst.updateConfig(config);
                         viewInst.render();
                     }
