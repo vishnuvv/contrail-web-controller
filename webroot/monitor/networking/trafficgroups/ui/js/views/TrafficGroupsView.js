@@ -106,7 +106,8 @@ define(
                                         url: "/api/tenants/config/get-config-details",
                                         type: "POST",
                                         data: JSON.stringify(
-                                            {data: [{type: 'firewall-rules',obj_uuids: ruleUUIDs, fields: ['firewall_policy_back_refs']}]})
+                                            {data: [{type: 'firewall-rules',obj_uuids: ruleUUIDs, fields: ['firewall_policy_back_refs',
+                                             'service', 'service_group_refs']}]})
                                     },
                                     dataParser: function (data) {
                                         var ruleDetails = _.result(data, '0.firewall-rules', []),
@@ -153,15 +154,35 @@ define(
                                                     dstType = '';
                                                     dst = '-';
                                                 }
-                                                var policy_name = _.result(ruleDetailsObj, 'firewall_policy_back_refs.0.to.2', '-'),
+                                                var policy_name_arr = _.result(ruleDetailsObj, 'firewall_policy_back_refs.0.to', []),
+                                                    service = _.result(ruleDetailsObj, 'service'),
+                                                    service_group_refs = _.result(ruleDetailsObj, 'service_group_refs'),
+                                                    serviceStr,
+                                                    service_dst_port_obj = _.result(ruleDetailsObj, 'service.dst_ports'),
+                                                    service_dst_port = '-',
+                                                    service_protocol = _.result(ruleDetailsObj, 'service.protocol'),
+                                                    policy_name = _.result(policy_name_arr.slice(-1), '0', '-'),
                                                     rule_name = _.result(ruleDetailsObj, 'display_name'),
                                                     direction = cowu.deSanitize(_.result(ruleDetailsObj, 'direction'));
+                                                if (service_dst_port_obj != null && service_dst_port_obj['start_port'] != null &&
+                                                    service_dst_port_obj['end_port'] != null) {
+                                                    if (service_dst_port_obj['start_port'] == service_dst_port_obj['end_port']) {
+                                                        service_dst_port = service_dst_port_obj['start_port'];
+                                                    } else {
+                                                        service_dst_port = contrail.format('{0}-{1}', service_dst_port_obj['start_port'], service_dst_port_obj['end_port']);
+                                                    }
+                                                    serviceStr = contrail.format('{0}:{1}', service_protocol, service_dst_port);
+                                                }
+                                                if (service_group_refs != null) {
+                                                    serviceStr = _.result(service_group_refs, '0.to.1');
+                                                }
                                                 formattedRuleDetails.push({
                                                     //policy_name: _.result(ruleDetailsObj, 'firewall_policy_back_refs.0.to.3', '-') +':'+
                                                       //          _.result(ruleDetailsObj, 'display_name'),
                                                     policy_name: policy_name,
                                                     rule_name: rule_name,
                                                     simple_action: _.result(ruleDetailsObj, 'action_list.simple_action', '-') == 'pass' ? 'permit': '-',
+                                                    service: serviceStr,
                                                     direction: direction == '>' ? 'uni': 'bi',
                                                     srcType: srcType,
                                                     dstType: dstType,
