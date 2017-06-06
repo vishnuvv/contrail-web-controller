@@ -99,7 +99,7 @@ define([
              data("contrailGrid")._dataView.getItem(rowIndex);
         if(mode === ctwc.INSERT_ABOVE) {
             if(rowIndex === 0) {
-                prev = '0';
+                prev = null;
             } else {
                prevRowData = $('#' + ctwc.FW_RULE_GRID_ID).
                data("contrailGrid")._dataView.getItem(rowIndex - 1);
@@ -110,7 +110,7 @@ define([
             var topIndex = $('#' + ctwc.FW_RULE_GRID_ID).
             data("contrailGrid")._dataView.getItems();
             if(rowIndex === (topIndex - 1)) {
-                next = '1.1';
+                next = null;
             } else {
                nextRowData = $('#' + ctwc.FW_RULE_GRID_ID).
                    data("contrailGrid")._dataView.getItem(rowIndex + 1);

@@ -69,7 +69,7 @@ function createFirewallRules (request, response, appData)
                     }
                     var fwRuleRefs = commonUtils.getValueByJsonPath(policyDetails,
                             'firewall-policy;firewall_rule_refs', []);
-                    var highestSeq = getHighestSequence(fwRuleRefs);
+                    var highestSeq = getHighestLeastSequence(fwRuleRefs);
                     updateFirewallRuleRefs(fwPolicyId, fwRules, appData, rulesSequenceMap, highestSeq,
                             function(fwError, fwRulesRes) {
                             commonUtils.handleJSONResponse(fwError, response, fwRulesRes);
@@ -107,18 +107,50 @@ function createFirewallRule (request, response, appData)
                                 'firewall-policy;firewall_rule_refs', []);
                         var sequence = '';
                         if(mode === INSERT_ABOVE) {
+                            if(!ruleSeq.prev) {
+                                try{
+                                     ruleSeq.prev = Number(ruleSeq.current) - 1.0
+                                } catch(e){
+                                    ruleSeq.prev = DEFAULT_INS_ABOVE_TXT;
+                                }
+                            }
                             sequence = getComputedSequence(mode, ruleSeq.prev, ruleSeq.current, null);
                         } else if(mode === INSERT_BELOW){
+                            if(!ruleSeq.next) {
+                                try{
+                                     ruleSeq.next = Number(ruleSeq.current) + 1.0
+                                } catch(e){
+                                    ruleSeq.next = DEFAULT_INS_BELOW_TXT;
+                                }
+                            }
                             sequence = getComputedSequence(mode, null, ruleSeq.current, ruleSeq.next);
                         } else if(mode === INSERT_AT_TOP) {
                             var leastSeq = getHighestLeastSequence(fwRuleRefs, 'least');
-                            sequence = getComputedSequence(mode, DEFAULT_INS_ABOVE_TXT, leastSeq, null);
+                            var prevSeq;
+                            try{
+                                prevSeq = Number(leastSeq) - 1.0
+                            } catch(e){
+                                prevSeq = DEFAULT_INS_ABOVE_TXT;
+                            }
+                            sequence = getComputedSequence(mode, prevSeq, leastSeq, null);
                         } else if(mode === INSERT_AT_END) {
                             var highestSeq = getHighestLeastSequence(fwRuleRefs, 'highest');
-                            sequence = getComputedSequence(mode, null, highestSeq, DEFAULT_INS_BELOW_TXT);
+                            var nextSeq;
+                            try{
+                                nextSeq = Number(highestSeq) + 1.0
+                            } catch(e){
+                                nextSeq = DEFAULT_INS_BELOW_TXT;
+                            }
+                            sequence = getComputedSequence(mode, null, highestSeq, nextSeq);
                         } else {
                             var highestSeq = getHighestLeastSequence(fwRuleRefs, 'highest');
-                            sequence = getComputedSequence(mode, null, highestSeq, DEFAULT_INS_BELOW_TXT);
+                            var nextSeq;
+                            try{
+                                nextSeq = Number(highestSeq) + 1.0
+                            } catch(e){
+                                nextSeq = DEFAULT_INS_BELOW_TXT;
+                            }
+                            sequence = getComputedSequence(mode, null, highestSeq, nextSeq);
                         }
                         if(sequence == '') {
                             sequence = DEFAULT_SEQUENCE_TXT;

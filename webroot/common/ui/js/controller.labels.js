@@ -849,6 +849,9 @@ define([
         this.TITLE_CREATE_ADDRESS_GROUP = 'Create Address Group';
         this.TITLE_ADDRESS_GROUP_MULTI_DELETE = 'Delete Address Group (s)';
         this.TITLE_ADDRESS_GROUP_DELETE = 'Delete Address Group';
+        this.TITLE_CREATE_SERVICE_GROUP = 'Create Service Group';
+        this.TITLE_SERVICE_GROUP_MULTI_DELETE = 'Delete Service Group (s)';
+        this.TITLE_SERVICE_GROUP_DELETE = 'Delete Service Group';
 
         /* RBAC labels */
         this.TITLE_RBAC = 'API Access';
