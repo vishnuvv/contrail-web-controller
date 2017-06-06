@@ -92,21 +92,10 @@ define([
         return gridElementConfig;
     };
     function getHeaderActionConfig(selectedProject,model) {
-        var applicationArray = [];
-        var tierArray = [];
-        var siteArray = [];
-        var deploymentArray = [];
-        var lablesArray = [];
         var data;
         var results = [];
         var tagMap = {};
         var actValue;
-        
-        deploymentArray.push({text:"None",value:"-"});
-        applicationArray.push({text:"None",value:"-"});
-        tierArray.push({text:"None",value:"-"});
-        siteArray.push({text:"None",value:"-"});
-        
         var tagsList = [{key : "application", name : "Application"},
             {key : "tier", name :"Tier"},
             {key : "site", name :"Site"},
@@ -126,7 +115,15 @@ define([
                                 {data: [{type: 'tags'}]})
                     };
                     contrail.ajaxHandler(ajaxConfig, null, function(response) {
-                        console.log(response);
+                        var applicationArray = [];
+                        var tierArray = [];
+                        var siteArray = [];
+                        var deploymentArray = [];
+                        var lablesArray = [];
+                        deploymentArray.push({text:"None",value:"-"});
+                        applicationArray.push({text:"None",value:"-"});
+                        tierArray.push({text:"None",value:"-"});
+                        siteArray.push({text:"None",value:"-"});
                         for(var i=0; i<response.length; i++){
                             tagsDetails = response[i].tags;
                             for(var j= 0; j<tagsDetails.length; j++){
@@ -141,9 +138,11 @@ define([
                                 }
                                 if(tagsDetails[j].tag.tag_type === "application") {
                                     data = {
-                                            "text":tagsDetails[j].tag.tag_value,
+                                            "text": (tagsDetails[j]['tag'].fq_name.length == 1)?
+                                                    "global:" + tagsDetails[j].tag.name :
+                                                     tagsDetails[j].tag.name,
                                             "value":actValue
-                                       };
+                                   };
                                     applicationArray.push(data);
                                 }
                                 else if(tagsDetails[j].tag.tag_type === "tier") {
