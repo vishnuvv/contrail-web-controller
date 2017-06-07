@@ -434,7 +434,37 @@ define(
                         .removeClass('showLinkInfo');
                         $('#traffic-groups-link-info').html('');
                         viewInst.updateConfig(config);
-                        viewInst.render();
+                        var data = self.trafficData ? JSON.parse(JSON.stringify(self.trafficData))
+                                     : viewInst.model.getItems();
+                        data = self.formatEmptyBytes(data,(cfg.levels ? cfg.levels : 1));
+                        viewInst.render(data);
+                    },
+                    this.formatEmptyBytes = function(data, level) {
+                        // If sum of in-bytes and out-bytes of a link is 0, making in-bytes and out-bytes
+                        // of first record of link to 1 to plot the link
+                        self.level = level;
+                        var dataTrafficMap = _.groupBy(data, function(d) {
+                            if(self.level == 1) {
+                                return d.app + d['eps.traffic.remote_app_id'];
+                            } else {
+                                return d.app + d.tier + d['eps.traffic.remote_app_id'] + d['eps.traffic.remote_tier_id'];
+                            }
+                        });
+                        _.each(dataTrafficMap, function(link) {
+                            var linkSum = _.reduce(link, function(sum,value,key) {
+                                return sum+value['SUM(eps.traffic.in_bytes)']+value['SUM(eps.traffic.out_bytes)'];
+                            }, 0);
+                            if(linkSum == 0) {
+                                _.each(link, function(rec,idx) {
+                                    if(idx ==0) {
+                                        rec['SUM(eps.traffic.in_bytes)'] =
+                                        rec['SUM(eps.traffic.out_bytes)'] = 1;
+                                    }
+                                    rec.nodata = true;
+                                });
+                            }
+                        });
+                        return data;
                     }
                     var postData = {
                         "async": false,
@@ -537,6 +567,8 @@ define(
                                         });
                                     });
                                     // cowu.populateTrafficGroupsData(data);
+                                    self.trafficData = JSON.parse(JSON.stringify(data));
+                                    data = self.formatEmptyBytes(data,1);
                                     return data;
                                 }
                             }]
