@@ -25,10 +25,11 @@ define(
                     self.$el.find('.widget-box').addClass('collapsed');
 
                     TrafficGroupsView.colorMap = {};
+                    TrafficGroupsView.colorArray = [];
                     TrafficGroupsView.tagMap = {};
                     TrafficGroupsView.ruleMap = {};
                     function formatAppLabel(label,type) {
-                        if(type) {
+                        if(type && label) {
                             label = label.replace(new RegExp('_'+ type, 'g'), '');
                         }
                         return label;
@@ -235,15 +236,22 @@ define(
                                     arcLabelYOffset: [-12,-6],
                                     colorScale: function (item) {
                                         var levelKey = 'TRAFFIC_GROUP_COLOR_LEVEL'+item.level,
-                                            unassignedColors = _.difference(cowc[levelKey], _.values(TrafficGroupsView.colorMap[item.level]));
+                                            unassignedColors = _.difference(cowc[levelKey], _.values(TrafficGroupsView.colorMap[item.level])),
+                                            itemName = (item.level == 1) ? item.name : formatAppLabel(item.name,item.arcType),
+                                            extraColors = TrafficGroupsView.colorArray;
+                                        if(unassignedColors.length == 0) {
+                                            if(!extraColors[item.level] || extraColors[item.level].length == 0) {
+                                                extraColors[item.level] = cowc[levelKey].slice(0);
+                                            }
+                                            unassignedColors = extraColors[item.level];
+                                        }
                                         if ( TrafficGroupsView.colorMap[item.level] == null) {
                                             TrafficGroupsView.colorMap[item.level] = {};
-                                            TrafficGroupsView.colorMap[item.level][item.name] = unassignedColors.pop();
-                                        } else if (TrafficGroupsView.colorMap[item.level] != null &&
-                                            TrafficGroupsView.colorMap[item.level][item.name] == null) {
-                                            TrafficGroupsView.colorMap[item.level][item.name] = unassignedColors.pop();
+                                            TrafficGroupsView.colorMap[item.level][itemName] = unassignedColors.pop();
+                                        } else if (TrafficGroupsView.colorMap[item.level][itemName] == null) {
+                                            TrafficGroupsView.colorMap[item.level][itemName] = unassignedColors.pop();
                                         }
-                                        return TrafficGroupsView.colorMap[item.level][item.name];
+                                        return TrafficGroupsView.colorMap[item.level][itemName];
                                     },
                                     showLinkTooltip:true,
                                     showLinkInfo: showLinkInfo,
@@ -263,14 +271,24 @@ define(
                                                 srcHierarchy = [d['app'], d['tier']],
                                                 dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
                                             }
-                                            var remoteVN = d['eps.traffic.remote_vn'];
+                                            var remoteVN = d['eps.traffic.remote_vn'],
+                                                srcDeployment = d['deployment'],
+                                                dstDeployment = d['eps.traffic.remote_deployment_id'];
                                             if(remoteVN && remoteVN.indexOf(':') > 0){
                                                 var remoteProject = remoteVN.split(':')[1];
                                                 if(currentProject != remoteProject) {
                                                     externalProject = 'externalProject';
                                                 }
+                                                if(dstDeployment) {
+                                                    externalProject += ' '+dstDeployment;
+                                                }
                                             } else {
                                                 externalProject = 'external';
+                                            }
+                                            if(srcDeployment) {
+                                                $.each(srcHierarchy, function(i) {
+                                                    srcHierarchy[i] += '_ '+srcDeployment;
+                                                });
                                             }
                                             if(externalProject) {
                                                 $.each(dstHierarchy, function(i) {
@@ -285,6 +303,7 @@ define(
                                                 names: srcHierarchy,
                                                 labelAppend: d['deployment'],
                                                 id: srcHierarchy.join('-'),
+                                                type: ' '+srcDeployment,
                                                 value: d['SUM(eps.traffic.in_bytes)'] + d['SUM(eps.traffic.out_bytes)'],
                                                 inBytes: d['SUM(eps.traffic.in_bytes)'],
                                                 outBytes: d['SUM(eps.traffic.out_bytes)']
@@ -318,7 +337,9 @@ define(
                                             var content = { title: removeEmptyTags(arcTitle), items: [] };
                                             content.title += '<hr/>'
 
-                                            var childrenArr = data['children'];
+                                            var childrenArr = data['children'],
+                                                nameLevel1 = formatAppLabel(data.namePath[0], data.arcType),
+                                                nameLevel2 = formatAppLabel(data.namePath[1], data.arcType);
                                             //data is nested on hovering 1st-level arc while showing 2-level arcs
                                             //For intra-app traffic, there will be 2 children with same linkId
                                             //Remove 2nd-level duplicate intra links
@@ -340,8 +361,8 @@ define(
                                             content.items.push({
                                                 label: 'Traffic In',
                                                 value:  formatBytes(_.sumBy(dataChildren,function(currSession) {
-                                                    if((data.namePath.length == 1 && currSession.app == data.namePath[0]) ||
-                                                        (data.namePath.length == 2 && currSession.app == data.namePath[0] && currSession.tier == data.namePath[1])) {
+                                                    if((data.namePath.length == 1 && currSession.app == nameLevel1) ||
+                                                        (data.namePath.length == 2 && currSession.app == nameLevel1 && currSession.tier == nameLevel2)) {
                                                         if (currSession != null && currSession['nodata']) {
                                                             return 0;
                                                         }
@@ -352,8 +373,8 @@ define(
                                             }, {
                                                 label: 'Traffic Out',
                                                 value: formatBytes(_.sumBy(dataChildren,function(currSession) {
-                                                    if((data.namePath.length == 1 && currSession.app == data.namePath[0]) ||
-                                                        (data.namePath.length == 2 && currSession.app == data.namePath[0] && currSession.tier == data.namePath[1])) {
+                                                    if((data.namePath.length == 1 && currSession.app == nameLevel1) ||
+                                                        (data.namePath.length == 2 && currSession.app == nameLevel1 && currSession.tier == nameLevel2)) {
                                                         if (currSession != null && currSession['nodata']) {
                                                             return 0;
                                                         }
@@ -378,19 +399,21 @@ define(
                                             if((srcTags == dstTags) || (d.link[1].data.arcType)) {
                                                 links = d.link.slice(0,1);
                                             }
-                                            var content = { title : '', items: [] };
-                                            var linkData = {
+                                            var content = { title : '', items: [] },
+                                                linkData = {
                                                     src: srcTags,
                                                     dst: dstTags
                                                 };
                                             linkData.items = [];
                                             _.each(links, function(link) {
-                                                var data = {
+                                                var namePath = link.data.currentNode ? link.data.currentNode.names : '',
+                                                    nameLevel1 = formatAppLabel(namePath[0], link.data.arcType),
+                                                    nameLevel2 = formatAppLabel(namePath[1], link.data.arcType),
+                                                    data = {
                                                     trafficIn: formatBytes(_.sumBy(link.data.dataChildren,
                                                         function(bytes) {
-                                                            var namePath = link.data.currentNode ? link.data.currentNode.names : '';
-                                                            if((namePath.length == 1 && bytes.app ==  namePath[0])
-                                                                || namePath.length == 2 && bytes.app ==  namePath[0] && bytes.tier ==  namePath[1]) {
+                                                            if((namePath.length == 1 && bytes.app ==  nameLevel1)
+                                                                || namePath.length == 2 && bytes.app ==  nameLevel1 && bytes.tier ==  nameLevel2) {
                                                                 if (bytes != null && bytes['nodata']) {
                                                                     return 0;
                                                                 }
@@ -401,9 +424,8 @@ define(
                                                         })),
                                                     trafficOut: formatBytes(_.sumBy(link.data.dataChildren,
                                                         function(bytes) {
-                                                            var namePath = link.data.currentNode ? link.data.currentNode.names : '';
-                                                            if((namePath.length == 1 && bytes.app ==  namePath[0])
-                                                                || namePath.length == 2 && bytes.app ==  namePath[0] && bytes.tier ==  namePath[1]) {
+                                                            if((namePath.length == 1 && bytes.app ==  nameLevel1)
+                                                                || namePath.length == 2 && bytes.app ==  nameLevel1 && bytes.tier ==  nameLevel2) {
                                                                 if (bytes != null && bytes['nodata']) {
                                                                     return 0;
                                                                 }
@@ -445,9 +467,11 @@ define(
                         self.level = level;
                         var dataTrafficMap = _.groupBy(data, function(d) {
                             if(self.level == 1) {
-                                return d.app + d['eps.traffic.remote_app_id'];
+                                return d.app + d['eps.traffic.remote_app_id'] +
+                                       d['deployment'] + d['eps.traffic.remote_deployment_id'];
                             } else {
-                                return d.app + d.tier + d['eps.traffic.remote_app_id'] + d['eps.traffic.remote_tier_id'];
+                                return d.app + d.tier + d['eps.traffic.remote_app_id'] +
+                                       d['eps.traffic.remote_tier_id'] + d['deployment'] + d['eps.traffic.remote_deployment_id'];
                             }
                         });
                         _.each(dataTrafficMap, function(link) {
