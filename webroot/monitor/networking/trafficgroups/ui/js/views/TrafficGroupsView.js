@@ -40,11 +40,83 @@ define(
                     }
                     function showLinkInfo(d,el,e,chartScope){
                         var data = {
-                                'src': d.link[0].data.id,
-                                'dest':d.link[1].data.id,
+                                'src': formatAppLabel(_.result(d, 'link.0.data.id'), _.result(d, 'link.0.data.arcType')),
+                                'dest': formatAppLabel(_.result(d, 'link.1.data.id'), _.result(d, 'link.1.data.arcType')),
                                 'linkData':[]
-                            }, ruleUUIDs = [], ruleKeys = [];
-                        data.dest = formatAppLabel(data.dest,d.link[1].data.arcType);
+                            }, ruleUUIDs = [], ruleKeys = [], level = 1;
+                        if (_.result(d, 'innerPoints.length') == 4)
+                            level = 2;
+                        var srcNodeData = _.filter(d.link, function (val, idx){
+                                return _.result(val, 'data.type') == 'src';
+                        });
+                        var dstNodeData = _.filter(d.link, function (val, idx){
+                                return _.result(val, 'data.type') == 'dst';
+                        });
+                        var srcId = formatAppLabel(_.result(srcNodeData, '0.data.currentNode.names.0'), d.link[0].data.arcType),
+                            dstId = formatAppLabel(_.result(dstNodeData, '0.data.currentNode.names.0'), d.link[1].data.arcType);
+                        if (level == 2) {
+                            srcId += ' && ' + formatAppLabel(_.result(srcNodeData, '0.data.currentNode.names.1'), d.link[0].data.arcType);
+                            dstId += ' && ' + formatAppLabel(_.result(dstNodeData, '0.data.currentNode.names.1'), d.link[1].data.arcType);
+                        }
+                        var childData = _.result(d, 'link.0.data.dataChildren', []);
+                        var srcSessionObjArr = _.chain(childData)
+                                .filter(function (val, idx) {
+                                    var app = formatAppLabel(_.result(srcNodeData, '0.data.currentNode.names.0'), d.link[0].data.arcType);
+                                    if (level == 1) {
+                                        return val['app'] == app;
+                                    } else if (level == 2) {
+                                        return val['app'] == app &&
+                                        val['tier'] == formatAppLabel(_.result(srcNodeData, '0.data.currentNode.names.1'), d.link[0].data.arcType);
+                                    }
+                                })
+                                .groupBy("eps.__key")
+                                .map(function (objs, key) {
+                                    var uuid;
+                                    if (key != null) {
+                                        try {
+                                            uuid = key.split(':').slice(-1)[0];
+                                        } catch(e) {
+                                            uuid = '-'
+                                        }
+                                    }
+                                    return {
+                                        'eps.__key': uuid,
+                                        'session_responded': _.sumBy(objs, 'SUM(eps.traffic.responder_session_count)'),
+                                        'session_initiated': _.sumBy(objs, 'SUM(eps.traffic.initiator_session_count)')
+                                    }
+                                }).value();
+                        var dstSessionObjArr, dstSessionObj;
+                        //If it is intralink no need to calculate endpoint2 sessions
+                        if (srcId != dstId) {
+                            dstSessionObjArr = _.chain(childData)
+                                .filter(function (val, idx) {
+                                    var app = formatAppLabel(_.result(dstNodeData, '0.data.currentNode.names.0'), d.link[1].data.arcType);
+                                    if (level == 1) {
+                                        return val['app'] == app;
+                                    } else if (level == 2) {
+                                        return val['app'] == app &&
+                                        val['tier'] == formatAppLabel(_.result(dstNodeData, '0.data.currentNode.names.1'), d.link[1].data.arcType);
+                                    }
+                                })
+                                .groupBy("eps.__key")
+                                .map(function (objs, key) {
+                                    var uuid;
+                                    if (key != null) {
+                                        try {
+                                            uuid = key.split(':').slice(-1)[0];
+                                        } catch(e) {
+                                            uuid = '-'
+                                        }
+                                    }
+                                    return {
+                                        'eps.__key': uuid,
+                                        'session_responded': _.sumBy(objs, 'SUM(eps.traffic.responder_session_count)'),
+                                        'session_initiated': _.sumBy(objs, 'SUM(eps.traffic.initiator_session_count)')
+                                    }
+                                }).value();
+                            dstSessionObj = _.groupBy(dstSessionObjArr, 'eps.__key');
+                        }
+                        var srcSessionObj = _.groupBy(srcSessionObjArr, 'eps.__key');
                         _.each(d.link, function(link) {
                             var appObj = {
                                 app_name: formatAppLabel(link.data.id,link.data.arcType),
@@ -115,7 +187,8 @@ define(
                                             ruleMap = {}, formattedRuleDetails = [];
                                         $.each(ruleDetails, function (idx, detailsObj) {
                                             if (detailsObj['firewall-rule'] != null) {
-                                                var ruleDetailsObj = detailsObj['firewall-rule'];
+                                                var ruleDetailsObj = detailsObj['firewall-rule'],
+                                                    ruleUUID = detailsObj['firewall-rule']['uuid'];
                                                 ruleMap[detailsObj['firewall-rule']['uuid']] = ruleDetailsObj; 
                                                 var src = _.result(ruleDetailsObj, 'endpoint_1.tags', []);
                                                     srcType = 'tags';
@@ -172,7 +245,7 @@ define(
                                                     } else {
                                                         service_dst_port = contrail.format('{0}-{1}', service_dst_port_obj['start_port'], service_dst_port_obj['end_port']);
                                                     }
-                                                    serviceStr = contrail.format('{0}:{1}', service_protocol, service_dst_port);
+                                                    serviceStr = contrail.format('{0}: {1}', service_protocol, service_dst_port);
                                                 }
                                                 if (service_group_refs != null) {
                                                     serviceStr = _.result(service_group_refs, '0.to.1');
@@ -181,6 +254,12 @@ define(
                                                     //policy_name: _.result(ruleDetailsObj, 'firewall_policy_back_refs.0.to.3', '-') +':'+
                                                       //          _.result(ruleDetailsObj, 'display_name'),
                                                     policy_name: policy_name,
+                                                    srcId: srcId,
+                                                    src_session_initiated: _.result(srcSessionObj, ruleUUID+'.0.session_initiated', 0),
+                                                    src_session_responded: _.result(srcSessionObj, ruleUUID+'.0.session_responded', 0),
+                                                    dstId: dstId,
+                                                    dst_session_initiated: _.result(dstSessionObj, ruleUUID+'.0.session_initiated', 0),
+                                                    dst_session_responded: _.result(dstSessionObj, ruleUUID+'.0.session_responded', 0),
                                                     rule_name: rule_name,
                                                     simple_action: _.result(ruleDetailsObj, 'action_list.simple_action', '-') == 'pass' ? 'permit': '-',
                                                     service: serviceStr,
@@ -188,9 +267,7 @@ define(
                                                     srcType: srcType,
                                                     dstType: dstType,
                                                     src: src,
-                                                    dst: dst,
-                                                    //rule_name: 
-                                                    //json_formatted: contrail.formatJSON2HTML(ruleDetailsObj)
+                                                    dst: dst
                                                 });
                                             }
                                         });
@@ -502,7 +579,8 @@ define(
                             "select": "T=, eps.traffic.remote_app_id, eps.traffic.remote_tier_id, eps.traffic.remote_site_id,"+
                                  "eps.traffic.remote_deployment_id, eps.traffic.remote_prefix, eps.traffic.remote_vn, eps.__key,"+
                                  " app, tier, site, deployment, vn, name, SUM(eps.traffic.in_bytes),"+
-                                 " SUM(eps.traffic.out_bytes), SUM(eps.traffic.in_pkts), SUM(eps.traffic.out_pkts)",
+                                 " SUM(eps.traffic.out_bytes), SUM(eps.traffic.in_pkts), SUM(eps.traffic.initiator_session_count)," +
+                                 " SUM(eps.traffic.responder_session_count), SUM(eps.traffic.out_pkts)",
                             "table_type": "STAT",
                             "table_name": "StatTable.EndpointSecurityStats.eps.traffic",
                             "where": "(name Starts with " + contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' + contrail.getCookie(cowc.COOKIE_PROJECT) + ")",
