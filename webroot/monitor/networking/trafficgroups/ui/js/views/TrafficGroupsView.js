@@ -395,8 +395,10 @@ define(
                                                 dstNames[i] = formatAppLabel(dstNames[i],d.link[1].data.arcType);
                                             });
                                             var srcTags = removeEmptyTags(srcNames),
-                                                dstTags = removeEmptyTags(dstNames);
-                                            if((srcTags == dstTags) || (d.link[1].data.arcType)) {
+                                                dstTags = removeEmptyTags(dstNames),
+                                                dstIndex = _.findIndex(links, function(link) { return link.data.type == 'dst' });
+                                            if((srcTags == dstTags) || _.includes(d.link[dstIndex].data.arcType, 'externalProject')
+                                                 || _.includes(d.link[dstIndex].data.arcType, 'external')) {
                                                 links = d.link.slice(0,1);
                                             }
                                             var content = { title : '', items: [] },
