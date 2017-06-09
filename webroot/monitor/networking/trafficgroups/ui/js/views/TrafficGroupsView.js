@@ -118,23 +118,6 @@ define(
                         }
                         var srcSessionObj = _.groupBy(srcSessionObjArr, 'eps.__key');
                         _.each(d.link, function(link) {
-                            var appObj = {
-                                app_name: formatAppLabel(link.data.id,link.data.arcType),
-                                trafficIn: formatBytes(_.sumBy(_.filter(link.data.dataChildren,
-                                    function(val,idx) {
-                                        return val.app == link.data.id;
-                                    }),
-                                function(bytes) {
-                                    return bytes['SUM(eps.traffic.in_bytes)'];
-                                })),
-                                trafficOut: formatBytes(_.sumBy(_.filter(link.data.dataChildren,
-                                    function(val,idx) {
-                                        return val.app == link.data.id;
-                                    }),
-                                function(bytes) {
-                                    return bytes['SUM(eps.traffic.in_bytes)'];
-                                }))
-                            };
                             ruleKeys = _.uniq(_.map(link['data']['dataChildren'], 'eps.__key'));
                             $.each(ruleKeys, function (idx, key) {
                                 if (key != null) {
@@ -142,7 +125,6 @@ define(
                                     ruleUUIDs.push(uuid);
                                 }
                             });
-                            data.linkData.push(appObj);
                         });
                         ruleUUIDs = _.uniq(ruleUUIDs);
                         _.each(chartScope.ribbons, function (ribbon) {
@@ -268,6 +250,20 @@ define(
                                                     dstType: dstType,
                                                     src: src,
                                                     dst: dst
+                                                });
+                                            }
+                                        });
+                                        var defaultRuleUUIDs = _.keys(cowc.DEFAULT_FIREWALL_RULES);
+                                        $.each(defaultRuleUUIDs, function (idx, uuid) {
+                                            if (ruleUUIDs.indexOf(uuid) > -1) {
+                                                var defaultRuleDetails = cowc.DEFAULT_FIREWALL_RULES[uuid];
+                                                formattedRuleDetails.push({
+                                                    policy_name: _.result(defaultRuleDetails, 'name'),
+                                                    rule_name: uuid,
+                                                    src_session_initiated: _.result(srcSessionObj, uuid+'.0.session_initiated', 0),
+                                                    src_session_responded: _.result(srcSessionObj, uuid+'.0.session_responded', 0),
+                                                    dst_session_initiated: _.result(dstSessionObj, uuid+'.0.session_initiated', 0),
+                                                    dst_session_responded: _.result(dstSessionObj, uuid+'.0.session_responded', 0),
                                                 });
                                             }
                                         });
@@ -640,7 +636,6 @@ define(
                                     });
                                     var chartData = [];
                                     $.each(data, function (idx, value) {
-                                        
                                         $.each(['eps.traffic.remote_app_id', 'eps.traffic.remote_deployment_id',
                                             'eps.traffic.remote_prefix', 'eps.traffic.remote_site_id',
                                             'eps.traffic.remote_tier_id'], function (idx, val) {
