@@ -19,7 +19,6 @@ define([
                 viewConfig = this.attributes.viewConfig,
                 selectedProject = viewConfig.selectedProject,
                 pagerOptions = viewConfig['pagerOptions'];
-                console.log(selectedProject);
 
             self.renderView4Config(self.$el, self.model,
                     getProjectTagGridViewConfig(selectedProject), null,
@@ -183,7 +182,7 @@ define([
                         var data = $(gridElId).data().getItems();
                         for(var i=0; i<data.length; i++){
                             var fqName = getValueByJsonPath(data[i],'fqName',[]);
-                            tagsBindItems[data[i]['type']] = (fqName != '-')?fqName.join(":"): '-';
+                            tagsBindItems[data[i]['type']] = (fqName != '-')?fqName.join(","): '-';
                         }
                         projectTagModel = new ProjectTagsModel(tagsBindItems);
                         projectTagEditView.model = projectTagModel;
