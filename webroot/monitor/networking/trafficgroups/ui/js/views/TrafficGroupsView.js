@@ -134,10 +134,17 @@ define(
                         d.selected = true;
                         d.active = true;
                         chartScope._render();
-                        $('#traffic-groups-radial-chart')
-                            .addClass('showLinkInfo');
                         $('#traffic-groups-link-info')
                             .html(trafficLinkInfoTmpl(data));
+                        if($('#traffic-groups-radial-chart').hasClass('showLinkInfo')) {
+                            $('.trafficGroups_sidePanel').
+                                removeClass('animateLinkInfo');
+                        } else {
+                            $('.trafficGroups_sidePanel').
+                                addClass('animateLinkInfo');
+                            $('#traffic-groups-radial-chart')
+                            .addClass('showLinkInfo');
+                        }
                         $('#traffic-groups-radial-chart')
                          .on('click','',{ thisChart:chartScope,thisRibbon:d },
                           function(ev){
@@ -148,10 +155,10 @@ define(
                                    ribbon.selected = false;
                                    ribbon.active = false;
                                 });
-                                ev.data.thisChart._render();
                                 $('#traffic-groups-radial-chart')
                                 .removeClass('showLinkInfo');
                                 $('#traffic-groups-link-info').html('');
+                                ev.data.thisChart._render();
                             }
                         });
                         if (ruleUUIDs.length > 0) {
