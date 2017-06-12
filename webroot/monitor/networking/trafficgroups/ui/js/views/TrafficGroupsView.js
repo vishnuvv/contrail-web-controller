@@ -305,6 +305,7 @@ define(
                                     showArcLabels: true,
                                     parentSeparationShrinkFactor: 0.02,
                                     arcLabelLetterWidth: 6,
+                                    labelDuration:0,
                                     labelFlow: 'along-arc',
                                     arcLabelXOffset: 0,
                                     arcLabelYOffset: [-12,-6],
