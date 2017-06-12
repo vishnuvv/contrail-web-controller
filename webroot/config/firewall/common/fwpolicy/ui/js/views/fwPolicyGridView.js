@@ -179,8 +179,8 @@ define([
             events : {
                 onClick : function(e, dc) {
                     var isGlobal = viewConfig.isGlobal;
-                    var viewTab = isGlobal ? 'config_infra_rules': 'config_firewall_rules';
-                    var hashP = isGlobal ?  'config_infra_firewall' : 'config_firewall_policies';
+                    var viewTab = isGlobal ? 'config_security_globalrules': 'config_security_projectrules';
+                    var hashP = isGlobal ?  'config_security_globalsettings' : 'config_security_projectsettings';
                     var hashParams = null,
                         hashObj = {
                             view: viewTab,

@@ -145,7 +145,7 @@ define([
         var headerActionConfig = [
             {
                 "type" : "link",
-                "title" : ctwl.TITLE_TAG_MULTI_DELETE,
+                "title" : ctwc.TITLE_TAG_MULTI_DELETE,
                 "iconClass": 'fa fa-trash',
                 "linkElementId": 'btnDeleteTAG',
                 "onClick" : function() {
@@ -154,7 +154,7 @@ define([
                     if(checkedRows && checkedRows.length > 0) {
                         tagEditView.model = tagModel;
                         tagEditView.renderDeleteTag(
-                            {"title": 'Delete Tag',
+                            {"title": ctwc.TITLE_TAG_MULTI_DELETE,
                                 selectedGridData: checkedRows,
                                 callback: function () {
                                     var dataView =
