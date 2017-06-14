@@ -188,6 +188,9 @@ define(
                                                 }
                                                 if (!src || src == '-') {
                                                     src = _.result(ruleDetailsObj, 'endpoint_1.any', '-');
+                                                    if (src == true) {
+                                                        src = 'any';
+                                                    }
                                                     srcType = ''
                                                 }
                                                 if (!src || src == '-') {
@@ -203,6 +206,8 @@ define(
                                                 }
                                                 if (!dst || dst == '-') {
                                                     dst = _.result(ruleDetailsObj, 'endpoint_2.any', '-');
+                                                    if (dst == true)
+                                                        dst = 'any';
                                                     dstType = ''
                                                 }
                                                 if (!dst || dst == '-') {
