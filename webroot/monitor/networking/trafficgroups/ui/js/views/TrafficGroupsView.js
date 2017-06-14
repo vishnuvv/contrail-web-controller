@@ -244,6 +244,10 @@ define(
                                                 if (service_group_refs != null) {
                                                     serviceStr = _.result(service_group_refs, '0.to.1');
                                                 }
+                                                var simple_action = _.result(ruleDetailsObj, 'action_list.simple_action', '-');
+                                                if (simple_action == 'pass') {
+                                                    simple_action = 'permit';
+                                                }
                                                 formattedRuleDetails.push({
                                                     //policy_name: _.result(ruleDetailsObj, 'firewall_policy_back_refs.0.to.3', '-') +':'+
                                                       //          _.result(ruleDetailsObj, 'display_name'),
@@ -255,7 +259,7 @@ define(
                                                     dst_session_initiated: _.result(dstSessionObj, ruleUUID+'.0.session_initiated', 0),
                                                     dst_session_responded: _.result(dstSessionObj, ruleUUID+'.0.session_responded', 0),
                                                     rule_name: rule_name,
-                                                    simple_action: _.result(ruleDetailsObj, 'action_list.simple_action', '-') == 'pass' ? 'permit': '-',
+                                                    simple_action: simple_action,
                                                     service: serviceStr,
                                                     direction: direction == '>' ? 'uni': 'bi',
                                                     srcType: srcType,
