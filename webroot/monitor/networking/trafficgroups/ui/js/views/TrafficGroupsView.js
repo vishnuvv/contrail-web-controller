@@ -550,7 +550,7 @@ define(
                         viewInst.updateConfig(config);
                         var data = self.trafficData ? JSON.parse(JSON.stringify(self.trafficData))
                                      : viewInst.model.getItems();
-                        data = self.formatEmptyBytes(data,(cfg.levels ? cfg.levels : 1));
+                        //data = self.formatEmptyBytes(data,(cfg.levels ? cfg.levels : 1));
                         viewInst.render(data);
                     },
                     this.formatEmptyBytes = function(data, level) {
@@ -653,6 +653,10 @@ define(
                                     });
                                     var chartData = [];
                                     $.each(data, function (idx, value) {
+                                        if (value['SUM(eps.traffic.out_bytes)'] + value['SUM(eps.traffic.in_bytes)'] == 0) {
+                                            value['SUM(eps.traffic.in_bytes)'] = value['SUM(eps.traffic.out_bytes)'] = 1;
+                                            value.nodata = true;
+                                        }
                                         $.each(['eps.traffic.remote_app_id', 'eps.traffic.remote_deployment_id',
                                             'eps.traffic.remote_prefix', 'eps.traffic.remote_site_id',
                                             'eps.traffic.remote_tier_id'], function (idx, val) {
@@ -684,7 +688,7 @@ define(
                                     });
                                     // cowu.populateTrafficGroupsData(data);
                                     self.trafficData = JSON.parse(JSON.stringify(data));
-                                    data = self.formatEmptyBytes(data,1);
+                                    //data = self.formatEmptyBytes(data,1);
                                     return data;
                                 }
                             }]
