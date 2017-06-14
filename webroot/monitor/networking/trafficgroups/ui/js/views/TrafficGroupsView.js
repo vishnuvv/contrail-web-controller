@@ -267,6 +267,8 @@ define(
                                                 formattedRuleDetails.push({
                                                     policy_name: _.result(defaultRuleDetails, 'name'),
                                                     rule_name: uuid,
+                                                    srcId: srcId,
+                                                    dstId: dstId,
                                                     src_session_initiated: _.result(srcSessionObj, uuid+'.0.session_initiated', 0),
                                                     src_session_responded: _.result(srcSessionObj, uuid+'.0.session_responded', 0),
                                                     dst_session_initiated: _.result(dstSessionObj, uuid+'.0.session_initiated', 0),
@@ -314,6 +316,7 @@ define(
                                     arcLabelLetterWidth: 6,
                                     labelDuration:0,
                                     labelFlow: 'along-arc',
+                                    linkCssClasses: ['implicitDeny'],
                                     arcLabelXOffset: 0,
                                     arcLabelYOffset: [-12,-6],
                                     colorScale: function (item) {
@@ -352,6 +355,11 @@ define(
                                             } else if(cfg['levels'] == 2) {
                                                 srcHierarchy = [d['app'], d['tier']],
                                                 dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
+                                            }
+                                            var defaultRuleUUIDs = _.keys(cowc.DEFAULT_FIREWALL_RULES);
+                                            if(typeof d['eps.__key'] == 'string' &&
+                                                d['eps.__key'].indexOf(defaultRuleUUIDs[0]) > -1) {
+                                                d.linkCssClass = 'implicitDeny';
                                             }
                                             var remoteVN = d['eps.traffic.remote_vn'],
                                                 srcDeployment = d['deployment'],
