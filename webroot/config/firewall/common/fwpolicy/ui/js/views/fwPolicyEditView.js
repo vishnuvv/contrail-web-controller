@@ -343,7 +343,7 @@ define([
     };
     var createPolicyViewConfig = [{
         elementId: cowu.formatElementId([prefixId, ctwl.TITLE_DETAILS]),
-        title: ctwl.TITLE_DETAILS,
+        title: ctwl.TITLE_POLICY_INFO,
         view: "SectionView",
         viewConfig: {
             rows: [

@@ -25,8 +25,6 @@ define([
                 "share": []
             },
             "tag_refs":[],
-            "tenant": null,
-            "tenant_access": "4,2,1",
             "id_perms": {"description": null}
         },
 
@@ -317,9 +315,13 @@ define([
                 this.updateRBACPermsAttrs(newFWPolicyData);
 
                 ctwu.deleteCGridData(newFWPolicyData);
-
                 newFWPolicyData.id_perms;
-
+                newFWPolicyData["display_name"] = newFWPolicyData["name"];
+                delete newFWPolicyData.Application;
+                delete newFWPolicyData.Deployment;
+                delete newFWPolicyData.Labels;
+                delete newFWPolicyData.Site;
+                delete newFWPolicyData.Tier;
                 postFWPolicyData['firewall-policy'] = newFWPolicyData;
 
                 if(options.mode === ctwl.CREATE_ACTION) {
