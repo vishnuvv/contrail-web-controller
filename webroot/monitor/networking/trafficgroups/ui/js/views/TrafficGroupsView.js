@@ -180,7 +180,7 @@ define(
                                                     ruleUUID = detailsObj['firewall-rule']['uuid'];
                                                 ruleMap[detailsObj['firewall-rule']['uuid']] = ruleDetailsObj; 
                                                 var src = _.result(ruleDetailsObj, 'endpoint_1.tags', []);
-                                                    srcType = 'tags';
+                                                    srcType = '';
                                                     src = src.join(' && ')
                                                 if (src.length == 0) {
                                                     src = _.result(ruleDetailsObj, 'endpoint_1.address_group', '-');
@@ -198,7 +198,7 @@ define(
                                                     srcType = 'virtual_network';
                                                 }
                                                 var dst = _.result(ruleDetailsObj, 'endpoint_2.tags', []),
-                                                    dstType = 'tags';
+                                                    dstType = '';
                                                     dst = dst.join(' && ');
                                                 if (!dst || dst.length == 0) {
                                                     dst = _.result(ruleDetailsObj, 'endpoint_2.address_group', '-');
