@@ -347,7 +347,7 @@ define(
                                         }
                                         return TrafficGroupsView.colorMap[item.level][itemName];
                                     },
-                                    showLinkTooltip:true,
+                                    showLinkTooltip: true,
                                     showLinkInfo: showLinkInfo,
                                     updateChart: this.updateChart,
                                     // levels: levels,
@@ -461,24 +461,18 @@ define(
                                                 label: 'Traffic In',
                                                 value:  formatBytes(_.sumBy(dataChildren,function(currSession) {
                                                     if((data.namePath.length == 1 && currSession.app == nameLevel1) ||
-                                                        (data.namePath.length == 2 && currSession.app == nameLevel1 && currSession.tier == nameLevel2)) {
-                                                        if (currSession != null && currSession['nodata']) {
-                                                            return 0;
-                                                        }
+                                                        (data.namePath.length == 2 && currSession.app == nameLevel1 && currSession.tier == nameLevel2))
                                                         return _.result(currSession,'SUM(eps.traffic.in_bytes)',0);
-                                                    } else
+                                                     else
                                                         return 0;
                                                 }))
                                             }, {
                                                 label: 'Traffic Out',
                                                 value: formatBytes(_.sumBy(dataChildren,function(currSession) {
                                                     if((data.namePath.length == 1 && currSession.app == nameLevel1) ||
-                                                        (data.namePath.length == 2 && currSession.app == nameLevel1 && currSession.tier == nameLevel2)) {
-                                                        if (currSession != null && currSession['nodata']) {
-                                                            return 0;
-                                                        }
+                                                        (data.namePath.length == 2 && currSession.app == nameLevel1 && currSession.tier == nameLevel2))
                                                         return _.result(currSession,'SUM(eps.traffic.out_bytes)',0);
-                                                    } else
+                                                     else
                                                         return 0;
                                                 }))
                                             });
@@ -514,24 +508,18 @@ define(
                                                     trafficIn: formatBytes(_.sumBy(link.data.dataChildren,
                                                         function(bytes) {
                                                             if((namePath.length == 1 && bytes.app ==  nameLevel1)
-                                                                || namePath.length == 2 && bytes.app ==  nameLevel1 && bytes.tier ==  nameLevel2) {
-                                                                if (bytes != null && bytes['nodata']) {
-                                                                    return 0;
-                                                                }
+                                                                || namePath.length == 2 && bytes.app ==  nameLevel1 && bytes.tier ==  nameLevel2)
                                                                 return _.result(bytes,'SUM(eps.traffic.in_bytes)',0);
-                                                            } else
+                                                             else
                                                                 return 0;
 
                                                         })),
                                                     trafficOut: formatBytes(_.sumBy(link.data.dataChildren,
                                                         function(bytes) {
                                                             if((namePath.length == 1 && bytes.app ==  nameLevel1)
-                                                                || namePath.length == 2 && bytes.app ==  nameLevel1 && bytes.tier ==  nameLevel2) {
-                                                                if (bytes != null && bytes['nodata']) {
-                                                                    return 0;
-                                                                }
+                                                                || namePath.length == 2 && bytes.app ==  nameLevel1 && bytes.tier ==  nameLevel2)
                                                                 return _.result(bytes,'SUM(eps.traffic.out_bytes)',0);
-                                                            } else
+                                                            else
                                                                 return 0
                                                         }))
                                                 };
@@ -559,37 +547,7 @@ define(
                         viewInst.updateConfig(config);
                         var data = self.trafficData ? JSON.parse(JSON.stringify(self.trafficData))
                                      : viewInst.model.getItems();
-                        //data = self.formatEmptyBytes(data,(cfg.levels ? cfg.levels : 1));
                         viewInst.render(data);
-                    },
-                    this.formatEmptyBytes = function(data, level) {
-                        // If sum of in-bytes and out-bytes of a link is 0, making in-bytes and out-bytes
-                        // of first record of link to 1 to plot the link
-                        self.level = level;
-                        var dataTrafficMap = _.groupBy(data, function(d) {
-                            if(self.level == 1) {
-                                return d.app + d['eps.traffic.remote_app_id'] +
-                                       d['deployment'] + d['eps.traffic.remote_deployment_id'];
-                            } else {
-                                return d.app + d.tier + d['eps.traffic.remote_app_id'] +
-                                       d['eps.traffic.remote_tier_id'] + d['deployment'] + d['eps.traffic.remote_deployment_id'];
-                            }
-                        });
-                        _.each(dataTrafficMap, function(link) {
-                            var linkSum = _.reduce(link, function(sum,value,key) {
-                                return sum+value['SUM(eps.traffic.in_bytes)']+value['SUM(eps.traffic.out_bytes)'];
-                            }, 0);
-                            if(linkSum == 0) {
-                                _.each(link, function(rec,idx) {
-                                    if(idx ==0) {
-                                        rec['SUM(eps.traffic.in_bytes)'] =
-                                        rec['SUM(eps.traffic.out_bytes)'] = 1;
-                                    }
-                                    rec.nodata = true;
-                                });
-                            }
-                        });
-                        return data;
                     }
                     var postData = {
                         "async": false,
@@ -624,8 +582,8 @@ define(
                                             "app": curDomain,
                                             "eps.traffic.remote_app_id": "",
                                             "eps.traffic.remote_vn": curDomain,
-                                            "SUM(eps.traffic.in_bytes)": 1,
-                                            "SUM(eps.traffic.out_bytes)": 1,
+                                            "SUM(eps.traffic.in_bytes)": 0,
+                                            "SUM(eps.traffic.out_bytes)": 0,
                                             'nodata': true
                                         }];
                                 } else {
@@ -660,12 +618,7 @@ define(
                                             });
                                         }
                                     });
-                                    var chartData = [];
                                     $.each(data, function (idx, value) {
-                                        if (value['SUM(eps.traffic.out_bytes)'] + value['SUM(eps.traffic.in_bytes)'] == 0) {
-                                            value['SUM(eps.traffic.in_bytes)'] = value['SUM(eps.traffic.out_bytes)'] = 1;
-                                            value.nodata = true;
-                                        }
                                         $.each(['eps.traffic.remote_app_id', 'eps.traffic.remote_deployment_id',
                                             'eps.traffic.remote_prefix', 'eps.traffic.remote_site_id',
                                             'eps.traffic.remote_tier_id'], function (idx, val) {
@@ -697,7 +650,6 @@ define(
                                     });
                                     // cowu.populateTrafficGroupsData(data);
                                     self.trafficData = JSON.parse(JSON.stringify(data));
-                                    //data = self.formatEmptyBytes(data,1);
                                     return data;
                                 }
                             }]
