@@ -51,8 +51,24 @@ define([
     };
 
     function getRowActionConfig() {
-        var rowActionConfig = [
-          ctwgc.getDeleteAction(function (rowIndex) {
+        var rowActionConfig = [];
+        rowActionConfig.push(ctwgc.getEditConfig(ctwl.TITLE_EDIT_POLICY, function (rowIndex) {
+            var dataItem = $(gridElId).data("contrailGrid").
+                _dataView.getItem(rowIndex),
+                fwPolicyModel = new FWPolicyModel(dataItem);
+            fwPolicyEditView.model = fwPolicyModel;
+            fwPolicyEditView.renderEditFirewallPolicyDescription(
+                {"title": ctwl.EDIT,
+                    mode: ctwl.EDIT_ACTION,
+                    callback: function () {
+                        var dataView =
+                            $(gridElId).data("contrailGrid")._dataView;
+                        dataView.refreshData();
+                    }
+                }
+            );
+        }));
+        rowActionConfig.push(ctwgc.getDeleteAction(function (rowIndex) {
               var dataItem = $(gridElId).data("contrailGrid").
                   _dataView.getItem(rowIndex),
                   fwPolicyModel = new FWPolicyModel(dataItem),
@@ -69,7 +85,7 @@ define([
                       }
                   }
               );
-        })];
+        }));
         return rowActionConfig;
     };
 
