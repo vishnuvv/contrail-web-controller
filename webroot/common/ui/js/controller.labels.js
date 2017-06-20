@@ -825,7 +825,6 @@ define([
         /* Firewall labels */
         this.TITLE_POLICY_INFO = "Policy Info";
         this.TITLE_EDIT_FW_POLICY = "Edit Firewall Policy";
-        this.TITLE_EDIT_POLICY = "Edit Policy";
         this.TITLE_FW_POLICY = 'Firewall Policies';
         this.TITLE_FW_RULE = 'Firewall Rules';
         this.CONFIG_SECURITY_POLICY_PAGE_ID = 'config-security-policy-page';

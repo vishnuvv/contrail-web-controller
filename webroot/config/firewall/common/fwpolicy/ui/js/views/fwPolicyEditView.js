@@ -315,6 +315,21 @@ define([
                         {
                             columns: [
                                 {
+                                    elementId: "name",
+                                    view: "FormInputView",
+                                    viewConfig: {
+                                        disabled: true,
+                                        path: "name",
+                                        dataBindValue: "name",
+                                        label: "Name",
+                                        class: "col-xs-12"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            columns: [
+                                {
                                     elementId: "description",
                                     view: "FormInputView",
                                     viewConfig: {

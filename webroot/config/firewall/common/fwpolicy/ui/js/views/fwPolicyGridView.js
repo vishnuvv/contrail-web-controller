@@ -52,7 +52,7 @@ define([
 
     function getRowActionConfig() {
         var rowActionConfig = [];
-        rowActionConfig.push(ctwgc.getEditConfig(ctwl.TITLE_EDIT_POLICY, function (rowIndex) {
+        rowActionConfig.push(ctwgc.getEditConfig("Edit", function (rowIndex) {
             var dataItem = $(gridElId).data("contrailGrid").
                 _dataView.getItem(rowIndex),
                 fwPolicyModel = new FWPolicyModel(dataItem);
