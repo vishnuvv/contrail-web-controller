@@ -186,6 +186,37 @@ define([
 
         return headerActionConfig;
     };
+
+    function onPolicyClick (e, dc) {
+        var isGlobal = this.viewConfig.isGlobal;
+        var viewTab = isGlobal ?
+                'config_security_globalrules': 'config_security_projectrules';
+        var hashP = isGlobal ?
+                'config_security_globalpolicies' : 'config_security_projectscopedpolicies';
+        var hashParams = null,
+            hashObj = {
+                view: viewTab,
+                focusedElement: {
+                    policy: dc.name,
+                    uuid: dc.uuid,
+                    tab: viewTab,
+                    isGlobal: isGlobal
+                }
+            };
+        if (contrail.checkIfKeyExistInObject(true,
+                hashParams,
+                'clickedElement')) {
+            hashObj.clickedElement =
+                hashParams.clickedElement;
+        }
+
+        layoutHandler.setURLHashParams(hashObj, {
+            p: hashP,
+            merge: false,
+            triggerHashChange: true
+        });
+    }
+
     function getfwPolicyColumns(viewConfig){
     	var fwPolicyColumns = [{
             id: 'name',
@@ -193,33 +224,7 @@ define([
             name: 'Name',
             cssClass :'cell-hyperlink-blue',
             events : {
-                onClick : function(e, dc) {
-                    var isGlobal = viewConfig.isGlobal;
-                    var viewTab = isGlobal ? 'config_security_globalrules': 'config_security_projectrules';
-                    var hashP = isGlobal ?  'config_security_globalpolicies' : 'config_security_projectscopedpolicies';
-                    var hashParams = null,
-                        hashObj = {
-                            view: viewTab,
-                            focusedElement: {
-                                policy: dc.name,
-                                uuid: dc.uuid,
-                                tab: viewTab,
-                                isGlobal: viewConfig.isGlobal
-                            }
-                        };
-                    if (contrail.checkIfKeyExistInObject(true,
-                            hashParams,
-                            'clickedElement')) {
-                        hashObj.clickedElement =
-                            hashParams.clickedElement;
-                    }
-
-                    layoutHandler.setURLHashParams(hashObj, {
-                        p: hashP,
-                        merge: false,
-                        triggerHashChange: true
-                    });
-                }
+                onClick : onPolicyClick.bind({viewConfig:viewConfig})
             }
          }, {
              id: 'id_perms.description',
@@ -237,6 +242,10 @@ define([
              id: 'firewall_rule_refs',
              field: 'firewall_rule_refs',
              name: 'Rules',
+             cssClass :'cell-hyperlink-blue',
+             events : {
+                 onClick : onPolicyClick.bind({viewConfig:viewConfig})
+             },
              minWidth : 80,
              formatter:
                  fwPolicyFormatter.fwRuleFormatter

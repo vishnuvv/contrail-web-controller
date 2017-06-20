@@ -990,7 +990,7 @@ define([
                                      dataBindValue: "direction()",
                                      disabled: "showService()",
                                      elementConfig:{
-                                         data:['<>', '>']
+                                         data:['<>', '>', '<']
                                      }}
                                 },
                                 {

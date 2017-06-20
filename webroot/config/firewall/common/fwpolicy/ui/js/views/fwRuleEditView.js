@@ -372,7 +372,7 @@ define([
                                 path: "direction",
                                 dataBindValue: "direction",
                                 elementConfig:{
-                                    data:['<>', '>']
+                                    data:['<>', '>', '<']
                                 }}
                          }]
                     },

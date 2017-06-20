@@ -49,7 +49,7 @@ define([
                 var dstEndtPort = getValueByJsonPath(modelConfig, "service;dst_ports;end_port", '');
                 serviceList.push(protocol);
                 if(dstStartPort === dstEndtPort){
-                    port = dstStartPort;
+                    port = dstStartPort === -1 ? ctwl.FIREWALL_POLICY_ANY : dstStartPort;
                 }else{
                    port = dstStartPort + '-' + dstEndtPort;
                 }
@@ -260,7 +260,8 @@ define([
                 },
                 'endpoint_1' : function(value, attr, finalObj){
                     return fwPolicyUtils.validateEndPoint('endpoint_1',finalObj);
-                }
+                },
+                'user_created_service' : fwPolicyUtils.validateServices
             }
         },
         addEditFirewallRule: function (callbackObj, options, serviceGroupList) {
