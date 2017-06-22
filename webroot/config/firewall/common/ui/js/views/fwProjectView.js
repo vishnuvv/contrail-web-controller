@@ -70,7 +70,7 @@ define([
                 viewConfig: {
                     rows: [{
                         columns: [{
-                            elementId: 'fw_project_tab_view',
+                            elementId: ctwc.GLOBAL_SECURITY_POLICY_TAB_ID,
                             view: 'TabsView',
                             viewConfig: getSecurityPolicyTabs(newViewConfig)
                         }]
