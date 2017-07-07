@@ -7,6 +7,9 @@ define(
          'contrail-charts-view', 'contrail-list-model'],
         function(_, ContrailView, ContrailChartsView, ContrailListModel) {
             var TrafficGroupsView = ContrailView.extend({
+                events: {
+                    'click .allSessionInfo' : 'showSessionsInfo'
+                },
                 resetTrafficStats: function(e) {
                     e.preventDefault();
                     var statsTime = '';
@@ -15,6 +18,13 @@ define(
                     }
                     self.renderTrafficChart(statsTime);
                     $(self.el).find('svg g').empty();
+                },
+                showSessionsInfo: function() {
+                    require(['monitor/networking/trafficgroups/ui/js/views/TrafficGroupsSessionsView'], function(SessionsView) {
+                        var linkInfo = self.getLinkInfo(self.selectedLinkData),
+                            sessionsView = new SessionsView();
+                        sessionsView.render(linkInfo.links[0].data.dataChildren);
+                    });
                 },
                 render : function() {
                     if(!($('#breadcrumb li:last a').text() == ctwc.TRAFFIC_GROUPS_ALL_APPS)){
@@ -45,12 +55,9 @@ define(
                         var dstNodeData = _.filter(d.link, function (val, idx){
                                 return _.result(val, 'data.type') == 'dst';
                         });
-                        var srcId = _.result(srcNodeData, '0.data.currentNode.displayLabels.0'),
-                            dstId = _.result(dstNodeData, '0.data.currentNode.displayLabels.0');
-                        if (level == 2) {
-                            srcId += '-' + _.result(srcNodeData, '0.data.currentNode.displayLabels.1');
-                            dstId += '-' + _.result(dstNodeData, '0.data.currentNode.displayLabels.1');
-                        }
+                        var srcId = removeEmptyTags(_.result(srcNodeData, '0.data.currentNode.displayLabels')),
+                            dstId = removeEmptyTags(_.result(dstNodeData, '0.data.currentNode.displayLabels'));
+                        self.selectedLinkData = d.link;
                         var childData = _.result(d, 'link.0.data.dataChildren', []);
                         var srcSessionObjArr = _.chain(childData)
                                 .filter(function (val, idx) {
@@ -465,18 +472,12 @@ define(
                                                 }))
                                             });
                                         } else {
-                                            var links = data.link,
-                                                srcTags = removeEmptyTags(_.result(links, '0.data.currentNode.displayLabels')),
-                                                dstTags = removeEmptyTags(_.result(links, '1.data.currentNode.displayLabels')),
-                                                dstIndex = _.findIndex(links, function(link) { return link.data.type == 'dst' });
-                                            if((srcTags == dstTags) || _.includes(links[dstIndex].data.arcType, 'externalProject')
-                                                 || _.includes(links[dstIndex].data.arcType, 'external')) {
-                                                links = links.slice(0,1);
-                                            }
-                                            var content = { title : '', items: [] },
+                                            var linkInfo = self.getLinkInfo(data.link),
+                                                links = linkInfo.links,
+                                                content = { title : '', items: [] },
                                                 linkData = {
-                                                    src: srcTags,
-                                                    dst: dstTags
+                                                    src: linkInfo.srcTags,
+                                                    dst: linkInfo.dstTags
                                                 };
                                             linkData.items = [];
                                             _.each(links, function(link) {
@@ -519,6 +520,16 @@ define(
                         var data = self.trafficData ? JSON.parse(JSON.stringify(self.trafficData))
                                      : viewInst.model.getItems();
                         viewInst.render(data);
+                    },
+                    this.getLinkInfo = function(links) {
+                        var srcTags = removeEmptyTags(_.result(links, '0.data.currentNode.displayLabels')),
+                            dstTags = removeEmptyTags(_.result(links, '1.data.currentNode.displayLabels')),
+                            dstIndex = _.findIndex(links, function(link) { return link.data.type == 'dst' });
+                        if((srcTags == dstTags) || _.includes(links[dstIndex].data.arcType, 'externalProject')
+                             || _.includes(links[dstIndex].data.arcType, 'external')) {
+                            links = links.slice(0,1);
+                        }
+                        return {links, srcTags, dstTags};
                     },
                     this.formatLabel = function(labels, idx, deployment) {
                         var labelMap = [
