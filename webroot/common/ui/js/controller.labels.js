@@ -1414,6 +1414,10 @@ define([
         this.TITLE_ADD_PACKET_CAPTURE = 'Create Analyzer';
         this.ERROR_LABEL_PACKET_CAPTURE = 'Analyzer';
         this.CONFIG_SEC_GRP_PAGE_ID = 'config-sec-grp-page';
+
+        /*Traffic Groups Labels */
+        this.TRAFFIC_GROUPS_ENDPOINT_STATS = 'traffic-groups-endpoint-statistics';
+        this.TITLE_TRAFFIC_GROUPS_ENDPOINT_STATS = 'Endpoint Statistics';
     };
     return CTLabels;
 });

@@ -7,9 +7,6 @@ define(
          'contrail-charts-view', 'contrail-list-model'],
         function(_, ContrailView, ContrailChartsView, ContrailListModel) {
             var TrafficGroupsView = ContrailView.extend({
-                events: {
-                    'click .allSessionInfo' : 'showSessionsInfo'
-                },
                 resetTrafficStats: function(e) {
                     e.preventDefault();
                     var statsTime = '';
@@ -20,10 +17,22 @@ define(
                     $(self.el).find('svg g').empty();
                 },
                 showSessionsInfo: function() {
-                    require(['monitor/networking/trafficgroups/ui/js/views/TrafficGroupsSessionsView'], function(SessionsView) {
+                    require(['monitor/networking/trafficgroups/ui/js/views/TrafficGroupsEPSTabsView'], function(EPSTabsView) {
                         var linkInfo = self.getLinkInfo(self.selectedLinkData),
-                            sessionsView = new SessionsView();
-                        sessionsView.render(linkInfo.links[0].data.dataChildren);
+                            linkData = {
+                                endpointNames: [linkInfo.srcTags, linkInfo.dstTags],
+                                endpointStats: []
+                            }
+                            epsTabsView = new EPSTabsView();
+                        _.each(linkInfo.links, function(link) {
+                            var namePath = link.data.currentNode ? link.data.currentNode.names : '',
+                                epsData = _.filter(link.data.dataChildren,
+                                    function(session) {
+                                        return self.isRecordMatched(namePath, session, link.data);
+                                    });
+                            linkData.endpointStats.push(epsData);
+                        });
+                        epsTabsView.render(linkData);
                     });
                 },
                 render : function() {
@@ -266,6 +275,7 @@ define(
                                                 $('#traffic-groups-radial-chart')
                                                 .addClass('showLinkInfo');
                                             }
+                                            $('.allSessionInfo').on('click', self.showSessionsInfo);
                                             $('#traffic-groups-radial-chart')
                                              .on('click','',{ thisChart:chartScope,thisRibbon:d },
                                               function(ev){

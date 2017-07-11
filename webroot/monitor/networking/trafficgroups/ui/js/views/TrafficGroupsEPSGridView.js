@@ -11,114 +11,119 @@ define([
         el: $(contentContainer),
         render: function (sessionData) {
             var self = this,
-                modalTemplate =contrail.getTemplate4Id('core-modal-template'),
-                prefixId = 'traffic-groups-sessions',
-                modalId = 'traffic-groups-sessions-modal',
-                modalLayout = modalTemplate({prefixId: prefixId, modalId: modalId}),
-                modalConfig = {
-                   'modalId': modalId,
-                   'className': 'modal-840',
-                   'body': modalLayout,
-                   'title': 'Endpoint Statistics',
-                   'onCancel': function() {
-                       $("#" + modalId).modal('hide');
-                   }
-                },
-                formId = prefixId + '_modal';
-            cowu.createModal(modalConfig);
-            var contrailListModel = new ContrailListModel({data : sessionData});
-            $('#'+ modalId).on('shown.bs.modal', function () {
-               self.renderView4Config($("#" + modalId).find('#' + formId), contrailListModel, self.getSessionsGridViewConfig(),
-                    null, null, null, function() {
-                        // Add the title once render is complete
-                        $("#" + formId).find('.grid-header-text')
-                            .html($('.traffic-rules header').html());
-                    }
-                );
-            });
+                viewConfig = this.attributes.viewConfig,
+                contrailListModel = new ContrailListModel({data : viewConfig.data}),
+                tabTitle = viewConfig.names.join(' ' + cowc.ARROW_RIGHT_ICON + ' ');
+           self.renderView4Config($("#"+viewConfig.tabid), contrailListModel, self.getSessionsGridViewConfig(tabTitle));
         },
-        getSessionsGridViewConfig: function () {
+        getSessionsGridViewConfig: function (title) {
             return {
-                elementId: cowu.formatElementId(['traffic-groups-sessions-list']),
-                view: "SectionView",
+                elementId: ctwl.TRAFFIC_GROUPS_ENDPOINT_STATS + '-grid',
+                view: "GridView",
                 viewConfig: {
-                    rows: [
-                        {
-                            columns: [
-                                {
-                                    elementId: 'traffic-groups-sessions-grid',
-                                    view: "GridView",
-                                    viewConfig: {
-                                        elementConfig: this.getSessionsConfiguration()
-                                    }
-                                }
-                            ]
-                        }
-                    ]
+                    elementConfig: this.getSessionsConfiguration(title)
                 }
             }
         },
-        getSessionsConfiguration: function () {
+        getSessionsConfiguration: function (title) {
             var sessionColumns = [
                         {
                             field: 'app',
-                            name: 'Application'
+                            name: 'Application',
+                            hide: true
                         },
                         {
                             field: 'deployment',
-                            name: 'Deployment'
+                            name: 'Deployment',
+                            hide: true,
+                            formatter:function(r,c,v,cd,dc) {
+                               return this.epsDefaultValueFormatter(v);
+                            }
                         },
-                         {
+                        {
                             field: 'tier',
                             name: 'Tier',
-                            hide: true
+                            formatter:function(r,c,v,cd,dc) {
+                               return this.epsDefaultValueFormatter(v);
+                            }
                         },
                         {
                             field: 'site',
                             name: 'Site',
-                            hide: true
+                            formatter:function(r,c,v,cd,dc) {
+                               return this.epsDefaultValueFormatter(v);
+                            }
                         },
                         {
                             field: 'eps.traffic.remote_app_id',
-                            name: 'Remote Application'
+                            name: 'Remote Application',
+                            hide: true
                         },
                         {
                             field: 'eps.traffic.remote_deployment_id',
-                            name: 'Remote Deployment'
+                            name: 'Remote Deployment',
+                            hide: true,
+                            formatter:function(r,c,v,cd,dc) {
+                               return this.epsDefaultValueFormatter(v);
+                            }
                         },
                         {
                             field: 'eps.traffic.remote_tier_id',
                             name: 'Remote Tier',
-                            hide: true
+                            formatter:function(r,c,v,cd,dc) {
+                               return this.epsDefaultValueFormatter(v);
+                            }
                         },
                         {
                             field: 'eps.traffic.remote_site_id',
                             name: 'Remote Site',
-                            hide: true
+                            formatter:function(r,c,v,cd,dc) {
+                               return this.epsDefaultValueFormatter(v);
+                            }
                         },
                         {
                             field: 'vn',
                             name: 'VN',
-                            hide: true
+                            hide: true,
+                            formatter:function(r,c,v,cd,dc) {
+                               return this.epsDefaultValueFormatter(v);
+                            }
                         },
                         {
                             field: 'eps.traffic.remote_vn',
                             name: 'Remote VN',
-                            hide: true
+                            hide: true,
+                            formatter:function(r,c,v,cd,dc) {
+                               return this.epsDefaultValueFormatter(v);
+                            }
                         },
                         {
                             field: 'SUM(eps.traffic.in_bytes)',
-                            name: 'In Bytes'
+                            name: 'In Bytes',
+                            formatter:function(r,c,v,cd,dc) {
+                               return formatBytes(v);
+                            }
                         },
                         {
                             field: 'SUM(eps.traffic.out_bytes)',
-                            name: 'Out Bytes'
+                            name: 'Out Bytes',
+                            formatter:function(r,c,v,cd,dc) {
+                               return formatBytes(v);
+                            }
+                        },
+                        {
+                            field: 'SUM(eps.traffic.initiator_session_count)',
+                            name: 'Sessions Initiated'
+                        },
+                        {
+                            field: 'SUM(eps.traffic.responder_session_count)',
+                            name: 'Sessions Responded'
                         }
                     ],
                 gridElementConfig = {
                     header: {
                         title: {
-                            text: ''
+                            text: title
                         },
                         defaultControls: {
                             collapseable: false,
@@ -141,10 +146,10 @@ define([
                         dataSource : {data: []},
                         statusMessages: {
                             loading: {
-                               text: 'Loading sessions..',
+                               text: 'Loading endpoint stats..',
                             },
                             empty: {
-                               text: 'No sessions Found.'
+                               text: 'No endpoint stats Found.'
                             }
                          }
                     },
@@ -182,17 +187,44 @@ define([
                                                         templateGenerator: 'TextGenerator'
                                                     },
                                                     {
+                                                        key: 'deployment',
+                                                        label: 'Deployment',
+                                                        templateGenerator: 'TextGenerator',
+                                                        templateGeneratorConfig: {
+                                                            formatter: 'epsDefaultValueFormatter'
+                                                        }
+                                                    },
+                                                    {
+                                                        key: 'tier',
+                                                        label: 'Tier',
+                                                        templateGenerator: 'TextGenerator',
+                                                        templateGeneratorConfig: {
+                                                            formatter: 'epsDefaultValueFormatter'
+                                                        }
+                                                    },
+                                                    {
+                                                        key: 'app',
+                                                        label: 'Site',
+                                                        templateGenerator: 'TextGenerator',
+                                                        templateGeneratorConfig: {
+                                                            formatter: 'siteFormatter'
+                                                        }
+                                                    },
+                                                    {
+                                                        key: 'vn',
+                                                        label: 'VN',
+                                                        templateGenerator: 'TextGenerator',
+                                                        templateGeneratorConfig: {
+                                                            formatter: 'epsDefaultValueFormatter'
+                                                        }
+                                                    },
+                                                    {
                                                         key: 'app',
                                                         label: 'Remote Application',
                                                         templateGenerator: 'TextGenerator',
                                                         templateGeneratorConfig: {
                                                             formatter: 'remoteAppFormatter'
                                                         }
-                                                    },
-                                                    {
-                                                        key: 'deployment',
-                                                        label: 'Deployment',
-                                                        templateGenerator: 'TextGenerator'
                                                     },
                                                     {
                                                         key: 'deployment',
@@ -204,11 +236,6 @@ define([
                                                     },
                                                     {
                                                         key: 'tier',
-                                                        label: 'Tier',
-                                                        templateGenerator: 'TextGenerator'
-                                                    },
-                                                    {
-                                                        key: 'tier',
                                                         label: 'Remote Tier',
                                                         templateGenerator: 'TextGenerator',
                                                         templateGeneratorConfig: {
@@ -216,22 +243,12 @@ define([
                                                         }
                                                     },
                                                     {
-                                                        key: 'site',
-                                                        label: 'Site',
-                                                        templateGenerator: 'TextGenerator'
-                                                    },
-                                                    {
-                                                        key: 'site',
+                                                        key: 'app',
                                                         label: 'Remote Site',
                                                         templateGenerator: 'TextGenerator',
                                                         templateGeneratorConfig: {
                                                             formatter: 'remoteSiteFormatter'
                                                         }
-                                                    },
-                                                    {
-                                                        key: 'vn',
-                                                        label: 'VN',
-                                                        templateGenerator: 'TextGenerator'
                                                     },
                                                     {
                                                         key: 'vn',
@@ -285,32 +302,38 @@ define([
             };
         }
     });
+    this.epsDefaultValueFormatter = function(v) {
+        return (v || v === 0) ? v : '-';
+    }
     this.remoteAppFormatter = function(v, dc) {
-       return  dc['eps.traffic.remote_app_id'];
+       return dc['eps.traffic.remote_app_id'];
     }
     this.remoteDeplFormatter = function(v, dc) {
-       return  dc['eps.traffic.remote_deployment_id'];
+       return this.epsDefaultValueFormatter(dc['eps.traffic.remote_deployment_id']);
     }
     this.remoteTierFormatter = function(v, dc) {
-       return  dc['eps.traffic.remote_tier_id'];
+       return this.epsDefaultValueFormatter(dc['eps.traffic.remote_tier_id']);
+    }
+    this.siteFormatter = function(v, dc) {
+       return this.epsDefaultValueFormatter(dc['site']);
     }
     this.remoteSiteFormatter = function(v, dc) {
-       return  dc['eps.traffic.remote_site_id'];
+       return this.epsDefaultValueFormatter(dc['eps.traffic.remote_site_id']);
     }
     this.remoteVNFormatter = function(v, dc) {
-       return  dc['eps.traffic.remote_vn'];
+       return this.epsDefaultValueFormatter(dc['eps.traffic.remote_vn']);
     }
     this.bytesInFormatter = function(v, dc) {
-       return  dc['SUM(eps.traffic.in_bytes)'];
+       return formatBytes(dc['SUM(eps.traffic.in_bytes)']);
     }
     this.bytesOutFormatter = function(v, dc) {
-       return  dc['SUM(eps.traffic.out_bytes)'];
+       return formatBytes(dc['SUM(eps.traffic.out_bytes)']);
     }
     this.sessionsInFormatter = function(v, dc) {
-       return  dc['SUM(eps.traffic.initiator_session_count)'];
+       return dc['SUM(eps.traffic.initiator_session_count)'];
     }
     this.sessionsOutFormatter = function(v, dc) {
-       return  dc['SUM(eps.traffic.responder_session_count)'];
+       return dc['SUM(eps.traffic.responder_session_count)'];
     }
     return TrafficGroupsSessionsView;
 });
