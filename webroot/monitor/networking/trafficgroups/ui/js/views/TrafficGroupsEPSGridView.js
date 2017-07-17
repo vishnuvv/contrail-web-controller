@@ -37,21 +37,21 @@ define([
                             name: 'Deployment',
                             hide: true,
                             formatter:function(r,c,v,cd,dc) {
-                               return this.epsDefaultValueFormatter(v);
+                               return epsDefaultValueFormatter(v);
                             }
                         },
                         {
                             field: 'tier',
                             name: 'Tier',
                             formatter:function(r,c,v,cd,dc) {
-                               return this.epsDefaultValueFormatter(v);
+                               return epsDefaultValueFormatter(v);
                             }
                         },
                         {
                             field: 'site',
                             name: 'Site',
                             formatter:function(r,c,v,cd,dc) {
-                               return this.epsDefaultValueFormatter(v);
+                               return epsDefaultValueFormatter(v);
                             }
                         },
                         {
@@ -64,21 +64,21 @@ define([
                             name: 'Remote Deployment',
                             hide: true,
                             formatter:function(r,c,v,cd,dc) {
-                               return this.epsDefaultValueFormatter(v);
+                               return epsDefaultValueFormatter(v);
                             }
                         },
                         {
                             field: 'eps.traffic.remote_tier_id',
                             name: 'Remote Tier',
                             formatter:function(r,c,v,cd,dc) {
-                               return this.epsDefaultValueFormatter(v);
+                               return epsDefaultValueFormatter(v);
                             }
                         },
                         {
                             field: 'eps.traffic.remote_site_id',
                             name: 'Remote Site',
                             formatter:function(r,c,v,cd,dc) {
-                               return this.epsDefaultValueFormatter(v);
+                               return epsDefaultValueFormatter(v);
                             }
                         },
                         {
@@ -86,7 +86,7 @@ define([
                             name: 'VN',
                             hide: true,
                             formatter:function(r,c,v,cd,dc) {
-                               return this.epsDefaultValueFormatter(v);
+                               return epsDefaultValueFormatter(v);
                             }
                         },
                         {
@@ -94,7 +94,7 @@ define([
                             name: 'Remote VN',
                             hide: true,
                             formatter:function(r,c,v,cd,dc) {
-                               return this.epsDefaultValueFormatter(v);
+                               return epsDefaultValueFormatter(v);
                             }
                         },
                         {
