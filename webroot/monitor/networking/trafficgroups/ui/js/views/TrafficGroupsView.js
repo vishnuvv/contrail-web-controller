@@ -7,6 +7,15 @@ define(
          'contrail-charts-view', 'contrail-list-model'],
         function(_, ContrailView, ContrailChartsView, ContrailListModel) {
             var TrafficGroupsView = ContrailView.extend({
+                tagTypeList: {
+                    'app': [],
+                    'tier': [],
+                    'deployment': [],
+                    'site': []
+                },
+                filterByTagType: ['app-deployment', 'tier'],
+                filterdData: {},
+                filterByTagName: {},
                 resetTrafficStats: function(e) {
                     e.preventDefault();
                     var statsTime = '';
@@ -281,6 +290,26 @@ define(
                         var ruleDetailsModel = new ContrailListModel(listModelConfig);
                     }
                 },
+                getTagHierarchy: function(d, level) {
+                    var srcHierarchy = [],
+                        dstHierarchy = [];
+                        level = level ? level : 1;
+                    _.each(self.filterByTagType, function(tags, idx) {
+                        if(idx < level) {
+                            var tagTypes = tags.split('-');
+                            srcHierarchy.push(_.compact(_.map(tagTypes, function(tag) {
+                                return d[tag.trim()];
+                            })).join('-'));
+                            dstHierarchy.push(_.compact(_.map(tagTypes, function(tag) {
+                                return d['eps.traffic.remote_' + tag.trim() + '_id'];
+                            })).join('-'));
+                        }
+                    });
+                    return {
+                        srcHierarchy: srcHierarchy,
+                        dstHierarchy: dstHierarchy
+                    };
+                },
                 updateChart: function(cfg) {
                     var extendConfig = {}
                     if(_.isEmpty(cfg)) {
@@ -327,10 +356,25 @@ define(
                                     return TrafficGroupsView.colorMap[item.level][itemName];
                                 },
                                 showLinkInfo: self.showLinkInfo,
+                                expandLevels: 'disable',
                                 // levels: levels,
                                 hierarchyConfig: {
                                     parse: function (d) {
-                                        var srcDeployment = d['deployment'],
+                                        var hierarchyObj = self.getTagHierarchy(d, cfg['levels']),
+                                            srcHierarchy = hierarchyObj.srcHierarchy
+                                            dstHierarchy = hierarchyObj.dstHierarchy,
+                                            currentProject = contrail.getCookie(cowc.COOKIE_PROJECT),
+                                            externalType = '',
+                                            srcDisplayLabel = [],
+                                            dstDisplayLabel = [],
+                                            remoteVN = d['eps.traffic.remote_vn'],
+                                            implicitDenyKey = ifNull(_.find(cowc.DEFAULT_FIREWALL_RULES, function(rule) {
+                                                return rule.name == 'Implicit Deny';
+                                            }), '').uuid,
+                                            implicitAllowKey = ifNull(_.find(cowc.DEFAULT_FIREWALL_RULES, function(rule) {
+                                                return rule.name == 'Implicit Allow';
+                                            }), '').uuid;
+                                        /*var srcDeployment = d['deployment'],
                                             dstDeployment = d['eps.traffic.remote_deployment_id'],
                                             srcHierarchy = [d['app']],
                                             dstHierarchy = [d['eps.traffic.remote_app_id']],
@@ -348,7 +392,7 @@ define(
                                         if(cfg['levels'] == 2) {
                                             srcHierarchy = [d['app'], d['tier']],
                                             dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
-                                        }
+                                        }*/
 
                                         if(typeof d['eps.__key'] == 'string' &&
                                             d['eps.__key'].indexOf(implicitDenyKey) > -1) {
@@ -359,8 +403,7 @@ define(
                                             d.linkCssClass = 'implicitAllow';
                                         }
                                         $.each(srcHierarchy, function(idx) {
-                                            srcDisplayLabel.push(self.formatLabel(srcHierarchy,
-                                                              idx, srcDeployment));
+                                            srcDisplayLabel.push(self.formatLabel(srcHierarchy, idx));
                                         });
 
                                         if(remoteVN && remoteVN.indexOf(':') > 0) {
@@ -373,8 +416,7 @@ define(
                                         }
 
                                         $.each(dstHierarchy, function(idx) {
-                                            dstDisplayLabel.push(self.formatLabel(dstHierarchy,
-                                                              idx, dstDeployment));
+                                            dstDisplayLabel.push(self.formatLabel(dstHierarchy, idx));
                                             if(externalType) {
                                                 if(externalType == 'external') {
                                                     dstHierarchy[idx] = 'External_external';
@@ -388,7 +430,7 @@ define(
                                             names: srcHierarchy,
                                             labelAppend: '',
                                             displayLabels: srcDisplayLabel,
-                                            id: srcHierarchy.join('-'),
+                                            id: _.compact(srcHierarchy).join('-'),
                                             value: d['SUM(eps.traffic.in_bytes)'] + d['SUM(eps.traffic.out_bytes)'],
                                             inBytes: d['SUM(eps.traffic.in_bytes)'],
                                             outBytes: d['SUM(eps.traffic.out_bytes)']
@@ -400,7 +442,7 @@ define(
                                             names: dstHierarchy,
                                             labelAppend: '',
                                             displayLabels: dstDisplayLabel,
-                                            id: dstHierarchy.join('-'),
+                                            id: _.compact(dstHierarchy).join('-'),
                                             type: externalType,
                                             value: d['SUM(eps.traffic.out_bytes)'] + d['SUM(eps.traffic.in_bytes)'],
                                             inBytes: d['SUM(eps.traffic.in_bytes)'],
@@ -504,9 +546,15 @@ define(
                     $('#traffic-groups-link-info').html('');
                     self.chartInfo = viewInst.getChartViewInfo(config,
                                 "dendrogram-chart-id", self.addtionalEvents());
-                    var data = self.trafficData ? JSON.parse(JSON.stringify(self.trafficData))
+                    var data = self.filterdData ? JSON.parse(JSON.stringify(self.filterdData))
                                  : viewInst.model.getItems();
                     viewInst.render(data, self.chartInfo.chartView);
+                    if(data && data.length == 0) {
+                        // if no records matching for selected filter tags, display no results found
+                        var noResults = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        noResults.textContent = 'No Results Found';
+                        document.getElementById('dendrogram-chart-id').append(noResults);
+                    }
                 },
                 addtionalEvents: function() {
                     return [{
@@ -591,8 +639,15 @@ define(
                     }
                     return {links, srcTags, dstTags};
                 },
-                formatLabel: function(labels, idx, deployment) {
-                    var labelMap = [
+                formatLabel: function(label, idx) {
+                    var displayLabel = '';
+                    if(label) {
+                        displayLabel = label[idx].replace('application', cowc.APPLICATION_ICON)
+                             .replace('tier', cowc.TIER_ICON)
+                             .replace('site', cowc.SITE_ICON)
+                             .replace('deployment', cowc.DEPLOYMENT_ICON);
+                    }
+                   /* var labelMap = [
                         {'type': 'application', 'icon': cowc.APPLICATION_ICON},
                         {'type': 'tier', 'icon': cowc.TIER_ICON}
                     ],
@@ -604,19 +659,124 @@ define(
                     labels[idx] += deployment;
                     if(idx == 0) {
                         displayLabel += deployment.replace('deployment', cowc.DEPLOYMENT_ICON);
-                    }
+                    }*/
                     return displayLabel;
                 },
                 removeEmptyTags: function(names) {
-                    return ((names && names.length > 1 && names[1] &&  names[1] != 'External')
-                            ? names.join('-') : names[0]);
+                    var displayNames = names.slice(0);
+                    displayNames = _.remove(displayNames, function(name, idx) {
+                        return !(name == 'External' && idx > 0);
+                    });
+                    return _.compact(displayNames).join('-');
+                    /*return ((names && names.length > 1 && names[1] &&  names[1] != 'External')
+                            ? names.join('-') : names[0]);*/
                 },
                 isRecordMatched: function(names, record, data) {
-                    var deployment = record['deployment'] ? '-' + record['deployment'] : '',
+                    var arcType = data.arcType ? '_' + data.arcType : '',
+                        isMatched = true;
+                    for(var i = 0; i < names.length; i++) {
+                        var tagTypes = self.filterByTagType[i].split('-'),
+                            tagName =  _.compact(_.map(tagTypes, function(tag) {
+                                            return record[tag];
+                                    })).join('-');
+                       tagName += arcType;
+                       isMatched = isMatched && (tagName == names[i]);
+                    }
+                    /*var deployment = record['deployment'] ? '-' + record['deployment'] : '',
                         arcType = data.arcType ? '_' + data.arcType : '';
                     return ((names.length == 1 && (record.app + deployment + arcType) == names[0]) ||
                             (names.length == 2 && (record.app + deployment + arcType) == names[0]
-                             && (record.tier + deployment + arcType) == names[1]));
+                             && (record.tier + deployment + arcType) == names[1]));*/
+                    return isMatched;
+                },
+                prepareTagList: function() {
+                    _.each(self.tagTypeList, function(tagName, tagType, obj) {
+                        obj[tagType] = _.compact(_.uniq(_.flatMap(self.trafficData,
+                            function(a) {
+                                return [a[tagType],a['eps.traffic.remote_' + tagType + '_id']];
+                            })));
+                    });
+                },
+                filterDataByTagName: function() {
+                   self.filterdData =  _.filter(self.trafficData, function(d) {
+                        var matchCriteria = true;
+                        _.each(self.filterByTagName, function(tagName, tagType) {
+                            matchCriteria = matchCriteria && (d[tagType] == tagName ||
+                               d['eps.traffic.remote_' + tagType + '_id'] == tagName);
+                        });
+                        return matchCriteria;
+                    });
+                },
+                filterTrafficData: function() {
+                    var modalTemplate =contrail.getTemplate4Id('core-modal-template'),
+                        prefixId = 'Filter_Traffic_Stats',
+                        modalId = prefixId + '-modal',
+                        modalLayout = modalTemplate({prefixId: prefixId, modalId: modalId}),
+                        modalConfig = {
+                           'modalId': modalId,
+                           'className': 'modal-840',
+                           'body': modalLayout,
+                           'title': 'Filter Traffic Data',
+                           'onCancel': function() {
+                               $("#" + modalId).modal('hide');
+                           },
+                           'onSave': function () {
+                                self.filterByTagName = {};
+                                _.each(self.tagTypeList, function(tagName, tagType) {
+                                    if($('#' + tagType).val())
+                                      self.filterByTagName[tagType] = $('#' + tagType).val();
+                                });
+                                $("#" + modalId).modal('hide');
+                                self.filterByTagType = $('#FilterbyTagType').val().split(',');
+                                if(self.filterByTagType)
+                                self.filterDataByTagName();
+                                self.updateChart({
+                                    levels: self.filterByTagType.length
+                                });
+                            },
+                        },
+                        formId = prefixId + '_modal';
+                    cowu.createModal(modalConfig);
+                    $('#'+ modalId).on('shown.bs.modal', function () {
+                         var filterTmpl = contrail.getTemplate4Id('filter-tarffic-data-template');
+                         //self.renderView4Config($("#" + modalId).find('#' + formId), null, self.getSessionsTabsViewConfig());
+                        $("#" + modalId).find('#' + formId).html(filterTmpl({tagList: self.tagTypeList}));
+
+                      var tagTypes = [{
+                            id: 'app',
+                            text: 'Application'
+                        },{
+                            id: 'tier',
+                            text: 'Tier',
+                        },{
+                            id:'deployment',
+                            text:'Deployment'
+                        },{
+                            id:'site',
+                            text:'Site'
+                       },
+                       {
+                            id:'app-deployment',
+                            text:'App-Deploment'
+                       },
+                       {
+                            id:'app-tier',
+                            text:'App-Tier'
+                       },
+                       {
+                            id:'app-site',
+                            text:'App-Site'
+                       },
+                       {
+                            id:'app-deployment-tier',
+                            text:'App-Deploment-Tier'
+                       }];
+                      $("#FilterbyTagType").select2({
+                            data: tagTypes,
+                            maximumSelectionSize: 2,
+                            multiple:true,
+                      });
+                    });
                 },
                 renderTrafficChart: function(statsTime) {
                     var statsTimeDuration = '120',
@@ -746,6 +906,7 @@ define(
                                     });
                                     // cowu.populateTrafficGroupsData(data);
                                     self.trafficData = JSON.parse(JSON.stringify(data));
+                                    self.prepareTagList();
                                     return data;
                                 }
                             }]
@@ -771,6 +932,7 @@ define(
                     self.$el.html(trafficGroupsTmpl({widgetTitle:'Traffic Groups'}));
                     self.$el.addClass('traffic-groups-view');
                     $('.clear-traffic-stats, .refresh-traffic-stats').on('click', self.resetTrafficStats);
+                    $('.filter-traffic-stats').on('click', self.filterTrafficData);
                     TrafficGroupsView.colorMap = {};
                     TrafficGroupsView.colorArray = [];
                     TrafficGroupsView.tagMap = {};
