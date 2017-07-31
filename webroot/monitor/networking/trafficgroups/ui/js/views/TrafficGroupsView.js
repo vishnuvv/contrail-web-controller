@@ -4,8 +4,11 @@
 
 define(
         [ 'lodashv4', 'contrail-view',
-         'contrail-charts-view', 'contrail-list-model'],
-        function(_, ContrailView, ContrailChartsView, ContrailListModel) {
+         'contrail-charts-view', 'contrail-list-model',
+         'monitor/networking/trafficgroups/ui/js/views/TrafficGroupsFilterView',
+         'monitor/networking/trafficgroups/ui/js/models/TrafficGroupsFilterModel'],
+        function(_, ContrailView, ContrailChartsView,
+                ContrailListModel, FilterView, FilterModel) {
             var TrafficGroupsView = ContrailView.extend({
                 tagTypeList: {
                     'app': [],
@@ -13,19 +16,18 @@ define(
                     'deployment': [],
                     'site': []
                 },
-                filterByTagType: ['app-deployment', 'tier'],
                 filterdData: {},
-                filterByTagName: {},
                 resetTrafficStats: function(e) {
                     e.preventDefault();
                     var statsTime = '';
                    if($(e.currentTarget).hasClass('clear-traffic-stats')) {
                         statsTime = '0';
                     }
-                    self.renderTrafficChart(statsTime);
-                    $(self.el).find('svg g').empty();
+                    this.renderTrafficChart(statsTime);
+                    $(this.el).find('svg g').empty();
                 },
                 showSessionsInfo: function() {
+                    var self = this;
                     require(['monitor/networking/trafficgroups/ui/js/views/TrafficGroupsEPSTabsView'], function(EPSTabsView) {
                         var linkInfo = self.getLinkInfo(self.selectedLinkData),
                             linkData = {
@@ -45,7 +47,8 @@ define(
                     });
                 },
                 showLinkInfo(d,el,e,chartScope) {
-                    var ruleUUIDs = [], ruleKeys = [], level = 1;
+                    var self = this,
+                        ruleUUIDs = [], ruleKeys = [], level = 1;
                     if (_.result(d, 'innerPoints.length') == 4)
                         level = 2;
                     var srcNodeData = _.filter(d.link, function (val, idx){
@@ -265,7 +268,7 @@ define(
                                             $('#traffic-groups-radial-chart')
                                             .addClass('showLinkInfo');
                                         }
-                                        $('.allSessionInfo').on('click', self.showSessionsInfo);
+                                        $('.allSessionInfo').on('click', self.showSessionsInfo.bind(self));
                                         $('#traffic-groups-radial-chart')
                                          .on('click','',{ thisChart:chartScope,thisRibbon:d },
                                           function(ev){
@@ -290,11 +293,12 @@ define(
                         var ruleDetailsModel = new ContrailListModel(listModelConfig);
                     }
                 },
-                getTagHierarchy: function(d, level) {
+                getTagHierarchy: function(d) {
                     var srcHierarchy = [],
-                        dstHierarchy = [];
-                        level = level ? level : 1;
-                    _.each(self.filterByTagType, function(tags, idx) {
+                        dstHierarchy = [],
+                        level = this.getTagFilterObj().groupByTagType.length,
+                        selectedTagTypes = this.getTagFilterObj().groupByTagType;
+                    _.each(selectedTagTypes, function(tags, idx) {
                         if(idx < level) {
                             var tagTypes = tags.split('-');
                             srcHierarchy.push(_.compact(_.map(tagTypes, function(tag) {
@@ -311,7 +315,8 @@ define(
                     };
                 },
                 updateChart: function(cfg) {
-                    var extendConfig = {}
+                    var self = this,
+                        extendConfig = {}
                     if(_.isEmpty(cfg)) {
                         cfg = {};
                     }
@@ -356,11 +361,11 @@ define(
                                     return TrafficGroupsView.colorMap[item.level][itemName];
                                 },
                                 showLinkInfo: self.showLinkInfo,
+                                drillDownLevel: self.getTagFilterObj().groupByTagType.length,
                                 expandLevels: 'disable',
-                                // levels: levels,
                                 hierarchyConfig: {
                                     parse: function (d) {
-                                        var hierarchyObj = self.getTagHierarchy(d, cfg['levels']),
+                                        var hierarchyObj = self.getTagHierarchy(d),
                                             srcHierarchy = hierarchyObj.srcHierarchy
                                             dstHierarchy = hierarchyObj.dstHierarchy,
                                             currentProject = contrail.getCookie(cowc.COOKIE_PROJECT),
@@ -374,26 +379,6 @@ define(
                                             implicitAllowKey = ifNull(_.find(cowc.DEFAULT_FIREWALL_RULES, function(rule) {
                                                 return rule.name == 'Implicit Allow';
                                             }), '').uuid;
-                                        /*var srcDeployment = d['deployment'],
-                                            dstDeployment = d['eps.traffic.remote_deployment_id'],
-                                            srcHierarchy = [d['app']],
-                                            dstHierarchy = [d['eps.traffic.remote_app_id']],
-                                            currentProject = contrail.getCookie(cowc.COOKIE_PROJECT),
-                                            externalType = '',
-                                            srcDisplayLabel = [],
-                                            dstDisplayLabel = [],
-                                            remoteVN = d['eps.traffic.remote_vn'],
-                                            implicitDenyKey = ifNull(_.find(cowc.DEFAULT_FIREWALL_RULES, function(rule) {
-                                                return rule.name == 'Implicit Deny';
-                                            }), '').uuid,
-                                            implicitAllowKey = ifNull(_.find(cowc.DEFAULT_FIREWALL_RULES, function(rule) {
-                                                return rule.name == 'Implicit Allow';
-                                            }), '').uuid;
-                                        if(cfg['levels'] == 2) {
-                                            srcHierarchy = [d['app'], d['tier']],
-                                            dstHierarchy = [d['eps.traffic.remote_app_id'], d['eps.traffic.remote_tier_id']];
-                                        }*/
-
                                         if(typeof d['eps.__key'] == 'string' &&
                                             d['eps.__key'].indexOf(implicitDenyKey) > -1) {
                                             d.linkCssClass = 'implicitDeny';
@@ -544,11 +529,25 @@ define(
                     $('#traffic-groups-radial-chart')
                     .removeClass('showLinkInfo');
                     $('#traffic-groups-link-info').html('');
-                    self.chartInfo = viewInst.getChartViewInfo(config,
+                    self.chartInfo = self.viewInst.getChartViewInfo(config,
                                 "dendrogram-chart-id", self.addtionalEvents());
+                    if(cfg['freshData']) {
+                        if(this.filterModelObj)
+                        this.filterModelObj.set('filterByTagName', null);
+                        self.viewInst.model.onAllRequestsComplete.subscribe(function() {
+                           self.chartRender();
+                        });
+                    } else {
+                        self.filterDataByTagName();
+                        self.chartRender();
+                    }
+                    self.updateFilterSec();
+                },
+                chartRender: function() {
+                    var self = this;
                     var data = self.filterdData ? JSON.parse(JSON.stringify(self.filterdData))
-                                 : viewInst.model.getItems();
-                    viewInst.render(data, self.chartInfo.chartView);
+                             : self.viewInst.model.getItems();
+                    self.viewInst.render(data, self.chartInfo.chartView);
                     if(data && data.length == 0) {
                         // if no records matching for selected filter tags, display no results found
                         var noResults = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -560,31 +559,31 @@ define(
                     return [{
                             event: 'click',
                             selector: 'node',
-                            handler: self._onClickNode,
+                            handler: this._onClickNode.bind(this),
                             handlerName: '_onClickNode'
                         },
                         {
                             event: 'click',
                             selector: 'link',
-                            handler: self._onClickLink,
+                            handler: this._onClickLink.bind(this),
                             handlerName: '_onClickLink'
                         },
                         {
                             event: 'mousemove',
                             selector: 'link',
-                            handler: self._onMousemoveLink,
+                            handler: this._onMousemoveLink.bind(this),
                             handlerName: '_onMousemoveLink'
                         },
                         {
                             event: 'mouseout',
                             selector: 'link',
-                            handler: self._onMouseoutLink,
+                            handler: this._onMouseoutLink.bind(this),
                             handlerName: '_onMouseoutLink'
                         }
                     ];
                 },
                 _onClickNode: function(d, el ,e) {
-                    var chartScope = self.chartInfo.component;
+                    var chartScope = this.chartInfo.component;
                     if(chartScope.config.attributes.
                         expandLevels == 'disable') {
                       return;
@@ -596,17 +595,17 @@ define(
                     //If clicked on 2nd level arc,collapse to 1st level
                     if(d.depth == 2 || d.height == 2)
                         levels = 1;
-                        self.updateChart({levels: levels});
+                        this.updateChart({levels: levels});
                     el.classList.remove(chartScope.selectorClass('active'));
                 },
                 _onClickLink: function(d, el ,e) {
-                    var chartScope = self.chartInfo.component;
+                    var chartScope = this.chartInfo.component;
                     if(chartScope.config.attributes.showLinkInfo) {
-                        self.showLinkInfo(d, el, e, chartScope);
+                        this.showLinkInfo(d, el, e, chartScope);
                     }
                 },
                 _onMousemoveLink: function(d, el ,e) {
-                    var chartScope = self.chartInfo.component,
+                    var chartScope = this.chartInfo.component,
                         [left, top] = chartScope.d3Selection.
                                             mouse(chartScope._container);
                       if(chartScope.clearLinkTooltip) {
@@ -623,15 +622,15 @@ define(
                       } , 300);
                 },
                 _onMouseoutLink: function(d, el ,e) {
-                    var chartScope = self.chartInfo.component;
+                    var chartScope = this.chartInfo.component;
                     if(chartScope.clearLinkTooltip) {
                       clearTimeout(chartScope.clearLinkTooltip);
                     }
                     chartScope.actionman.fire('HideComponent', 'tooltip-id');
                 },
                 getLinkInfo: function(links) {
-                    var srcTags = self.removeEmptyTags(_.result(links, '0.data.currentNode.displayLabels')),
-                        dstTags = self.removeEmptyTags(_.result(links, '1.data.currentNode.displayLabels')),
+                    var srcTags = this.removeEmptyTags(_.result(links, '0.data.currentNode.displayLabels')),
+                        dstTags = this.removeEmptyTags(_.result(links, '1.data.currentNode.displayLabels')),
                         dstIndex = _.findIndex(links, function(link) { return link.data.type == 'dst' });
                     if((srcTags == dstTags) || _.includes(links[dstIndex].data.arcType, 'externalProject')
                          || _.includes(links[dstIndex].data.arcType, 'external')) {
@@ -647,19 +646,6 @@ define(
                              .replace('site', cowc.SITE_ICON)
                              .replace('deployment', cowc.DEPLOYMENT_ICON);
                     }
-                   /* var labelMap = [
-                        {'type': 'application', 'icon': cowc.APPLICATION_ICON},
-                        {'type': 'tier', 'icon': cowc.TIER_ICON}
-                    ],
-                    displayLabel = '';
-                    if(labels) {
-                        displayLabel = labels[idx].replace(labelMap[idx].type, labelMap[idx].icon);
-                    }
-                    deployment = deployment ? ('-' + deployment) : '';
-                    labels[idx] += deployment;
-                    if(idx == 0) {
-                        displayLabel += deployment.replace('deployment', cowc.DEPLOYMENT_ICON);
-                    }*/
                     return displayLabel;
                 },
                 removeEmptyTags: function(names) {
@@ -668,28 +654,23 @@ define(
                         return !(name == 'External' && idx > 0);
                     });
                     return _.compact(displayNames).join('-');
-                    /*return ((names && names.length > 1 && names[1] &&  names[1] != 'External')
-                            ? names.join('-') : names[0]);*/
                 },
                 isRecordMatched: function(names, record, data) {
                     var arcType = data.arcType ? '_' + data.arcType : '',
-                        isMatched = true;
+                        isMatched = true,
+                        selectedTagTypes = this.getTagFilterObj().groupByTagType;
                     for(var i = 0; i < names.length; i++) {
-                        var tagTypes = self.filterByTagType[i].split('-'),
+                        var tagTypes = selectedTagTypes[i].split('-'),
                             tagName =  _.compact(_.map(tagTypes, function(tag) {
                                             return record[tag];
                                     })).join('-');
                        tagName += arcType;
                        isMatched = isMatched && (tagName == names[i]);
                     }
-                    /*var deployment = record['deployment'] ? '-' + record['deployment'] : '',
-                        arcType = data.arcType ? '_' + data.arcType : '';
-                    return ((names.length == 1 && (record.app + deployment + arcType) == names[0]) ||
-                            (names.length == 2 && (record.app + deployment + arcType) == names[0]
-                             && (record.tier + deployment + arcType) == names[1]));*/
                     return isMatched;
                 },
                 prepareTagList: function() {
+                    var self = this;
                     _.each(self.tagTypeList, function(tagName, tagType, obj) {
                         obj[tagType] = _.compact(_.uniq(_.flatMap(self.trafficData,
                             function(a) {
@@ -698,92 +679,82 @@ define(
                     });
                 },
                 filterDataByTagName: function() {
-                   self.filterdData =  _.filter(self.trafficData, function(d) {
-                        var matchCriteria = true;
-                        _.each(self.filterByTagName, function(tagName, tagType) {
-                            matchCriteria = matchCriteria && (d[tagType] == tagName ||
+                    var self = this;
+                    self.filterdData =  _.filter(self.trafficData, function(d) {
+                        var isMatched = true;
+                        _.each(self.getTagFilterObj().filterByTagName, function(tag) {
+                            var tagObj = tag.split(cowc.DROPDOWN_VALUE_SEPARATOR),
+                                tagType = tagObj[1],
+                                tagName = tagObj[0];
+                            isMatched = isMatched && (d[tagType] == tagName ||
                                d['eps.traffic.remote_' + tagType + '_id'] == tagName);
                         });
-                        return matchCriteria;
+                        return isMatched;
                     });
                 },
-                filterTrafficData: function() {
-                    var modalTemplate =contrail.getTemplate4Id('core-modal-template'),
-                        prefixId = 'Filter_Traffic_Stats',
-                        modalId = prefixId + '-modal',
-                        modalLayout = modalTemplate({prefixId: prefixId, modalId: modalId}),
-                        modalConfig = {
-                           'modalId': modalId,
-                           'className': 'modal-840',
-                           'body': modalLayout,
-                           'title': 'Filter Traffic Data',
-                           'onCancel': function() {
-                               $("#" + modalId).modal('hide');
-                           },
-                           'onSave': function () {
-                                self.filterByTagName = {};
-                                _.each(self.tagTypeList, function(tagName, tagType) {
-                                    if($('#' + tagType).val())
-                                      self.filterByTagName[tagType] = $('#' + tagType).val();
-                                });
-                                $("#" + modalId).modal('hide');
-                                self.filterByTagType = $('#FilterbyTagType').val().split(',');
-                                if(self.filterByTagType)
-                                self.filterDataByTagName();
-                                self.updateChart({
-                                    levels: self.filterByTagType.length
-                                });
-                            },
-                        },
-                        formId = prefixId + '_modal';
-                    cowu.createModal(modalConfig);
-                    $('#'+ modalId).on('shown.bs.modal', function () {
-                         var filterTmpl = contrail.getTemplate4Id('filter-tarffic-data-template');
-                         //self.renderView4Config($("#" + modalId).find('#' + formId), null, self.getSessionsTabsViewConfig());
-                        $("#" + modalId).find('#' + formId).html(filterTmpl({tagList: self.tagTypeList}));
-
-                      var tagTypes = [{
-                            id: 'app',
-                            text: 'Application'
-                        },{
-                            id: 'tier',
-                            text: 'Tier',
-                        },{
-                            id:'deployment',
-                            text:'Deployment'
-                        },{
-                            id:'site',
-                            text:'Site'
-                       },
-                       {
-                            id:'app-deployment',
-                            text:'App-Deploment'
-                       },
-                       {
-                            id:'app-tier',
-                            text:'App-Tier'
-                       },
-                       {
-                            id:'app-site',
-                            text:'App-Site'
-                       },
-                       {
-                            id:'app-deployment-tier',
-                            text:'App-Deploment-Tier'
-                       }];
-                      $("#FilterbyTagType").select2({
-                            data: tagTypes,
-                            maximumSelectionSize: 2,
-                            multiple:true,
-                      });
+                applySelectedFilter: function(modelObj) {
+                    this.filterModelObj = modelObj;
+                    var selectedTagTypes = this.getTagFilterObj().groupByTagType;
+                    this.filterDataByTagName();
+                    this.updateChart();
+                },
+                updateFilterSec: function() {
+                    var groupByTags = [],
+                        filterByTags = [];
+                    _.each(this.getTagFilterObj().groupByTagType, function(tag) {
+                        var curTag = _.find(cowc.TRAFFIC_GROUP_TAG_OPTIONS,
+                            function(tagObj) {
+                                return tagObj.value == tag
+                        });
+                        groupByTags.push(curTag.text)
                     });
+                    $('#groupByTagTypeSec .selectedVal')
+                        .html(groupByTags.join(', '));
+                    if(this.getTagFilterObj().filterByTagName) {
+                        _.each(this.getTagFilterObj().filterByTagName,
+                            function(tag) {
+                             filterByTags.push(tag
+                                .split(cowc.DROPDOWN_VALUE_SEPARATOR)[0]);
+                        });
+                        $('#filterByTagNameSec').removeClass('hidden')
+                        .find('.selectedVal')
+                        .html(filterByTags.join(', '));
+                    } else {
+                         $('#filterByTagNameSec').addClass('hidden');
+                    }
+                },
+                showFilterOptions: function() {
+                    this.filterView.model = new FilterModel({
+                        groupByTagType: this.getTagFilterObj().groupByTagType,
+                        filterByTagName: this.getTagFilterObj().filterByTagName
+                    });
+                    this.filterView.editFilterOptions(this.tagTypeList, this.applySelectedFilter.bind(this));
+                },
+                getTagFilterObj: function() {
+                    var filterByTagName = null,
+                        groupByTagType = null;
+                        if(this.filterModelObj) {
+                            groupByTagType = this.filterModelObj
+                                              .get('groupByTagType').split(',');
+                            filterByTagName = this.filterModelObj
+                                              .get('filterByTagName');
+                            filterByTagName = filterByTagName ?
+                                    filterByTagName.split(',') : null;
+                        } else {
+                            groupByTagType = ['app-deployment', 'tier'];
+                        }
+                    return {
+                        groupByTagType: groupByTagType,
+                        filterByTagName: filterByTagName
+                    };
                 },
                 renderTrafficChart: function(statsTime) {
                     var statsTimeDuration = '120',
                         displayTime = '2 Hrs',
                         lastStatsTime = localStorage.traffic_stats_time,
                         curDomainProject = contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' +
-                                           contrail.getCookie(cowc.COOKIE_PROJECT);
+                                           contrail.getCookie(cowc.COOKIE_PROJECT),
+                        self = this;
                     if(statsTime) {
                         displayTime = statsTime + ' Mins';
                         statsTimeDuration = statsTime;
@@ -870,7 +841,8 @@ define(
                                         if(data && data.length == 1 && data[0].nodata) {
                                             self.updateChart({
                                                 'expandLevels': 'disable',
-                                                'showLinkInfo': false
+                                                'showLinkInfo': false,
+                                                'levels': 1
                                             });
                                         }
                                     });
@@ -904,8 +876,8 @@ define(
                                                 value[tagName] = value[tagName].split(':').pop();
                                         });
                                     });
-                                    // cowu.populateTrafficGroupsData(data);
                                     self.trafficData = JSON.parse(JSON.stringify(data));
+                                    self.filterDataByTagName();
                                     self.prepareTagList();
                                     return data;
                                 }
@@ -915,12 +887,12 @@ define(
 
                         }
                     };
-                    viewInst = new ContrailChartsView({
+                    this.viewInst = new ContrailChartsView({
                         el: this.$el.find('#traffic-groups-radial-chart'),
                         model: new ContrailListModel(listModelConfig)
                     });
                     this.updateChart({
-                        levels:1
+                        'freshData': true
                     });
                 },
                 render: function() {
@@ -928,11 +900,11 @@ define(
                         pushBreadcrumb([ctwc.TRAFFIC_GROUPS_ALL_APPS]);
                     }
                     var trafficGroupsTmpl = contrail.getTemplate4Id('traffic-groups-template');
-                    self = this;
-                    self.$el.html(trafficGroupsTmpl({widgetTitle:'Traffic Groups'}));
-                    self.$el.addClass('traffic-groups-view');
-                    $('.clear-traffic-stats, .refresh-traffic-stats').on('click', self.resetTrafficStats);
-                    $('.filter-traffic-stats').on('click', self.filterTrafficData);
+                    //self = this;
+                    this.$el.html(trafficGroupsTmpl({widgetTitle:'Traffic Groups'}));
+                    this.$el.addClass('traffic-groups-view');
+                    $('.clear-traffic-stats, .refresh-traffic-stats').on('click', this.resetTrafficStats.bind(this));
+                    $('.filter-traffic-stats').on('click', this.showFilterOptions.bind(this));
                     TrafficGroupsView.colorMap = {};
                     TrafficGroupsView.colorArray = [];
                     TrafficGroupsView.tagMap = {};
@@ -940,6 +912,7 @@ define(
                     /**
                      * @levels  #Indicates no of levels to be drawn
                      */
+                    this.filterView = new FilterView();
                     this.renderTrafficChart();
                 }
             });
