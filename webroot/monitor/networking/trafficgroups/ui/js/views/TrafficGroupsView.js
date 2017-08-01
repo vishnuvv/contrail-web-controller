@@ -5,10 +5,10 @@
 define(
         [ 'lodashv4', 'contrail-view',
          'contrail-charts-view', 'contrail-list-model',
-         'monitor/networking/trafficgroups/ui/js/views/TrafficGroupsFilterView',
-         'monitor/networking/trafficgroups/ui/js/models/TrafficGroupsFilterModel'],
+         'monitor/networking/trafficgroups/ui/js/views/TrafficGroupsSettingsView',
+         'monitor/networking/trafficgroups/ui/js/models/TrafficGroupsSettingsModel'],
         function(_, ContrailView, ContrailChartsView,
-                ContrailListModel, FilterView, FilterModel) {
+                ContrailListModel, settingsView, settingsModel) {
             var TrafficGroupsView = ContrailView.extend({
                 tagTypeList: {
                     'app': [],
@@ -20,9 +20,6 @@ define(
                 resetTrafficStats: function(e) {
                     e.preventDefault();
                     var statsTime = '';
-                   if($(e.currentTarget).hasClass('clear-traffic-stats')) {
-                        statsTime = '0';
-                    }
                     this.renderTrafficChart(statsTime);
                     $(this.el).find('svg g').empty();
                 },
@@ -296,8 +293,8 @@ define(
                 getTagHierarchy: function(d) {
                     var srcHierarchy = [],
                         dstHierarchy = [],
-                        level = this.getTagFilterObj().groupByTagType.length,
-                        selectedTagTypes = this.getTagFilterObj().groupByTagType;
+                        level = this.getCategorizationObj().length,
+                        selectedTagTypes = this.getCategorizationObj();
                     _.each(selectedTagTypes, function(tags, idx) {
                         if(idx < level) {
                             var tagTypes = tags.split('-');
@@ -361,7 +358,7 @@ define(
                                     return TrafficGroupsView.colorMap[item.level][itemName];
                                 },
                                 showLinkInfo: self.showLinkInfo,
-                                drillDownLevel: self.getTagFilterObj().groupByTagType.length,
+                                drillDownLevel: self.getCategorizationObj().length,
                                 expandLevels: 'disable',
                                 hierarchyConfig: {
                                     parse: function (d) {
@@ -532,8 +529,6 @@ define(
                     self.chartInfo = self.viewInst.getChartViewInfo(config,
                                 "dendrogram-chart-id", self.addtionalEvents());
                     if(cfg['freshData']) {
-                        if(this.filterModelObj)
-                        this.filterModelObj.set('filterByTagName', null);
                         self.viewInst.model.onAllRequestsComplete.subscribe(function() {
                            self.chartRender();
                         });
@@ -541,7 +536,7 @@ define(
                         self.filterDataByTagName();
                         self.chartRender();
                     }
-                    self.updateFilterSec();
+                    self.updateTGSettingsSec();
                 },
                 chartRender: function() {
                     var self = this;
@@ -658,7 +653,7 @@ define(
                 isRecordMatched: function(names, record, data) {
                     var arcType = data.arcType ? '_' + data.arcType : '',
                         isMatched = true,
-                        selectedTagTypes = this.getTagFilterObj().groupByTagType;
+                        selectedTagTypes = this.getCategorizationObj();
                     for(var i = 0; i < names.length; i++) {
                         var tagTypes = selectedTagTypes[i].split('-'),
                             tagName =  _.compact(_.map(tagTypes, function(tag) {
@@ -682,7 +677,7 @@ define(
                     var self = this;
                     self.filterdData =  _.filter(self.trafficData, function(d) {
                         var isMatched = true;
-                        _.each(self.getTagFilterObj().filterByTagName, function(tag) {
+                        _.each(self.getTGSettings().filterByTagName, function(tag) {
                             var tagObj = tag.split(cowc.DROPDOWN_VALUE_SEPARATOR),
                                 tagType = tagObj[1],
                                 tagName = tagObj[0];
@@ -693,25 +688,27 @@ define(
                     });
                 },
                 applySelectedFilter: function(modelObj) {
-                    this.filterModelObj = modelObj;
-                    var selectedTagTypes = this.getTagFilterObj().groupByTagType;
+                    this.settingsModelObj = modelObj;
                     this.filterDataByTagName();
                     this.updateChart();
                 },
-                updateFilterSec: function() {
+                updateTGSettingsSec: function() {
                     var groupByTags = [],
                         filterByTags = [];
-                    _.each(this.getTagFilterObj().groupByTagType, function(tag) {
-                        var curTag = _.find(cowc.TRAFFIC_GROUP_TAG_OPTIONS,
-                            function(tagObj) {
-                                return tagObj.value == tag
+                    /*_.each(this.getCategorizationObj(), function(category) {
+                        var curCategory = [];
+                        _.each(category.split('-'), function(tag) {
+                            curCategory.push(_.find(cowc.TRAFFIC_GROUP_TAG_TYPES,
+                                function(tagObj) {
+                                    return tagObj.value == tag
+                            }).text);
                         });
-                        groupByTags.push(curTag.text)
+                        groupByTags.push(curCategory.join('-'));
                     });
                     $('#groupByTagTypeSec .selectedVal')
-                        .html(groupByTags.join(', '));
-                    if(this.getTagFilterObj().filterByTagName) {
-                        _.each(this.getTagFilterObj().filterByTagName,
+                        .html(groupByTags.join(', '));*/
+                    if(this.getTGSettings().filterByTagName) {
+                        _.each(this.getTGSettings().filterByTagName,
                             function(tag) {
                              filterByTags.push(tag
                                 .split(cowc.DROPDOWN_VALUE_SEPARATOR)[0]);
@@ -724,65 +721,93 @@ define(
                     }
                 },
                 showFilterOptions: function() {
-                    this.filterView.model = new FilterModel({
-                        groupByTagType: this.getTagFilterObj().groupByTagType,
-                        filterByTagName: this.getTagFilterObj().filterByTagName
-                    });
-                    this.filterView.editFilterOptions(this.tagTypeList, this.applySelectedFilter.bind(this));
+                    this.settingsView.model = new settingsModel(this.getTGSettings());
+                    this.settingsView.editFilterOptions(this.tagTypeList,
+                        this.applySelectedFilter.bind(this));
                 },
-                getTagFilterObj: function() {
+                getTGSettings: function() {
                     var filterByTagName = null,
-                        groupByTagType = null;
-                        if(this.filterModelObj) {
-                            groupByTagType = this.filterModelObj
+                        groupByTagType = null,
+                        subGroupByTagType = null,
+                        time_range = 3600,
+                        from_time = null,
+                        to_time = null;
+                        if(this.settingsModelObj) {
+                            groupByTagType = this.settingsModelObj
                                               .get('groupByTagType').split(',');
-                            filterByTagName = this.filterModelObj
+                            subGroupByTagType = this.settingsModelObj
+                                              .get('subGroupByTagType');
+                            subGroupByTagType = subGroupByTagType ?
+                                    subGroupByTagType.split(',') : null;
+                            filterByTagName = this.settingsModelObj
                                               .get('filterByTagName');
                             filterByTagName = filterByTagName ?
                                     filterByTagName.split(',') : null;
+                            time_range = this.settingsModelObj.get('time_range');
+                            from_time = this.settingsModelObj.get('from_time');
+                            to_time = this.settingsModelObj.get('to_time');
+
                         } else {
-                            groupByTagType = ['app-deployment', 'tier'];
+                            groupByTagType = ['app','deployment'];
+                            subGroupByTagType = ['tier'];
                         }
                     return {
                         groupByTagType: groupByTagType,
-                        filterByTagName: filterByTagName
+                        subGroupByTagType: subGroupByTagType,
+                        filterByTagName: filterByTagName,
+                        time_range: time_range,
+                        from_time: from_time,
+                        to_time: to_time
                     };
                 },
-                renderTrafficChart: function(statsTime) {
-                    var statsTimeDuration = '120',
-                        displayTime = '2 Hrs',
-                        lastStatsTime = localStorage.traffic_stats_time,
-                        curDomainProject = contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' +
-                                           contrail.getCookie(cowc.COOKIE_PROJECT),
-                        self = this;
-                    if(statsTime) {
-                        displayTime = statsTime + ' Mins';
-                        statsTimeDuration = statsTime;
-                        if(!lastStatsTime) {
-                            localStorage.setItem("traffic_stats_time", JSON.stringify({}));
-                        }
-                        lastStatsTime = JSON.parse(localStorage.getItem('traffic_stats_time'));
-                        lastStatsTime[curDomainProject] = new Date().getTime();
-                        localStorage.setItem("traffic_stats_time", JSON.stringify(lastStatsTime));
-                    } else if(lastStatsTime && JSON.parse(lastStatsTime)
-                             && JSON.parse(lastStatsTime)[curDomainProject]) {
-                        var timeDiff = new Date().getTime() - JSON.parse(lastStatsTime)[curDomainProject];
-                        statsTimeDuration = Math.round(timeDiff / (1000 * 60));
-                        var statsTimeHrs = Math.floor(statsTimeDuration / 60),
-                            statsTimeMins = statsTimeDuration % 60;
-                        if(statsTimeHrs < 2) {
-                            displayTime = (statsTimeHrs > 0 ? statsTimeHrs +' Hrs ' : '') +
-                                          (statsTimeMins > 0 ? statsTimeMins +' Mins' : '');
-                        } else {
-                            statsTimeDuration = '120';
-                        }
+                getCategorizationObj: function() {
+                    var categorization = [this.getTGSettings().groupByTagType
+                                            .join('-')];
+                    if(this.getTGSettings().subGroupByTagType) {
+                        categorization.push(this.getTGSettings()
+                                        .subGroupByTagType.join('-'));
                     }
-                    $(self.el).find('.statsTimeDuration').text((displayTime ? displayTime : '0 Mins'));
+                    return categorization;
+                },
+                updateSettingsView: function() {
+                    var fromTime = this.getTGSettings().time_range;
+                    if(fromTime == -1) {
+                        fromTime = this.getTGSettings().from_time;
+                        var toTime = this.getTGSettings().to_time
+                        $(this.el).find('#statsFromOnly').addClass('hidden');
+                        $(this.el).find('#statsFromTo').removeClass('hidden')
+                        $(this.el).find('#statsFromTo .statsFromTime').text(fromTime);
+                        $(this.el).find('#statsFromTo .statsToTime').text(toTime);
+                    } else {
+                        fromTime = _.find(ctwc.TIMERANGE_DROPDOWN_VALUES,
+                            function(timeMap) {
+                                return timeMap.id == fromTime;
+                        });
+                        $(this.el).find('#statsFromOnly').removeClass('hidden')
+                            .find('.statsFromTime').text(fromTime.text);
+                        $(this.el).find('#statsFromTo').addClass('hidden');
+                    }
+                },
+                renderTrafficChart: function(statsTime) {
+                    var self = this,
+                        fromTime = this.getTGSettings().time_range,
+                        toTime = 0;
+                        if(fromTime == -1) {
+                            fromTime = (new Date().getTime() - new Date(
+                                    this.getTGSettings().from_time).getTime()),
+                            toTime = (new Date().getTime() - new Date(
+                                    this.getTGSettings().to_time).getTime());
+                            fromTime = Math.round(fromTime / (1000 * 60));
+                            toTime = Math.round(toTime / (1000 * 60));
+                        } else {
+                            fromTime /= 60;
+                        }
+                    self.updateSettingsView();
                     var postData = {
                         "async": false,
                         "formModelAttrs": {
-                            "from_time_utc": "now-" + (statsTimeDuration+'m'),
-                            "to_time_utc": "now",
+                            "from_time_utc": "now-" + (fromTime + 'm'),
+                            "to_time_utc": "now-" + (toTime + 'm'),
                             "select": "eps.traffic.remote_app_id, eps.traffic.remote_tier_id, eps.traffic.remote_site_id,"+
                                  "eps.traffic.remote_deployment_id, eps.traffic.remote_prefix, eps.traffic.remote_vn, eps.__key,"+
                                  " app, tier, site, deployment, vn, name, SUM(eps.traffic.in_bytes),"+
@@ -861,11 +886,11 @@ define(
                                         }
                                         //If app is empty, put vn name in app
                                         if(_.isEmpty(value['app']) || value['app'] == '0') {
-                                            value['app'] = formatVN(value['vn']);
+                                           value['app'] = formatVN(value['vn']);
                                         }
                                         if(value['eps.traffic.remote_app_id'] == '' || value['eps.traffic.remote_app_id'] == '0') {
                                             // if(value['eps.traffic.remote_vn'] != '') {
-                                                value['eps.traffic.remote_app_id'] = formatVN(value['eps.traffic.remote_vn']);
+                                               value['eps.traffic.remote_app_id'] = formatVN(value['eps.traffic.remote_vn']);
                                             // } else {
                                             //     value['eps.traffic.remote_app_id'] = value['vn'];
                                             // }
@@ -903,7 +928,7 @@ define(
                     //self = this;
                     this.$el.html(trafficGroupsTmpl({widgetTitle:'Traffic Groups'}));
                     this.$el.addClass('traffic-groups-view');
-                    $('.clear-traffic-stats, .refresh-traffic-stats').on('click', this.resetTrafficStats.bind(this));
+                    $('.refresh-traffic-stats').on('click', this.resetTrafficStats.bind(this));
                     $('.filter-traffic-stats').on('click', this.showFilterOptions.bind(this));
                     TrafficGroupsView.colorMap = {};
                     TrafficGroupsView.colorArray = [];
@@ -912,7 +937,7 @@ define(
                     /**
                      * @levels  #Indicates no of levels to be drawn
                      */
-                    this.filterView = new FilterView();
+                    this.settingsView = new settingsView();
                     this.renderTrafficChart();
                 }
             });
