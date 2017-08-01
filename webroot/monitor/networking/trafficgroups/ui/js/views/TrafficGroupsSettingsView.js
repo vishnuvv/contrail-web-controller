@@ -5,22 +5,21 @@
 define([
     'lodash',
     'contrail-view',
-    'knockback',
-    'monitor/networking/trafficgroups/ui/js/models/TrafficGroupsFilterModel'
-], function (_, ContrailView, Knockback, filterModel) {
-    var TrafficGroupsFilterView = ContrailView.extend({
+    'knockback'
+], function (_, ContrailView, Knockback) {
+    var TrafficGroupsSettingsView = ContrailView.extend({
         el: $(contentContainer),
         editFilterOptions: function (tagTypeList, callback) {
             var filterView = this,
                 filterModel = this.model,
-                prefixId = ctwl.TRAFFIC_GROUPS_FILTER,
+                prefixId = ctwl.TRAFFIC_GROUPS_SETTINGS,
                 editTemplate = contrail.getTemplate4Id(cowc.TMPL_EDIT_FORM),
                 editLayout = editTemplate({prefixId: prefixId}),
                 modalId = 'configure-' + prefixId ;//+ '-modal',
                 modalConfig = {
                    'modalId': modalId,
                    'className': 'modal-840',
-                   'title': 'Filter Traffic Data',
+                   'title': ctwl.TITLE_TRAFFIC_GROUPS_SETTINGS,
                    'body': editLayout,
                    'onSave': function () {
                         filterModel.filterByTagRule({
@@ -43,9 +42,9 @@ define([
                         $("#" + modalId).modal('hide');
                     }
                 };
+            this.subscribeModelChangeEvents(filterModel, ctwl.EDIT_ACTION);
             cowu.createModal(modalConfig);
             $('#'+ modalId).on('shown.bs.modal', function () {
-                 var filterTmpl = contrail.getTemplate4Id('filter-tarffic-data-template');
                  filterView.renderView4Config($("#" + modalId).find("#" + prefixId + "-form"),
                     filterModel, filterView.tagsFilterViewConfig(tagTypeList),'filterByTagRuleValidation', null, null,
                     function () {
@@ -74,10 +73,10 @@ define([
         },
         tagsFilterViewConfig: function(tagTypeList) {
             var addrFields = [],
-                tagsMap = cowc.TRAFFIC_GROUP_TAG_OPTIONS,
+                tagsMap = cowc.TRAFFIC_GROUP_TAG_TYPES,
                 tagValues = this.getTagValuesObj(tagTypeList);
             return {
-                elementId: 'Traffic_Data_Filter',
+                elementId: 'Traffic_Groups_Settings',
                 view: 'SectionView',
                 viewConfig: {
                     rows: [
@@ -87,16 +86,31 @@ define([
                                     elementId: 'groupByTagType',
                                     view: 'FormMultiselectView',
                                     viewConfig: {
-                                        label: "Categorization:",
+                                        label: "Categorization",
                                         path: 'groupByTagType',
                                         dataBindValue: 'groupByTagType',
-                                        class: 'col-xs-12',
+                                        class: 'col-xs-6',
                                         elementConfig: {
                                             dataTextField: "text",
                                             dataValueField: "value",
-                                            placeholder: "Select Endpoint",
-                                            maximumSelectionSize: 2,
+                                            placeholder: "Select Tags",
                                             data: tagsMap
+                                        }
+                                    }
+                                },
+                                {
+                                    elementId: 'subGroupByTagType',
+                                    view: 'FormMultiselectView',
+                                    viewConfig: {
+                                        label: "Subcategorization",
+                                        path: 'subGroupByTagType',
+                                        dataBindValue: 'subGroupByTagType',
+                                        dataBindOptionList : "tagTypeList()",
+                                        class: 'col-xs-6',
+                                        elementConfig: {
+                                            dataTextField: "text",
+                                            dataValueField: "value",
+                                            placeholder: "Select Tags"
                                         }
                                     }
                                 }
@@ -110,11 +124,11 @@ define([
                                     viewConfig: {
                                         templateId: cowc.TMPL_MULTISELECT_VIEW,
                                         class:'col-xs-12',
-                                        label:'Filter:',
+                                        label:'Filter',
                                         path: 'filterByTagName',
                                         dataBindValue: 'filterByTagName',
                                         elementConfig: {
-                                            placeholder: 'Select Tags',
+                                            placeholder: 'Select Tag Names',
                                             minimumResultsForSearch : 1,
                                             dataTextField: "text",
                                             dataValueField: "value",
@@ -128,11 +142,19 @@ define([
                                     }
                                 }
                             ]
-                        }
+                        },
+                        ctwvc.getTimeRangeConfig("hh:mm A")
                     ]
                 }
             }
+        },
+        subscribeModelChangeEvents: function(filterModel) {
+            filterModel.__kb.view_model.model().on('change:groupByTagType',
+                function(model, newValue){
+                    filterModel.onGroupByTagTypeChanged(newValue);
+                }
+            );
         }
     });
-    return TrafficGroupsFilterView;
+    return TrafficGroupsSettingsView;
 });

@@ -1424,7 +1424,8 @@ define([
         /*Traffic Groups Labels */
         this.TRAFFIC_GROUPS_ENDPOINT_STATS = 'traffic-groups-endpoint-statistics';
         this.TITLE_TRAFFIC_GROUPS_ENDPOINT_STATS = 'Endpoint Statistics';
-        this.TRAFFIC_GROUPS_FILTER = 'Traffic_Stats_Filter';
+        this.TRAFFIC_GROUPS_SETTINGS = 'Traffic_Groups_Settings';
+        this.TITLE_TRAFFIC_GROUPS_SETTINGS = 'Traffic Groups Settings';
     };
     return CTLabels;
 });

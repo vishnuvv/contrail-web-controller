@@ -46,7 +46,7 @@ define([
                                 0 : (idx + 1);
                 tabConfig.push({
                     elementId: "Endpoint_" + idx + "_Stats",
-                    title: sessionData.endpointNames[idx],
+                    title: 'Endpoint' + (idx + 1),
                     view: "TrafficGroupsEPSGridView",
                     viewPathPrefix: "monitor/networking/trafficgroups/ui/js/views/",
                     viewConfig: {
