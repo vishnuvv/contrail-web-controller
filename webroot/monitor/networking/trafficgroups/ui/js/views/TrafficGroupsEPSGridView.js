@@ -30,55 +30,31 @@ define([
                         {
                             field: 'app',
                             name: 'Application',
-                            hide: true
+                            hide: true,
+                            formatter:function(r,c,v,cd,dc) {
+                               return appFormatter(v, dc);
+                            }
                         },
                         {
                             field: 'deployment',
                             name: 'Deployment',
                             hide: true,
                             formatter:function(r,c,v,cd,dc) {
-                               return epsDefaultValueFormatter(v);
+                               return deplFormatter(v, dc);
                             }
                         },
                         {
                             field: 'tier',
                             name: 'Tier',
                             formatter:function(r,c,v,cd,dc) {
-                               return epsDefaultValueFormatter(v);
+                               return tierFormatter(v, dc);
                             }
                         },
                         {
                             field: 'site',
                             name: 'Site',
                             formatter:function(r,c,v,cd,dc) {
-                               return epsDefaultValueFormatter(v);
-                            }
-                        },
-                        {
-                            field: 'eps.traffic.remote_app_id',
-                            name: 'Remote Application',
-                            hide: true
-                        },
-                        {
-                            field: 'eps.traffic.remote_deployment_id',
-                            name: 'Remote Deployment',
-                            hide: true,
-                            formatter:function(r,c,v,cd,dc) {
-                               return epsDefaultValueFormatter(v);
-                            }
-                        },
-                        {
-                            field: 'eps.traffic.remote_tier_id',
-                            name: 'Remote Tier',
-                            formatter:function(r,c,v,cd,dc) {
-                               return epsDefaultValueFormatter(v);
-                            }
-                        },
-                        {
-                            field: 'eps.traffic.remote_site_id',
-                            name: 'Remote Site',
-                            formatter:function(r,c,v,cd,dc) {
-                               return epsDefaultValueFormatter(v);
+                               return siteFormatter(v, dc);
                             }
                         },
                         {
@@ -86,7 +62,37 @@ define([
                             name: 'VN',
                             hide: true,
                             formatter:function(r,c,v,cd,dc) {
-                               return epsDefaultValueFormatter(v);
+                               return vnFormatter(v, dc);
+                            }
+                        },
+                        {
+                            field: 'eps.traffic.remote_app_id',
+                            name: 'Remote Application',
+                            hide: true,
+                            formatter:function(r,c,v,cd,dc) {
+                               return remoteAppFormatter(v, dc);
+                            }
+                        },
+                        {
+                            field: 'eps.traffic.remote_deployment_id',
+                            name: 'Remote Deployment',
+                            hide: true,
+                            formatter:function(r,c,v,cd,dc) {
+                               return remoteDeplFormatter(v, dc);
+                            }
+                        },
+                        {
+                            field: 'eps.traffic.remote_tier_id',
+                            name: 'Remote Tier',
+                            formatter:function(r,c,v,cd,dc) {
+                               return remoteTierFormatter(v, dc);
+                            }
+                        },
+                        {
+                            field: 'eps.traffic.remote_site_id',
+                            name: 'Remote Site',
+                            formatter:function(r,c,v,cd,dc) {
+                               return remoteSiteFormatter(v, dc);
                             }
                         },
                         {
@@ -94,7 +100,7 @@ define([
                             name: 'Remote VN',
                             hide: true,
                             formatter:function(r,c,v,cd,dc) {
-                               return epsDefaultValueFormatter(v);
+                               return epsDefaultValueFormatter(v, dc);
                             }
                         },
                         {
@@ -184,14 +190,17 @@ define([
                                                     {
                                                         key: 'app',
                                                         label: 'Application',
-                                                        templateGenerator: 'TextGenerator'
+                                                        templateGenerator: 'TextGenerator',
+                                                        templateGeneratorConfig: {
+                                                            formatter: 'appFormatter'
+                                                        }
                                                     },
                                                     {
                                                         key: 'deployment',
                                                         label: 'Deployment',
                                                         templateGenerator: 'TextGenerator',
                                                         templateGeneratorConfig: {
-                                                            formatter: 'epsDefaultValueFormatter'
+                                                            formatter: 'deplFormatter'
                                                         }
                                                     },
                                                     {
@@ -199,7 +208,7 @@ define([
                                                         label: 'Tier',
                                                         templateGenerator: 'TextGenerator',
                                                         templateGeneratorConfig: {
-                                                            formatter: 'epsDefaultValueFormatter'
+                                                            formatter: 'tierFormatter'
                                                         }
                                                     },
                                                     {
@@ -305,11 +314,20 @@ define([
     this.epsDefaultValueFormatter = function(v) {
         return (v || v === 0) ? v : '-';
     }
+    this.appFormatter = function(v, dc) {
+       return this.epsDefaultValueFormatter(dc['app']);
+    }
     this.remoteAppFormatter = function(v, dc) {
-       return dc['eps.traffic.remote_app_id'];
+       return this.epsDefaultValueFormatter(dc['eps.traffic.remote_app_id']);
+    }
+    this.deplFormatter = function(v, dc) {
+       return this.epsDefaultValueFormatter(dc['deployment']);
     }
     this.remoteDeplFormatter = function(v, dc) {
        return this.epsDefaultValueFormatter(dc['eps.traffic.remote_deployment_id']);
+    }
+    this.tierFormatter = function(v, dc) {
+       return this.epsDefaultValueFormatter(dc['tier']);
     }
     this.remoteTierFormatter = function(v, dc) {
        return this.epsDefaultValueFormatter(dc['eps.traffic.remote_tier_id']);
@@ -319,6 +337,9 @@ define([
     }
     this.remoteSiteFormatter = function(v, dc) {
        return this.epsDefaultValueFormatter(dc['eps.traffic.remote_site_id']);
+    }
+    this.vnFormatter = function(v, dc) {
+       return this.epsDefaultValueFormatter(dc['vn']);
     }
     this.remoteVNFormatter = function(v, dc) {
        return this.epsDefaultValueFormatter(dc['eps.traffic.remote_vn']);
