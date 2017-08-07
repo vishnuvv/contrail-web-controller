@@ -19,8 +19,7 @@ define(
                 filterdData: {},
                 resetTrafficStats: function(e) {
                     e.preventDefault();
-                    var statsTime = '';
-                    this.renderTrafficChart(statsTime);
+                    this.renderTrafficChart();
                     $(this.el).find('svg g').empty();
                 },
                 showSessionsInfo: function() {
@@ -293,16 +292,20 @@ define(
                 getTagHierarchy: function(d) {
                     var srcHierarchy = [],
                         dstHierarchy = [],
-                        level = this.getCategorizationObj().length,
-                        selectedTagTypes = this.getCategorizationObj();
+                        selectedTagTypes = this.getCategorizationObj(),
+                        level = selectedTagTypes.length,
+                        self = this;
                     _.each(selectedTagTypes, function(tags, idx) {
                         if(idx < level) {
                             var tagTypes = tags.split('-');
                             srcHierarchy.push(_.compact(_.map(tagTypes, function(tag) {
-                                return d[tag.trim()];
+                                var tagVal = d[tag.trim()];
+                                return tagVal ? tagVal : self.getTagLabel(tag, d);
                             })).join('-'));
                             dstHierarchy.push(_.compact(_.map(tagTypes, function(tag) {
-                                return d['eps.traffic.remote_' + tag.trim() + '_id'];
+                                var tagVal = d['eps.traffic.remote_' + tag.trim() + '_id'];
+                                return tagVal ? tagVal : self.getTagLabel(tag,
+                                                d, d['eps.traffic.remote_vn']);
                             })).join('-'));
                         }
                     });
@@ -310,6 +313,23 @@ define(
                         srcHierarchy: srcHierarchy,
                         dstHierarchy: dstHierarchy
                     };
+                },
+                getTagLabel: function(tagType, d, vn) {
+                    var label = '',
+                        tagObj = _.find(cowc.TRAFFIC_GROUP_TAG_TYPES,
+                            function(tag) {
+                                return tag.value == tagType;
+                        });
+                    if(tagObj) {
+                        if(tagObj.showIcononEmpty) {
+                            label += tagObj.text.toLowerCase();
+                        }
+                        if(tagObj.showVNonEmpty) {
+                            label += (label ? ' ' : '') +
+                                this.formatVN(vn ? vn : d['vn']);
+                        }
+                    }
+                    return label;
                 },
                 updateChart: function(cfg) {
                     var self = this,
@@ -533,10 +553,9 @@ define(
                            self.chartRender();
                         });
                     } else {
-                        self.filterDataByTagName();
                         self.chartRender();
                     }
-                    self.updateTGSettingsSec();
+                    //self.updateTGFilterSec();
                 },
                 chartRender: function() {
                     var self = this;
@@ -653,11 +672,13 @@ define(
                 isRecordMatched: function(names, record, data) {
                     var arcType = data.arcType ? '_' + data.arcType : '',
                         isMatched = true,
+                        self = this,
                         selectedTagTypes = this.getCategorizationObj();
                     for(var i = 0; i < names.length; i++) {
                         var tagTypes = selectedTagTypes[i].split('-'),
                             tagName =  _.compact(_.map(tagTypes, function(tag) {
-                                            return record[tag];
+                                            return record[tag] ? record[tag]
+                                            : self.getTagLabel(tag, record)
                                     })).join('-');
                        tagName += arcType;
                        isMatched = isMatched && (tagName == names[i]);
@@ -688,37 +709,59 @@ define(
                     });
                 },
                 applySelectedFilter: function(modelObj) {
+                    var oldTimeRange = this.getTGSettings().time_range,
+                        oldFromTime = this.getTGSettings().from_time,
+                        oldToTime = this.getTGSettings().to_time;
                     this.settingsModelObj = modelObj;
                     this.filterDataByTagName();
-                    this.updateChart();
+                    var newTimeRange = this.getTGSettings().time_range,
+                        newFromTime = this.getTGSettings().from_time,
+                        newToTime = this.getTGSettings().to_time;
+                    if(oldTimeRange != newTimeRange || (oldTimeRange == -1 && (
+                              oldFromTime != newFromTime ||
+                              oldToTime != newToTime))) {
+                        this.renderTrafficChart();
+                    } else {
+                        this.updateChart();
+                    }
                 },
-                updateTGSettingsSec: function() {
+                removeFilter: function(e) {
+                    var curElem = $(e.currentTarget).parent('li').find('div'),
+                        tag = curElem.attr('data-tag'),
+                        val = curElem.html();
+                    if(this.settingsModelObj) {
+                        var filterObj = this.settingsModelObj
+                            .get('filterByTagName').split(',');
+                        filterObj = _.filter(filterObj, function(tagName) {
+                            return tagName != (val + ";" +tag);
+                        });
+                        this.settingsModelObj
+                            .set('filterByTagName', filterObj.join(','));
+                        this.applySelectedFilter(this.settingsModelObj);
+                    }
+                },
+                updateTGFilterSec: function() {
                     var groupByTags = [],
                         filterByTags = [];
-                    /*_.each(this.getCategorizationObj(), function(category) {
-                        var curCategory = [];
-                        _.each(category.split('-'), function(tag) {
-                            curCategory.push(_.find(cowc.TRAFFIC_GROUP_TAG_TYPES,
-                                function(tagObj) {
-                                    return tagObj.value == tag
-                            }).text);
-                        });
-                        groupByTags.push(curCategory.join('-'));
-                    });
-                    $('#groupByTagTypeSec .selectedVal')
-                        .html(groupByTags.join(', '));*/
                     if(this.getTGSettings().filterByTagName) {
                         _.each(this.getTGSettings().filterByTagName,
                             function(tag) {
-                             filterByTags.push(tag
-                                .split(cowc.DROPDOWN_VALUE_SEPARATOR)[0]);
+                            var tagObj = tag.split(cowc.DROPDOWN_VALUE_SEPARATOR);
+                             filterByTags.push({
+                                tag: tagObj[1],
+                                value: tagObj[0]
+                             });
                         });
-                        $('#filterByTagNameSec').removeClass('hidden')
-                        .find('.selectedVal')
-                        .html(filterByTags.join(', '));
+                        $('#filterByTagNameSec').removeClass('hidden');
                     } else {
                          $('#filterByTagNameSec').addClass('hidden');
                     }
+                    var filterViewTmpl =
+                        contrail.getTemplate4Id('traffic-filter-view-template');
+                    $('#filterByTagNameSec').html(filterViewTmpl({
+                        tags : filterByTags
+                    }));
+                    $('.tgRemoveFilter').on('click', this.removeFilter.bind(this));
                 },
                 showFilterOptions: function() {
                     this.settingsView.model = new settingsModel(this.getTGSettings());
@@ -769,7 +812,7 @@ define(
                     }
                     return categorization;
                 },
-                updateSettingsView: function() {
+                updateStatsTimeSec: function() {
                     var fromTime = this.getTGSettings().time_range;
                     if(fromTime == -1) {
                         fromTime = this.getTGSettings().from_time;
@@ -788,7 +831,10 @@ define(
                         $(this.el).find('#statsFromTo').addClass('hidden');
                     }
                 },
-                renderTrafficChart: function(statsTime) {
+                formatVN: function(vnName) {
+                    return vnName.replace(/([^:]*):([^:]*):([^:]*)/,'$3 ($2)');
+                },
+                renderTrafficChart: function() {
                     var self = this,
                         fromTime = this.getTGSettings().time_range,
                         toTime = 0;
@@ -802,7 +848,7 @@ define(
                         } else {
                             fromTime /= 60;
                         }
-                    self.updateSettingsView();
+                    self.updateStatsTimeSec();
                     var postData = {
                         "async": false,
                         "formModelAttrs": {
@@ -884,17 +930,6 @@ define(
                                         function formatVN(vnName) {
                                             return vnName.replace(/([^:]*):([^:]*):([^:]*)/,'$3 ($2)');
                                         }
-                                        //If app is empty, put vn name in app
-                                        if(_.isEmpty(value['app']) || value['app'] == '0') {
-                                           value['app'] = formatVN(value['vn']);
-                                        }
-                                        if(value['eps.traffic.remote_app_id'] == '' || value['eps.traffic.remote_app_id'] == '0') {
-                                            // if(value['eps.traffic.remote_vn'] != '') {
-                                               value['eps.traffic.remote_app_id'] = formatVN(value['eps.traffic.remote_vn']);
-                                            // } else {
-                                            //     value['eps.traffic.remote_app_id'] = value['vn'];
-                                            // }
-                                        }
                                         //Strip-off the domain and project form FQN
                                         $.each(['app','site','tier','deployment'],function(idx,tagName) {
                                             if(typeof(value[tagName]) == 'string' && value[tagName].split(':').length == 3)
@@ -925,7 +960,6 @@ define(
                         pushBreadcrumb([ctwc.TRAFFIC_GROUPS_ALL_APPS]);
                     }
                     var trafficGroupsTmpl = contrail.getTemplate4Id('traffic-groups-template');
-                    //self = this;
                     this.$el.html(trafficGroupsTmpl({widgetTitle:'Traffic Groups'}));
                     this.$el.addClass('traffic-groups-view');
                     $('.refresh-traffic-stats').on('click', this.resetTrafficStats.bind(this));
