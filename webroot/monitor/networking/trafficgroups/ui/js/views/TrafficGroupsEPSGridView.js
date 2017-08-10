@@ -9,7 +9,7 @@ define([
 ], function (_, ContrailView, ContrailListModel) {
     var TrafficGroupsSessionsView = ContrailView.extend({
         el: $(contentContainer),
-        render: function (sessionData) {
+        render: function () {
             var self = this,
                 viewConfig = this.attributes.viewConfig,
                 contrailListModel = new ContrailListModel({data : viewConfig.data}),
@@ -29,32 +29,23 @@ define([
             var sessionColumns = [
                         {
                             field: 'app',
-                            name: 'Application',
-                            hide: true,
+                            name: 'Policy',
                             formatter:function(r,c,v,cd,dc) {
-                               return appFormatter(v, dc);
+                               return policyFormatter(v, dc);
                             }
                         },
                         {
-                            field: 'deployment',
-                            name: 'Deployment',
-                            hide: true,
+                            field: 'app',
+                            name: 'Source Tags',
                             formatter:function(r,c,v,cd,dc) {
-                               return deplFormatter(v, dc);
+                               return sourceTagsFormatter(v, dc);
                             }
                         },
                         {
-                            field: 'tier',
-                            name: 'Tier',
+                            field: 'app',
+                            name: 'Remote Tags',
                             formatter:function(r,c,v,cd,dc) {
-                               return tierFormatter(v, dc);
-                            }
-                        },
-                        {
-                            field: 'site',
-                            name: 'Site',
-                            formatter:function(r,c,v,cd,dc) {
-                               return siteFormatter(v, dc);
+                               return remoteTagsFormatter(v, dc);
                             }
                         },
                         {
@@ -63,36 +54,6 @@ define([
                             hide: true,
                             formatter:function(r,c,v,cd,dc) {
                                return vnFormatter(v, dc);
-                            }
-                        },
-                        {
-                            field: 'eps.traffic.remote_app_id',
-                            name: 'Remote Application',
-                            hide: true,
-                            formatter:function(r,c,v,cd,dc) {
-                               return remoteAppFormatter(v, dc);
-                            }
-                        },
-                        {
-                            field: 'eps.traffic.remote_deployment_id',
-                            name: 'Remote Deployment',
-                            hide: true,
-                            formatter:function(r,c,v,cd,dc) {
-                               return remoteDeplFormatter(v, dc);
-                            }
-                        },
-                        {
-                            field: 'eps.traffic.remote_tier_id',
-                            name: 'Remote Tier',
-                            formatter:function(r,c,v,cd,dc) {
-                               return remoteTierFormatter(v, dc);
-                            }
-                        },
-                        {
-                            field: 'eps.traffic.remote_site_id',
-                            name: 'Remote Site',
-                            formatter:function(r,c,v,cd,dc) {
-                               return remoteSiteFormatter(v, dc);
                             }
                         },
                         {
@@ -106,6 +67,7 @@ define([
                         {
                             field: 'SUM(eps.traffic.in_bytes)',
                             name: 'In Bytes',
+                            maxWidth: 75,
                             formatter:function(r,c,v,cd,dc) {
                                return formatBytes(v);
                             }
@@ -113,17 +75,20 @@ define([
                         {
                             field: 'SUM(eps.traffic.out_bytes)',
                             name: 'Out Bytes',
+                            maxWidth: 75,
                             formatter:function(r,c,v,cd,dc) {
                                return formatBytes(v);
                             }
                         },
                         {
                             field: 'SUM(eps.traffic.initiator_session_count)',
-                            name: 'Sessions Initiated'
+                            name: 'Sessions Initiated',
+                            maxWidth: 130,
                         },
                         {
                             field: 'SUM(eps.traffic.responder_session_count)',
-                            name: 'Sessions Responded'
+                            name: 'Sessions Responded',
+                            maxWidth: 130,
                         }
                     ],
                 gridElementConfig = {
@@ -187,6 +152,22 @@ define([
                                                 title: 'Details',
                                                 templateGenerator: 'BlockListTemplateGenerator',
                                                 templateGeneratorConfig: [
+                                                    {
+                                                        key: 'app',
+                                                        label: 'Policy',
+                                                        templateGenerator: 'TextGenerator',
+                                                        templateGeneratorConfig: {
+                                                            formatter: 'policyFormatter'
+                                                        }
+                                                    },
+                                                    {
+                                                        key: 'app',
+                                                        label: 'Rule',
+                                                        templateGenerator: 'TextGenerator',
+                                                        templateGeneratorConfig: {
+                                                            formatter: 'ruleFormatter'
+                                                        }
+                                                    },
                                                     {
                                                         key: 'app',
                                                         label: 'Application',
@@ -314,6 +295,18 @@ define([
     this.epsDefaultValueFormatter = function(v) {
         return (v || v === 0) ? v : '-';
     }
+    this.policyFormatter = function(v, dc) {
+        return this.epsDefaultValueFormatter(this.getPolicyInfo(dc).name);
+    }
+    this.ruleFormatter = function(v, dc) {
+        return this.epsDefaultValueFormatter(this.getPolicyInfo(dc).uuid);
+    }
+    this.sourceTagsFormatter = function(v, dc) {
+       return this.epsDefaultValueFormatter(this.getEndpointTags(dc));
+    }
+    this.remoteTagsFormatter = function(v, dc) {
+       return this.epsDefaultValueFormatter(this.getEndpointTags(dc), 'remote');
+    }
     this.appFormatter = function(v, dc) {
        return this.epsDefaultValueFormatter(dc['app']);
     }
@@ -355,6 +348,41 @@ define([
     }
     this.sessionsOutFormatter = function(v, dc) {
        return dc['SUM(eps.traffic.responder_session_count)'];
+    }
+    this.getPolicyInfo = function(dc) {
+        var policyInfo = {};
+        if(dc['eps.__key']) {
+            if(dc['eps.__key'].indexOf(':') > 0) {
+                var policy = dc['eps.__key'].split(':');
+                policyInfo = {
+                    'name': policy[policy.length-2],
+                    'uuid': policy[policy.length-1]
+                }
+            } else {
+                var policy = _.find(cowc.DEFAULT_FIREWALL_RULES,
+                    function(rule) {
+                        return rule.uuid == dc['eps.__key'];
+                });
+                if(policy) {
+                    policyInfo = {
+                        'name': policy.name,
+                        'uuid': dc['eps.__key']
+                    }
+                }
+            }
+        }
+        return policyInfo;
+    }
+    this.getEndpointTags = function(dc, endpoint) {
+         var tags = '';
+        _.each(cowc.TRAFFIC_GROUP_TAG_TYPES, function(tag) {
+            var tagVal = (endpoint == 'remote') ?
+                dc['eps.traffic.remote_' + tag.value + '_id'] : dc[tag.value];
+            if(tagVal) {
+                tags += (tags ? '<br/>' : '') + tagVal;
+            }
+        });
+        return tags;
     }
     return TrafficGroupsSessionsView;
 });

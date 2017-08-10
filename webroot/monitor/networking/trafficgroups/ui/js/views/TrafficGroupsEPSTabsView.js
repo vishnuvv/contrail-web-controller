@@ -17,7 +17,7 @@ define([
                 modalLayout = modalTemplate({prefixId: prefixId, modalId: modalId}),
                 modalConfig = {
                    'modalId': modalId,
-                   'className': 'modal-840',
+                   'className': 'modal-980',
                    'body': modalLayout,
                    'title': ctwl.TITLE_TRAFFIC_GROUPS_ENDPOINT_STATS,
                    'onCancel': function() {
