@@ -1420,6 +1420,7 @@ define([
         this.TITLE_TRAFFIC_GROUPS_ENDPOINT_STATS = 'Endpoint Statistics';
         this.TRAFFIC_GROUPS_SETTINGS = 'Traffic_Groups_Settings';
         this.TITLE_TRAFFIC_GROUPS_SETTINGS = 'Traffic Groups Settings';
+        this.TRAFFIC_GROUPS_NO_DATA = 'No Statistics found for the selected duration in this project';
     };
     return CTLabels;
 });

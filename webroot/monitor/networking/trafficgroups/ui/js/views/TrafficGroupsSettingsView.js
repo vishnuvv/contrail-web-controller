@@ -18,11 +18,11 @@ define([
                 modalId = 'configure-' + prefixId ;//+ '-modal',
                 modalConfig = {
                    'modalId': modalId,
-                   'className': 'modal-840',
+                   'className': 'modal-700',
                    'title': ctwl.TITLE_TRAFFIC_GROUPS_SETTINGS,
                    'body': editLayout,
                    'onSave': function () {
-                        filterModel.filterByTagRule({
+                        filterModel.tgSettingsRule({
                             init: function () {
                                 cowu.enableModalLoading(modalId);
                             },
@@ -46,10 +46,10 @@ define([
             cowu.createModal(modalConfig);
             $('#'+ modalId).on('shown.bs.modal', function () {
                  filterView.renderView4Config($("#" + modalId).find("#" + prefixId + "-form"),
-                    filterModel, filterView.tagsFilterViewConfig(tagTypeList),'filterByTagRuleValidation', null, null,
+                    filterModel, filterView.tagsFilterViewConfig(tagTypeList),'tgSettingsRuleValidation', null, null,
                     function () {
                         Knockback.applyBindings(filterModel, document.getElementById(modalId));
-                        kbValidation.bind(filterView);
+                        kbValidation.bind(filterView, {collection:filterModel.model().attributes.endpoints});
                     }, null, null);
             });
         },
@@ -83,67 +83,157 @@ define([
                         {
                             columns: [
                                 {
-                                    elementId: 'groupByTagType',
-                                    view: 'FormMultiselectView',
-                                    viewConfig: {
-                                        label: "Categorization",
-                                        path: 'groupByTagType',
-                                        dataBindValue: 'groupByTagType',
-                                        class: 'col-xs-6',
-                                        elementConfig: {
-                                            dataTextField: "text",
-                                            dataValueField: "value",
-                                            placeholder: "Select Tags",
-                                            data: tagsMap
+                                    elementId: 'tg_filter',
+                                    view: "AccordianView",
+                                    viewConfig: [
+                                        {
+                                            elementId: 'Traffic_Groups_Filter',
+                                            title: 'Filter',
+                                            view: "SectionView",
+                                            viewConfig: {
+                                                rows: [
+                                                    {
+                                                        columns: [{
+                                                            elementId: "filter_by_endpoints",
+                                                            view: "FormEditableGridView",
+                                                                viewConfig: {
+                                                                    path: "endpoints",
+                                                                    collection: "endpoints",
+                                                                    class:'col-xs-12',
+                                                                    validation:
+                                                                        "filterRuleValidation",
+                                                                    templateId: cowc.TMP_EDITABLE_GRID_ACTION_VIEW,
+                                                                    columns: [{
+                                                                        elementId: "endpoint",
+                                                                        name: "Filter By:",
+                                                                        view: "FormHierarchicalDropdownView",
+                                                                        viewConfig: {
+                                                                            templateId: cowc.TMPL_EDITABLE_GRID_MULTISELECT_VIEW,
+                                                                            class:'col-xs-12',
+                                                                            path: 'endpoint',
+                                                                            width: 600,
+                                                                            dataBindValue: 'endpoint()',
+                                                                            elementConfig: {
+                                                                                placeholder: 'Select Endpoint',
+                                                                                minimumResultsForSearch : 1,
+                                                                                dataTextField: "text",
+                                                                                dataValueField: "value",
+                                                                                data: tagValues,
+                                                                                width: 600,
+                                                                                queryMap: [
+                                                                                    { name : 'Application',  value : 'app', iconClass:'fa fa-list-alt' },
+                                                                                    { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-database' },
+                                                                                    { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
+                                                                                    { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' }]
+                                                                            }
+                                                                        }
+                                                                    }],
+                                                                    rowActions: [
+                                                                        {
+                                                                            onClick: "function() {\
+                                                                            $root.addEndpointByIndex($data, this); }",
+                                                                            iconClass: 'fa fa-plus'
+                                                                        },
+                                                                        {
+                                                                            onClick: "function() {\
+                                                                            $root.deleteEndpoint($data, this)\
+                                                                            ;}",
+                                                                            iconClass: 'fa fa-minus'
+                                                                        }
+                                                                    ],
+                                                                    gridActions: [
+                                                                        {
+                                                                            onClick: "function() {\
+                                                                            addEndpoint(); }",
+                                                                            buttonTitle: ""
+                                                                        }
+                                                                    ]
+                                                                }
+                                                        }]
+                                                    }
+                                                ]
+                                            }
                                         }
-                                    }
-                                },
-                                {
-                                    elementId: 'subGroupByTagType',
-                                    view: 'FormMultiselectView',
-                                    viewConfig: {
-                                        label: "Subcategorization",
-                                        path: 'subGroupByTagType',
-                                        dataBindValue: 'subGroupByTagType',
-                                        dataBindOptionList : "tagTypeList()",
-                                        class: 'col-xs-6',
-                                        elementConfig: {
-                                            dataTextField: "text",
-                                            dataValueField: "value",
-                                            placeholder: "Select Tags"
-                                        }
-                                    }
+                                    ]
                                 }
                             ]
                         },
                         {
                             columns: [
                                 {
-                                    elementId: 'filterByTagName',
-                                    view:"FormHierarchicalDropdownView",
-                                    viewConfig: {
-                                        templateId: cowc.TMPL_MULTISELECT_VIEW,
-                                        class:'col-xs-12',
-                                        label:'Filter',
-                                        path: 'filterByTagName',
-                                        dataBindValue: 'filterByTagName',
-                                        elementConfig: {
-                                            placeholder: 'Select Tag Names',
-                                            minimumResultsForSearch : 1,
-                                            dataTextField: "text",
-                                            dataValueField: "value",
-                                            data: tagValues,
-                                            queryMap: [
-                                                { name : 'Application',  value : 'app', iconClass:'fa fa-list-alt' },
-                                                { name : 'Deployment',  value : 'deployment', iconClass:'fa fa-database' },
-                                                { name : 'Site',  value : 'site', iconClass:'fa fa-life-ring' },
-                                                { name : 'Tier',  value : 'tier', iconClass:'fa fa-clone' }]
+                                    elementId: 'tg_categorization',
+                                    view: "AccordianView",
+                                    viewConfig: [
+                                        {
+                                            elementId: 'Traffic_Groups_Categorization',
+                                            title: 'Display',
+                                            view: "SectionView",
+                                            viewConfig: {
+                                                rows: [
+                                                   {
+                                                        columns: [
+                                                            {
+                                                                elementId: 'groupByTagType',
+                                                                view: 'FormMultiselectView',
+                                                                viewConfig: {
+                                                                    label: "Categorization",
+                                                                    path: 'groupByTagType',
+                                                                    dataBindValue: 'groupByTagType',
+                                                                    class: 'col-xs-8',
+                                                                    elementConfig: {
+                                                                        dataTextField: "text",
+                                                                        dataValueField: "value",
+                                                                        placeholder: "Select Tags",
+                                                                        data: tagsMap
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                elementId: 'subGroupByTagType',
+                                                                view: 'FormMultiselectView',
+                                                                viewConfig: {
+                                                                    label: "Subcategorization",
+                                                                    path: 'subGroupByTagType',
+                                                                    dataBindValue: 'subGroupByTagType',
+                                                                    dataBindOptionList : "tagTypeList",
+                                                                    class: 'col-xs-8',
+                                                                    elementConfig: {
+                                                                        dataTextField: "text",
+                                                                        dataValueField: "value",
+                                                                        placeholder: "Select Tags"
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
                                         }
-                                    }
+                                    ]
                                 }
                             ]
                         },
-                        ctwvc.getTimeRangeConfig("hh:mm A")
+                        {
+                            columns: [
+                                {
+                                    elementId: 'stats_time',
+                                    view: "AccordianView",
+                                    viewConfig: [
+                                        {
+                                            elementId: 'Traffic_Groups_Time_Range',
+                                            title: 'Time Range',
+                                            view: "SectionView",
+                                            active: false,
+                                            viewConfig: {
+                                                rows: [
+                                                    ctwvc.getTimeRangeConfig("hh:mm A")
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }   
                     ]
                 }
             }
