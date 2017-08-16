@@ -2868,6 +2868,7 @@ define([
             var self = underlayGraphView;
             self.removeUnderlayPathIds();
             self.removeUnderlayEffects();
+            self.network.network.destroy();
             self.toBeDupedElements = {
                 "nodes": [],
                 "edges": []

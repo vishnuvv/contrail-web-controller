@@ -124,6 +124,7 @@ define([
         var interfaceDetails = [];
         var deferredObj = $.Deferred();
         underlayUtils.removeUnderlayTabs(underlayTabView, deferredObj);
+        console.log('show prouter tabs');
         deferredObj.always(function (resetLoading) {
         var data = {
             hostName : ifNull(nodeDetails['name'],'-'),
@@ -181,6 +182,7 @@ define([
         vRouterParams['hostname'] = nodeDetails['name'];
         vRouterParams['isUnderlayPage'] = true;
         var vRouterTabConfig = ctwvc.getVRouterDetailsPageTabs(vRouterParams);
+        console.log('show vrouter tabs called ');
         underlayTabView.childViewMap[ctwc.UNDERLAY_TAB_ID].renderNewTab(
             ctwc.UNDERLAY_TAB_ID, vRouterTabConfig, null, null, function(){
                 $("#"+ctwc.UNDERLAY_TAB_ID).tabs({active:2});

@@ -666,9 +666,10 @@ define(
                     var listModelConfig = {
                         remote : {
                             ajaxConfig : {
-                                url: monitorInfraConstants.monitorInfraUrls['QUERY'],
-                                type: 'POST',
-                                data: JSON.stringify(postData)
+                                url: 'sgresponse.json',
+                                //url: monitorInfraConstants.monitorInfraUrls['QUERY'],
+                                //type: 'POST',
+                                //data: JSON.stringify(postData)
                             },
                             dataParser : function (response) {
                                 if(false || response['data'].length == 0) {
