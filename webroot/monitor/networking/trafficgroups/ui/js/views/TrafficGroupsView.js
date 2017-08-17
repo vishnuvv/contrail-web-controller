@@ -18,7 +18,7 @@ define(
                     'deployment': [],
                     'site': []
                 },
-                filterdData: {},
+                filterdData: null,
                 resetTrafficStats: function(e) {
                     e.preventDefault();
                     tgView.renderTrafficChart();
@@ -552,6 +552,12 @@ define(
                                 "dendrogram-chart-id", self.addtionalEvents());
                     if(cfg['freshData']) {
                         self.viewInst.model.onAllRequestsComplete.subscribe(function() {
+                           var data = self.clientData.concat(self.serverData);
+                           data = self.updateRemoteIds(data);
+                           self.viewInst.model.setData(data);
+                           self.trafficData = JSON.parse(JSON.stringify(data));
+                           self.filterDataByEndpoints();
+                           self.prepareTagList();
                            self.chartRender();
                         });
                     } else {
@@ -872,6 +878,35 @@ define(
                     return vnName ? vnName
                             .replace(/([^:]*):([^:]*):([^:]*)/,'$3 ($2)') : '';
                 },
+                updateRemoteIds: function (data) {
+                    data = cowu.ifNull(data, []);
+                    var tagMap = {}, tagsResponse = TrafficGroupsView.tagsResponse;
+                    var tagRecords = _.result(tagsResponse,'0.tags',[]);
+                    tagRecords.forEach(function(val,idx) {
+                        var currTag = val['tag'];
+                        tagMap[currTag.tag_id] = currTag.name;
+                    });
+                    $.each(data, function (idx, value) {
+                        $.each(['eps.traffic.remote_app_id', 'eps.traffic.remote_deployment_id',
+                            'eps.traffic.remote_prefix', 'eps.traffic.remote_site_id',
+                            'eps.traffic.remote_tier_id'], function (idx, val) {
+                                if(value[val] == '0')
+                                    value[val] = '';
+                                if(!_.isEmpty(tagMap[parseInt(value[val])])) {
+                                    value[val] = tagMap[parseInt(value[val])];
+                                }
+                        });
+                        function formatVN(vnName) {
+                            return vnName.replace(/([^:]*):([^:]*):([^:]*)/,'$3 ($2)');
+                        }
+                        //Strip-off the domain and project form FQN
+                        $.each(['app','site','tier','deployment'],function(idx,tagName) {
+                            if(typeof(value[tagName]) == 'string' && value[tagName].split(':').length == 3)
+                                value[tagName] = value[tagName].split(':').pop();
+                        });
+                    });
+                    return data;
+                },
                 renderTrafficChart: function() {
                     var self = this,
                         fromTime = this.getTGSettings().time_range,
@@ -887,81 +922,113 @@ define(
                             fromTime /= 60;
                         }
                     self.updateStatsTimeSec();
-                    var postData = {
+                    var configTagDefObj = $.ajax({
+                        url: 'api/tenants/config/get-config-details',
+                        type: 'POST',
+                        data: {data:[{type: 'tags'}]}
+                    }).done(function(response) {
+                        TrafficGroupsView.tagsResponse = response;
+                        TrafficGroupsView.tagMap = _.groupBy(_.map(_.result(response, '0.tags', []), 'tag'), 'tag_id');
+                    });
+                    var clientPostData = {
                         "async": false,
                         "formModelAttrs": {
                             "from_time_utc": "now-" + (fromTime + 'm'),
                             "to_time_utc": "now-" + (toTime + 'm'),
-                            "select": "eps.traffic.remote_app_id, eps.traffic.remote_tier_id, eps.traffic.remote_site_id,"+
-                                 "eps.traffic.remote_deployment_id, eps.traffic.remote_prefix, eps.traffic.remote_vn, eps.__key,"+
-                                 " app, tier, site, deployment, vn, name, SUM(eps.traffic.in_bytes),"+
-                                 " SUM(eps.traffic.out_bytes), SUM(eps.traffic.in_pkts), SUM(eps.traffic.initiator_session_count)," +
-                                 " SUM(eps.traffic.responder_session_count), SUM(eps.traffic.out_pkts)",
+                            "select": "eps.client.remote_app_id, eps.client.remote_tier_id, eps.client.remote_site_id,"+
+                                 "eps.client.remote_deployment_id, eps.client.remote_prefix, eps.client.remote_vn, eps.__key,"+
+                                 " app, tier, site, deployment, vn, name, SUM(eps.client.in_bytes),"+
+                                 " SUM(eps.client.out_bytes), SUM(eps.client.in_pkts), SUM(eps.client.hits)," +
+                                 " SUM(eps.client.out_pkts)",
                             "table_type": "STAT",
-                            "table_name": "StatTable.EndpointSecurityStats.eps.traffic",
+                            "table_name": "StatTable.EndpointSecurityStats.eps.client",
                             "where": "(name Starts with " + contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' + contrail.getCookie(cowc.COOKIE_PROJECT) + ")",
                             "where_json": []
                         }
                     };
+
+                    var serverPostData = {
+                        "async": false,
+                        "formModelAttrs": {
+                            "from_time_utc": "now-" + (fromTime + 'm'),
+                            "to_time_utc": "now-" + (toTime + 'm'),
+                            "select": "eps.server.remote_app_id, eps.server.remote_tier_id, eps.server.remote_site_id,"+
+                                 "eps.server.remote_deployment_id, eps.server.remote_prefix, eps.server.remote_vn, eps.__key,"+
+                                 " app, tier, site, deployment, vn, name, SUM(eps.server.in_bytes),"+
+                                 " SUM(eps.server.out_bytes), SUM(eps.server.in_pkts), SUM(eps.server.hits)," +
+                                 " SUM(eps.server.out_pkts)",
+                            "table_type": "STAT",
+                            "table_name": "StatTable.EndpointSecurityStats.eps.server",
+                            "where": "(name Starts with " + contrail.getCookie(cowc.COOKIE_DOMAIN) + ':' + contrail.getCookie(cowc.COOKIE_PROJECT) + ")",
+                            "where_json": []
+                        }
+                    };
+
                     var listModelConfig = {
                         remote : {
                             ajaxConfig : {
-                                url: monitorInfraConstants.monitorInfraUrls['QUERY'],
-                                type: 'POST',
-                                data: JSON.stringify(postData)
+                                url:monitorInfraConstants.monitorInfraUrls['QUERY'],
+                                type:'POST',
+                                data:JSON.stringify(clientPostData)
                             },
                             dataParser : function (response) {
-                                if(false || response['data'].length == 0) {
-                                    return [];
-                                } else {
-                                    return response['data'];
-                                }
+                                var clientData = cowu.getValueByJsonPath(response, 'data', []);
+                                var modifiedClientData = [];
+                                    _.each(clientData, function (val, idx) {
+                                        val['isClient'] = true;
+                                        val['eps.traffic.remote_app_id'] = val['eps.client.remote_app_id'];
+                                        val['eps.traffic.remote_deployment_id'] = val['eps.client.remote_deployment_id'];
+                                        val['eps.traffic.remote_site_id'] = val['eps.client.remote_site_id'];
+                                        val['eps.traffic.remote_tier_id'] = val['eps.client.remote_tier_id'];
+                                        val['eps.traffic.remote_deployment_id'] = val['eps.client.remote_deployment_id'];
+                                        val['eps.traffic.remote_vn'] = val['eps.client.remote_vn'];
+                                        val['SUM(eps.traffic.in_bytes)'] = val['SUM(eps.client.in_bytes)'];
+                                        val['SUM(eps.traffic.out_bytes)'] = val['SUM(eps.client.out_bytes)'];
+                                        val['SUM(eps.traffic.in_pkts)'] = val['SUM(eps.client.in_pkts)'];
+                                        val['SUM(eps.traffic.out_pkts)'] = val['SUM(eps.client.out_pkts)'];
+                                        val['eps.traffic.remote_prefix'] = val['eps.client.remote_prefix'];
+                                        var updateVal = _.omit(val, ['eps.client.remote_app_id', 'eps.client.remote_deployment_id',
+                                         'eps.client.remote_site_id', 'eps.client.remote_tier_id', 'eps.client.remote_deployment_id',
+                                         'eps.client.remote_vn', 'SUM(eps.client.in_bytes)', 'SUM(eps.client.out_bytes)',
+                                         'SUM(eps.client.in_pkts)', 'SUM(eps.client.out_pkts)']);
+                                        modifiedClientData.push(updateVal);
+                                    });
+                                self.clientData = modifiedClientData;
+                                return modifiedClientData;
                             }
                         },
                         vlRemoteConfig: {
                             vlRemoteList: [{
                                 getAjaxConfig: function() {
                                     return {
-                                        url: 'api/tenants/config/get-config-details',
-                                        type:'POST',
-                                        data:JSON.stringify({data:[{type: 'tags'}]})
+                                        url: monitorInfraConstants.monitorInfraUrls['QUERY'],
+                                        type: 'POST',
+                                        data: JSON.stringify(serverPostData)
                                     }
                                 },
                                 successCallback: function(response, contrailListModel) {
-                                    TrafficGroupsView.tagMap = _.groupBy(_.map(_.result(response, '0.tags', []), 'tag'), 'tag_id');
-                                    var tagMap = {};
-                                    var tagRecords = _.result(response,'0.tags',[]);
-                                    tagRecords.forEach(function(val,idx) {
-                                        var currTag = val['tag'];
-                                        tagMap[currTag.tag_id] = currTag.name;
+                                    var serverData = cowu.getValueByJsonPath(response, 'data', []);
+                                    var modifiedServerData = [];
+                                    _.each(serverData, function (val, idx) {
+                                        val['isServer'] = true;
+                                        val['eps.traffic.remote_app_id'] = val['eps.server.remote_app_id'];
+                                        val['eps.traffic.remote_deployment_id'] = val['eps.server.remote_deployment_id'];
+                                        val['eps.traffic.remote_site_id'] = val['eps.server.remote_site_id'];
+                                        val['eps.traffic.remote_tier_id'] = val['eps.server.remote_tier_id'];
+                                        val['eps.traffic.remote_deployment_id'] = val['eps.server.remote_deployment_id'];
+                                        val['eps.traffic.remote_vn'] = val['eps.server.remote_vn'];
+                                        val['SUM(eps.traffic.in_bytes)'] = val['SUM(eps.server.in_bytes)'];
+                                        val['SUM(eps.traffic.out_bytes)'] = val['SUM(eps.server.out_bytes)'];
+                                        val['SUM(eps.traffic.in_pkts)'] = val['SUM(eps.server.in_pkts)'];
+                                        val['SUM(eps.traffic.out_pkts)'] = val['SUM(eps.server.out_pkts)'];
+                                        val['eps.traffic.remote_prefix'] = val['eps.server.remote_prefix'];
+                                        var updateVal = _.omit(val, ['eps.server.remote_app_id', 'eps.server.remote_deployment_id',
+                                         'eps.server.remote_site_id', 'eps.server.remote_tier_id', 'eps.server.remote_deployment_id',
+                                         'eps.server.remote_vn', 'SUM(eps.server.in_bytes)', 'SUM(eps.server.out_bytes)',
+                                         'SUM(eps.server.in_pkts)', 'SUM(eps.server.out_pkts)']);
+                                        modifiedServerData.push(updateVal);
                                     });
-                                    var data = contrailListModel.getItems();
-                                    contrailListModel.onAllRequestsComplete.subscribe(function() {
-                                        var data = contrailListModel.getItems();
-                                    });
-                                    $.each(data, function (idx, value) {
-                                        $.each(['eps.traffic.remote_app_id', 'eps.traffic.remote_deployment_id',
-                                            'eps.traffic.remote_prefix', 'eps.traffic.remote_site_id',
-                                            'eps.traffic.remote_tier_id'], function (idx, val) {
-                                                if(value[val] == '0')
-                                                    value[val] = '';
-                                                if(!_.isEmpty(tagMap[parseInt(value[val])])) {
-                                                    value[val] = tagMap[parseInt(value[val])];
-                                                }
-                                        });
-                                        function formatVN(vnName) {
-                                            return vnName.replace(/([^:]*):([^:]*):([^:]*)/,'$3 ($2)');
-                                        }
-                                        //Strip-off the domain and project form FQN
-                                        $.each(['app','site','tier','deployment'],function(idx,tagName) {
-                                            if(typeof(value[tagName]) == 'string' && value[tagName].split(':').length == 3)
-                                                value[tagName] = value[tagName].split(':').pop();
-                                        });
-                                    });
-                                    self.trafficData = JSON.parse(JSON.stringify(data));
-                                    self.filterDataByEndpoints();
-                                    self.prepareTagList();
-                                    return data;
+                                    self.serverData = modifiedServerData;
                                 }
                             }]
                         },
@@ -969,12 +1036,15 @@ define(
 
                         }
                     };
-                    this.viewInst = new ContrailChartsView({
-                        el: this.$el.find('#traffic-groups-radial-chart'),
-                        model: new ContrailListModel(listModelConfig)
-                    });
-                    this.updateChart({
-                        'freshData': true
+                    configTagDefObj.done(function () {
+                        //var self = this;
+                        self.viewInst = new ContrailChartsView({
+                            el: self.$el.find('#traffic-groups-radial-chart'),
+                            model: new ContrailListModel(listModelConfig)
+                        });
+                        self.updateChart({
+                            'freshData': true
+                        });
                     });
                 },
                 render: function() {
