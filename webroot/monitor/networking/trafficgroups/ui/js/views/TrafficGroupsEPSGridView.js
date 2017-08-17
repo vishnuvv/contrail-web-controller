@@ -35,6 +35,17 @@ define([
                             }
                         },
                         {
+                            field: 'isClient',
+                            name: 'Client Session',
+                            formatter: function(r,c,v,cd,dc) {
+                               if (dc['isClient']) {
+                                    return 'True';
+                               } else {
+                                    return 'Flase';
+                               }
+                            }
+                        },
+                        {
                             field: 'app',
                             name: 'Source Tags',
                             formatter:function(r,c,v,cd,dc) {
@@ -81,13 +92,20 @@ define([
                             }
                         },
                         {
+                            field: 'SUM(eps.server.hits)',
+                            name: 'Hits',
+                            hide: true
+                        },
+                        {
                             field: 'SUM(eps.traffic.initiator_session_count)',
                             name: 'Sessions Initiated',
+                            hide: true,
                             maxWidth: 130,
                         },
                         {
                             field: 'SUM(eps.traffic.responder_session_count)',
                             name: 'Sessions Responded',
+                            hide: true,
                             maxWidth: 130,
                         }
                     ],
