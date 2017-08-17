@@ -177,9 +177,12 @@ define([
                                                                 view: 'FormMultiselectView',
                                                                 viewConfig: {
                                                                     label: "Categorization",
+                                                                    templateId: cowc.TMPL_EDITABLE_GRID_MULTISELECT_WITH_ICON_VIEW,
                                                                     path: 'groupByTagType',
+                                                                    icon: 'fa fa-info-circle',
+                                                                    iconInfo: 'Choose tag types to group data for first level',
                                                                     dataBindValue: 'groupByTagType',
-                                                                    class: 'col-xs-8',
+                                                                    class: 'col-xs-10',
                                                                     elementConfig: {
                                                                         dataTextField: "text",
                                                                         dataValueField: "value",
@@ -193,10 +196,13 @@ define([
                                                                 view: 'FormMultiselectView',
                                                                 viewConfig: {
                                                                     label: "Subcategorization",
+                                                                    templateId: cowc.TMPL_EDITABLE_GRID_MULTISELECT_WITH_ICON_VIEW,
                                                                     path: 'subGroupByTagType',
+                                                                    icon: 'fa fa-info-circle',
+                                                                    iconInfo: 'Choose tag types to group data for second level',
                                                                     dataBindValue: 'subGroupByTagType',
                                                                     dataBindOptionList : "tagTypeList",
-                                                                    class: 'col-xs-8',
+                                                                    class: 'col-xs-10',
                                                                     elementConfig: {
                                                                         dataTextField: "text",
                                                                         dataValueField: "value",
