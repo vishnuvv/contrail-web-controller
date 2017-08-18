@@ -42,8 +42,7 @@ define([
             var tabConfig = [],
                 sessionData = this.sessionData
             _.each(sessionData.endpointStats, function(endpoint, idx) {
-                var targetIdx = (sessionData.endpointStats.length - 1 == idx) ?
-                                0 : (idx + 1);
+                var targetIdx = (idx == 0) ? 1 : 0;
                 tabConfig.push({
                     elementId: "Endpoint_" + idx + "_Stats",
                     title: 'Endpoint' + (idx + 1),
