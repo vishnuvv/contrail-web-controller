@@ -9,7 +9,8 @@ function ControllerInfraDashboardLoader() {
     this.load = function (paramObject) {
         var self = this,
             hashParams = paramObject['hashParams'],
-            renderFn = paramObject['function'];
+            renderFn = paramObject['function'],
+            loadingStartedDefObj = paramObject['loadingStartedDefObj'];
         $("#page-content").removeClass("dashboard-no-padding").addClass("dashboard-padding");
         if(monInfraDashboardLoader.loadedControllerInfoboxes != true) {
             monInfraDashboardLoader.loadedControllerInfoboxes = true;
@@ -19,6 +20,9 @@ function ControllerInfraDashboardLoader() {
                         el: $(contentContainer)
                     });
                     self.monInfraDashboardView.render();
+                    if (loadingStartedDefObj != null) {
+                    	loadingStartedDefObj.resolve();
+                    }
                 });
             });
         }

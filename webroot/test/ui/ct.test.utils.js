@@ -39,7 +39,13 @@ define([
             "/api/tenant/networking/get-instances?count={0}&nextCount={1}&startAt={2}": /\/api\/tenant\/networking\/get-instances\?.*$/,
             "/api/tenant/networking/get-instances-list?startAt={0}": /\/api\/tenant\/networking\/get-instances-list\?.*$/,
             '/api/tenant/networking/get-interfaces-list':  /\/api\/tenant\/networking\/get-interfaces-list.*$/,
-            '/api/tenant/networking/get-interfaces?count={0}&nextCount={1}': /\/api\/tenant\/networking\/get-interfaces.*$/
+            '/api/tenant/networking/get-interfaces?count={0}&nextCount={1}': /\/api\/tenant\/networking\/get-interfaces.*$/,
+            '/api/admin/monitor/infrastructure/vrouters/cached-summary': /\/api\/admin\/monitor\/infrastructure\/vrouters\/cached-summary.*$/,
+            '/api/admin/monitor/infrastructure/analyticsnodes/summary': /\/api\/admin\/monitor\/infrastructure\/analyticsnodes\/summary.*$/,
+            '/api/admin/monitor/infrastructure/controlnodes/summary': /\/api\/admin\/monitor\/infrastructure\/controlnodes\/summary.*$/,
+            '/api/admin/monitor/infrastructure/dbnodes/summary': /\/api\/admin\/monitor\/infrastructure\/dbnodes\/summary.*$/,
+            '/api/admin/monitor/infrastructure/confignodes/summary': /\/api\/admin\/monitor\/infrastructure\/confignodes\/summary.*$/,
+            '/api/tenant/networking/virtual-networks/list': /\/api\/tenant\/networking\/virtual-networks\/list.*$/
         };
 
         return regexUrlMap [url];

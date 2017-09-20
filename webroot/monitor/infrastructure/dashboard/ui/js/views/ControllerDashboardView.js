@@ -5,6 +5,7 @@
 define([
     'underscore',
     'backbone',
+    'contrail-view',
     // 'config node charts view'
     'controller-basedir/monitor/infrastructure/common/ui/js/views/ConfigNodeScatterChartView',
     // 'controlnode-scatterchart-view',
@@ -21,13 +22,13 @@ define([
     'monitor-infra-controlnode-model',
     'monitor-infra-vrouter-model',
     'contrail-list-model'
-], function(_,Backbone,ConfigNodeScatterChartView,
+], function(_,Backbone,ContrailView, ConfigNodeScatterChartView,
         ControlNodeScatterChartView,DatabaseNodeScatterChartView,
         AnalyticsNodeScatterChartView,MonitorInfraDashboardView,VRouterDashboardView,
         analyticsNodeListModelCfg,databaseNodeListModelCfg,configNodeListModelCfg,
         controlNodeListModelCfg,VRouterListModel,ContrailListModel) {
 
-    var ControllerDashboardView = Backbone.View.extend({
+    var ControllerDashboardView = ContrailView.extend({
         el: $(contentContainer),
         render: function () {
             var self = this;

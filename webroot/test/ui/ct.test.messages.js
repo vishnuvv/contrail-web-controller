@@ -42,6 +42,8 @@ define([
         this.ROUTE_AGGREGATE_GRID_VIEW_COMMON_TEST_MODULE = 'Route Aggregate Grid View - Common Tests';
         this.PORT_GRID_VIEW_COMMON_TEST_MODULE = 'Port Grid View - Common Tests';
 
+        //Monitor Infra test cases
+        this.MONITOR_INFRA_DASHBOARD = 'Monitor infrastructure dashboard test cases';
         this.get = function () {
             var args = arguments;
             return args[0].replace(/\{(\d+)\}/g, function (m, n) {

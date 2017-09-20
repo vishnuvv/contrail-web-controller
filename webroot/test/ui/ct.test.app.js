@@ -40,6 +40,18 @@ require([
             setFeaturePkgAndInit(featurePkg, coreTestMockData);
         });
 
+        /*require(['content-handler'], function (ContentHandler) {
+        	contentHandler = new ContentHandler();
+        	globalObj.resourcePathStub = sinon.stub(contentHandler, 'getPath', function (resourceDir, type, fileName) {
+            	console.log('resourcePathStub parameters resourceDir',JSON.stringify(resourceDir), 'type', type, 'fileName', fileName);
+            	console.log('resourcePathStub', pkgBaseDir + resourceDir['testDir'] != null ? resourceDir['testDir'] : resourceDir['rootDir']+ '/'+type+'/'+ fileName);
+            	if (resourceDir['testDir'] != null) {
+            		return resourceDir['testDir']+ '/'+type+'/'+ fileName;
+            	} else {
+            		return pkgBaseDir + resourceDir['rootDir']+ '/'+type+'/'+ fileName;
+            	}
+            });
+        });*/
         function getControllerTestAppPaths(coreBaseDir) {
             var controllerTestAppPathObj = {};
 

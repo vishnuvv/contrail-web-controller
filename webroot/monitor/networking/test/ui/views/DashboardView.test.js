@@ -39,6 +39,7 @@ define([
 
         responses.push(cotr.createFakeServerResponse( {
             url: cttu.getRegExForUrl(ctwc.URL_ALL_PROJECTS),
+            postBody: JSON.stringify({"id":"14F3EA34-7B0D-4330-B0AD-84A404142FEB-1505394793501","FQN":"default-domain:admin"}),
             body: JSON.stringify(TestMockdata.projectMockData)
         }));
 
@@ -129,7 +130,7 @@ define([
                     ]
                 }
             ]
-        } ;
+        };
 
     };
 

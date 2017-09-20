@@ -38,6 +38,7 @@ module.exports = function (grunt) {
         {pattern: 'contrail-web-controller/webroot/test/ui/ct.test.app.js'},
         {pattern: 'contrail-web-controller/webroot/test/ui/*.js', included: false},
         {pattern: 'contrail-web-controller/webroot/monitor/**/*.css', included: false},
+        {pattern: 'contrail-web-controller/webroot/monitor/infrastructure/common/test/mockdata/*.js', included: false},
         {pattern: 'contrail-web-controller/webroot/monitor/**/*.tmpl', included: false},
         {pattern: 'contrail-web-controller/webroot/config/**/*.tmpl', included: false},
         {pattern: 'contrail-web-controller/webroot/common/ui/templates/*.tmpl', included: false},
@@ -54,6 +55,7 @@ module.exports = function (grunt) {
 
 
         {pattern: 'contrail-web-core/webroot/js/**/*.js', included: false},
+        {pattern: 'contrail-web-core/webroot/js/views/MonitorInfraDashboardView.js', included: false},
         {pattern: 'contrail-web-core/webroot/dist/js/**/*.js', included: false},
         {pattern: 'contrail-web-core/webroot/common/ui/templates/*.tmpl', included: false},
 
@@ -64,7 +66,9 @@ module.exports = function (grunt) {
         {pattern: 'contrail-web-core/webroot/dist/reports/**/default.config.json', included: false},
 
         {pattern: 'contrail-web-controller/webroot/**/test/**/*.mock.data.js', included: false},
-        {pattern: 'contrail-web-controller/webroot/**/test/**/*.unit.test.suite.js', included: false}
+        {pattern: 'contrail-web-controller/webroot/**/test/**/*.unit.test.suite.js', included: false},
+        //For monInfraDashboard.main.js
+        {pattern: 'contrail-web-core/webroot/js/*.js', included: false}
     ];
 
     function browserSubdirFn(browser, platform) {
@@ -75,6 +79,38 @@ module.exports = function (grunt) {
     var karmaConfig = {
         options: {
             configFile: 'karma.config.js'
+        },
+        monInfraDashboardView: {
+        	options: {
+        		files: [
+        		    {
+        		    	pattern: 'contrail-web-controller/webroot/monitor/infrastructure/test/ui/views/InfraDashboardView.test.js',
+        		    	included: false
+        		    },
+        		    {
+        		    	pattern: 'contrail-web-controller/webroot/monitor/infrastructure/dashboard/ui/js/views/ControllerDashboardView.js',
+        		    	included: false
+        		    }
+        		],
+        		preprocessors: {
+                    'contrail-web-controller/webroot/monitor/infrastructure/dashboard/ui/js/**/*.js': ['coverage']
+                },
+                junitReporter: {
+                    outputDir: __dirname + '/reports/tests/monInfra/views/',
+                    outputFile: 'monitor-infra-dashboard-view-test-results.xml',
+                    suite: 'monInfraDashboardView',
+                    useBrowserName: false
+                },
+                htmlReporter: {
+                    outputFile: __dirname + '/reports/tests/monInfra/views/monitor-infra-dashboard-view-test-results.html'
+                },
+                coverageReporter: {
+                    type: 'html',
+                    dir: __dirname + '/reports/coverage/monInfra/views/InfraDashboardView/',
+                    subdir: browserSubdirFn
+                },
+                feature: 'monInfra'
+        	}
         },
         networkListView: {
             options: {
@@ -242,7 +278,7 @@ module.exports = function (grunt) {
                     {
                         pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/DashboardViewNetworks.test.js',
                         included: false
-                    },
+                    }/*,
                     {
                         pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/DashboardViewInstances.test.js',
                         included: false
@@ -254,7 +290,7 @@ module.exports = function (grunt) {
                     {
                         pattern: 'contrail-web-controller/webroot/monitor/networking/test/ui/views/DashboardViewPortDistribution.test.js',
                         included: false
-                    }
+                    }*/
                 ],
                 preprocessors: {
                     'contrail-web-controller/webroot/monitor/networking/ui/js/**/*.js': ['coverage']
@@ -775,7 +811,10 @@ module.exports = function (grunt) {
         if (target != 'options') {
             allTestFiles = allTestFiles.concat(karmaConfig[target]['options']['files']);
             var feature = karmaConfig[target]['options']['feature'];
-            if (feature == 'nm') {
+            /*if (target == 'monInfraDashboardView') {
+                allNMTestFiles = allNMTestFiles.concat(karmaConfig[target]['options']['files']);
+            }*/
+            if (target == 'dashBoardView') {
                 allNMTestFiles = allNMTestFiles.concat(karmaConfig[target]['options']['files']);
             }
             if(feature == 'config') {
@@ -891,8 +930,9 @@ module.exports = function (grunt) {
     // Now add the test files along with common files.
     karmaConfig['runAllNMTests']['options']['files'] = commonFiles.concat(allNMTestFiles);
     karmaConfig['runAllConfigTests']['options']['files'] = commonFiles.concat(allConfigTestFiles);
-    karmaConfig['runAllTests']['options']['files'] = commonFiles.concat(allTestFiles);
-
+    //karmaConfig['runAllTests']['options']['files'] = commonFiles.concat(allTestFiles);
+    console.log('allNMTestFiles ', allNMTestFiles);
+    karmaConfig['runAllTests']['options']['files'] = commonFiles.concat(allNMTestFiles);
     grunt.initConfig({
         pkg: grunt.file.readJSON(__dirname + "/../../../../contrail-web-core/package.json"),
         karma: karmaConfig,
