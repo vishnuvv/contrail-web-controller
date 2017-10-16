@@ -53,79 +53,84 @@ define([
     };
 
     function getRowActionConfig(viewConfig) {
-        var rowActionConfig = [];
-        rowActionConfig.push(ctwgc.getEditConfig("Edit", function (rowIndex) {
-                var dataItem = $(gridElId).data("contrailGrid").
-                    _dataView.getItem(rowIndex),
-                fwPolicyModel = new FWPolicyModel(dataItem);
-                    fwPolicyEditView.model = fwPolicyModel;
-                    fwPolicyEditView.renderEditFirewallPolicyDescription(
-                        {"title": ctwl.EDIT,
-                            mode: ctwl.EDIT_ACTION,
-                            callback: function () {
-                                var dataView =
-                                    $(gridElId).data("contrailGrid")._dataView;
-                                dataView.refreshData();
+        if(cowu.isAdmin() === false && viewConfig['is_global'] === true){
+            return false;
+        }
+        else{
+            var rowActionConfig = [];
+            rowActionConfig.push(ctwgc.getEditConfig("Edit", function (rowIndex) {
+                    var dataItem = $(gridElId).data("contrailGrid").
+                        _dataView.getItem(rowIndex),
+                    fwPolicyModel = new FWPolicyModel(dataItem);
+                        fwPolicyEditView.model = fwPolicyModel;
+                        fwPolicyEditView.renderEditFirewallPolicyDescription(
+                            {"title": ctwl.EDIT,
+                                mode: ctwl.EDIT_ACTION,
+                                callback: function () {
+                                    var dataView =
+                                        $(gridElId).data("contrailGrid")._dataView;
+                                    dataView.refreshData();
+                                }
                             }
-                        }
-                    );
-            }));
-        rowActionConfig.push(ctwgc.getDeleteAction(function (rowIndex) {
-                 if(viewConfig.isWizard){
-                     fwzUtils.appendDeleteContainer($(arguments[1].context).parent()[0], 'fw-policy-wizard-global-grid-id', true);
-                     $(".cancelWizardDeletePopup").off('click').on('click', function(){
-                         if($('.confirmation-popover').length != 0){
-                             $('.confirmation-popover').remove(); 
-                             $('#delete-popup-background').removeClass('overlay-background');
-                         }
-                     });
-                     $(".saveWizardRecords").off('click').on('click', function(){
-                         var dataItem = $('#' + ctwc.FW_POLICY_GRID_ID).data('contrailGrid')._dataView.getItem(rowIndex);
-                         var model = new FWPolicyModel();
-                         model.deleteFWPolicies([dataItem], {
-                             success: function () {
-                                 $('#' + ctwc.FW_POLICY_GRID_ID).
-                                 data('contrailGrid')._dataView.refreshData();
-                                 if($('.confirmation-popover').length != 0){
-                                     $('.confirmation-popover').remove(); 
-                                     $('#delete-popup-background').removeClass('overlay-background');
-                                 }
-                             },
-                             error: function (error) {
-                                 $("#grid-details-error-container").text('');
-                                 $("#grid-details-error-container").text(error.responseText);
-                                 $(".aps-details-error-container").show();
-                                 if($('.confirmation-popover').length != 0){
-                                     $('.confirmation-popover').remove(); 
-                                     $('#delete-popup-background').removeClass('overlay-background');
-                                 }
+                        );
+                }));
+            rowActionConfig.push(ctwgc.getDeleteAction(function (rowIndex) {
+                     if(viewConfig.isWizard){
+                         fwzUtils.appendDeleteContainer($(arguments[1].context).parent()[0], 'fw-policy-wizard-global-grid-id', true);
+                         $(".cancelWizardDeletePopup").off('click').on('click', function(){
+                             if($('.confirmation-popover').length != 0){
+                                 $('.confirmation-popover').remove();
+                                 $('#delete-popup-background').removeClass('overlay-background');
                              }
                          });
-                     });
-                 }else{
-                     var dataItem = $(gridElId).data("contrailGrid").
-                     _dataView.getItem(rowIndex),
-                     fwPolicyModel = new FWPolicyModel(dataItem),
-                     checkedRow = [dataItem];
-                 fwPolicyEditView.model = fwPolicyModel;
-                 fwPolicyEditView.renderDeleteFWPolicies(
-                     {"title": ctwl.TITLE_FW_POLICY_DELETE,
-                         checkedRows: checkedRow,
-                         callback: function () {
-                             var dataView =
-                                 $(gridElId).data("contrailGrid")._dataView;
-                             dataView.refreshData();
+                         $(".saveWizardRecords").off('click').on('click', function(){
+                             var dataItem = $('#' + ctwc.FW_POLICY_GRID_ID).data('contrailGrid')._dataView.getItem(rowIndex);
+                             var model = new FWPolicyModel();
+                             model.deleteFWPolicies([dataItem], {
+                                 success: function () {
+                                     $('#' + ctwc.FW_POLICY_GRID_ID).
+                                     data('contrailGrid')._dataView.refreshData();
+                                     if($('.confirmation-popover').length != 0){
+                                         $('.confirmation-popover').remove();
+                                         $('#delete-popup-background').removeClass('overlay-background');
+                                     }
+                                 },
+                                 error: function (error) {
+                                     $("#grid-details-error-container").text('');
+                                     $("#grid-details-error-container").text(error.responseText);
+                                     $(".aps-details-error-container").show();
+                                     if($('.confirmation-popover').length != 0){
+                                         $('.confirmation-popover').remove();
+                                         $('#delete-popup-background').removeClass('overlay-background');
+                                     }
+                                 }
+                             });
+                         });
+                     }else{
+                         var dataItem = $(gridElId).data("contrailGrid").
+                         _dataView.getItem(rowIndex),
+                         fwPolicyModel = new FWPolicyModel(dataItem),
+                         checkedRow = [dataItem];
+                     fwPolicyEditView.model = fwPolicyModel;
+                     fwPolicyEditView.renderDeleteFWPolicies(
+                         {"title": ctwl.TITLE_FW_POLICY_DELETE,
+                             checkedRows: checkedRow,
+                             callback: function () {
+                                 var dataView =
+                                     $(gridElId).data("contrailGrid")._dataView;
+                                 dataView.refreshData();
+                             }
                          }
-                     }
-                 );
-               }
-            }));
-        if(viewConfig.isWizard){
-           var options = [];
-           options.push(rowActionConfig[1]);
-           return options;
-        }else{
-            return rowActionConfig; 
+                     );
+                   }
+                }));
+            if(viewConfig.isWizard){
+               var options = [];
+               options.push(rowActionConfig[1]);
+               return options;
+            }else{
+                return rowActionConfig;
+            }
         }
     };
 
@@ -180,116 +185,120 @@ define([
     };
 
     function getHeaderActionConfig(viewConfig) {
-            var headerActionConfig;
-            var headerActionConfig = [
-                {
-                    "type" : "link",
-                    "title" : ctwl.TITLE_FW_POLICY_MULTI_DELETE,
-                    "iconClass": 'fa fa-trash',
-                    "linkElementId": 'btnDeleteFWPolicy',
-                    "onClick" : function() {
-                        var fwPolicyModel = new FWPolicyModel();
-                        var checkedRows =
-                            $(gridElId).data("contrailGrid").
-                            getCheckedRows();
-                        if(checkedRows && checkedRows.length > 0) {
+            if(cowu.isAdmin() === false && viewConfig.isGlobal === true){
+                return false;
+            }
+            else{
+                var headerActionConfig = [
+                    {
+                        "type" : "link",
+                        "title" : ctwl.TITLE_FW_POLICY_MULTI_DELETE,
+                        "iconClass": 'fa fa-trash',
+                        "linkElementId": 'btnDeleteFWPolicy',
+                        "onClick" : function() {
+                            var fwPolicyModel = new FWPolicyModel();
+                            var checkedRows =
+                                $(gridElId).data("contrailGrid").
+                                getCheckedRows();
+                            if(checkedRows && checkedRows.length > 0) {
+                                fwPolicyEditView.model = fwPolicyModel;
+                                fwPolicyEditView.renderDeleteFWPolicies(
+                                    {"title": ctwl.TITLE_FW_POLICY_MULTI_DELETE,
+                                        checkedRows: checkedRows,
+                                        callback: function () {
+                                            var dataView =
+                                                $(gridElId).
+                                                data("contrailGrid")._dataView;
+                                            dataView.refreshData();
+                                        }
+                                    }
+                                );
+                            }
+                        }
+                    },
+                    {
+                        "type" : "link",
+                        "title" : ctwl.TITLE_CREATE_FW_POLICY,
+                        "iconClass" : "fa fa-plus",
+                        "onClick" : function() {
+                            var fwPolicyModel = new FWPolicyModel();
                             fwPolicyEditView.model = fwPolicyModel;
-                            fwPolicyEditView.renderDeleteFWPolicies(
-                                {"title": ctwl.TITLE_FW_POLICY_MULTI_DELETE,
-                                    checkedRows: checkedRows,
+                            fwPolicyEditView.renderAddEditFWPolicy(
+                                {"title": ctwl.CREATE,
                                     callback: function () {
                                         var dataView =
                                             $(gridElId).
                                             data("contrailGrid")._dataView;
                                         dataView.refreshData();
-                                    }
+                                    },
+                                    mode : ctwl.CREATE_ACTION,
+                                    isGlobal: viewConfig.isGlobal
                                 }
                             );
                         }
                     }
-                },
-                {
-                    "type" : "link",
-                    "title" : ctwl.TITLE_CREATE_FW_POLICY,
-                    "iconClass" : "fa fa-plus",
-                    "onClick" : function() {
-                        var fwPolicyModel = new FWPolicyModel();
-                        fwPolicyEditView.model = fwPolicyModel;
-                        fwPolicyEditView.renderAddEditFWPolicy(
-                            {"title": ctwl.CREATE,
-                                callback: function () {
-                                    var dataView =
-                                        $(gridElId).
-                                        data("contrailGrid")._dataView;
-                                    dataView.refreshData();
-                                },
-                                mode : ctwl.CREATE_ACTION,
-                                isGlobal: viewConfig.isGlobal
-                            }
-                        );
-                    }
-                }
-            ];
-        if(viewConfig.isWizard == true){
-            var headerActionConfig = [
-                {
-                    "type" : "link",
-                    "title" : ctwl.TITLE_FW_POLICY_MULTI_DELETE,
-                    "iconClass": 'fa fa-trash',
-                    "linkElementId": 'btnDeleteFWPolicy',
-                    "onClick" : function() {
-                        fwzUtils.appendDeleteContainer($('#btnDeleteFWPolicy')[0], 'fw-policy-wizard-global-grid-id', true);
-                        $(".cancelWizardDeletePopup").off('click').on('click', function(){
-                            if($('.confirmation-popover').length != 0){
-                                $('.confirmation-popover').remove(); 
-                                $('#delete-popup-background').removeClass('overlay-background');
-                            }
-                        });
-                        $(".saveWizardRecords").off('click').on('click', function(){
-                            var checkedRows = $('#' + ctwc.FW_POLICY_GRID_ID).data('contrailGrid').getCheckedRows();
-                            if(checkedRows && checkedRows.length > 0) {
-                                var model = new FWPolicyModel();
-                                model.deleteFWPolicies(checkedRows, {
-                                    success: function () {
-                                        $('#' + ctwc.FW_POLICY_GRID_ID).
-                                        data('contrailGrid')._dataView.refreshData();
-                                        if($('.confirmation-popover').length != 0){
-                                            $('.confirmation-popover').remove();
-                                            $('#delete-popup-background').removeClass('overlay-background');
-                                        }
-                                    },
-                                    error: function (error) {
-                                        $("#grid-details-error-container").text('');
-                                        $("#grid-details-error-container").text(error.responseText);
-                                        $(".aps-details-error-container").show();
-                                        if($('.confirmation-popover').length != 0){
-                                            $('.confirmation-popover').remove();
-                                            $('#delete-popup-background').removeClass('overlay-background');
-                                        }
+                ];
+                if(viewConfig.isWizard == true){
+                    var headerActionConfig = [
+                        {
+                            "type" : "link",
+                            "title" : ctwl.TITLE_FW_POLICY_MULTI_DELETE,
+                            "iconClass": 'fa fa-trash',
+                            "linkElementId": 'btnDeleteFWPolicy',
+                            "onClick" : function() {
+                                fwzUtils.appendDeleteContainer($('#btnDeleteFWPolicy')[0], 'fw-policy-wizard-global-grid-id', true);
+                                $(".cancelWizardDeletePopup").off('click').on('click', function(){
+                                    if($('.confirmation-popover').length != 0){
+                                        $('.confirmation-popover').remove();
+                                        $('#delete-popup-background').removeClass('overlay-background');
                                     }
-                               }); 
+                                });
+                                $(".saveWizardRecords").off('click').on('click', function(){
+                                    var checkedRows = $('#' + ctwc.FW_POLICY_GRID_ID).data('contrailGrid').getCheckedRows();
+                                    if(checkedRows && checkedRows.length > 0) {
+                                        var model = new FWPolicyModel();
+                                        model.deleteFWPolicies(checkedRows, {
+                                            success: function () {
+                                                $('#' + ctwc.FW_POLICY_GRID_ID).
+                                                data('contrailGrid')._dataView.refreshData();
+                                                if($('.confirmation-popover').length != 0){
+                                                    $('.confirmation-popover').remove();
+                                                    $('#delete-popup-background').removeClass('overlay-background');
+                                                }
+                                            },
+                                            error: function (error) {
+                                                $("#grid-details-error-container").text('');
+                                                $("#grid-details-error-container").text(error.responseText);
+                                                $(".aps-details-error-container").show();
+                                                if($('.confirmation-popover').length != 0){
+                                                    $('.confirmation-popover').remove();
+                                                    $('#delete-popup-background').removeClass('overlay-background');
+                                                }
+                                            }
+                                       });
+                                    }
+                                });
                             }
-                        });
-                    }
-                },
-                {
-                    "type" : "link",
-                    "title" : ctwl.TITLE_CREATE_FW_POLICY,
-                    "iconClass" : "fa fa-plus",
-                    "onClick" : function() {
-                        newApplicationSet = {};
-                        $("#aps-overlay-container").hide();
-                        $('#applicationpolicyset_policy_wizard .actions').css("display", "block");
-                        $('#aps-main-back-button').hide();
-                        $('#applicationpolicyset_policy_wizard a.btn-primary').trigger("click");
-                    }
+                        },
+                        {
+                            "type" : "link",
+                            "title" : ctwl.TITLE_CREATE_FW_POLICY,
+                            "iconClass" : "fa fa-plus",
+                            "onClick" : function() {
+                                newApplicationSet = {};
+                                $("#aps-overlay-container").hide();
+                                $('#applicationpolicyset_policy_wizard .actions').css("display", "block");
+                                $('#aps-main-back-button').hide();
+                                $('#applicationpolicyset_policy_wizard a.btn-primary').trigger("click");
+                            }
+                        }
+                    ];
+                    return headerActionConfig;
                 }
-            ];
-            return headerActionConfig;
-        }
-        else{
-            return headerActionConfig;
-        }
+                else{
+                    return headerActionConfig;
+                }
+            }
     };
 
     function onPolicyClick (e, dc) {
