@@ -200,7 +200,7 @@ define([
                         $("#overlay-background-id").removeClass("overlay-background");
                         $('#applicationpolicyset_policy_wizard .actions').css("display", "block");
                         $('#aps-main-back-button').hide();
-                        $('#applicationpolicyset_policy_wizard a.btn-primary').trigger("click");
+                        $($('#applicationpolicyset_policy_wizard a.btn-primary')[0]).trigger("click");
                     }
                 }
             ];
@@ -218,7 +218,7 @@ define([
         $("#aps-overlay-container").hide();
         $('#applicationpolicyset_policy_wizard .actions').css("display", "block");
         $('#aps-main-back-button').hide();
-        $('#applicationpolicyset_policy_wizard a.btn-primary').trigger("click");
+        $($('#applicationpolicyset_policy_wizard a.btn-primary')[0]).trigger("click");
     }
 
     function getfwPolicyColumns(viewConfig){

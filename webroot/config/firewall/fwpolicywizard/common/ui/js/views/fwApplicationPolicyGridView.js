@@ -221,7 +221,7 @@ define([
                         var modelHeader = ctwc.APS_MODAL_HEADER+ ' > '+ newApplicationSet.name;
                         $('.modal-header-title').text('');
                         $('.modal-header-title').text(modelHeader);
-                        $('#applicationpolicyset_policy_wizard a.btn-primary').trigger("click");
+                        $($('#applicationpolicyset_policy_wizard a.btn-primary')[0]).trigger("click");
                     }else{
                         $("#grid-details-error-container").text('');
                         $("#grid-details-error-container").text('Please enter the name.');
