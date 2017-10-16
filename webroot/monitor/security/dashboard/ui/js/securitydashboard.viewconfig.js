@@ -103,7 +103,7 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                                         "session_type": "client",
                                         "start_time": "now-1h",
                                         "end_time": "now",
-                                        "where": [[{"name":"vn","value":ctwu.getCurrentDomainProject(),"op":7}]],
+                                        "where": [[{"name":"vn","value":ctwu.getCurrentDomainProject(),"op":7}]]
                                         "select_fields": ["SUM(forward_logged_bytes)", "SUM(reverse_logged_bytes)", "protocol", "server_port"],
                                         "table": "SessionSeriesTable"
                                     })
