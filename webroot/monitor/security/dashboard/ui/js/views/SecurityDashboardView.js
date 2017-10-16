@@ -10,10 +10,31 @@ define([
         el: $(contentContainer),
         render: function (viewConfig) {
             this.renderView4Config(this.$el, null,
-                    getSecurityDashboardViewConfig());
+                    getBreadCrumbViewConfig(viewConfig));
         }
     });
+    
+    function getBreadCrumbViewConfig(viewConfig) {
+        var hashParams = viewConfig.hashParams,
+            customProjectDropdownOptions = {
+                getProjectsFromIdentity: true,
+                includeDefaultProject: true,
+                childView: {
+                    init: function () {
+                    	return function (project) {
+                    		return getSecurityDashboardViewConfig();
+                    	}
+                    }()
+                }
+            },
+            customDomainDropdownOptions = {
+                childView: {
+                    init: ctwvc.getProjectBreadcrumbDropdownViewConfig(hashParams, customProjectDropdownOptions)
+                }
+            };
 
+        return ctwvc.getDomainBreadcrumbDropdownViewConfig(hashParams, customDomainDropdownOptions);
+    };
     function getSecurityDashboardViewConfig() {
         var viewConfig =  {
                 rows : [{
@@ -33,7 +54,9 @@ define([
                                                     },
                                                     widgetCfgList: [
                                                         {id: 'vmi-implicit-allow-deny-scatterchart'},
+                                                        {id: 'top-10-allowed-rules'},
                                                         {id: 'top-5-services'}
+                                                        //{id: 'top-10-deny-rules'},
                                                     ]
                                                  }
                                              },
