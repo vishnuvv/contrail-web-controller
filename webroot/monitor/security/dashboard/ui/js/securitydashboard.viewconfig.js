@@ -63,12 +63,14 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                     itemAttr: {
                         width: 2,
                         height: 1.5,
-                        title: 'Implicit Allow/Deny stats of VMI'
+                        title: 'Interface Implicit Allow/Deny Statistics',
+                        showTitle: true
                     }
                 }
             },
             'top-5-services': function () {
-                 return {
+                var topServiceCnt = 10;
+                return {
                     modelCfg: {
                         modelId:'top-5-services',
                         config: {
@@ -97,12 +99,13 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                             chartOptions: {
                                 yFormatter: function(y) {return formatBytes(y, true);},
                                 xAxisLabel: 'Service',
-                                yAxisLabel: 'Traffic'
+                                yAxisLabel: 'Traffic',
+                                barOrientation: 'horizontal'
                             },
                             parseFn: function (data) {
                                 var parsedData = {}, chartData = [];
                                 _.each(data, function (obj, i) {
-                                    var service = cowf.format.protocol(obj['protocol']) + '('+obj['server_port']+')';
+                                    var service = cowf.format.protocol(obj['protocol']) + ' ('+obj['server_port']+')';
                                      if (parsedData[service] != null) {
                                          parsedData[service] += (_.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0));
                                      } else {
@@ -116,8 +119,8 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                                     return -obj.value; //minus to get descending order
                                 })
                                 return [{
-                                    key: 'Top 5 Services',
-                                    values: chartData.slice(0,10)
+                                    key: 'Top '+topServiceCnt+' Services',
+                                    values: chartData.slice(0, topServiceCnt)
                                 }];
                             }
                         }
@@ -125,7 +128,8 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                     itemAttr: {
                         width: 1,
                         height: 1.5,
-                        title: 'Implicit Allow/Deny stats of VMI'
+                        title: 'Top '+topServiceCnt+' Services',
+                        showTitle: true
                     }
                 }
             }
