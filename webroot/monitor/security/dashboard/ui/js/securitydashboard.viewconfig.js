@@ -30,6 +30,7 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                                 yLabelFormat: function(y) {return formatBytes(y);},
                                 xLabel: 'Implicit Allow',
                                 yLabel: 'Implicit Deny',
+                                controlPanel: false,
                                 dataParser: function (data) {
                                     var parsedData = [];
                                     _.each(data, function (obj, i) {
@@ -61,9 +62,9 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                         }
                     },
                     itemAttr: {
-                        width: 2,
+                        width: 1,
                         height: 1.5,
-                        title: 'Interface Implicit Allow/Deny Statistics',
+                        title: 'Interfaces',
                         showTitle: true
                     }
                 }
@@ -97,43 +98,176 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                         view:'MultiBarChartView',
                         viewConfig: {
                             chartOptions: {
-                                yFormatter: function(y) {return formatBytes(y, true);},
-                                xAxisLabel: 'Service',
+                                yFormatter: function(y) {return formatBytes(y);},
+                                xAxisLabel: '',
                                 yAxisLabel: 'Traffic',
-                                barOrientation: 'horizontal'
+                                barOrientation: 'horizontal',
+                                zerofill: true,
+                                xLblFormatter: function (d) {
+                                    if (d != null && typeof d == 'string') {
+                                       return d;
+                                    }
+                                }
                             },
                             parseFn: function (data) {
-                                var parsedData = {}, chartData = [];
-                                _.each(data, function (obj, i) {
-                                    var service = cowf.format.protocol(obj['protocol']) + ' ('+obj['server_port']+')';
-                                     if (parsedData[service] != null) {
-                                         parsedData[service] += (_.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0));
-                                     } else {
-                                         parsedData[service] = _.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0);
-                                     }
-                                });
-                                _.map(parsedData, function (value, key) {
-                                     chartData.push({label: key, value: value})
-                                });
-                                chartData = _.sortBy(chartData, function (obj){
-                                    return -obj.value; //minus to get descending order
-                                })
-                                return [{
-                                    key: 'Top '+topServiceCnt+' Services',
-                                    values: chartData.slice(0, topServiceCnt)
-                                }];
+                            	return cowu.parseDataForDiscreteBarChart(data, {
+                            		groupBy: function (obj) {
+                            			return cowf.format.protocol(obj['protocol']) + ' ('+obj['server_port']+')';
+                            		},
+                            		axisField: function (obj) {
+                            			return (_.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0));
+                            		},
+                                    label: 'Top Services',
+                                    topCnt: topServiceCnt,
+                                    zerofill: true,
+                            	});
                             }
                         }
                     },
                     itemAttr: {
                         width: 1,
                         height: 1.5,
-                        title: 'Top '+topServiceCnt+' Services',
+                        title: 'Top Services',
+                        showTitle: true
+                    }
+                }
+            },
+            'top-10-allowed-rules': function () {
+                var topServiceCnt = 10;
+                return {
+                    modelCfg: {
+                        modelId:'top-10-rule',
+                        config: {
+                            remote : {
+                                ajaxConfig : {
+                                    url:monitorInfraConstants.monitorInfraUrls['ANALYTICS_QUERY'],
+                                    type:'POST',
+                                    data:JSON.stringify({
+                                        "session_type": "server",
+                                        "start_time": "now-10m",
+                                        "end_time": "now",
+                                        "select_fields": ["SUM(forward_logged_bytes)", "SUM(reverse_logged_bytes)", "security_policy_rule", "forward_action"],
+                                        "table": "SessionSeriesTable"
+                                    })
+                                },
+                                dataParser : function (response) {
+                                    return _.result(response, 'value', []);
+                                }
+                            }
+                        }
+                    },
+                    viewCfg:{
+                        elementId : 'top-10-allowed-rules',
+                        view:'MultiBarChartView',
+                        viewConfig: {
+                            chartOptions: {
+                                yFormatter: function(y) {return formatBytes(y);},
+                                xAxisLabel: '',
+                                yAxisLabel: 'Traffic',
+                                barOrientation: 'horizontal',
+                                zerofill: true,
+                                xLblFormatter: ruleUUIdFormatter
+                            },
+                            parseFn: function (data) {
+                            	/*data = _.filter(data, function (obj) {
+                            		return _.result(obj, 'forward_action') == 'accept';
+                            	});*/
+                            	return cowu.parseDataForDiscreteBarChart(data, {
+                            		groupBy: 'security_policy_rule',
+                            		axisField: function (obj) {
+                            			return (_.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0));
+                            		},
+                                    label: 'Traffic',
+                                    topCnt: topServiceCnt,
+                                    zerofill: true,
+                            	});
+                            }
+                        }
+                    },
+                    itemAttr: {
+                        width: 1,
+                        height: 1.5,
+                        title: 'Top Rules (Action: Pass)',
+                        showTitle: true
+                    }
+                }
+            },
+            'top-10-deny-rules': function () {
+                var topServiceCnt = 10;
+                return {
+                    modelCfg: {
+                        modelId:'top-10-rule',
+                        config: {
+                            remote : {
+                                ajaxConfig : {
+                                    url:monitorInfraConstants.monitorInfraUrls['ANALYTICS_QUERY'],
+                                    type:'POST',
+                                    data:JSON.stringify({
+                                        "session_type": "server",
+                                        "start_time": "now-10m",
+                                        "end_time": "now",
+                                        "select_fields": ["SUM(forward_logged_bytes)", "SUM(reverse_logged_bytes)", "security_policy_rule", "forward_action"],
+                                        "table": "SessionSeriesTable"
+                                    })
+                                },
+                                dataParser : function (response) {
+                                    return _.result(response, 'value', []);
+                                }
+                            }
+                        }
+                    },
+                    viewCfg:{
+                        elementId : 'top-10-deny-rules',
+                        view:'MultiBarChartView',
+                        viewConfig: {
+                            chartOptions: {
+                                yFormatter: function(y) {return formatBytes(y);},
+                                xAxisLabel: '',
+                                yAxisLabel: 'Traffic',
+                                barOrientation: 'horizontal',
+                                zerofill: true,
+                                xLblFormatter: ruleUUIdFormatter
+                            },
+                            parseFn: function (data) {
+                            	/*data = _.filter(data, function (obj) {
+                            		return _.result(obj, 'forward_action') == 'deny';
+                            	});*/
+                            	return cowu.parseDataForDiscreteBarChart(data, {
+                            		groupBy: 'security_policy_rule',
+                            		axisField: function (obj) {
+                            			return (_.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0));
+                            		},
+                                    label: 'Traffic',
+                                    topCnt: topServiceCnt,
+                                    zerofill: true,
+                            	});
+                            }
+                        }
+                    },
+                    itemAttr: {
+                        width: 1,
+                        height: 1.5,
+                        title: 'Top Rules (Action: Deny)',
                         showTitle: true
                     }
                 }
             }
          };
+        function ruleUUIdFormatter (d) {
+            if (cowc.DEFAULT_FIREWALL_RULES[d] != null) {
+                d = cowc.DEFAULT_FIREWALL_RULES[d]['name'];
+            }
+            // Hack for now to differentiate between the
+            // tooltip header formatter and axis tick formatter
+            // because we dont want to call the formatter in
+            // tooltip
+            if (arguments.length == 2) {
+               return d;
+            }
+            if (d != null && typeof d == 'string') {
+               return d.substring(0,8)+'...';
+            }
+        }
         self.getViewConfig = function(id) {
             return self.viewConfig[id];
         };
