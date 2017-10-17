@@ -80,7 +80,7 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                         }
                     },
                     itemAttr: {
-                        width: 2,
+                        width: 1,
                         height: 1.5,
                         title: 'Interfaces',
                         showTitle: true
@@ -153,6 +153,120 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                         width: 1,
                         height: 1.5,
                         title: 'Top Services',
+                        showTitle: true
+                    }
+                }
+            },
+            'top-10-allowed-rules': function () {
+                var topServiceCnt = 10;
+                return {
+                    modelCfg: {
+                        modelId:'top-10-rule',
+                        config: {
+                            remote : {
+                                ajaxConfig : {
+                                    url:monitorInfraConstants.monitorInfraUrls['ANALYTICS_QUERY'],
+                                    type:'POST',
+                                    data:JSON.stringify({
+                                        "session_type": "client",
+                                        "start_time": "now-10m",
+                                        "end_time": "now",
+                                        "select_fields": ["SUM(forward_logged_bytes)", "SUM(reverse_logged_bytes)", "security_policy_rule", "forward_action"],
+                                        "table": "SessionSeriesTable"
+                                    })
+                                },
+                                dataParser : function (response) {
+                                    return _.result(response, 'value', []);
+                                }
+                            }
+                        }
+                    },
+                    viewCfg:{
+                        elementId : 'top-10-allowed-rules',
+                        view:'MultiBarChartView',
+                        viewConfig: {
+                            chartOptions: {
+                                yFormatter: function(y) {return formatBytes(y);},
+                                xAxisLabel: '',
+                                yAxisLabel: 'Traffic',
+                                barOrientation: 'horizontal'
+                            },
+                            parseFn: function (data) {
+                            	/*data = _.filter(data, function (obj) {
+                            		return _.result(obj, 'forward_action') == 'accept';
+                            	});*/
+                            	return cowu.parseDataForDiscreteBarChart(data, {
+                            		groupBy: 'security_policy_rule',
+                            		axisField: function (obj) {
+                            			return (_.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0));
+                            		},
+                            		label: 'Top '+topServiceCnt+' Allowed Rules',
+                            		topCnt: topServiceCnt
+                            	});
+                            }
+                        }
+                    },
+                    itemAttr: {
+                        width: 1,
+                        height: 1.5,
+                        title: 'Top '+topServiceCnt+' Allowed Rules',
+                        showTitle: true
+                    }
+                }
+            },
+            'top-10-deny-rules': function () {
+                var topServiceCnt = 10;
+                return {
+                    modelCfg: {
+                        modelId:'top-10-rule',
+                        config: {
+                            remote : {
+                                ajaxConfig : {
+                                    url:monitorInfraConstants.monitorInfraUrls['ANALYTICS_QUERY'],
+                                    type:'POST',
+                                    data:JSON.stringify({
+                                        "session_type": "client",
+                                        "start_time": "now-10m",
+                                        "end_time": "now",
+                                        "select_fields": ["SUM(forward_logged_bytes)", "SUM(reverse_logged_bytes)", "security_policy_rule", "forward_action"],
+                                        "table": "SessionSeriesTable"
+                                    })
+                                },
+                                dataParser : function (response) {
+                                    return _.result(response, 'value', []);
+                                }
+                            }
+                        }
+                    },
+                    viewCfg:{
+                        elementId : 'top-10-deny-rules',
+                        view:'MultiBarChartView',
+                        viewConfig: {
+                            chartOptions: {
+                                yFormatter: function(y) {return formatBytes(y);},
+                                xAxisLabel: '',
+                                yAxisLabel: 'Traffic',
+                                barOrientation: 'horizontal'
+                            },
+                            parseFn: function (data) {
+                            	/*data = _.filter(data, function (obj) {
+                            		return _.result(obj, 'forward_action') == 'deny';
+                            	});*/
+                            	return cowu.parseDataForDiscreteBarChart(data, {
+                            		groupBy: 'security_policy_rule',
+                            		axisField: function (obj) {
+                            			return (_.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0));
+                            		},
+                            		label: 'Top '+topServiceCnt+' Allowed Rules',
+                            		topCnt: topServiceCnt
+                            	});
+                            }
+                        }
+                    },
+                    itemAttr: {
+                        width: 1,
+                        height: 1.5,
+                        title: 'Top '+topServiceCnt+' Deny Rules',
                         showTitle: true
                     }
                 }
