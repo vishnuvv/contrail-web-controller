@@ -6,9 +6,17 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
         function(_, ContrailView, ContrailListModel){
     var SecurityDashboardViewConfig = function () {
         var self = this;
+        var domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
+        	project = contrail.getCookie(cowc.COOKIE_PROJECT),
+        	topServiceCnt = 10;
+        	//projectFQN = domain + ':' + projectSelectedValueData.name,
+        //projectUUID = projectSelectedValueData.value;
         self.viewConfig = {
-            'vmi-implicit-allow-deny-scatterchart': function (){
-                return {
+    		'top-10-allowed-rules': function () {
+                return topRulesWidgetCfg('accept');
+            },
+        	'vmi-implicit-allow-deny-scatterchart': function (){
+            	return {
                     modelCfg: {
                         modelId:'vmi-implicit-allow-deny-model',
                         source: 'STATTABLE',
@@ -69,8 +77,10 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                     }
                 }
             },
+            'top-10-deny-rules': function () {
+            	return topRulesWidgetCfg('deny');
+            },
             'top-5-services': function () {
-                var topServiceCnt = 10;
                 return {
                     modelCfg: {
                         modelId:'top-5-services',
@@ -107,7 +117,8 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                                     if (d != null && typeof d == 'string') {
                                        return d;
                                     }
-                                }
+                                },
+                                margin: {top: 10, right: 30, bottom: 80, left: 100},
                             },
                             parseFn: function (data) {
                             	return cowu.parseDataForDiscreteBarChart(data, {
@@ -131,126 +142,6 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                         showTitle: true
                     }
                 }
-            },
-            'top-10-allowed-rules': function () {
-                var topServiceCnt = 10;
-                return {
-                    modelCfg: {
-                        modelId:'top-10-rule',
-                        config: {
-                            remote : {
-                                ajaxConfig : {
-                                    url:monitorInfraConstants.monitorInfraUrls['ANALYTICS_QUERY'],
-                                    type:'POST',
-                                    data:JSON.stringify({
-                                        "session_type": "server",
-                                        "start_time": "now-10m",
-                                        "end_time": "now",
-                                        "select_fields": ["SUM(forward_logged_bytes)", "SUM(reverse_logged_bytes)", "security_policy_rule", "forward_action"],
-                                        "table": "SessionSeriesTable"
-                                    })
-                                },
-                                dataParser : function (response) {
-                                    return _.result(response, 'value', []);
-                                }
-                            }
-                        }
-                    },
-                    viewCfg:{
-                        elementId : 'top-10-allowed-rules',
-                        view:'MultiBarChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: function(y) {return formatBytes(y);},
-                                xAxisLabel: '',
-                                yAxisLabel: 'Traffic',
-                                barOrientation: 'horizontal',
-                                zerofill: true,
-                                xLblFormatter: ruleUUIdFormatter
-                            },
-                            parseFn: function (data) {
-                            	/*data = _.filter(data, function (obj) {
-                            		return _.result(obj, 'forward_action') == 'accept';
-                            	});*/
-                            	return cowu.parseDataForDiscreteBarChart(data, {
-                            		groupBy: 'security_policy_rule',
-                            		axisField: function (obj) {
-                            			return (_.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0));
-                            		},
-                                    label: 'Traffic',
-                                    topCnt: topServiceCnt,
-                                    zerofill: true,
-                            	});
-                            }
-                        }
-                    },
-                    itemAttr: {
-                        width: 1,
-                        height: 1.5,
-                        title: 'Top Rules (Action: Pass)',
-                        showTitle: true
-                    }
-                }
-            },
-            'top-10-deny-rules': function () {
-                var topServiceCnt = 10;
-                return {
-                    modelCfg: {
-                        modelId:'top-10-rule',
-                        config: {
-                            remote : {
-                                ajaxConfig : {
-                                    url:monitorInfraConstants.monitorInfraUrls['ANALYTICS_QUERY'],
-                                    type:'POST',
-                                    data:JSON.stringify({
-                                        "session_type": "server",
-                                        "start_time": "now-10m",
-                                        "end_time": "now",
-                                        "select_fields": ["SUM(forward_logged_bytes)", "SUM(reverse_logged_bytes)", "security_policy_rule", "forward_action"],
-                                        "table": "SessionSeriesTable"
-                                    })
-                                },
-                                dataParser : function (response) {
-                                    return _.result(response, 'value', []);
-                                }
-                            }
-                        }
-                    },
-                    viewCfg:{
-                        elementId : 'top-10-deny-rules',
-                        view:'MultiBarChartView',
-                        viewConfig: {
-                            chartOptions: {
-                                yFormatter: function(y) {return formatBytes(y);},
-                                xAxisLabel: '',
-                                yAxisLabel: 'Traffic',
-                                barOrientation: 'horizontal',
-                                zerofill: true,
-                                xLblFormatter: ruleUUIdFormatter
-                            },
-                            parseFn: function (data) {
-                            	/*data = _.filter(data, function (obj) {
-                            		return _.result(obj, 'forward_action') == 'deny';
-                            	});*/
-                            	return cowu.parseDataForDiscreteBarChart(data, {
-                            		groupBy: 'security_policy_rule',
-                            		axisField: function (obj) {
-                            			return (_.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0));
-                            		},
-                                    label: 'Traffic',
-                                    topCnt: topServiceCnt,
-                                    zerofill: true,
-                            	});
-                            }
-                        }
-                    },
-                    itemAttr: {
-                        width: 1,
-                        height: 1.5,
-                        title: 'Top Rules (Action: Deny)',
-                        showTitle: true
-                    }
-                }
             }
          };
         function ruleUUIdFormatter (d) {
@@ -262,11 +153,121 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
             // because we dont want to call the formatter in
             // tooltip
             if (arguments.length == 2) {
-               return d;
+            	return d;
+            	/*return '<tspan x="10">tspan line 1</tspan>'+
+                '<tspan x="10" dy="15">tspan line 2</tspan>';*/
             }
             if (d != null && typeof d == 'string') {
-               return d.substring(0,8)+'...';
+            	/*return '<tspan x="10">tspan line 1</tspan>'+
+                '<tspan x="10" dy="15">tspan line 2</tspan>';*/
+            	if (d.length > 100) {
+            		d = d.split('<--->')[0]+'...'; 
+            	}
+            	return d;
             }
+        }
+        function topRulesWidgetCfg (action) {
+        	return {
+                modelCfg: {
+                    modelId:'top-10-rule',
+                    config: {
+                        remote : {
+                            ajaxConfig : {
+                                url:monitorInfraConstants.monitorInfraUrls['ANALYTICS_QUERY'],
+                                type:'POST',
+                                data:JSON.stringify({
+                                    "session_type": "server",
+                                    "start_time": "now-10m",
+                                    "end_time": "now",
+                                    "select_fields": ["SUM(forward_logged_bytes)", "SUM(reverse_logged_bytes)", "security_policy_rule", "forward_action"],
+                                    "table": "SessionSeriesTable"
+                                })
+                            },
+                            dataParser : function (response) {
+                                return _.result(response, 'value', []);
+                            }
+                        },
+                        vlRemoteConfig : {
+                            vlRemoteList : [{
+                                getAjaxConfig : function(primaryCallresponse) {
+                                    var rule = _.map(primaryCallresponse, 'security_policy_rule'),
+                                    	ruleUUIDs = [];
+                                    _.forEach(rule, function (value) {
+                                    	if (value == '00000000-0000-0000-0000-000000000001'
+                                    		|| value == '00000000-0000-0000-0000-000000000002') {
+                                    		ruleUUIDs.push(value);
+                                    	}
+                                    	if (value != null && typeof value == 'string' &&
+                                    		value.indexOf(':') > -1) {
+                                    		ruleUUIDs.push(value.split(':').pop());
+                                    	}
+                                    })
+                                    return {
+                                        url: "/api/tenants/config/get-config-details",
+                                        type: "POST",
+                                        data: JSON.stringify(
+                                            {data: [{type: 'firewall-rules',obj_uuids: ruleUUIDs, fields: ['firewall_policy_back_refs',
+                                             'service', 'service_group_refs']}]})
+                                    };
+                                },
+                                successCallback : function(response, contrailListModel) {
+                                    var firewallRules = _.result(response, '0.firewall-rules', []),
+                                    	primaryCallResponse = contrailListModel.getItems(),
+                                    	ruleMap = _.keyBy(primaryCallResponse, 'security_policy_rule'),
+                                    	ruleDataArr = [];
+                                    _.forEach(firewallRules, function(value) {
+                                    	var firewallObj = _.result(value, 'firewall-rule');
+                                    	var ruleStats = _.filter(ruleMap, function (value, key) {
+                                    		return _.includes(key, _.result(firewallObj, 'uuid'));
+                                    	})
+                                    	ruleDataArr.push($.extend({}, _.result(ruleStats, '0', {}), firewallObj));
+                                    })
+                                    contrailListModel.setData(ruleDataArr);
+                                }
+                            }],
+                        }
+                    }
+                },
+                viewCfg:{
+                    elementId : 'top-10-allowed-rules',
+                    view:'MultiBarChartView',
+                    viewConfig: {
+                        chartOptions: {
+                            yFormatter: function(y) {return formatBytes(y);},
+                            xAxisLabel: '',
+                            yAxisLabel: 'Traffic',
+                            barOrientation: 'horizontal',
+                            zerofill: true,
+                            xLblFormatter: ruleUUIdFormatter
+                        },
+                        parseFn: function (data) {
+                        	/*data = _.filter(data, function (obj) {
+                        		return _.result(obj, 'forward_action') == action;
+                        	});*/
+                        	return cowu.parseDataForDiscreteBarChart(data, {
+                        		groupBy: function (obj) {
+                        			var endpoint1_tags = _.result(obj, 'endpoint_1.tags', []).join('&');
+                        			var endpoint2_tags = _.result(obj, 'endpoint_2.tags', []).join('&');
+                        			return endpoint1_tags + ' <---> ' + endpoint2_tags;
+                        		},
+                        		axisField: function (obj) {
+                        			return (_.result(obj, 'SUM(forward_logged_bytes)', 0) + _.result(obj, 'SUM(reverse_logged_bytes)', 0));
+                        		},
+                                label: 'Traffic',
+                                topCnt: topServiceCnt,
+                                zerofill: true,
+                        	});
+                        }
+                    }
+                },
+                itemAttr: {
+                    width: 1,
+                    height: 1.5,
+                    title: 'Top Rules (Action: Pass)',
+                    showTitle: true
+                }
+            
+        	}
         }
         self.getViewConfig = function(id) {
             return self.viewConfig[id];
