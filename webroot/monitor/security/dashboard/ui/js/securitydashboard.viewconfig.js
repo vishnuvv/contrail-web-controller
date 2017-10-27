@@ -6,9 +6,7 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
         function(_, ContrailView, ContrailListModel){
     var SecurityDashboardViewConfig = function () {
         var self = this;
-        var domain = contrail.getCookie(cowc.COOKIE_DOMAIN),
-        	project = contrail.getCookie(cowc.COOKIE_PROJECT),
-        	topServiceCnt = 10;
+        var topServiceCnt = 10;
         	//projectFQN = domain + ':' + projectSelectedValueData.name,
         //projectUUID = projectSelectedValueData.value;
         self.viewConfig = {
@@ -23,7 +21,7 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                         config: {
                             "table_name": "StatTable.EndpointSecurityStats.eps.client",
                             "select": "eps.__key, name, SUM(eps.client.in_bytes), SUM(eps.client.out_bytes)",
-                            //'where': '(eps.__key = 00000000-0000-0000-0000-000000000001) OR (eps.__key = 00000000-0000-0000-0000-000000000002)',
+                            "where": "(name Starts with " + ctwu.getCurrentDomainProject() +')',
                             "parser": function(response){
                                 return _.result(response, 'data', []);
                             }
@@ -92,6 +90,7 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                                         "session_type": "client",
                                         "start_time": "now-10m",
                                         "end_time": "now",
+                                        "where": [[{"name":"vn","value":ctwu.getCurrentDomainProject(),"op":7}]],
                                         "select_fields": ["SUM(forward_logged_bytes)", "SUM(reverse_logged_bytes)", "protocol", "server_port"],
                                         "table": "SessionSeriesTable"
                                     })
@@ -162,7 +161,7 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
             if (d != null && typeof d == 'string') {
             	/*return '<tspan x="10">tspan line 1</tspan>'+
                 '<tspan x="10" dy="15">tspan line 2</tspan>';*/
-            	if (d.length > 100) {
+                if (d.length > 38) {
             		d = d.split('<--->')[0]+'...'; 
             	}
             	return d;
@@ -181,6 +180,7 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model'],
                                     "session_type": "server",
                                     "start_time": "now-10m",
                                     "end_time": "now",
+                                    "where": [[{"name":"vn","value":ctwu.getCurrentDomainProject(),"op":7}]],
                                     "select_fields": ["SUM(forward_logged_bytes)", "SUM(reverse_logged_bytes)", "security_policy_rule", "forward_action"],
                                     "table": "SessionSeriesTable"
                                 })

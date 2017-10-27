@@ -19,6 +19,7 @@ define([
             customProjectDropdownOptions = {
                 getProjectsFromIdentity: true,
                 includeDefaultProject: true,
+                allDropdownOption: ctwc.ALL_PROJECT_DROPDOWN_OPTION,
                 childView: {
                     init: function () {
                     	return function (project) {
