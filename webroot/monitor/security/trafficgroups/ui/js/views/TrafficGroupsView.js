@@ -552,7 +552,7 @@ define(
                                 arcLabelLetterWidth: 6,
                                 labelDuration:0,
                                 labelFlow: 'along-arc',
-                                linkCssClasses: ['implicitDeny', 'implicitAllow'],
+                                linkCssClasses: ['implicitDeny', 'implicitAllow', 'notEvaluated'],
                                 arcLabelXOffset: 0,
                                 arcLabelYOffset: [-12,-6],
                                 showLinkDirection: true,
@@ -607,11 +607,18 @@ define(
                                             implicitAllowKey = ifNull(_.find(cowc.DEFAULT_FIREWALL_RULES, function(rule) {
                                                 return rule.name == 'Implicit Allow';
                                             }), '').uuid;
+
+                                            notEvaluatedKey = ifNull(_.find(cowc.DEFAULT_FIREWALL_RULES, function(rule) {
+                                                return rule.name == 'Not Evaluated';
+                                            }), '').uuid;
                                         if(self.isImplictRule(d, implicitDenyKey)) {
                                             d.linkCssClass = 'implicitDeny';
                                         }
                                         if(self.isImplictRule(d, implicitAllowKey)) {
                                             d.linkCssClass = 'implicitAllow';
+                                        }
+                                        if(self.isImplictRule(d, notEvaluatedKey)) {
+                                            d.linkCssClass = 'notEvaluated';
                                         }
                                         $.each(srcHierarchy, function(idx) {
                                             srcDisplayLabel.push(self.formatLabel(hierarchyObj.srcLabels, idx));
