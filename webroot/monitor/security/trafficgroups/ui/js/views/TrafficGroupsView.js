@@ -690,7 +690,7 @@ define(
                                                     return _.result(currSession,'SUM(eps.traffic.out_bytes)',0);
                                             }))
                                         }, {
-                                            label: 'VMIs',
+                                            label: ctwl.VMI_LABEL,
                                             value: _.uniq(matchedChilds, 'name').length
                                         });
                                     } else {
@@ -975,6 +975,7 @@ define(
                                 vmiDetails : {
                                     data : [],
                                     title : arcData.title,
+                                    vmiLabel: ctwl.VMI_LABEL,
                                     vmiCount: ''
                                 },
                                 d : d
@@ -989,6 +990,7 @@ define(
                     this.showTGSidePanel({
                         data : 'nodata',
                         title : title,
+                        vmiLabel: ctwl.VMI_LABEL,
                         vmiCount: ''
                     }, d);
                 },
