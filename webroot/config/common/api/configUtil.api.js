@@ -234,7 +234,7 @@ function getConfigDetailsAsync (dataObj, callback)
     var fields = dataObj['fields'];
     if (null != fields) {
         if (fields instanceof Array) {
-            fields = fields.join(":");
+            fields = fields.join(",");
         }
         url = buildConfigURLSuffix(startDone, url,
                                    'fields=' + fields);
