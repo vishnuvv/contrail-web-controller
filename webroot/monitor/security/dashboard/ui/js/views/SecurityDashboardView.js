@@ -51,13 +51,30 @@ define([
                                                     elementId : 'security-dashboard-stackview-0',
                                                     gridAttr : {
                                                         widthMultiplier : cowc.GRID_STACK_DEFAULT_WIDTH,
-                                                        heightMultiplier : 10
+                                                        heightMultiplier : 11
                                                     },
                                                     widgetCfgList: [
-                                                        {id: 'top-apps'},
-                                                        {id: 'top-vns'},
-                                                        {id: 'top-vmis-with-acl-deny'},
-                                                        {id: 'top-acl-with-deny'}
+                                                        {
+                                                            id: 'top-apps',
+                                                            itemAttr: {
+                                                                cssClass: 'panel panel-default',
+                                                            }
+                                                        },{
+                                                            id: 'top-vns',
+                                                            itemAttr: {
+                                                                cssClass: 'panel panel-default',
+                                                            }
+                                                        },{
+                                                            id: 'top-vmis-with-acl-deny',
+                                                            itemAttr: {
+                                                                cssClass: 'panel panel-default',
+                                                            }
+                                                        },{
+                                                            id: 'top-acl-with-deny',
+                                                            itemAttr: {
+                                                                cssClass: 'panel panel-default',
+                                                            }
+                                                        }
                                                         /*{id: 'vmi-implicit-allow-deny-scatterchart'},
                                                         {id: 'top-10-allowed-rules'},
                                                         {id: 'top-5-services'}
