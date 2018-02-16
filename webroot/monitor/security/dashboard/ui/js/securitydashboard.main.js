@@ -12,7 +12,6 @@ function SecurityDashboardLoader() {
             var securityDashboard = new SecurityDashboard();
             securityDashboard.render({hashParams: hashParams});
         });
-
     };
     this.destroy = function()  {
     }

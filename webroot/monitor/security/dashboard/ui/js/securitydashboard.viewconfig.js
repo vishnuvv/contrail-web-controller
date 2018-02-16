@@ -174,6 +174,8 @@ define(['lodashv4', 'contrail-view', 'contrail-list-model',
                               xLblFormatter: function (x) {
                                   if (typeof x == 'number') {
                                       return '';
+                                  } else if (typeof x == 'string') {
+                                      return x.split('=')[1];
                                   }
                                   return x;
                               },
