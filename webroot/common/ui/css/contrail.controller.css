@@ -1203,3 +1203,16 @@ body.navbar-fixed{
 #portTranslationCollection table thead{
     background: #fafafa;
 }
+
+#security-dashboard-carousel-view .carousel-inner{
+       padding: 0px !important;
+}
+#security-dashboard-carousel-view .grid-stack > .grid-stack-item > .grid-stack-item-content{
+       top:10px;
+}
+#security-dashboard-carousel-view .grid-stack-item-content {
+    background: #f9f9f9;
+}
+#security-dashboard-carousel-view .grid-stack-item-content line[x2='0']{
+       display:none;
+}

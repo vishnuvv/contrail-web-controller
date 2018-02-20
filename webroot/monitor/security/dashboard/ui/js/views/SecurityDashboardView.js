@@ -55,24 +55,100 @@ define([
                                                     },
                                                     widgetCfgList: [
                                                         {
-                                                            id: 'top-apps',
+                                                            id: 'top-tags',
                                                             itemAttr: {
-                                                                cssClass: 'panel panel-default',
+                                                                //cssClass: 'panel panel-default',
+                                                                dropdown: {
+                                                                    id: 'top-tags-dropdown',
+                                                                    data: [{
+                                                                        'text': 'Top Applications',
+                                                                        'id': {
+                                                                            viewCfg: {
+                                                                              viewConfig: {
+                                                                                  chartOptions: {
+                                                                                      groupBy: ['app', 'remote_app_id.name'],
+                                                                                      title: 'Top Applications'
+                                                                                  }
+                                                                              }  
+                                                                            },
+                                                                            modelCfg: [{
+                                                                                source: 'APISERVER',
+                                                                                mergeFn: {
+                                                                                    modelKey: 'remote_app_id'
+                                                                                }
+                                                                            }]   
+                                                                        }
+                                                                    },{
+                                                                        'text': 'Top Tiers',
+                                                                        'id': {
+                                                                         viewCfg: {
+                                                                           viewConfig: {
+                                                                               chartOptions: {
+                                                                                   groupBy: ['tier', 'remote_tier_id.name'],
+                                                                                   title: 'Top Tiers'
+                                                                               }
+                                                                           }  
+                                                                         },
+                                                                         modelCfg: [{
+                                                                             source: 'APISERVER',
+                                                                             mergeFn: {
+                                                                                 modelKey: 'remote_tier_id'
+                                                                             }
+                                                                         }]   
+                                                                        }
+                                                                    },{
+                                                                        'text': 'Top Sites',
+                                                                        'id': {
+                                                                            viewCfg: {
+                                                                              viewConfig: {
+                                                                                  chartOptions: {
+                                                                                      groupBy: ['site', 'remote_site_id.name'],
+                                                                                      title: 'Top Sites'
+                                                                                  }
+                                                                              }  
+                                                                            },
+                                                                            modelCfg: [{
+                                                                                source: 'APISERVER',
+                                                                                mergeFn: {
+                                                                                    modelKey: 'remote_site_id'
+                                                                                }
+                                                                            }]
+                                                                        }
+                                                                    },{
+                                                                        'text': 'Top Deployments',
+                                                                        'id': {
+                                                                            viewCfg: {
+                                                                              viewConfig: {
+                                                                                  chartOptions: {
+                                                                                      groupBy: ['deployment', 'remote_deployment_id.name'],
+                                                                                      title: 'Top Deployments'
+                                                                                  }
+                                                                              }  
+                                                                            },
+                                                                            modelCfg: [{
+                                                                                source: 'APISERVER',
+                                                                                mergeFn: {
+                                                                                    modelKey: 'remote_deployment_id'
+                                                                                }
+                                                                            }]   
+                                                                        }
+                                                                    }]
+                                                                },
                                                             }
                                                         },{
                                                             id: 'top-vns',
                                                             itemAttr: {
-                                                                cssClass: 'panel panel-default',
+                                                                //cssClass: 'panel panel-default',
                                                             }
                                                         },{
                                                             id: 'top-vmis-with-acl-deny',
                                                             itemAttr: {
-                                                                cssClass: 'panel panel-default',
+                                                                //cssClass: 'panel panel-default',
                                                             }
                                                         },{
                                                             id: 'top-acl-with-deny',
                                                             itemAttr: {
-                                                                cssClass: 'panel panel-default',
+                                                                //cssClass: 'panel panel-default',
                                                             }
                                                         }
                                                         /*{id: 'vmi-implicit-allow-deny-scatterchart'},
